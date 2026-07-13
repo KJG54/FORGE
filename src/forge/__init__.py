@@ -1,8 +1,3 @@
-"""FORGE governance framework.
-
-Milestone 0 establishes project identity and tooling only. Production governance
-contracts and lifecycle behavior begin in later, separately approved milestones.
-"""
+"""FORGE: local-first governance for human-directed, AI-assisted work."""
 
 __version__ = "0.1.0a0"
-
