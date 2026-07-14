@@ -39,7 +39,7 @@ forge = "forge.cli.app:main"
 packages = ["src/forge"]
 
 [tool.pytest.ini_options]
-addopts = "-ra --strict-config --strict-markers --basetemp=.pytest_cache/tmp"
+addopts = "-ra --strict-config --strict-markers"
 testpaths = ["tests"]
 
 [tool.ruff]
