@@ -143,6 +143,14 @@ class RepositoryLayout:
     def decision_supersession_directory(self) -> Path:
         return self.active_directory / "decision-supersessions"
 
+    @property
+    def imported_result_directory(self) -> Path:
+        return self.active_directory / "imported-results"
+
+    @property
+    def handoff_directory(self) -> Path:
+        return self.local_directory / "handoffs"
+
 
 @dataclass(frozen=True)
 class InitializationResult:

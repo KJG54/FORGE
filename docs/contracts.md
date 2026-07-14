@@ -53,3 +53,8 @@ re-derived before the CLI service advances a step.
 M1 Increment 5 persists and validates `AcceptanceRecord`, `ApprovalRevocation`, `DecisionRecord`,
 and `DecisionSupersession`. Their source files remain immutable: effective revocation,
 supersession, and staleness are derived from append-only records and journal events.
+
+M1 Increment 6 uses `AgentHandoff`, `AgentResult`, and `ReturnedFile` at the manual worker boundary.
+Handoffs remain disposable local views. A validated `AgentResult` is persisted only when its staged
+files are explicitly applied; the result and every imported artifact revision are then cross-checked
+against one `result-imported` event. Import records acknowledge provenance, not approval.

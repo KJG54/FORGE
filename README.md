@@ -15,7 +15,7 @@ or a same-user security sandbox.
 
 ## Current capabilities
 
-M1 Increments 1 through 5 provide strict versioned data contracts, deterministic JSON Schema export,
+M1 Increments 1 through 6 provide strict versioned data contracts, deterministic JSON Schema export,
 project configuration validation, owner identity bootstrap, repository discovery, safe path
 resolution, non-destructive `forge init`, ordered event journals, deterministic replay, atomic
 snapshot replacement, explicit journal/snapshot mismatch detection, safe declarative pack loading,
@@ -25,9 +25,12 @@ preservation, working-copy drift reporting, worker claims, manual structured che
 packets, dependency references, and record-backed verification transitions. Increment 5 adds
 owner-only acceptance and revocation, append-only decisions and supersession, deterministic stale
 propagation after revision or revocation, and an explicit rework path for invalidated steps.
+Increment 6 adds provider-neutral manual handoffs and a two-phase staged result-import pipeline with
+bounded schemas, path and symlink controls, secret screening, previews, explicit collision actions,
+and single-event artifact registration.
 
-It deliberately does not yet implement handoffs, imports, or closure. Those behaviors belong to
-later M1 increments. M2 remains responsible for event hash chains, recovery, concurrency, and
+It deliberately does not yet implement closure or archival preservation. Those behaviors belong to
+the next M1 increment. M2 remains responsible for event hash chains, recovery, concurrency, and
 interruption hardening.
 
 Initialize an ordinary project repository with:
@@ -72,6 +75,7 @@ forge --help
 - [Packs, initiatives, and manual runs](docs/workflows.md)
 - [Artifacts, claims, checks, and evidence](docs/artifacts-and-evidence.md)
 - [Acceptance, decisions, and invalidation](docs/acceptance-and-invalidation.md)
+- [Manual handoffs and safe result import](docs/handoffs-and-imports.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [Contributing](CONTRIBUTING.md)

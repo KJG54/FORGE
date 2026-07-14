@@ -18,6 +18,8 @@ from forge.core.acceptance import (
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
 from forge.core.authorization import owner_actor
 from forge.core.decisions import record_decision
+from forge.core.handoffs import create_handoff
+from forge.core.imports import apply_result_import, preview_result_import
 from forge.core.lifecycle import begin_manual_run, create_initiative
 from forge.core.status import inspect_status
 from forge.core.verification import (
@@ -30,7 +32,7 @@ from forge.core.verification import (
     show_evidence,
     verify_step,
 )
-from forge.errors import ForgeError
+from forge.errors import ConfigurationError, ForgeError
 from forge.packs.loader import available_packs, find_pack
 from forge.schemas import export_schema_bundle
 from forge.storage.configuration import load_configuration, render_configuration
@@ -76,6 +78,18 @@ def root(
 def _fail(error: ForgeError) -> None:
     typer.echo(f"Error: {error}", err=True)
     raise typer.Exit(code=int(error.exit_code))
+
+
+def _assignment_map(values: list[str] | None, label: str) -> dict[str, str]:
+    assignments: dict[str, str] = {}
+    for item in values or ():
+        path, separator, value = item.partition("=")
+        if not separator or not path.strip() or not value.strip():
+            raise ConfigurationError(f"{label} must use TARGET=VALUE syntax: {item!r}")
+        if path in assignments:
+            raise ConfigurationError(f"Duplicate {label} assignment for {path!r}")
+        assignments[path] = value
+    return assignments
 
 
 @app.command("init")
@@ -342,6 +356,101 @@ def begin(
         return
     typer.echo(f"Started manual run {result.run.id} for step {step_id}")
     typer.echo("Run success will remain separate from checks, evidence, and owner acceptance")
+
+
+@app.command("handoff")
+def handoff(
+    step_id: Annotated[str, typer.Argument(help="Eligible workflow step ID.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    constraint: Annotated[
+        list[str] | None,
+        typer.Option("--constraint", help="Repeat for each bounded worker constraint."),
+    ] = None,
+) -> None:
+    """Generate portable neutral Markdown, JSON, and return-schema files."""
+    try:
+        layout = discover_repository(directory)
+        result = create_handoff(
+            layout,
+            step_id=step_id,
+            constraints=tuple(constraint or ()),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Created handoff {result.handoff.id}")
+    typer.echo(f"Directory: {result.directory}")
+    typer.echo("Worker output remains untrusted and must use forge import-result")
+
+
+@app.command("import-result")
+def import_result(
+    manifest: Annotated[Path, typer.Argument(help="AgentResult JSON manifest path.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    apply_changes: Annotated[
+        bool,
+        typer.Option("--apply", help="Apply the displayed registration plan atomically."),
+    ] = False,
+    role: Annotated[
+        list[str] | None,
+        typer.Option("--role", help="TARGET=ROLE for each new artifact target."),
+    ] = None,
+    collision: Annotated[
+        list[str] | None,
+        typer.Option(
+            "--collision",
+            help="TARGET=revise for governed targets or TARGET=replace otherwise.",
+        ),
+    ] = None,
+) -> None:
+    """Stage and preview an untrusted result; apply only with explicit actions."""
+    try:
+        layout = discover_repository(directory)
+        roles = _assignment_map(role, "Role assignment")
+        collisions = _assignment_map(collision, "Collision assignment")
+        if apply_changes:
+            configuration = load_configuration(layout.configuration_file)
+            imported = apply_result_import(
+                layout,
+                manifest_path=manifest,
+                actor=owner_actor(configuration.owner),
+                role_assignments=roles,
+                collision_actions=collisions,
+            )
+            preview = imported.preview
+        else:
+            imported = None
+            preview = preview_result_import(
+                layout,
+                manifest_path=manifest,
+                role_assignments=roles,
+                collision_actions=collisions,
+            )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Staged result: {preview.staged.result.id}")
+    typer.echo(f"Source step: {preview.step_id}")
+    for action in preview.actions:
+        typer.echo(
+            f"Action: {action.action} {action.target_path} role={action.role or 'required'} "
+            f"digest={action.digest}"
+        )
+        for blocker in action.blockers:
+            typer.echo(f"Blocker: {blocker}")
+    if imported is None:
+        typer.echo("Preview only; rerun with --apply after resolving every blocker")
+    else:
+        typer.echo(f"Imported event: {imported.event.id}")
+        typer.echo(
+            "Imported worker content remains subject to claims, checks, evidence, and acceptance"
+        )
 
 
 @artifact_app.command("add")

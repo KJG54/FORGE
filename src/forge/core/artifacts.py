@@ -14,7 +14,7 @@ from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision, Provenan
 from forge.contracts.base import utc_now
 from forge.contracts.events import AuditEvent
 from forge.core.lifecycle import ActiveInitiative, load_active_initiative
-from forge.core.transitions import ARTIFACT_REGISTERED, ARTIFACT_REVISED
+from forge.core.transitions import ARTIFACT_REGISTERED, ARTIFACT_REVISED, RESULT_IMPORTED
 from forge.errors import ConfigurationError, ConflictError, IntegrityError, SecurityError
 from forge.security.paths import normalize_repository_path, resolve_repository_path
 from forge.security.secrets import screen_governed_content
@@ -181,6 +181,25 @@ def _revisions_for_artifact(
 ) -> tuple[ArtifactRevision, ...]:
     revisions: list[ArtifactRevision] = []
     for event in read_journal(layout.event_journal_file):
+        if event.event_type == RESULT_IMPORTED:
+            updates = event.metadata.get("artifact_updates")
+            if not isinstance(updates, list):
+                raise IntegrityError(f"Import event {event.id} lacks artifact updates")
+            for update in updates:
+                if not isinstance(update, dict):
+                    raise IntegrityError(f"Import event {event.id} has invalid artifact updates")
+                if update.get("artifact_id") != str(artifact_id):
+                    continue
+                revision_value = update.get("revision_id")
+                if not isinstance(revision_value, str):
+                    raise IntegrityError(f"Import event {event.id} lacks a revision ID")
+                try:
+                    revisions.append(load_artifact_revision(layout, UUID(revision_value)))
+                except ValueError as error:
+                    raise IntegrityError(
+                        f"Import event {event.id} has an invalid revision ID"
+                    ) from error
+            continue
         if event.event_type not in {ARTIFACT_REGISTERED, ARTIFACT_REVISED}:
             continue
         if event.metadata.get("artifact_id") != str(artifact_id):

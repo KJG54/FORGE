@@ -20,9 +20,12 @@ semantic-version commitments begin at v1.0.0.
   and record-backed verification transitions.
 - Owner-only acceptance and revocation, append-only decisions and supersession, recursive
   dependency staleness, downstream workflow invalidation, and restart-safe rework transitions.
+- Provider-neutral manual handoff bundles and two-phase untrusted result import with bounded
+  staging, inventory/path/symlink/secret safeguards, previews, explicit collision actions,
+  content-addressed preservation, and single-event artifact registration.
 
 ### Limitations
 
-- Handoff, import, and closure services are not yet implemented; they remain assigned to later M1
-  increments.
+- Closure and archive-preservation services are not yet implemented; they remain assigned to M1
+  Increment 7.
 - Project and distribution naming remain provisional.

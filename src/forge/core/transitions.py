@@ -28,6 +28,7 @@ ACCEPTANCE_RECORDED = "acceptance-recorded"
 ACCEPTANCE_REVOKED = "acceptance-revoked"
 DECISION_RECORDED = "decision-recorded"
 DECISION_SUPERSEDED = "decision-superseded"
+RESULT_IMPORTED = "result-imported"
 
 
 def _metadata_string(event: AuditEvent, key: str) -> str:
@@ -291,6 +292,52 @@ class WorkflowStateReducer:
             }
         )
 
+    def _apply_import_event(
+        self,
+        state: MaterializedState,
+        event: AuditEvent,
+    ) -> MaterializedState:
+        value = event.metadata.get("artifact_updates")
+        if not isinstance(value, list) or not value:
+            raise IntegrityError(f"Import event {event.id} has no artifact updates")
+        updates = cast("list[object]", value)
+        revisions = dict(state.current_artifact_revisions)
+        seen: set[UUID] = set()
+        for raw in updates:
+            if not isinstance(raw, dict):
+                raise IntegrityError(f"Import event {event.id} has invalid artifact metadata")
+            item = cast("dict[object, object]", raw)
+            artifact_value = item.get("artifact_id")
+            revision_value = item.get("revision_number")
+            action = item.get("action")
+            if (
+                not isinstance(artifact_value, str)
+                or not isinstance(revision_value, int)
+                or isinstance(revision_value, bool)
+                or action not in {"create", "revise"}
+            ):
+                raise IntegrityError(f"Import event {event.id} has invalid artifact metadata")
+            try:
+                artifact_id = UUID(artifact_value)
+            except ValueError as error:
+                raise IntegrityError(
+                    f"Import event {event.id} has an invalid artifact ID"
+                ) from error
+            if artifact_id in seen:
+                raise IntegrityError(f"Import event {event.id} updates an artifact twice")
+            seen.add(artifact_id)
+            current = revisions.get(artifact_id)
+            if action == "create":
+                if current is not None or revision_value != 1:
+                    raise IntegrityError("Imported artifact creation must register revision 1")
+            elif current is None or revision_value != current + 1:
+                raise IntegrityError("Imported artifact revision is not contiguous")
+            revisions[artifact_id] = revision_value
+        return self._apply_invalidation(
+            state.model_copy(update={"current_artifact_revisions": revisions}),
+            event,
+        )
+
     def __call__(
         self,
         state: MaterializedState | None,
@@ -308,6 +355,8 @@ class WorkflowStateReducer:
             return self._apply_decision_event(state, event)
         if event.event_type == ACCEPTANCE_REVOKED:
             return self._apply_invalidation(state, event)
+        if event.event_type == RESULT_IMPORTED:
+            return self._apply_import_event(state, event)
         return state
 
 

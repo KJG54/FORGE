@@ -7,9 +7,11 @@ from typing import cast
 from uuid import UUID
 
 from forge.contracts.actors import ActorType
+from forge.contracts.agents import AgentResult
 from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
 from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, DecisionSupersession
 from forge.contracts.events import AuditEvent
+from forge.contracts.runs import RunRecord
 from forge.contracts.state import MaterializedState, StepState
 from forge.contracts.verification import (
     AcceptanceRecord,
@@ -29,6 +31,7 @@ from forge.core.transitions import (
     DECISION_RECORDED,
     DECISION_SUPERSEDED,
     EVIDENCE_REGISTERED,
+    RESULT_IMPORTED,
     STEP_TRANSITIONED,
 )
 from forge.errors import IntegrityError, SecurityError
@@ -95,6 +98,10 @@ def _decision_path(layout: RepositoryLayout, decision_id: UUID) -> Path:
 
 def _supersession_path(layout: RepositoryLayout, supersession_id: UUID) -> Path:
     return layout.decision_supersession_directory / f"{supersession_id}.json"
+
+
+def _imported_result_path(layout: RepositoryLayout, result_id: UUID) -> Path:
+    return layout.imported_result_directory / f"{result_id}.json"
 
 
 def _validate_common(record: object, event: AuditEvent, record_id: UUID) -> None:
@@ -201,6 +208,7 @@ def validate_governed_records(
     expected_revocations: set[Path] = set()
     expected_decisions: set[Path] = set()
     expected_supersessions: set[Path] = set()
+    expected_imported_results: set[Path] = set()
     revisions_by_id: dict[UUID, ArtifactRevision] = {}
     artifact_roles: dict[UUID, str] = {}
     current_revision_ids: dict[UUID, UUID] = {}
@@ -212,6 +220,7 @@ def validate_governed_records(
     decisions_by_id: dict[UUID, DecisionRecord] = {}
     revoked_acceptance_ids: set[UUID] = set()
     stale_ids: set[UUID] = set()
+    seen_event_record_ids: set[UUID] = set()
     owner_id = load_configuration(layout.configuration_file).owner.id
 
     for event in events:
@@ -270,6 +279,168 @@ def validate_governed_records(
             revisions_by_id[revision_id] = revision
             artifact_roles[artifact_id] = artifact.role
             current_revision_ids[artifact_id] = revision_id
+        elif event.event_type == RESULT_IMPORTED:
+            result_id = _uuid_metadata(event, "result_id")
+            result_path = _imported_result_path(layout, result_id)
+            expected_imported_results.add(result_path)
+            result = load_record(result_path, AgentResult)
+            result_digest = canonical_json_digest(result.model_dump(mode="json"))
+            manifest_digest = event.metadata.get("manifest_digest")
+            raw_updates = event.metadata.get("artifact_updates")
+            import_step_id = event.metadata.get("step_id")
+            source_kind = event.metadata.get("source_kind")
+            import_step = next(
+                (item for item in workflow.steps if item.id == import_step_id),
+                None,
+            )
+            if not isinstance(raw_updates, list) or not raw_updates:
+                raise IntegrityError(f"Import event {event.id} has no artifact updates")
+            updates = cast("list[object]", raw_updates)
+            if (
+                result.id != result_id
+                or str(result.source_run_or_handoff_id) != event.metadata.get("source_id")
+                or event.metadata.get("result_digest") != result_digest
+                or result_digest not in event.affected_digests
+                or not isinstance(manifest_digest, str)
+                or manifest_digest not in event.affected_digests
+                or result_id not in event.affected_record_ids
+                or result_id in seen_event_record_ids
+                or len(updates) != len(result.returned_files)
+                or import_step is None
+                or event.actor.actor_type not in import_step.allowed_actors
+                or source_kind not in {"run", "handoff"}
+                or (source_kind == "run" and event.run_id != result.source_run_or_handoff_id)
+                or (source_kind == "handoff" and event.run_id is not None)
+            ):
+                raise IntegrityError(f"Imported result does not match event {event.id}")
+            if source_kind == "run":
+                source_run = load_record(
+                    layout.governed_run_directory
+                    / f"{result.source_run_or_handoff_id}.json",
+                    RunRecord,
+                )
+                if (
+                    source_run.initiative_id != event.initiative_id
+                    or source_run.step_id != import_step_id
+                ):
+                    raise IntegrityError(f"Imported result source run is invalid: {event.id}")
+            returned_by_paths = {
+                (item.source_path, item.proposed_target_path): item
+                for item in result.returned_files
+            }
+            if len(returned_by_paths) != len(result.returned_files):
+                raise IntegrityError(f"Imported result has duplicate file declarations: {event.id}")
+            import_stale: set[UUID] = set()
+            seen_artifacts: set[UUID] = set()
+            for raw_update in updates:
+                if not isinstance(raw_update, dict):
+                    raise IntegrityError(f"Import event {event.id} has invalid artifact data")
+                update = cast("dict[object, object]", raw_update)
+                artifact_value = update.get("artifact_id")
+                revision_value = update.get("revision_id")
+                revision_number = update.get("revision_number")
+                source_path = update.get("source_path")
+                target_path = update.get("target_path")
+                action = update.get("action")
+                role = update.get("artifact_role")
+                digest = update.get("content_digest")
+                byte_size = update.get("byte_size")
+                media_type = update.get("media_type")
+                if (
+                    not isinstance(artifact_value, str)
+                    or not isinstance(revision_value, str)
+                    or not isinstance(revision_number, int)
+                    or isinstance(revision_number, bool)
+                    or not isinstance(source_path, str)
+                    or not isinstance(target_path, str)
+                    or action not in {"create", "revise"}
+                    or not isinstance(role, str)
+                    or not isinstance(digest, str)
+                    or not isinstance(byte_size, int)
+                    or isinstance(byte_size, bool)
+                    or not isinstance(media_type, str)
+                ):
+                    raise IntegrityError(f"Import event {event.id} has invalid artifact data")
+                try:
+                    artifact_id = UUID(artifact_value)
+                    revision_id = UUID(revision_value)
+                except ValueError as error:
+                    raise IntegrityError(
+                        f"Import event {event.id} has invalid artifact UUIDs"
+                    ) from error
+                if artifact_id in seen_artifacts:
+                    raise IntegrityError(f"Import event {event.id} updates an artifact twice")
+                seen_artifacts.add(artifact_id)
+                declaration = returned_by_paths.get((source_path, target_path))
+                record_path = _record_path(layout, artifact_id, revision_number)
+                stored_revision_path = _revision_path(layout, revision_id)
+                expected_artifact_records.add(record_path)
+                expected_revisions.add(stored_revision_path)
+                artifact = load_record(record_path, ArtifactRecord)
+                revision = load_record(stored_revision_path, ArtifactRevision)
+                _validate_common(artifact, event, artifact_id)
+                _validate_common(revision, event, revision_id)
+                if (
+                    declaration is None
+                    or artifact.id != artifact_id
+                    or artifact.role != role
+                    or artifact.current_revision != revision_number
+                    or revision.id != revision_id
+                    or revision.artifact_id != artifact_id
+                    or revision.revision_number != revision_number
+                    or revision.path != target_path
+                    or revision.content_digest != digest
+                    or revision.byte_size != byte_size
+                    or revision.media_type != media_type
+                    or revision.registration_event_id != event.id
+                    or revision.preserved_object_path is None
+                    or revision.preservation_status != "preserved"
+                    or revision.provenance.source_type != "import-result"
+                    or revision.provenance.source_reference
+                    != f"result:{result_id}:{source_path}"
+                    or revision.provenance.metadata.get("untrusted") is not True
+                    or digest not in event.affected_digests
+                    or (declaration.declared_digest is not None
+                        and declaration.declared_digest != digest)
+                ):
+                    raise IntegrityError(
+                        f"Imported artifact records do not match event {event.id}"
+                    )
+                if action == "create":
+                    if (
+                        revision_number != 1
+                        or artifact_id in current_revision_ids
+                        or revision.superseded_revision_number is not None
+                        or revision.stale_dependency_effects
+                    ):
+                        raise IntegrityError("Imported artifact creation has invalid history")
+                else:
+                    prior_revision_id = current_revision_ids.get(artifact_id)
+                    if prior_revision_id is None:
+                        raise IntegrityError("Imported revision has no current predecessor")
+                    prior = revisions_by_id[prior_revision_id]
+                    superseded_value = update.get("superseded_revision_id")
+                    if (
+                        superseded_value != str(prior.id)
+                        or revision_number != prior.revision_number + 1
+                        or revision.superseded_revision_number != prior.revision_number
+                        or prior.id not in revision.stale_dependency_effects
+                    ):
+                        raise IntegrityError("Imported revision predecessor does not match history")
+                    import_stale.update(revision.stale_dependency_effects)
+                verify_preserved_object(
+                    layout,
+                    repository_path=revision.preserved_object_path,
+                    expected_digest=revision.content_digest,
+                    expected_size=revision.byte_size,
+                )
+                revisions_by_id[revision_id] = revision
+                artifact_roles[artifact_id] = artifact.role
+                current_revision_ids[artifact_id] = revision_id
+            effects = set(_uuid_list_metadata(event, "stale_record_ids"))
+            if effects != import_stale or not effects.issubset(event.affected_record_ids):
+                raise IntegrityError(f"Import event {event.id} has invalid stale effects")
+            stale_ids.update(effects)
         elif event.event_type == CLAIM_RECORDED:
             claim_id = _uuid_metadata(event, "claim_id")
             path = _claim_path(layout, claim_id)
@@ -490,6 +661,8 @@ def validate_governed_records(
                         "Acceptance transition lacks current owner acceptance support"
                     )
 
+        seen_event_record_ids.update(event.affected_record_ids)
+
     _validate_directory(layout.artifact_record_directory, expected_artifact_records)
     _validate_directory(layout.artifact_revision_directory, expected_revisions)
     if expected_artifact_records or layout.artifact_directory.exists():
@@ -508,6 +681,7 @@ def validate_governed_records(
     _validate_directory(layout.revocation_directory, expected_revocations)
     _validate_directory(layout.decision_directory, expected_decisions)
     _validate_directory(layout.decision_supersession_directory, expected_supersessions)
+    _validate_directory(layout.imported_result_directory, expected_imported_results)
     expected_state = {
         artifact_id: revisions_by_id[revision_id].revision_number
         for artifact_id, revision_id in current_revision_ids.items()

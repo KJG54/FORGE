@@ -68,5 +68,5 @@ integrity errors without silently repairing them.
 
 ## Deferred guarantees
 
-The implemented M1 surface still excludes handoffs, imports, closure, hash chaining, recovery,
-cross-process locking, and idempotent retry. Those remain assigned to later increments or M2.
+The implemented M1 surface still excludes closure, hash chaining, recovery, cross-process locking,
+and idempotent retry. Closure is assigned to Increment 7; the hardening guarantees remain M2 work.
