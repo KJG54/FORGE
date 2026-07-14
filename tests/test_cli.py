@@ -61,7 +61,7 @@ def test_pack_create_status_next_and_begin_commands(tmp_path: Path) -> None:
 
     listed = runner.invoke(app, ["pack", "list", "-C", str(tmp_path)])
     assert listed.exit_code == 0, listed.stdout
-    assert "software-basic 0.1.0" in listed.stdout
+    assert "software-basic 0.2.0" in listed.stdout
     validated = runner.invoke(
         app,
         ["pack", "validate", "software-basic", "-C", str(tmp_path)],
@@ -257,4 +257,69 @@ def test_artifact_claim_check_evidence_and_verify_commands(tmp_path: Path) -> No
     verified = runner.invoke(app, ["verify", "discover", "-C", str(tmp_path)])
     assert verified.exit_code == 0, verified.stdout
     assert "Step discover: awaiting_acceptance" in verified.stdout
-    assert "Increment 5" in verified.stdout
+    assert "forge acceptance record discover" in verified.stdout
+
+    accepted = runner.invoke(
+        app,
+        [
+            "acceptance",
+            "record",
+            "discover",
+            "--scope",
+            "Discovery outputs",
+            "--known-limitation",
+            "Presence check only",
+            "-C",
+            str(tmp_path),
+        ],
+    )
+    assert accepted.exit_code == 0, accepted.stdout
+    acceptance_id = _line_value(accepted.stdout, "Recorded owner acceptance ")
+    assert "Step discover: completed" in accepted.stdout
+
+    shown = runner.invoke(
+        app, ["acceptance", "show", acceptance_id, "-C", str(tmp_path)]
+    )
+    assert shown.exit_code == 0, shown.stdout
+    assert "status=current" in shown.stdout
+
+    decided = runner.invoke(
+        app,
+        [
+            "decide",
+            "--type",
+            "scope-choice",
+            "--question",
+            "Proceed?",
+            "--option",
+            "Yes",
+            "--option",
+            "No",
+            "--outcome",
+            "Yes",
+            "--rationale",
+            "Evidence is sufficient",
+            "-C",
+            str(tmp_path),
+        ],
+    )
+    assert decided.exit_code == 0, decided.stdout
+    assert "Recorded decision" in decided.stdout
+
+    revoked = runner.invoke(
+        app,
+        [
+            "acceptance",
+            "revoke",
+            acceptance_id,
+            "--reason",
+            "Requirements changed",
+            "-C",
+            str(tmp_path),
+        ],
+    )
+    assert revoked.exit_code == 0, revoked.stdout
+    status = runner.invoke(app, ["status", "-C", str(tmp_path)])
+    assert status.exit_code == 0, status.stdout
+    assert "Step discover: invalidated" in status.stdout
+    assert f"Stale record: {acceptance_id}" in status.stdout

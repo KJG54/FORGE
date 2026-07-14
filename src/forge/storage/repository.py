@@ -127,6 +127,22 @@ class RepositoryLayout:
     def evidence_directory(self) -> Path:
         return self.active_directory / "evidence"
 
+    @property
+    def acceptance_directory(self) -> Path:
+        return self.active_directory / "acceptance"
+
+    @property
+    def revocation_directory(self) -> Path:
+        return self.active_directory / "revocations"
+
+    @property
+    def decision_directory(self) -> Path:
+        return self.active_directory / "decisions"
+
+    @property
+    def decision_supersession_directory(self) -> Path:
+        return self.active_directory / "decision-supersessions"
+
 
 @dataclass(frozen=True)
 class InitializationResult:

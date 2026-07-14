@@ -285,9 +285,9 @@ def load_active_initiative(layout: RepositoryLayout) -> ActiveInitiative:
         raise IntegrityError("; ".join(details))
     if report.replayed_state.initiative_id != initiative.id:
         raise IntegrityError("Materialized state belongs to a different initiative")
-    from forge.core.record_validation import validate_increment4_records
+    from forge.core.record_validation import validate_governed_records
 
-    validate_increment4_records(
+    validate_governed_records(
         layout,
         events,
         report.replayed_state,

@@ -100,8 +100,8 @@ def test_artifact_revisions_preserve_exact_bytes_and_restart(tmp_path: Path) -> 
     history = show_artifact(initialized.layout, objective.artifact.id)
     assert [revision.revision_number for revision in history.revisions] == [1, 2]
     assert object_path.read_bytes() == original_bytes
-    assert revised.revision.stale_dependency_effects == ()
-    assert restarted.state.stale_record_ids == ()
+    assert revised.revision.stale_dependency_effects == (first_revision_id,)
+    assert restarted.state.stale_record_ids == (first_revision_id,)
 
 
 def test_complete_requires_declared_current_outputs(tmp_path: Path) -> None:
@@ -245,6 +245,28 @@ def test_failed_check_and_new_revision_cannot_satisfy_verification(tmp_path: Pat
         path="objective.md",
         actor=actor,
     )
+    invalidated = load_active_initiative(initialized.layout)
+    assert invalidated.state.step_states["discover"] is StepState.INVALIDATED
+    assert completed.claim.id in invalidated.state.stale_record_ids
+    with pytest.raises(ConflictError, match="not awaiting verification"):
+        record_check(
+            initialized.layout,
+            step_id="discover",
+            check_id="outputs-present",
+            check_version="1",
+            invocation_metadata={"invocation": "manual review after revision"},
+            outcome=CheckOutcome.PASSED,
+            actor=actor,
+            exit_status=0,
+        )
+
+    begin_manual_run(initialized.layout, step_id="discover", actor=actor)
+    revised_claim = complete_step(
+        initialized.layout,
+        step_id="discover",
+        assertion="Revised outputs produced",
+        actor=actor,
+    )
     passing = record_check(
         initialized.layout,
         step_id="discover",
@@ -262,10 +284,10 @@ def test_failed_check_and_new_revision_cannot_satisfy_verification(tmp_path: Pat
         actor=actor,
         artifact_revision_ids=passing.check.target_artifact_revision_ids,
         check_result_ids=(passing.check.id,),
-        claim_ids=(completed.claim.id,),
+        claim_ids=(revised_claim.claim.id,),
     )
-    with pytest.raises(ConflictError, match="No current worker claim"):
-        verify_step(initialized.layout, step_id="discover")
+    verified = verify_step(initialized.layout, step_id="discover")
+    assert verified.state.step_states["discover"] is StepState.AWAITING_ACCEPTANCE
 
 
 def test_preserved_object_tampering_is_an_integrity_error(tmp_path: Path) -> None:

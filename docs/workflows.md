@@ -1,8 +1,9 @@
 # Packs, Initiative Creation, and Manual Runs
 
-M1 Increment 3 adds the first domain-neutral workflow services. M1 Increment 4 now supplies worker
+M1 Increment 3 adds the first domain-neutral workflow services. M1 Increment 4 supplies worker
 claims, checks, and evidence through the separate services documented in
-[`artifacts-and-evidence.md`](artifacts-and-evidence.md). Owner acceptance remains unavailable.
+[`artifacts-and-evidence.md`](artifacts-and-evidence.md). M1 Increment 5 supplies owner acceptance,
+revocation, decisions, and invalidation.
 
 ## Declarative pack loading
 
@@ -47,13 +48,13 @@ The locked workflow determines step order, states, actor classes, authority requ
 conditions, and events. Replay validates those rules again from the journal; `state.json` cannot
 authorize a transition by itself.
 
-`forge begin <step>` starts only a `ready` step, records a durable manual `RunRecord`, and moves the
-step to `in_progress`. A running process or manual effort is not a claim, check, evidence packet, or
-acceptance decision.
+`forge begin <step>` starts a `ready` step or explicitly reworks an `invalidated` step, records a
+durable manual `RunRecord`, and moves the step to `in_progress`. A running process or manual effort
+is not a claim, check, evidence packet, or acceptance decision.
 
-Conditioned transitions cannot be asserted by a caller. Increment 4 derives `claim-recorded`,
-`required-checks-passed`, and `required-evidence-registered` from governed records. The
-`owner-acceptance-recorded` condition remains unavailable until Increment 5.
+Conditioned transitions cannot be asserted by a caller. FORGE derives `claim-recorded`,
+`required-checks-passed`, `required-evidence-registered`, and `owner-acceptance-recorded` from
+governed records.
 
 Use read-only commands after any process restart:
 
@@ -67,6 +68,5 @@ integrity errors without silently repairing them.
 
 ## Deferred guarantees
 
-The implemented M1 surface still excludes acceptance, handoffs, imports, closure, hash chaining,
-recovery, cross-process locking, and idempotent retry. Those remain assigned to later increments
-or M2.
+The implemented M1 surface still excludes handoffs, imports, closure, hash chaining, recovery,
+cross-process locking, and idempotent retry. Those remain assigned to later increments or M2.

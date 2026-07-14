@@ -419,6 +419,9 @@ def revise_artifact(
     )
     previous_number = active.state.current_artifact_revisions[artifact_id]
     previous_revision = _revisions_for_artifact(layout, artifact_id, previous_number)[-1]
+    from forge.core.invalidation import calculate_artifact_revision_invalidation
+
+    invalidation = calculate_artifact_revision_invalidation(active, previous_revision)
     normalized, content, preserved = _preserve_project_file(layout, path)
     for view in list_artifacts(layout):
         if view.artifact.id != artifact_id and view.current_revision.path == normalized:
@@ -445,7 +448,13 @@ def revise_artifact(
         actor_id=actor.id,
         recorded_at=now,
     )
-    basis = "participant registered a new immutable artifact revision"
+    basis = (
+        "participant registered a new immutable artifact revision and FORGE propagated "
+        "dependency staleness"
+    )
+    governed_effects = tuple(
+        dict.fromkeys((previous_revision.id, revision_id, *invalidation.stale_record_ids))
+    )
     artifact = ArtifactRecord(
         id=artifact_id,
         initiative_id=active.initiative.id,
@@ -454,7 +463,7 @@ def revise_artifact(
         event_sequence=sequence,
         authorization_basis=basis,
         tool_version=__version__,
-        affected_record_ids=(previous_revision.id, revision_id),
+        affected_record_ids=governed_effects,
         affected_digests=(previous_revision.content_digest, preserved.digest),
         role=previous_record.role,
         title=previous_record.title,
@@ -469,7 +478,9 @@ def revise_artifact(
         event_sequence=sequence,
         authorization_basis=basis,
         tool_version=__version__,
-        affected_record_ids=(artifact_id, previous_revision.id),
+        affected_record_ids=tuple(
+            dict.fromkeys((artifact_id, previous_revision.id, *invalidation.stale_record_ids))
+        ),
         affected_digests=(previous_revision.content_digest, preserved.digest),
         artifact_id=artifact_id,
         revision_number=revision_number,
@@ -482,7 +493,7 @@ def revise_artifact(
         preserved_object_path=preserved.repository_path,
         preservation_status="preserved",
         superseded_revision_number=previous_number,
-        stale_dependency_effects=(),
+        stale_dependency_effects=invalidation.stale_record_ids,
     )
     event = AuditEvent(
         id=event_id,
@@ -492,7 +503,7 @@ def revise_artifact(
         event_type=ARTIFACT_REVISED,
         actor=actor,
         authorization_basis=basis,
-        affected_record_ids=(artifact_id, previous_revision.id, revision_id),
+        affected_record_ids=tuple(dict.fromkeys((artifact_id, *governed_effects))),
         affected_digests=(previous_revision.content_digest, preserved.digest),
         metadata={
             "artifact_id": str(artifact_id),
@@ -500,6 +511,7 @@ def revise_artifact(
             "revision_id": str(revision_id),
             "revision_number": revision_number,
             "superseded_revision_id": str(previous_revision.id),
+            **invalidation.event_metadata(),
         },
     )
     created_directories: list[Path] = []

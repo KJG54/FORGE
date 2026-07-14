@@ -42,7 +42,7 @@ caller supplies `--force`; unrelated files in the destination are preserved.
 Pre-v1 schemas may change only through the accepted ADR and migration policy. Exporting a schema
 does not create public semantic-version compatibility before v1.0.0.
 
-## Increment 4 record services
+## Increment 4 and 5 record services
 
 M1 Increment 4 persists `ArtifactRecord` snapshots and immutable `ArtifactRevision`, `Claim`,
 `CheckResult`, and `EvidencePacket` records. Each record is cross-checked against its exact journal
@@ -50,6 +50,6 @@ event during restart. Artifact revision digests bind preserved bytes; check and 
 bind canonical semantic content. Transition conditions cite governed supporting record IDs and are
 re-derived before the CLI service advances a step.
 
-The existing contracts intentionally keep acceptance separate. Increment 4 does not create or
-interpret `AcceptanceRecord`, and revision events do not populate stale-dependency effects. Those
-behaviors remain assigned to M1 Increment 5.
+M1 Increment 5 persists and validates `AcceptanceRecord`, `ApprovalRevocation`, `DecisionRecord`,
+and `DecisionSupersession`. Their source files remain immutable: effective revocation,
+supersession, and staleness are derived from append-only records and journal events.

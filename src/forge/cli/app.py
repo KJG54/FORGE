@@ -9,8 +9,15 @@ import typer
 from forge import __version__
 from forge.contracts.capabilities import SideEffectClass
 from forge.contracts.verification import CheckOutcome
+from forge.core.acceptance import (
+    list_acceptances,
+    record_acceptance,
+    revoke_acceptance,
+    show_acceptance,
+)
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
 from forge.core.authorization import owner_actor
+from forge.core.decisions import record_decision
 from forge.core.lifecycle import begin_manual_run, create_initiative
 from forge.core.status import inspect_status
 from forge.core.verification import (
@@ -40,12 +47,14 @@ pack_app = typer.Typer(help="Inspect validated declarative data packs.")
 artifact_app = typer.Typer(help="Register and inspect immutable artifact revisions.")
 check_app = typer.Typer(help="Record and inspect structured manual checks.")
 evidence_app = typer.Typer(help="Register and inspect durable evidence packets.")
+acceptance_app = typer.Typer(help="Record, inspect, or revoke owner acceptance.")
 app.add_typer(schema_app, name="schema")
 app.add_typer(config_app, name="config")
 app.add_typer(pack_app, name="pack")
 app.add_typer(artifact_app, name="artifact")
 app.add_typer(check_app, name="check")
 app.add_typer(evidence_app, name="evidence")
+app.add_typer(acceptance_app, name="acceptance")
 
 
 def _version_callback(value: bool) -> None:
@@ -273,6 +282,10 @@ def status(
             typer.echo(f"Active run: {run_id}")
         for gate_id in report.state.open_gate_ids:
             typer.echo(f"Open gate: {gate_id}")
+        for decision_id in report.state.open_decision_ids:
+            typer.echo(f"Open decision: {decision_id}")
+        for record_id in report.state.stale_record_ids:
+            typer.echo(f"Stale record: {record_id}")
     for action in report.next_actions:
         typer.echo(f"Next: {action}")
     for blocker in report.blockers:
@@ -398,7 +411,9 @@ def artifact_revise(
     )
     typer.echo(f"Revision ID: {result.revision.id}")
     typer.echo(f"Digest: {result.revision.content_digest}")
-    typer.echo("Dependency invalidation remains assigned to M1 Increment 5")
+    typer.echo(
+        f"Stale dependency effects: {len(result.revision.stale_dependency_effects)}"
+    )
 
 
 @artifact_app.command("list")
@@ -452,8 +467,9 @@ def artifact_show(
         )
         for dependent_id in dependency_references(layout, revision.id):
             typer.echo(f"  Dependency reference: {dependent_id}")
+        for stale_id in revision.stale_dependency_effects:
+            typer.echo(f"  Stale dependency: {stale_id}")
     typer.echo(f"Working copy matches: {str(view.working_copy_matches).lower()}")
-    typer.echo("Stale dependency propagation: deferred to M1 Increment 5")
 
 
 @app.command("complete")
@@ -671,7 +687,156 @@ def verify(
         _fail(error)
         return
     typer.echo(f"Step {step_id}: {result.state.step_states[step_id].value}")
-    typer.echo("Owner acceptance is still required and belongs to M1 Increment 5")
+    typer.echo(f"Next: forge acceptance record {step_id} --scope <accepted-scope>")
+
+
+@acceptance_app.command("record")
+def acceptance_record(
+    step_id: Annotated[str, typer.Argument(help="Step awaiting owner acceptance.")],
+    accepted_scope: Annotated[
+        str,
+        typer.Option("--scope", help="Exact scope the owner accepts."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    known_limitation: Annotated[
+        list[str] | None,
+        typer.Option("--known-limitation", help="Repeat for each accepted limitation."),
+    ] = None,
+    residual_risk: Annotated[
+        list[str] | None,
+        typer.Option("--residual-risk", help="Repeat for each residual risk."),
+    ] = None,
+) -> None:
+    """Record owner-only acceptance bound to exact current evidence."""
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = record_acceptance(
+            layout,
+            step_id=step_id,
+            accepted_scope=accepted_scope,
+            actor=owner_actor(configuration.owner),
+            known_limitations=tuple(known_limitation or ()),
+            residual_risks=tuple(residual_risk or ()),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Recorded owner acceptance {result.acceptance.id}")
+    typer.echo(f"Step {step_id}: {result.transition.state.step_states[step_id].value}")
+
+
+@acceptance_app.command("revoke")
+def acceptance_revoke(
+    acceptance_id: Annotated[UUID, typer.Argument(help="Acceptance UUID to revoke.")],
+    reason: Annotated[str, typer.Option("--reason", help="Explicit revocation reason.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Revoke acceptance and invalidate its dependent progression."""
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = revoke_acceptance(
+            layout,
+            acceptance_id=acceptance_id,
+            reason=reason,
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Revoked acceptance {acceptance_id} with record {result.revocation.id}")
+
+
+@acceptance_app.command("show")
+def acceptance_show(
+    acceptance_id: Annotated[
+        UUID | None,
+        typer.Argument(help="Acceptance UUID; omit to show complete history."),
+    ] = None,
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Show one acceptance or the complete append-only history."""
+    try:
+        layout = discover_repository(directory)
+        views = (
+            (show_acceptance(layout, acceptance_id),)
+            if acceptance_id is not None
+            else list_acceptances(layout)
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    if not views:
+        typer.echo("No acceptance records")
+    for view in views:
+        status_label = "revoked" if view.revocation else "stale" if view.stale else "current"
+        typer.echo(
+            f"{view.acceptance.id} step={view.step_id} status={status_label} "
+            f"scope={view.acceptance.accepted_scope}"
+        )
+        if view.revocation is not None:
+            typer.echo(f"  Revocation: {view.revocation.id} {view.revocation.reason}")
+
+
+@app.command("decide")
+def decide(
+    decision_type: Annotated[str, typer.Option("--type", help="Stable decision type.")],
+    question: Annotated[str, typer.Option("--question", help="Question being decided.")],
+    option: Annotated[
+        list[str],
+        typer.Option("--option", help="Repeat for each considered option."),
+    ],
+    outcome: Annotated[str, typer.Option("--outcome", help="Chosen outcome.")],
+    rationale: Annotated[str, typer.Option("--rationale", help="Owner rationale.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    affected_record: Annotated[
+        list[UUID] | None,
+        typer.Option("--affected-record", help="Repeat for each affected governed record."),
+    ] = None,
+    bound_digest: Annotated[
+        list[str] | None,
+        typer.Option("--bound-digest", help="Repeat for each sha256-bound fact."),
+    ] = None,
+    supersedes: Annotated[
+        UUID | None,
+        typer.Option("--supersedes", help="Active decision UUID replaced by this decision."),
+    ] = None,
+) -> None:
+    """Record an owner decision, optionally superseding an active decision."""
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = record_decision(
+            layout,
+            decision_type=decision_type,
+            question=question,
+            considered_options=tuple(option),
+            chosen_outcome=outcome,
+            rationale=rationale,
+            actor=owner_actor(configuration.owner),
+            affected_record_ids=tuple(affected_record or ()),
+            bound_digests=tuple(bound_digest or ()),
+            supersedes=supersedes,
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Recorded decision {result.decision.id}")
+    if result.supersession is not None:
+        typer.echo(f"Supersession: {result.supersession.id}")
 
 
 def main() -> None:

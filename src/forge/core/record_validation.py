@@ -1,4 +1,4 @@
-"""Cross-check Increment 4 governed records against journal events and preserved bytes."""
+"""Cross-check governed records against journal events and preserved bytes."""
 
 from __future__ import annotations
 
@@ -6,20 +6,33 @@ from pathlib import Path
 from typing import cast
 from uuid import UUID
 
+from forge.contracts.actors import ActorType
 from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
+from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, DecisionSupersession
 from forge.contracts.events import AuditEvent
 from forge.contracts.state import MaterializedState, StepState
-from forge.contracts.verification import CheckOutcome, CheckResult, Claim, EvidencePacket
+from forge.contracts.verification import (
+    AcceptanceRecord,
+    CheckOutcome,
+    CheckResult,
+    Claim,
+    EvidencePacket,
+)
 from forge.contracts.workflows import WorkflowDefinition
 from forge.core.transitions import (
+    ACCEPTANCE_RECORDED,
+    ACCEPTANCE_REVOKED,
     ARTIFACT_REGISTERED,
     ARTIFACT_REVISED,
     CHECK_RECORDED,
     CLAIM_RECORDED,
+    DECISION_RECORDED,
+    DECISION_SUPERSEDED,
     EVIDENCE_REGISTERED,
     STEP_TRANSITIONED,
 )
 from forge.errors import IntegrityError, SecurityError
+from forge.storage.configuration import load_configuration
 from forge.storage.objects import canonical_json_digest, verify_preserved_object
 from forge.storage.records import load_record
 from forge.storage.repository import RepositoryLayout
@@ -66,6 +79,22 @@ def _check_path(layout: RepositoryLayout, check_id: UUID) -> Path:
 
 def _evidence_path(layout: RepositoryLayout, evidence_id: UUID) -> Path:
     return layout.evidence_directory / f"{evidence_id}.json"
+
+
+def _acceptance_path(layout: RepositoryLayout, acceptance_id: UUID) -> Path:
+    return layout.acceptance_directory / f"{acceptance_id}.json"
+
+
+def _revocation_path(layout: RepositoryLayout, revocation_id: UUID) -> Path:
+    return layout.revocation_directory / f"{revocation_id}.json"
+
+
+def _decision_path(layout: RepositoryLayout, decision_id: UUID) -> Path:
+    return layout.decision_directory / f"{decision_id}.json"
+
+
+def _supersession_path(layout: RepositoryLayout, supersession_id: UUID) -> Path:
+    return layout.decision_supersession_directory / f"{supersession_id}.json"
 
 
 def _validate_common(record: object, event: AuditEvent, record_id: UUID) -> None:
@@ -156,24 +185,34 @@ def _condition_record_ids(event: AuditEvent, condition: str) -> tuple[UUID, ...]
     return record_ids
 
 
-def validate_increment4_records(
+def validate_governed_records(
     layout: RepositoryLayout,
     events: tuple[AuditEvent, ...],
     state: MaterializedState,
     workflow: WorkflowDefinition,
 ) -> None:
-    """Validate every Increment 4 record and its event/object dependencies."""
+    """Validate all implemented M1 record and event dependencies."""
     expected_artifact_records: set[Path] = set()
     expected_revisions: set[Path] = set()
     expected_claims: set[Path] = set()
     expected_checks: set[Path] = set()
     expected_evidence: set[Path] = set()
+    expected_acceptances: set[Path] = set()
+    expected_revocations: set[Path] = set()
+    expected_decisions: set[Path] = set()
+    expected_supersessions: set[Path] = set()
     revisions_by_id: dict[UUID, ArtifactRevision] = {}
     artifact_roles: dict[UUID, str] = {}
     current_revision_ids: dict[UUID, UUID] = {}
     claims_by_id: dict[UUID, Claim] = {}
     checks_by_id: dict[UUID, CheckResult] = {}
     evidence_by_id: dict[UUID, EvidencePacket] = {}
+    acceptances_by_id: dict[UUID, AcceptanceRecord] = {}
+    acceptance_steps: dict[UUID, str] = {}
+    decisions_by_id: dict[UUID, DecisionRecord] = {}
+    revoked_acceptance_ids: set[UUID] = set()
+    stale_ids: set[UUID] = set()
+    owner_id = load_configuration(layout.configuration_file).owner.id
 
     for event in events:
         if event.event_type in {ARTIFACT_REGISTERED, ARTIFACT_REVISED}:
@@ -214,6 +253,14 @@ def validate_increment4_records(
                     or revision.superseded_revision_number != previous.revision_number
                 ):
                     raise IntegrityError("Artifact revision predecessor does not match history")
+                effects = _uuid_list_metadata(event, "stale_record_ids")
+                if (
+                    revision.stale_dependency_effects != effects
+                    or previous_id not in effects
+                    or not set(effects).issubset(event.affected_record_ids)
+                ):
+                    raise IntegrityError("Artifact revision staleness does not match its event")
+                stale_ids.update(effects)
             verify_preserved_object(
                 layout,
                 repository_path=revision.preserved_object_path,
@@ -281,6 +328,102 @@ def validate_increment4_records(
             ):
                 raise IntegrityError(f"Evidence packet does not match event {event.id}")
             evidence_by_id[evidence_id] = evidence
+        elif event.event_type == ACCEPTANCE_RECORDED:
+            acceptance_id = _uuid_metadata(event, "acceptance_id")
+            path = _acceptance_path(layout, acceptance_id)
+            expected_acceptances.add(path)
+            acceptance = load_record(path, AcceptanceRecord)
+            _validate_common(acceptance, event, acceptance_id)
+            artifact_ids = _uuid_list_metadata(event, "artifact_revision_ids")
+            check_ids = _uuid_list_metadata(event, "check_result_ids")
+            evidence_ids = _uuid_list_metadata(event, "evidence_ids")
+            step_id = event.metadata.get("step_id")
+            if (
+                not isinstance(step_id, str)
+                or acceptance.id != acceptance_id
+                or acceptance.owner_actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or acceptance.acceptance_event_id != event.id
+                or acceptance.revocation_id is not None
+                or acceptance.accepted_artifact_revision_ids != artifact_ids
+                or acceptance.accepted_check_result_ids != check_ids
+                or acceptance.accepted_evidence_ids != evidence_ids
+                or not set(artifact_ids).issubset(revisions_by_id)
+                or not set(check_ids).issubset(checks_by_id)
+                or not set(evidence_ids).issubset(evidence_by_id)
+                or set((acceptance_id, *artifact_ids, *check_ids, *evidence_ids))
+                - set(event.affected_record_ids)
+                or set(acceptance.affected_digests) - set(event.affected_digests)
+                or canonical_json_digest(acceptance.model_dump(mode="json"))
+                not in event.affected_digests
+                or set((acceptance_id, *artifact_ids, *check_ids, *evidence_ids)) & stale_ids
+            ):
+                raise IntegrityError(f"Acceptance record does not match event {event.id}")
+            acceptances_by_id[acceptance_id] = acceptance
+            acceptance_steps[acceptance_id] = step_id
+        elif event.event_type in {DECISION_RECORDED, DECISION_SUPERSEDED}:
+            decision_id = _uuid_metadata(event, "decision_id")
+            path = _decision_path(layout, decision_id)
+            expected_decisions.add(path)
+            decision = load_record(path, DecisionRecord)
+            _validate_common(decision, event, decision_id)
+            if (
+                decision.id != decision_id
+                or decision.actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or not set(decision.bound_digests).issubset(event.affected_digests)
+                or canonical_json_digest(decision.model_dump(mode="json"))
+                not in event.affected_digests
+            ):
+                raise IntegrityError(f"Decision record does not match event {event.id}")
+            if event.event_type == DECISION_SUPERSEDED:
+                prior_id = _uuid_metadata(event, "prior_decision_id")
+                supersession_id = _uuid_metadata(event, "supersession_id")
+                supersession_path = _supersession_path(layout, supersession_id)
+                expected_supersessions.add(supersession_path)
+                supersession = load_record(supersession_path, DecisionSupersession)
+                _validate_common(supersession, event, supersession_id)
+                if (
+                    prior_id not in decisions_by_id
+                    or supersession.id != supersession_id
+                    or supersession.prior_decision_id != prior_id
+                    or supersession.replacement_decision_id != decision_id
+                    or supersession.actor != event.actor
+                    or canonical_json_digest(supersession.model_dump(mode="json"))
+                    not in event.affected_digests
+                ):
+                    raise IntegrityError(
+                        f"Decision supersession does not match event {event.id}"
+                    )
+                stale_ids.add(prior_id)
+            decisions_by_id[decision_id] = decision
+        elif event.event_type == ACCEPTANCE_REVOKED:
+            acceptance_id = _uuid_metadata(event, "acceptance_id")
+            revocation_id = _uuid_metadata(event, "revocation_id")
+            path = _revocation_path(layout, revocation_id)
+            expected_revocations.add(path)
+            revocation = load_record(path, ApprovalRevocation)
+            _validate_common(revocation, event, revocation_id)
+            effects = _uuid_list_metadata(event, "stale_record_ids")
+            if (
+                acceptance_id not in acceptances_by_id
+                or acceptance_id in revoked_acceptance_ids
+                or revocation.id != revocation_id
+                or revocation.approval_id != acceptance_id
+                or revocation.actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or event.metadata.get("step_id") != acceptance_steps.get(acceptance_id)
+                or acceptance_id not in effects
+                or not set(effects).issubset(event.affected_record_ids)
+                or canonical_json_digest(revocation.model_dump(mode="json"))
+                not in event.affected_digests
+            ):
+                raise IntegrityError(f"Acceptance revocation does not match event {event.id}")
+            revoked_acceptance_ids.add(acceptance_id)
+            stale_ids.update(effects)
         elif event.event_type == STEP_TRANSITIONED:
             destination = event.metadata.get("destination_state")
             step_id = event.metadata.get("step_id")
@@ -331,6 +474,21 @@ def validate_increment4_records(
                     for packet in supported_packets
                 ):
                     raise IntegrityError("Verification transition lacks current evidence support")
+            elif destination == StepState.COMPLETED.value:
+                support = _condition_record_ids(event, "owner-acceptance-recorded")
+                matching = [
+                    acceptances_by_id[item]
+                    for item in support
+                    if item in acceptances_by_id and item not in stale_ids
+                ]
+                if not any(
+                    acceptance_steps[item.id] == step.id
+                    and set(item.accepted_artifact_revision_ids) == current_outputs
+                    for item in matching
+                ):
+                    raise IntegrityError(
+                        "Acceptance transition lacks current owner acceptance support"
+                    )
 
     _validate_directory(layout.artifact_record_directory, expected_artifact_records)
     _validate_directory(layout.artifact_revision_directory, expected_revisions)
@@ -346,9 +504,19 @@ def validate_increment4_records(
     _validate_directory(layout.claim_directory, expected_claims)
     _validate_directory(layout.check_directory, expected_checks)
     _validate_directory(layout.evidence_directory, expected_evidence)
+    _validate_directory(layout.acceptance_directory, expected_acceptances)
+    _validate_directory(layout.revocation_directory, expected_revocations)
+    _validate_directory(layout.decision_directory, expected_decisions)
+    _validate_directory(layout.decision_supersession_directory, expected_supersessions)
     expected_state = {
         artifact_id: revisions_by_id[revision_id].revision_number
         for artifact_id, revision_id in current_revision_ids.items()
     }
     if state.current_artifact_revisions != expected_state:
         raise IntegrityError("Materialized artifact revisions do not match governed records")
+    if set(state.stale_record_ids) != stale_ids:
+        raise IntegrityError("Materialized stale records do not match governed invalidations")
+
+
+# Compatibility alias retained for callers from earlier M1 increments.
+validate_increment4_records = validate_governed_records

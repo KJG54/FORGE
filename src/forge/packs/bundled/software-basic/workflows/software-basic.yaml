@@ -1,6 +1,6 @@
 schema_version: "1.0"
 id: software-basic
-version: 0.1.0
+version: 0.2.0
 pack_id: software-basic
 name: Software Basic
 description: A governed six-step workflow for ordinary software initiatives.
@@ -15,7 +15,7 @@ steps:
     check_requirements: [outputs-present]
     acceptance_requirements: [owner-acceptance]
     allowed_actors: [owner, human_contributor]
-    allowed_transitions: [begin, submit, verify, accept]
+    allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [initiative-objective]
   - id: plan
@@ -28,7 +28,7 @@ steps:
     check_requirements: [outputs-present]
     acceptance_requirements: [owner-acceptance]
     allowed_actors: [owner, human_contributor]
-    allowed_transitions: [begin, submit, verify, accept]
+    allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [accepted-discovery]
   - id: execute
@@ -41,7 +41,7 @@ steps:
     check_requirements: [declared-checks]
     acceptance_requirements: [owner-acceptance]
     allowed_actors: [owner, human_contributor]
-    allowed_transitions: [begin, submit, verify, accept]
+    allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: block_for_owner_review
     context_selection_rules: [accepted-plan]
   - id: verify
@@ -54,7 +54,7 @@ steps:
     check_requirements: [declared-checks]
     acceptance_requirements: [owner-acceptance]
     allowed_actors: [owner, human_contributor]
-    allowed_transitions: [begin, submit, verify, accept]
+    allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [requirements, project-artifacts]
   - id: review
@@ -67,7 +67,7 @@ steps:
     check_requirements: [review-complete]
     acceptance_requirements: [owner-acceptance]
     allowed_actors: [owner, human_contributor]
-    allowed_transitions: [begin, submit, verify, accept]
+    allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [verification-report]
   - id: close
@@ -80,7 +80,7 @@ steps:
     check_requirements: [closure-readiness]
     acceptance_requirements: [owner-acceptance]
     allowed_actors: [owner, human_contributor]
-    allowed_transitions: [begin, submit, verify, accept]
+    allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [accepted-review]
 transitions:
@@ -95,6 +95,13 @@ transitions:
     source_state: in_progress
     destination_state: awaiting_verification
     conditions: [claim-recorded]
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: rework
+    source_state: invalidated
+    destination_state: in_progress
+    conditions: []
     authority_requirement: participant
     invalidation_effects: []
     event_type: step-transitioned

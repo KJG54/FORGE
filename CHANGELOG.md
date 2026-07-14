@@ -18,9 +18,11 @@ semantic-version commitments begin at v1.0.0.
 - Immutable artifact revisions with content-addressed preservation, drift detection, heuristic
   secret screening, worker claims, manual check results, evidence packets, dependency references,
   and record-backed verification transitions.
+- Owner-only acceptance and revocation, append-only decisions and supersession, recursive
+  dependency staleness, downstream workflow invalidation, and restart-safe rework transitions.
 
 ### Limitations
 
-- Acceptance, revocation, stale-record propagation, handoff, import, and closure services are not
-  yet implemented. Owner-acceptance transitions remain blocked until Increment 5.
+- Handoff, import, and closure services are not yet implemented; they remain assigned to later M1
+  increments.
 - Project and distribution naming remain provisional.

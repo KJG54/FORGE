@@ -2,7 +2,8 @@
 
 M1 Increment 4 implements the record-backed verification portion of the approved vertical slice.
 It keeps worker assertions, structured evaluations, durable support, and owner decisions separate.
-Owner acceptance and stale-record propagation begin in Increment 5 and are not implemented here.
+M1 Increment 5 layers acceptance and invalidation on these records as documented in
+[`acceptance-and-invalidation.md`](acceptance-and-invalidation.md).
 
 ## Immutable revisions and preservation
 
@@ -37,8 +38,9 @@ forge artifact revise <artifact-id> objective.md
 
 Artifact roles must be declared by the locked workflow. Artifact views include immutable revision
 IDs, digests, preservation paths, direct claim/check/evidence dependency references, and working
-copy status. Increment 4 records those references but intentionally does not propagate stale record
-IDs; that invalidation behavior belongs to Increment 5.
+copy status. When a current revision is superseded, Increment 5 recursively marks its dependent
+claims, checks, evidence, acceptance, and digest-bound decisions stale and invalidates affected
+workflow progression.
 
 ## Claim, check, evidence, verify
 
@@ -82,7 +84,5 @@ still owns cross-process locking, idempotent retry, interruption recovery, and h
 
 ## Explicit boundary
 
-Increment 4 does not provide an acceptance command and cannot satisfy
-`owner-acceptance-recorded`. It also does not mark dependent checks, evidence, gates, or acceptance
-records stale after a revision. Those owner-authority and invalidation semantics are the next M1
-increment and must not be inferred from a passing check or successful process exit.
+Passing checks and process success still do not imply acceptance. Acceptance is a distinct,
+owner-authorized Increment 5 record. Handoff, import, and closure remain outside this increment.
