@@ -80,7 +80,7 @@ def _view(active: ActiveInitiative, run: RunRecord) -> RunView:
 
 
 def list_runs(layout: RepositoryLayout) -> tuple[RunView, ...]:
-    active = load_active_initiative(layout)
+    active = load_active_initiative(layout, allow_paused=True)
     return tuple(_view(active, record) for record in _load_runs(active))
 
 

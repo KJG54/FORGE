@@ -22,6 +22,7 @@ from forge.core.acceptance import (
 from forge.core.archival import close_initiative
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
 from forge.core.authorization import owner_actor
+from forge.core.continuity import pause_initiative, resume_initiative
 from forge.core.decisions import record_decision
 from forge.core.diagnostics import inspect_repository_health
 from forge.core.handoffs import create_handoff
@@ -449,6 +450,63 @@ def recover(
     else:
         typer.echo("Preserved snapshot: none (state.json was missing)")
     typer.echo("Integrity: healthy")
+
+
+@app.command("pause")
+@_locked_mutation
+def pause(
+    reason: Annotated[
+        str,
+        typer.Option("--reason", help="Owner reason for pausing governed work."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Pause active work at a safe governed boundary."""
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = pause_initiative(
+            layout,
+            actor=owner_actor(configuration.owner),
+            reason=reason,
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Paused initiative {result.state.initiative_id}")
+    typer.echo(f"Pause event: {result.event.id}")
+    typer.echo("Next: resume")
+
+
+@app.command("resume")
+@_locked_mutation
+def resume(
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Resume a healthy paused initiative with durable context."""
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = resume_initiative(
+            layout,
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Resumed initiative {result.state.initiative_id}")
+    typer.echo(f"Resume event: {result.event.id}")
+    typer.echo(f"Summary: {result.summary}")
+    for action in result.state.permitted_next_actions:
+        typer.echo(f"Next: {action}")
 
 
 @app.command("history")

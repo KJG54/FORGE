@@ -143,7 +143,7 @@ def _step_event_map(layout: RepositoryLayout) -> dict[UUID, str]:
 
 
 def list_acceptances(layout: RepositoryLayout) -> tuple[AcceptanceView, ...]:
-    active = load_active_initiative(layout)
+    active = load_active_initiative(layout, allow_paused=True)
     steps = _step_event_map(layout)
     revocations = {
         item.approval_id: item

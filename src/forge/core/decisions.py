@@ -71,7 +71,7 @@ def _event_committed(layout: RepositoryLayout, event_id: UUID) -> bool:
 
 
 def list_decisions(layout: RepositoryLayout) -> tuple[DecisionRecord, ...]:
-    load_active_initiative(layout)
+    load_active_initiative(layout, allow_paused=True)
     if not layout.decision_directory.exists():
         return ()
     return tuple(

@@ -15,6 +15,7 @@ from forge.contracts.state import (
 )
 from forge.core.lifecycle import load_active_initiative
 from forge.errors import IntegrityError
+from forge.storage.journal import read_journal
 from forge.storage.repository import RepositoryLayout
 
 
@@ -85,7 +86,11 @@ def inspect_status(
             archived_initiative_ids=archived_ids,
         )
     try:
-        active = load_active_initiative(layout, allow_terminal=True)
+        active = load_active_initiative(
+            layout,
+            allow_terminal=True,
+            allow_paused=True,
+        )
     except IntegrityError as error:
         return StatusReport(
             repository_state=RepositoryState.INITIALIZED,
@@ -120,7 +125,18 @@ def inspect_status(
         for view in drifted
     )
     next_actions = active.state.permitted_next_actions
-    if drifted:
+    if active.state.lifecycle_state is InitiativeLifecycleState.PAUSED:
+        pause_id = active.state.active_pause_event_id
+        pause_event = next(
+            (event for event in read_journal(layout.event_journal_file) if event.id == pause_id),
+            None,
+        )
+        reason = pause_event.metadata.get("reason") if pause_event is not None else None
+        if not isinstance(reason, str) or not reason:
+            raise IntegrityError("Paused initiative lacks a valid governing pause reason")
+        blockers = (f"Initiative paused: {reason}", *blockers)
+        next_actions = ("resume",)
+    elif drifted:
         next_actions = tuple(f"artifact-revise:{view.artifact.id}" for view in drifted)
     return StatusReport(
         repository_state=RepositoryState.INITIALIZED,

@@ -85,6 +85,19 @@ Recovery refuses healthy snapshots, legacy M1 journals, damaged or truncated jou
 history, missing governed records, and missing preserved objects. It does not truncate history,
 repair journal bytes, resolve unrelated incomplete commands, retire archives, or remove locks.
 
+## M2 Increment 5 pause and resume
+
+The owner-only lifecycle events defined by
+[ADR-0016](adr/ADR-0016-explicit-pause-and-resume.md) preserve workflow position without copying or
+rewriting state. `initiative-paused` binds the complete pre-pause materialized-state digest,
+current step, and legal next actions. Replay retains the step, artifact, decision, evidence, and
+acceptance projections while changing lifecycle state to `paused` and limiting the next action to
+`resume`.
+
+`initiative-resumed` must reference the active pause event. Replay restores the active lifecycle
+and re-derives legal workflow actions. Both events use the existing journal commit, snapshot,
+locking, and idempotency protocols.
+
 ## Increment 7 archive layer
 
 Successful closure appends an owner-authorized terminal event and writes the final snapshot before

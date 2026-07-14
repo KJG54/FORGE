@@ -156,7 +156,7 @@ def _active_run_for_step(active: ActiveInitiative, step_id: str, actor: Actor) -
 
 
 def list_claims(layout: RepositoryLayout) -> tuple[Claim, ...]:
-    load_active_initiative(layout)
+    load_active_initiative(layout, allow_paused=True)
     if not layout.claim_directory.exists():
         return ()
     return tuple(
@@ -168,7 +168,7 @@ def list_claims(layout: RepositoryLayout) -> tuple[Claim, ...]:
 
 
 def list_checks(layout: RepositoryLayout) -> tuple[CheckResult, ...]:
-    load_active_initiative(layout)
+    load_active_initiative(layout, allow_paused=True)
     if not layout.check_directory.exists():
         return ()
     return tuple(
@@ -180,7 +180,7 @@ def list_checks(layout: RepositoryLayout) -> tuple[CheckResult, ...]:
 
 
 def list_evidence(layout: RepositoryLayout) -> tuple[EvidencePacket, ...]:
-    load_active_initiative(layout)
+    load_active_initiative(layout, allow_paused=True)
     if not layout.evidence_directory.exists():
         return ()
     return tuple(
@@ -195,7 +195,7 @@ def list_evidence(layout: RepositoryLayout) -> tuple[EvidencePacket, ...]:
 
 
 def show_evidence(layout: RepositoryLayout, evidence_id: UUID) -> EvidencePacket:
-    load_active_initiative(layout)
+    load_active_initiative(layout, allow_paused=True)
     if not _evidence_path(layout, evidence_id).exists():
         raise ConflictError(f"Unknown evidence packet {evidence_id}")
     return load_record(_evidence_path(layout, evidence_id), EvidencePacket)

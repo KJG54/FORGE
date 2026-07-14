@@ -27,7 +27,7 @@ def inspect_history(
             raise ConflictError(
                 "No active initiative exists; select archived history with --archive"
             )
-        load_active_initiative(layout)
+        load_active_initiative(layout, allow_paused=True)
         events = read_journal(layout.event_journal_file)
     result = events
     if event_type is not None:

@@ -83,6 +83,7 @@ class MaterializedState(VersionedModel):
     open_gate_ids: tuple[SymbolicId, ...] = ()
     open_decision_ids: tuple[UUID, ...] = ()
     active_run_ids: tuple[UUID, ...] = ()
+    active_pause_event_id: UUID | None = None
     permitted_next_actions: tuple[NonEmptyString, ...] = ()
     journal_head_sequence: Annotated[int, Field(ge=0)] = 0
     journal_head_hash: Sha256Digest | None = None

@@ -16,8 +16,11 @@ from forge.contracts.state import (
 from forge.contracts.workflows import StepDefinition, TransitionDefinition, WorkflowDefinition
 from forge.core.authorization import authorize_transition, require_owner
 from forge.errors import IntegrityError, TransitionError
+from forge.storage.canonical import canonical_json_digest
 
 INITIATIVE_CREATED = "initiative-created"
+INITIATIVE_PAUSED = "initiative-paused"
+INITIATIVE_RESUMED = "initiative-resumed"
 INTEGRITY_RECOVERED = "integrity-recovered"
 STEP_TRANSITIONED = "step-transitioned"
 ARTIFACT_REGISTERED = "artifact-registered"
@@ -403,6 +406,62 @@ class WorkflowStateReducer:
             }
         )
 
+    def _apply_pause_event(
+        self,
+        state: MaterializedState,
+        event: AuditEvent,
+    ) -> MaterializedState:
+        if state.lifecycle_state is not InitiativeLifecycleState.ACTIVE:
+            raise IntegrityError("Only an active initiative may be paused")
+        require_owner(event.actor, self.owner_identity_id, "pause an initiative")
+        if state.active_run_ids:
+            raise IntegrityError("Pause event cannot retain active runs")
+        _metadata_string(event, "reason")
+        expected_digest = canonical_json_digest(state.model_dump(mode="json"))
+        if (
+            event.metadata.get("resumable_state_digest") != expected_digest
+            or expected_digest not in event.affected_digests
+            or event.metadata.get("resumable_current_step_id") != state.current_step_id
+            or _metadata_string_list(event, "resumable_next_actions")
+            != state.permitted_next_actions
+        ):
+            raise IntegrityError("Pause event does not bind the exact resumable state")
+        return state.model_copy(
+            update={
+                "lifecycle_state": InitiativeLifecycleState.PAUSED,
+                "active_pause_event_id": event.id,
+                "permitted_next_actions": ("resume",),
+            }
+        )
+
+    def _apply_resume_event(
+        self,
+        state: MaterializedState,
+        event: AuditEvent,
+    ) -> MaterializedState:
+        if state.lifecycle_state is not InitiativeLifecycleState.PAUSED:
+            raise IntegrityError("Only a paused initiative may be resumed")
+        require_owner(event.actor, self.owner_identity_id, "resume an initiative")
+        pause_event_id = state.active_pause_event_id
+        if pause_event_id is None:
+            raise IntegrityError("Paused state does not identify its governing pause event")
+        try:
+            recorded_pause_id = UUID(_metadata_string(event, "pause_event_id"))
+        except ValueError as error:
+            raise IntegrityError("Resume event has an invalid pause event ID") from error
+        if recorded_pause_id != pause_event_id:
+            raise IntegrityError("Resume event does not match the active pause")
+        _metadata_string(event, "resumption_summary")
+        if event.metadata.get("resumed_current_step_id") != state.current_step_id:
+            raise IntegrityError("Resume event does not match the preserved workflow position")
+        return state.model_copy(
+            update={
+                "lifecycle_state": InitiativeLifecycleState.ACTIVE,
+                "active_pause_event_id": None,
+                "permitted_next_actions": self._next_actions(state.step_states),
+            }
+        )
+
     def __call__(
         self,
         state: MaterializedState | None,
@@ -417,6 +476,17 @@ class WorkflowStateReducer:
             InitiativeLifecycleState.ABANDONED,
         }:
             raise IntegrityError("Terminal initiatives cannot accept later events")
+        if state.lifecycle_state is InitiativeLifecycleState.PAUSED:
+            if event.event_type == INITIATIVE_RESUMED:
+                return self._apply_resume_event(state, event)
+            if event.event_type == INTEGRITY_RECOVERED:
+                require_owner(event.actor, self.owner_identity_id, "recover materialized state")
+                return state
+            raise IntegrityError("Paused initiatives may only be resumed or recovered")
+        if event.event_type == INITIATIVE_PAUSED:
+            return self._apply_pause_event(state, event)
+        if event.event_type == INITIATIVE_RESUMED:
+            return self._apply_resume_event(state, event)
         if event.event_type == INITIATIVE_CLOSED:
             return self._apply_closure_event(state, event)
         if event.event_type == STEP_TRANSITIONED:

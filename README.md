@@ -55,9 +55,13 @@ snapshots when—and only when—the complete journal remains valid and hash-cha
 preserves observed snapshot bytes, verifies governed records and objects, records provenance, and
 can safely resume its own interrupted post-commit snapshot or receipt write.
 
+M2 Increment 5 adds owner-authorized `forge pause` and `forge resume`, exact resumable-state
+binding, active-run safety checks, inspection-only paused behavior, and durable summaries for
+continuing work without relying on prior chat history.
+
 The M1 archive is explicitly preliminary. Later M2 increments remain responsible for damaged
 journal handling, generic interrupted-command resolution, atomic archive hardening, stale-lock
-remediation, pause/resume, migration, abandonment, and successor initiatives.
+remediation, migration, abandonment, and successor initiatives.
 
 Initialize an ordinary project repository with:
 
@@ -68,6 +72,8 @@ forge pack validate software-basic
 forge create "Objective" --scope "Bounded scope" --trust-pack-data \
   --idempotency-key create-objective
 forge status
+forge pause --reason "Waiting for owner review"
+forge resume
 forge recover --reason "Rebuild derived state after an interrupted write"
 forge artifact add requirements.md --role requirements --title "Requirements"
 forge schema export --output schemas
@@ -107,6 +113,7 @@ forge --help
 - [Preliminary closure and archive inspection](docs/closure-and-archives.md)
 - [Idempotent mutation retries](docs/idempotency.md)
 - [Explicit active-snapshot recovery](docs/recovery.md)
+- [Pause and long-gap resume](docs/continuity.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [M1 evidence report](docs/milestones/m1-report.md)
@@ -114,6 +121,7 @@ forge --help
 - [M2 Increment 2 locking boundary](docs/milestones/m2-increment-2.md)
 - [M2 Increment 3 idempotency boundary](docs/milestones/m2-increment-3.md)
 - [M2 Increment 4 recovery boundary](docs/milestones/m2-increment-4.md)
+- [M2 Increment 5 continuity boundary](docs/milestones/m2-increment-5.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

@@ -318,6 +318,7 @@ def load_active_initiative(
     layout: RepositoryLayout,
     *,
     allow_terminal: bool = False,
+    allow_paused: bool = False,
 ) -> ActiveInitiative:
     active, events = load_replayed_active_initiative(layout)
     try:
@@ -347,6 +348,13 @@ def load_active_initiative(
         raise IntegrityError(
             "Terminal initiative state remains under .forge/active; supported mutations are "
             "disabled"
+        )
+    if (
+        report.replayed_state.lifecycle_state is InitiativeLifecycleState.PAUSED
+        and not allow_paused
+    ):
+        raise ConflictError(
+            "Initiative is paused; only inspection, recovery, and 'forge resume' are allowed"
         )
     for run_id in report.replayed_state.active_run_ids:
         run = load_record(layout.governed_run_directory / f"{run_id}.json", RunRecord)

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import json
-import os
+import socket
 import subprocess
 import sys
 from dataclasses import asdict
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -48,33 +49,23 @@ def test_lock_releases_after_success_and_failure(tmp_path: Path) -> None:
 
 def test_cross_process_lock_blocks_cli_mutation_without_traceback(tmp_path: Path) -> None:
     initialized = initialize_repository(tmp_path, owner_display_name="Owner")
-    source_root = Path(__file__).resolve().parents[1] / "src"
-    environment = os.environ.copy()
-    environment["PYTHONPATH"] = os.pathsep.join(
-        item for item in (str(source_root), environment.get("PYTHONPATH", "")) if item
-    )
-    script = """
-import sys
-from pathlib import Path
-from forge.storage.locking import repository_mutation_lock
-from forge.storage.repository import RepositoryLayout
-layout = RepositoryLayout.at(Path(sys.argv[1]))
-with repository_mutation_lock(layout, command='holder-process'):
-    print('READY', flush=True)
-    sys.stdin.readline()
-"""
+    path = initialized.layout.lock_directory / LOCK_NAME
     process = subprocess.Popen(
-        [sys.executable, "-c", script, str(tmp_path)],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        encoding="utf-8",
-        env=environment,
+        [sys.executable, "-c", "import time; time.sleep(30)"],
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
     try:
-        assert process.stdout is not None
-        assert process.stdout.readline().strip() == "READY"
+        assert process.poll() is None
+        owner = LockOwner(
+            token="holder-token",
+            pid=process.pid,
+            hostname=socket.gethostname(),
+            command="holder-process",
+            created_at=datetime.now(UTC).isoformat(),
+        )
+        path.write_text(json.dumps(asdict(owner)), encoding="utf-8", newline="\n")
         blocked = runner.invoke(
             app,
             [
@@ -91,9 +82,8 @@ with repository_mutation_lock(layout, command='holder-process'):
         assert "live mutation lock" in blocked.stderr
         assert "Traceback" not in blocked.stderr
     finally:
-        if process.stdin is not None:
-            process.stdin.write("release\n")
-            process.stdin.flush()
+        path.unlink(missing_ok=True)
+        process.terminate()
         process.wait(timeout=10)
     assert lock_diagnostic(initialized.layout) is None
 

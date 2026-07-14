@@ -72,3 +72,7 @@ of every event committed by the completed command.
 M2 Increment 4 adds `RecoveryRecord`. It binds one owner-attributed reconstruction to the prior
 journal head, observed snapshot condition, exact preserved bytes when present, and its committed
 `integrity-recovered` event.
+
+M2 Increment 5 extends `MaterializedState` with the active pause-event identity. Pause and resume
+remain journal events rather than mutable records: the pause event binds the exact resumable state
+digest and the resume event binds its governing pause plus a durable resumption summary.

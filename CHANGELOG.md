@@ -38,6 +38,9 @@ semantic-version commitments begin at v1.0.0.
 - M2 owner-authorized active-snapshot recovery with exact-byte evidence preservation, complete
   journal and governed-record validation, recovery provenance, atomic reconstruction, and
   duplicate-free resume after recovery-event commitment.
+- M2 owner-authorized pause and resume with resumable-state digests, active-run refusal,
+  inspection-only paused behavior, restart-safe lifecycle restoration, and durable resumption
+  summaries.
 
 ### Limitations
 
