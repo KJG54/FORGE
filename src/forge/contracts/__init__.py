@@ -38,6 +38,7 @@ from forge.contracts.idempotency import (
 )
 from forge.contracts.initiatives import Initiative, InitiativeReference
 from forge.contracts.packs import PackManifest, PackTrustDecision, PackTrustState
+from forge.contracts.recovery import RecoveryRecord, SnapshotCondition
 from forge.contracts.runs import RunRecord
 from forge.contracts.state import (
     ExplanationProfile,
@@ -93,6 +94,7 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "pack-manifest": PackManifest,
     "pack-trust-decision": PackTrustDecision,
     "project-configuration": ProjectConfiguration,
+    "recovery-record": RecoveryRecord,
     "provenance-record": ProvenanceRecord,
     "returned-file": ReturnedFile,
     "risk-acceptance": RiskAcceptance,
@@ -148,6 +150,7 @@ __all__ = [
     "PackTrustState",
     "ProjectConfiguration",
     "ProvenanceRecord",
+    "RecoveryRecord",
     "RepositoryState",
     "ReturnedFile",
     "RiskAcceptance",
@@ -155,6 +158,7 @@ __all__ = [
     "RunState",
     "ScopeAmendment",
     "SideEffectClass",
+    "SnapshotCondition",
     "StepDefinition",
     "StepState",
     "TransitionDefinition",

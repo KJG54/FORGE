@@ -44,7 +44,11 @@ from forge.storage.configuration import load_configuration
 from forge.storage.journal import read_journal
 from forge.storage.records import load_record, write_record
 from forge.storage.repository import RepositoryLayout
-from forge.storage.snapshots import append_event_and_update_snapshot, inspect_snapshot_integrity
+from forge.storage.snapshots import (
+    append_event_and_update_snapshot,
+    inspect_snapshot_integrity,
+    replay_events,
+)
 
 
 @dataclass(frozen=True)
@@ -241,11 +245,14 @@ def create_initiative(
     return InitiativeCreationResult(active, read_journal(layout.event_journal_file)[-1])
 
 
-def load_active_initiative(
+def load_replayed_active_initiative(
     layout: RepositoryLayout,
-    *,
-    allow_terminal: bool = False,
-) -> ActiveInitiative:
+) -> tuple[ActiveInitiative, tuple[AuditEvent, ...]]:
+    """Validate locked active records and replay the authoritative journal.
+
+    This deliberately does not inspect ``state.json`` so explicit recovery can
+    operate while the derived snapshot is missing or corrupt.
+    """
     if not layout.initiative_file.exists():
         raise ConflictError("No active initiative exists; run 'forge create' first")
     configuration = load_configuration(layout.configuration_file)
@@ -294,25 +301,43 @@ def load_active_initiative(
         raise IntegrityError("Initiative creation event does not match locked records")
     reducer = WorkflowStateReducer(workflow, configuration.owner.id)
     try:
+        replayed_state = replay_events(events, reducer)
+    except (AuthorizationError, TransitionError) as error:
+        raise IntegrityError(f"Journal violates locked governance rules: {error}") from error
+    if replayed_state is None:
+        raise IntegrityError("Journal replay did not produce active state")
+    if replayed_state.initiative_id != initiative.id:
+        raise IntegrityError("Materialized state belongs to a different initiative")
+    return (
+        ActiveInitiative(layout, initiative, manifest, trust, workflow, replayed_state),
+        events,
+    )
+
+
+def load_active_initiative(
+    layout: RepositoryLayout,
+    *,
+    allow_terminal: bool = False,
+) -> ActiveInitiative:
+    active, events = load_replayed_active_initiative(layout)
+    try:
         report = inspect_snapshot_integrity(
             layout.event_journal_file,
             layout.state_file,
-            reducer,
+            active.reducer,
         )
     except (AuthorizationError, TransitionError) as error:
         raise IntegrityError(f"Journal violates locked governance rules: {error}") from error
     if not report.is_healthy or report.replayed_state is None:
         details = report.diagnostics or ("Journal replay did not produce active state",)
         raise IntegrityError("; ".join(details))
-    if report.replayed_state.initiative_id != initiative.id:
-        raise IntegrityError("Materialized state belongs to a different initiative")
     from forge.core.record_validation import validate_governed_records
 
     validate_governed_records(
         layout,
         events,
         report.replayed_state,
-        workflow,
+        active.workflow,
     )
     if (
         report.replayed_state.lifecycle_state
@@ -335,7 +360,7 @@ def load_active_initiative(
         )
         if (
             run.id != run_id
-            or run.initiative_id != initiative.id
+            or run.initiative_id != active.initiative.id
             or run.status is not RunState.RUNNING
             or report.replayed_state.step_states.get(run.step_id) is not StepState.IN_PROGRESS
             or run_event is None
@@ -343,11 +368,11 @@ def load_active_initiative(
         ):
             raise IntegrityError(f"Active run record is inconsistent: {run_id}")
     return ActiveInitiative(
-        layout,
-        initiative,
-        manifest,
-        trust,
-        workflow,
+        active.layout,
+        active.initiative,
+        active.pack_manifest,
+        active.pack_trust,
+        active.workflow,
         report.replayed_state,
     )
 

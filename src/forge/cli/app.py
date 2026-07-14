@@ -28,6 +28,7 @@ from forge.core.handoffs import create_handoff
 from forge.core.history import inspect_history
 from forge.core.imports import apply_result_import, preview_result_import
 from forge.core.lifecycle import begin_manual_run, create_initiative
+from forge.core.recovery import recover_active_snapshot
 from forge.core.runs import cancel_run, list_runs, show_run
 from forge.core.status import inspect_status
 from forge.core.verification import (
@@ -137,6 +138,7 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
                     command=function.__name__,
                     provided_key=provided_key,
                     parameters=parameters,
+                    resume_incomplete=function.__name__ == "recover",
                 ) as invocation:
                     typer.echo(f"Idempotency key: {invocation.key}")
                     if invocation.is_replay:
@@ -412,6 +414,41 @@ def status(
         typer.echo(f"Next: {action}")
     for blocker in report.blockers:
         typer.echo(f"Blocker: {blocker}")
+
+
+@app.command("recover")
+@_locked_mutation
+def recover(
+    reason: Annotated[
+        str,
+        typer.Option("--reason", help="Owner reason for explicit snapshot recovery."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Preserve and rebuild a damaged active snapshot from valid history."""
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = recover_active_snapshot(
+            layout,
+            actor=owner_actor(configuration.owner),
+            reason=reason,
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    action = "Resumed" if result.resumed else "Completed"
+    typer.echo(f"{action} recovery {result.record.id}")
+    typer.echo(f"Recovery event: {result.event.id}")
+    if result.record.preserved_snapshot_path is not None:
+        typer.echo(f"Preserved snapshot: {result.record.preserved_snapshot_path}")
+    else:
+        typer.echo("Preserved snapshot: none (state.json was missing)")
+    typer.echo("Integrity: healthy")
 
 
 @app.command("history")

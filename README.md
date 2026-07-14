@@ -48,11 +48,16 @@ owner metadata, live contention refusal, and non-destructive stale-lock diagnost
 
 M2 Increment 3 adds optional or generated mutation idempotency keys, journal-bound request
 identity, completion receipts tied to exact event hashes, duplicate-free successful retry, and
-conservative interruption diagnostics. Explicit recovery remains later M2 work.
+conservative interruption diagnostics.
 
-The M1 archive is explicitly preliminary. Later M2 increments remain responsible for explicit
-recovery, atomic archive hardening, stale-lock remediation, pause/resume, migration, abandonment,
-and successor initiatives.
+M2 Increment 4 adds owner-authorized `forge recover` for missing, invalid, or mismatched active
+snapshots when—and only when—the complete journal remains valid and hash-chained. Recovery
+preserves observed snapshot bytes, verifies governed records and objects, records provenance, and
+can safely resume its own interrupted post-commit snapshot or receipt write.
+
+The M1 archive is explicitly preliminary. Later M2 increments remain responsible for damaged
+journal handling, generic interrupted-command resolution, atomic archive hardening, stale-lock
+remediation, pause/resume, migration, abandonment, and successor initiatives.
 
 Initialize an ordinary project repository with:
 
@@ -63,6 +68,7 @@ forge pack validate software-basic
 forge create "Objective" --scope "Bounded scope" --trust-pack-data \
   --idempotency-key create-objective
 forge status
+forge recover --reason "Rebuild derived state after an interrupted write"
 forge artifact add requirements.md --role requirements --title "Requirements"
 forge schema export --output schemas
 ```
@@ -100,12 +106,14 @@ forge --help
 - [Manual handoffs and safe result import](docs/handoffs-and-imports.md)
 - [Preliminary closure and archive inspection](docs/closure-and-archives.md)
 - [Idempotent mutation retries](docs/idempotency.md)
+- [Explicit active-snapshot recovery](docs/recovery.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [M1 evidence report](docs/milestones/m1-report.md)
 - [M2 Increment 1 integrity boundary](docs/milestones/m2-increment-1.md)
 - [M2 Increment 2 locking boundary](docs/milestones/m2-increment-2.md)
 - [M2 Increment 3 idempotency boundary](docs/milestones/m2-increment-3.md)
+- [M2 Increment 4 recovery boundary](docs/milestones/m2-increment-4.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

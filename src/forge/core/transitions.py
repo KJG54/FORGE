@@ -18,6 +18,7 @@ from forge.core.authorization import authorize_transition, require_owner
 from forge.errors import IntegrityError, TransitionError
 
 INITIATIVE_CREATED = "initiative-created"
+INTEGRITY_RECOVERED = "integrity-recovered"
 STEP_TRANSITIONED = "step-transitioned"
 ARTIFACT_REGISTERED = "artifact-registered"
 ARTIFACT_REVISED = "artifact-revised"
@@ -430,6 +431,9 @@ class WorkflowStateReducer:
             return self._apply_invalidation(state, event)
         if event.event_type == RESULT_IMPORTED:
             return self._apply_import_event(state, event)
+        if event.event_type == INTEGRITY_RECOVERED:
+            require_owner(event.actor, self.owner_identity_id, "recover materialized state")
+            return state
         return state
 
 

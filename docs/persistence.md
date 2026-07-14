@@ -43,8 +43,8 @@ previous-hash links, sequence and initiative identity, and complete-record termi
 binds `state.json` to the exact journal-head sequence and hash.
 
 Complete M1 journals with empty hash fields remain readable but are read-only until an explicit
-later migration preserves the original bytes and records provenance. Recovery, explicit
-stale-lock remediation, and interruption hardening remain later M2 work.
+later migration preserves the original bytes and records provenance. Active-snapshot recovery
+requires a fully hash-chained journal; explicit stale-lock remediation remains later M2 work.
 
 ## M2 Increment 2 mutation locking
 
@@ -52,7 +52,7 @@ Supported governed mutations acquire the repository-wide lock defined by
 [ADR-0013](adr/ADR-0013-cross-process-mutation-lock.md). Exclusive creation prevents overlapping
 processes, ownership metadata makes contention inspectable, and token verification prevents one
 owner from releasing another owner's lock. Stale status is diagnostic only: this increment never
-silently removes a lock. Explicit recovery remains deferred.
+silently removes a lock.
 
 ## M2 Increment 3 idempotency
 
@@ -66,6 +66,24 @@ retirement.
 An identical retry returns the existing event references. Different parameters with the same key
 are rejected. If events exist without their completion receipt, mutation stops with an explicit
 recovery requirement; this increment neither duplicates the operation nor invents a receipt.
+
+## M2 Increment 4 active-snapshot recovery
+
+The owner may run `forge recover --reason "..."` when the active `state.json` is missing, invalid,
+or disagrees with deterministic replay. [ADR-0015](adr/ADR-0015-explicit-active-snapshot-recovery.md)
+requires the entire journal to validate as one complete canonical hash chain before any recovery
+write. FORGE also validates all governed records and content-addressed objects referenced by that
+history.
+
+If an observed snapshot exists, FORGE preserves its exact bytes and digest under
+`.forge/active/recovery-snapshots/`. It writes an immutable recovery record, appends an
+owner-attributed `integrity-recovered` event as the commit point, and only then atomically rebuilds
+`state.json`. A retry using the same idempotency key may finish this recovery event's snapshot and
+receipt without appending another event.
+
+Recovery refuses healthy snapshots, legacy M1 journals, damaged or truncated journals, ambiguous
+history, missing governed records, and missing preserved objects. It does not truncate history,
+repair journal bytes, resolve unrelated incomplete commands, retire archives, or remove locks.
 
 ## Increment 7 archive layer
 

@@ -13,6 +13,7 @@ from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
 from forge.contracts.capabilities import SideEffectClass
 from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, DecisionSupersession
 from forge.contracts.events import AuditEvent
+from forge.contracts.recovery import RecoveryRecord, SnapshotCondition
 from forge.contracts.runs import RunRecord
 from forge.contracts.state import InitiativeLifecycleState, MaterializedState, RunState, StepState
 from forge.contracts.verification import (
@@ -34,15 +35,18 @@ from forge.core.transitions import (
     DECISION_SUPERSEDED,
     EVIDENCE_REGISTERED,
     INITIATIVE_CLOSED,
+    INTEGRITY_RECOVERED,
     RESULT_IMPORTED,
     RUN_CANCELLED,
     STEP_TRANSITIONED,
 )
 from forge.errors import IntegrityError, SecurityError
+from forge.storage.canonical import sha256_digest
 from forge.storage.configuration import load_configuration
 from forge.storage.objects import canonical_json_digest, verify_preserved_object
 from forge.storage.records import load_record
 from forge.storage.repository import RepositoryLayout
+from forge.storage.snapshots import MAX_SNAPSHOT_BYTES
 
 
 def _uuid_metadata(event: AuditEvent, key: str) -> UUID:
@@ -110,6 +114,10 @@ def _imported_result_path(layout: RepositoryLayout, result_id: UUID) -> Path:
 
 def _closure_path(layout: RepositoryLayout, closure_id: UUID) -> Path:
     return layout.closure_directory / f"{closure_id}.json"
+
+
+def _recovery_path(layout: RepositoryLayout, recovery_id: UUID) -> Path:
+    return layout.recovery_record_directory / f"{recovery_id}.json"
 
 
 def _validate_common(record: object, event: AuditEvent, record_id: UUID) -> None:
@@ -219,6 +227,8 @@ def validate_governed_records(
     expected_imported_results: set[Path] = set()
     expected_closures: set[Path] = set()
     expected_runs: set[Path] = set()
+    expected_recoveries: set[Path] = set()
+    expected_recovery_snapshots: set[Path] = set()
     revisions_by_id: dict[UUID, ArtifactRevision] = {}
     artifact_roles: dict[UUID, str] = {}
     current_revision_ids: dict[UUID, UUID] = {}
@@ -638,6 +648,74 @@ def validate_governed_records(
                 raise IntegrityError(f"Acceptance revocation does not match event {event.id}")
             revoked_acceptance_ids.add(acceptance_id)
             stale_ids.update(effects)
+        elif event.event_type == INTEGRITY_RECOVERED:
+            recovery_id = _uuid_metadata(event, "recovery_record_id")
+            recovery_path = _recovery_path(layout, recovery_id)
+            expected_recoveries.add(recovery_path)
+            recovery = load_record(recovery_path, RecoveryRecord)
+            _validate_common(recovery, event, recovery_id)
+            record_digest = canonical_json_digest(recovery.model_dump(mode="json"))
+            if (
+                recovery.id != recovery_id
+                or recovery.recovery_event_id != event.id
+                or recovery.actor != event.actor
+                or recovery.actor_id != owner_id
+                or recovery.source_journal_head_sequence != event.sequence - 1
+                or recovery.source_journal_head_hash != event.previous_event_hash
+                or event.metadata.get("reason") != recovery.reason
+                or event.metadata.get("snapshot_condition")
+                != recovery.snapshot_condition.value
+                or event.metadata.get("source_journal_head_sequence")
+                != recovery.source_journal_head_sequence
+                or event.metadata.get("source_journal_head_hash")
+                != recovery.source_journal_head_hash
+                or record_digest not in event.affected_digests
+            ):
+                raise IntegrityError(f"Recovery record does not match event {event.id}")
+            preserved_fields = (
+                event.metadata.get("preserved_snapshot_path"),
+                event.metadata.get("preserved_snapshot_digest"),
+                event.metadata.get("preserved_snapshot_size"),
+            )
+            record_fields = (
+                recovery.preserved_snapshot_path,
+                recovery.preserved_snapshot_digest,
+                recovery.preserved_snapshot_size,
+            )
+            if preserved_fields != record_fields:
+                raise IntegrityError(f"Recovery preservation metadata disagrees: {event.id}")
+            if recovery.snapshot_condition is SnapshotCondition.MISSING:
+                if any(value is not None for value in record_fields):
+                    raise IntegrityError(
+                        f"Missing snapshot recovery has preserved data: {event.id}"
+                    )
+            else:
+                preserved_path = (
+                    layout.root / str(recovery.preserved_snapshot_path)
+                )
+                expected_path = layout.recovery_snapshot_directory / f"{recovery_id}.bin"
+                if preserved_path != expected_path:
+                    raise IntegrityError(f"Recovery snapshot path is not canonical: {event.id}")
+                expected_recovery_snapshots.add(expected_path)
+                if expected_path.is_symlink() or not expected_path.is_file():
+                    raise IntegrityError(f"Recovery snapshot is missing or unsafe: {event.id}")
+                try:
+                    if expected_path.stat().st_size > MAX_SNAPSHOT_BYTES:
+                        raise IntegrityError(
+                            f"Preserved recovery snapshot exceeds {MAX_SNAPSHOT_BYTES} bytes"
+                        )
+                    preserved = expected_path.read_bytes()
+                except OSError as error:
+                    raise IntegrityError(
+                        f"Cannot read preserved recovery snapshot: {error}"
+                    ) from error
+                if (
+                    len(preserved) != recovery.preserved_snapshot_size
+                    or sha256_digest(preserved) != recovery.preserved_snapshot_digest
+                    or recovery.preserved_snapshot_digest not in event.affected_digests
+                ):
+                    raise IntegrityError(f"Preserved recovery snapshot is invalid: {event.id}")
+
         elif event.event_type == INITIATIVE_CLOSED:
             closure_id = _uuid_metadata(event, "closure_record_id")
             final_acceptance_ids = _uuid_list_metadata(event, "final_acceptance_ids")
@@ -818,6 +896,8 @@ def validate_governed_records(
     _validate_directory(layout.imported_result_directory, expected_imported_results)
     _validate_directory(layout.closure_directory, expected_closures)
     _validate_directory(layout.governed_run_directory, expected_runs)
+    _validate_directory(layout.recovery_record_directory, expected_recoveries)
+    _validate_directory(layout.recovery_snapshot_directory, expected_recovery_snapshots)
     expected_state = {
         artifact_id: revisions_by_id[revision_id].revision_number
         for artifact_id, revision_id in current_revision_ids.items()

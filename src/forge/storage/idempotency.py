@@ -131,6 +131,14 @@ def stamp_event_for_current_mutation(event: AuditEvent) -> AuditEvent:
     return event.model_copy(update={"metadata": metadata})
 
 
+def current_idempotency_request() -> IdempotencyEventMetadata:
+    """Return the command identity bound to the active mutation context."""
+    request = _REQUEST_CONTEXT.get()
+    if request is None:
+        raise IntegrityError("Recovery requires an active idempotent mutation context")
+    return request
+
+
 def _receipt_path(layout: RepositoryLayout, key: str) -> Path:
     filename = hashlib.sha256(key.encode("utf-8")).hexdigest() + ".json"
     return layout.idempotency_directory / filename
@@ -206,12 +214,24 @@ def _read_raw_registry(layout: RepositoryLayout) -> _RawRegistry:
     )
 
 
-def _validate_registry(raw: _RawRegistry) -> None:
+def _validate_registry(
+    raw: _RawRegistry,
+    *,
+    allowed_incomplete_key: str | None = None,
+) -> None:
     all_keys = set(raw.receipts) | set(raw.event_groups)
     for key in all_keys:
         receipt = raw.receipts.get(key)
         group = raw.event_groups.get(key, ())
         if receipt is None:
+            if key == allowed_incomplete_key and group:
+                identities = {
+                    (metadata.command, metadata.request_digest)
+                    for metadata, _event in group
+                }
+                if len(identities) != 1:
+                    raise IntegrityError(f"Idempotency metadata disagrees for key {key!r}")
+                continue
             raise IntegrityError(
                 f"Idempotency key {key!r} has committed events without a completion receipt; "
                 "explicit recovery is required"
@@ -275,13 +295,17 @@ def idempotent_mutation(
     command: str,
     provided_key: str | None,
     parameters: Mapping[str, object],
+    resume_incomplete: bool = False,
 ) -> Generator[IdempotencyInvocation]:
     """Replay a completed command or bind newly committed events to one receipt."""
     key = _validate_key(provided_key)
     command = _validate_command(command)
     digest = request_digest(command, parameters)
     raw = _read_raw_registry(layout)
-    _validate_registry(raw)
+    _validate_registry(
+        raw,
+        allowed_incomplete_key=key if resume_incomplete else None,
+    )
     existing = raw.receipts.get(key)
     if existing is not None:
         if (existing.command, existing.request_digest) != (command, digest):
@@ -290,6 +314,21 @@ def idempotent_mutation(
             )
         yield IdempotencyInvocation(key, command, digest, existing)
         return
+
+    incomplete = raw.event_groups.get(key, ())
+    if incomplete:
+        if not resume_incomplete:
+            raise IntegrityError(
+                f"Idempotency key {key!r} has committed events without a completion receipt; "
+                "explicit recovery is required"
+            )
+        if any(
+            (metadata.command, metadata.request_digest) != (command, digest)
+            for metadata, _event in incomplete
+        ):
+            raise ConflictError(
+                f"Idempotency key {key!r} was already used for a different command request"
+            )
 
     request = IdempotencyEventMetadata(
         key=key,

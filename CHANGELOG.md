@@ -35,9 +35,13 @@ semantic-version commitments begin at v1.0.0.
   refusal, stale-lock diagnostics, and ownership-verified release.
 - M2 journal-bound mutation idempotency with generated or caller-provided keys, canonical request
   binding, exact-event completion receipts, duplicate-free retry, and interruption detection.
+- M2 owner-authorized active-snapshot recovery with exact-byte evidence preservation, complete
+  journal and governed-record validation, recovery provenance, atomic reconstruction, and
+  duplicate-free resume after recovery-event commitment.
 
 ### Limitations
 
 - M1 archives remain preliminary and do not yet claim atomic interruption recovery, abandonment,
-  or successor initiatives; those remain later M2 work.
+  or successor initiatives; active-snapshot recovery does not repair damaged journals or generic
+  interrupted mutations.
 - Project and distribution naming remain provisional.

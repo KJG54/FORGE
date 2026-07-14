@@ -155,6 +155,14 @@ class RepositoryLayout:
         return self.active_directory / "closure"
 
     @property
+    def recovery_record_directory(self) -> Path:
+        return self.active_directory / "recovery-records"
+
+    @property
+    def recovery_snapshot_directory(self) -> Path:
+        return self.active_directory / "recovery-snapshots"
+
+    @property
     def archive_manifest_file(self) -> Path:
         return self.active_directory / "archive-manifest.json"
 
