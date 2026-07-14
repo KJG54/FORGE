@@ -2,6 +2,7 @@
 
 from collections.abc import Callable
 from functools import wraps
+from inspect import signature
 from pathlib import Path
 from typing import Annotated
 from uuid import UUID
@@ -43,6 +44,7 @@ from forge.errors import ConfigurationError, ForgeError
 from forge.packs.loader import available_packs, find_pack
 from forge.schemas import export_schema_bundle
 from forge.storage.configuration import load_configuration, render_configuration
+from forge.storage.idempotency import idempotent_mutation
 from forge.storage.locking import repository_mutation_lock
 from forge.storage.repository import discover_repository, initialize_repository
 
@@ -59,6 +61,13 @@ check_app = typer.Typer(help="Record and inspect structured manual checks.")
 evidence_app = typer.Typer(help="Register and inspect durable evidence packets.")
 acceptance_app = typer.Typer(help="Record, inspect, or revoke owner acceptance.")
 run_app = typer.Typer(help="Inspect or cancel durable work attempts.")
+IdempotencyOption = Annotated[
+    str | None,
+    typer.Option(
+        "--idempotency-key",
+        help="Stable retry key; FORGE generates and reports one when omitted.",
+    ),
+]
 app.add_typer(schema_app, name="schema")
 app.add_typer(config_app, name="config")
 app.add_typer(pack_app, name="pack")
@@ -105,13 +114,39 @@ def _assignment_map(values: list[str] | None, label: str) -> dict[str, str]:
 def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
     @wraps(function)
     def locked(*args: P.args, **kwargs: P.kwargs) -> None:
-        directory = kwargs.get("directory", Path("."))
         try:
+            bound = signature(function).bind(*args, **kwargs)
+            bound.apply_defaults()
+            directory = bound.arguments.get("directory", Path("."))
             if not isinstance(directory, Path):
                 raise ConfigurationError("Mutation command directory must be a filesystem path")
             layout = discover_repository(directory)
             with repository_mutation_lock(layout, command=function.__name__):
-                function(*args, **kwargs)
+                parameters = dict(bound.arguments)
+                provided_key = parameters.pop("idempotency_key", None)
+                parameters.pop("directory", None)
+                if function.__name__ == "import_result" and not parameters.get(
+                    "apply_changes"
+                ):
+                    function(*args, **kwargs)
+                    return
+                if provided_key is not None and not isinstance(provided_key, str):
+                    raise ConfigurationError("Idempotency key must be text")
+                with idempotent_mutation(
+                    layout,
+                    command=function.__name__,
+                    provided_key=provided_key,
+                    parameters=parameters,
+                ) as invocation:
+                    typer.echo(f"Idempotency key: {invocation.key}")
+                    if invocation.is_replay:
+                        assert invocation.receipt is not None
+                        event_ids = ", ".join(
+                            str(item.event_id) for item in invocation.receipt.events
+                        )
+                        typer.echo(f"Idempotent replay; committed event(s): {event_ids}")
+                        return
+                    function(*args, **kwargs)
         except ForgeError as error:
             _fail(error)
 
@@ -277,6 +312,7 @@ def create(
             help="Owner confirmation for this exact data pack; never authorizes execution.",
         ),
     ] = False,
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Create one owner-authorized initiative and immutable workflow lock."""
     try:
@@ -448,6 +484,7 @@ def close(
         Path,
         typer.Option("--directory", "-C", help="Repository or child directory."),
     ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Close fully accepted work into a preliminary immutable M1 archive."""
     try:
@@ -505,6 +542,7 @@ def begin(
         SideEffectClass,
         typer.Option("--side-effect", help="Declared side-effect class for this manual run."),
     ] = SideEffectClass.REPOSITORY_WRITE,
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Begin an eligible manual step without claiming completion."""
     try:
@@ -577,6 +615,7 @@ def run_cancel(
         Path,
         typer.Option("--directory", "-C", help="Repository or child directory."),
     ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Cancel active work without implying completion or acceptance."""
     try:
@@ -648,6 +687,7 @@ def import_result(
             help="TARGET=revise for governed targets or TARGET=replace otherwise.",
         ),
     ] = None,
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Stage and preview an untrusted result; apply only with explicit actions."""
     try:
@@ -707,6 +747,7 @@ def artifact_add(
         str,
         typer.Option("--media-type", help="Stable media type for this exact revision."),
     ] = "application/octet-stream",
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Register a logical artifact and preserve its exact first revision."""
     try:
@@ -742,6 +783,7 @@ def artifact_revise(
         str | None,
         typer.Option("--media-type", help="Media type, or inherit the prior revision."),
     ] = None,
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Register and preserve a new immutable artifact revision."""
     try:
@@ -839,6 +881,7 @@ def complete(
         list[str] | None,
         typer.Option("--limitation", help="Repeat for each known claim limitation."),
     ] = None,
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Record a worker claim and submit current declared outputs for checking."""
     try:
@@ -885,6 +928,7 @@ def check_record(
         list[str] | None,
         typer.Option("--limitation", help="Repeat for each check limitation."),
     ] = None,
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Record a manual check without executing or trusting a capability."""
     try:
@@ -954,6 +998,7 @@ def evidence_add(
         list[str] | None,
         typer.Option("--limitation", help="Repeat for each evidence limitation."),
     ] = None,
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Register digest-bound evidence references and explicit limitations."""
     try:
@@ -1033,6 +1078,7 @@ def verify(
         Path,
         typer.Option("--directory", "-C", help="Repository or child directory."),
     ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Derive check/evidence conditions and advance only when both are current."""
     try:
@@ -1065,6 +1111,7 @@ def acceptance_record(
         list[str] | None,
         typer.Option("--residual-risk", help="Repeat for each residual risk."),
     ] = None,
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Record owner-only acceptance bound to exact current evidence."""
     try:
@@ -1094,6 +1141,7 @@ def acceptance_revoke(
         Path,
         typer.Option("--directory", "-C", help="Repository or child directory."),
     ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Revoke acceptance and invalidate its dependent progression."""
     try:
@@ -1172,6 +1220,7 @@ def decide(
         UUID | None,
         typer.Option("--supersedes", help="Active decision UUID replaced by this decision."),
     ] = None,
+    idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Record an owner decision, optionally superseding an active decision."""
     try:

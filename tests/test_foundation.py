@@ -20,11 +20,11 @@ def test_public_project_files_exist() -> None:
     assert not missing, f"Missing foundational files: {missing}"
 
 
-def test_m2_increment_2_does_not_contain_later_milestone_modules() -> None:
+def test_m2_increment_3_does_not_contain_later_milestone_modules() -> None:
     package = ROOT / "src" / "forge"
     deferred = {"agents", "capabilities"}
     present = sorted(name for name in deferred if (package / name).exists())
-    assert not present, f"M2 Increment 2 created deferred implementation modules: {present}"
+    assert not present, f"M2 Increment 3 created deferred implementation modules: {present}"
 
     core = package / "core"
     forbidden_core = {

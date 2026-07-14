@@ -31,6 +31,11 @@ from forge.contracts.decisions import (
     WorkflowDeviation,
 )
 from forge.contracts.events import AuditEvent
+from forge.contracts.idempotency import (
+    IdempotencyEventMetadata,
+    IdempotencyEventReference,
+    IdempotencyReceipt,
+)
 from forge.contracts.initiatives import Initiative, InitiativeReference
 from forge.contracts.packs import PackManifest, PackTrustDecision, PackTrustState
 from forge.contracts.runs import RunRecord
@@ -82,6 +87,7 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "gate": Gate,
     "initiative": Initiative,
     "initiative-reference": InitiativeReference,
+    "idempotency-receipt": IdempotencyReceipt,
     "materialized-state": MaterializedState,
     "owner-identity": OwnerIdentity,
     "pack-manifest": PackManifest,
@@ -128,6 +134,9 @@ __all__ = [
     "EvidencePacket",
     "ExplanationProfile",
     "Gate",
+    "IdempotencyEventMetadata",
+    "IdempotencyEventReference",
+    "IdempotencyReceipt",
     "Initiative",
     "InitiativeLifecycleState",
     "InitiativeReference",

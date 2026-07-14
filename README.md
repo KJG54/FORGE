@@ -10,8 +10,8 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Pre-alpha foundation:** The name, distribution name, public marks, contracts, and CLI remain
-> provisional. Milestone 1 implementation is complete and awaiting owner review; this is not a
-> public production release.
+> provisional. Milestone 1 is accepted and Milestone 2 implementation is in progress; this is not
+> a public production release.
 
 ## Current capabilities
 
@@ -41,14 +41,18 @@ software-specific. The complete evidence and limitations are recorded in the
 
 M2 Increment 1 adds canonical event serialization, SHA-256 previous-hash chaining, snapshot
 journal-head binding, and explicit read-only compatibility for complete M1 journals. Migration,
-locking, recovery, and the remaining M2 hardening are not yet implemented.
+recovery, and the remaining M2 hardening are not yet implemented.
 
 M2 Increment 2 adds repository-wide cross-process locking for supported mutations, inspectable
-owner metadata, live contention refusal, and non-destructive stale-lock diagnostics. Idempotency and
-recovery remain later M2 work.
+owner metadata, live contention refusal, and non-destructive stale-lock diagnostics.
 
-The M1 archive is explicitly preliminary. M2 remains responsible for abandonment, successors,
-event hash chains, recovery, concurrency, idempotency, and interruption hardening.
+M2 Increment 3 adds optional or generated mutation idempotency keys, journal-bound request
+identity, completion receipts tied to exact event hashes, duplicate-free successful retry, and
+conservative interruption diagnostics. Explicit recovery remains later M2 work.
+
+The M1 archive is explicitly preliminary. Later M2 increments remain responsible for explicit
+recovery, atomic archive hardening, stale-lock remediation, pause/resume, migration, abandonment,
+and successor initiatives.
 
 Initialize an ordinary project repository with:
 
@@ -56,7 +60,8 @@ Initialize an ordinary project repository with:
 forge init --owner-name "Repository Owner"
 forge config validate
 forge pack validate software-basic
-forge create "Objective" --scope "Bounded scope" --trust-pack-data
+forge create "Objective" --scope "Bounded scope" --trust-pack-data \
+  --idempotency-key create-objective
 forge status
 forge artifact add requirements.md --role requirements --title "Requirements"
 forge schema export --output schemas
@@ -94,11 +99,13 @@ forge --help
 - [Acceptance, decisions, and invalidation](docs/acceptance-and-invalidation.md)
 - [Manual handoffs and safe result import](docs/handoffs-and-imports.md)
 - [Preliminary closure and archive inspection](docs/closure-and-archives.md)
+- [Idempotent mutation retries](docs/idempotency.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [M1 evidence report](docs/milestones/m1-report.md)
 - [M2 Increment 1 integrity boundary](docs/milestones/m2-increment-1.md)
 - [M2 Increment 2 locking boundary](docs/milestones/m2-increment-2.md)
+- [M2 Increment 3 idempotency boundary](docs/milestones/m2-increment-3.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

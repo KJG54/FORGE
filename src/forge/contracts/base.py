@@ -45,6 +45,15 @@ Sha256Digest = Annotated[
     str,
     StringConstraints(pattern=r"^sha256:[0-9a-f]{64}$"),
 ]
+IdempotencyKey = Annotated[
+    str,
+    StringConstraints(
+        strip_whitespace=True,
+        min_length=1,
+        max_length=128,
+        pattern=r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+    ),
+]
 
 
 def normalize_utc_datetime(value: datetime) -> datetime:

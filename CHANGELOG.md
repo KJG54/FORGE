@@ -33,9 +33,11 @@ semantic-version commitments begin at v1.0.0.
   corruption detection, and explicit read-only compatibility for legacy M1 journals.
 - M2 repository-wide cross-process mutation locking with bounded owner metadata, live contention
   refusal, stale-lock diagnostics, and ownership-verified release.
+- M2 journal-bound mutation idempotency with generated or caller-provided keys, canonical request
+  binding, exact-event completion receipts, duplicate-free retry, and interruption detection.
 
 ### Limitations
 
-- M1 archives are preliminary and do not claim hash chains, concurrent-writer safety, idempotent
-  retry, interruption recovery, abandonment, or successor initiatives; those remain M2 work.
+- M1 archives remain preliminary and do not yet claim atomic interruption recovery, abandonment,
+  or successor initiatives; those remain later M2 work.
 - Project and distribution naming remain provisional.

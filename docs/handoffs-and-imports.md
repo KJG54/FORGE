@@ -71,8 +71,8 @@ forge import-result ../worker-return/result.json \
 It writes project targets, content-addressed objects, imported-result data, and artifact records
 before committing one `result-imported` event. Pre-commit failures roll back project targets and new
 records. After the event commit, the journal remains authoritative under the existing M1
-transaction model; M2 still owns crash recovery, cross-process locking, idempotent retry, and
-interruption hardening.
+transaction model. M2 Increments 1 through 3 now add hash integrity, cross-process locking, and
+idempotent retry; crash recovery and remaining interruption hardening remain deferred.
 
 Imported files remain ordinary untrusted worker output. Workflow completion still requires a
 participant claim, declared checks, evidence, and separate owner acceptance. Handoff and staging

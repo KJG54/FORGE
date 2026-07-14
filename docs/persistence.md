@@ -43,8 +43,8 @@ previous-hash links, sequence and initiative identity, and complete-record termi
 binds `state.json` to the exact journal-head sequence and hash.
 
 Complete M1 journals with empty hash fields remain readable but are read-only until an explicit
-later migration preserves the original bytes and records provenance. Idempotent retry, recovery,
-explicit stale-lock remediation, and interruption hardening remain later M2 work.
+later migration preserves the original bytes and records provenance. Recovery, explicit
+stale-lock remediation, and interruption hardening remain later M2 work.
 
 ## M2 Increment 2 mutation locking
 
@@ -52,7 +52,20 @@ Supported governed mutations acquire the repository-wide lock defined by
 [ADR-0013](adr/ADR-0013-cross-process-mutation-lock.md). Exclusive creation prevents overlapping
 processes, ownership metadata makes contention inspectable, and token verification prevents one
 owner from releasing another owner's lock. Stale status is diagnostic only: this increment never
-silently removes a lock. Idempotency and explicit recovery remain deferred.
+silently removes a lock. Explicit recovery remains deferred.
+
+## M2 Increment 3 idempotency
+
+Supported governed CLI mutations use the journal-bound protocol in
+[ADR-0014](adr/ADR-0014-journal-bound-command-idempotency.md). Reserved metadata is applied before
+event hash sealing. On successful command completion, `.forge/idempotency/` stores one validated
+receipt binding the request to every exact committed event hash. The key namespace spans active
+and archived initiatives, so successful closure remains safely replayable after active-state
+retirement.
+
+An identical retry returns the existing event references. Different parameters with the same key
+are rejected. If events exist without their completion receipt, mutation stops with an explicit
+recovery requirement; this increment neither duplicates the operation nor invents a receipt.
 
 ## Increment 7 archive layer
 
@@ -65,5 +78,5 @@ directory.
 This ordering provides deterministic, inspectable successful closure and command-level archive
 immutability. It does not make the journal, snapshot, archive promotion, and active-state retirement
 one atomic transaction. An interruption is reported as an integrity error and is never silently
-repaired. Hash chains, cross-process locks, idempotent close retries, and interrupted-archive
-recovery remain explicit M2 work.
+repaired. Interrupted-archive recovery remains explicit later M2 work; completed closure retries
+are protected by the M2 Increment 3 idempotency receipt.

@@ -79,8 +79,9 @@ forge verify discover
 
 Every governed record is written before its event is committed. If failure occurs before journal
 commit, newly created record files are removed. Once the event is committed, the journal remains
-authoritative and snapshot disagreement is reported under the existing M1 transaction model. M2
-still owns cross-process locking, idempotent retry, interruption recovery, and hash chaining.
+authoritative and snapshot disagreement is reported under the existing transaction model. M2
+Increments 1 through 3 add hash chaining, cross-process locking, and command idempotency. Explicit
+recovery and interruption repair remain later M2 work.
 
 ## Explicit boundary
 

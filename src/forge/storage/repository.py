@@ -29,6 +29,7 @@ class RepositoryLayout:
     forge_directory: Path
     active_directory: Path
     archive_directory: Path
+    idempotency_directory: Path
     objects_directory: Path
     object_directory: Path
     local_directory: Path
@@ -49,6 +50,7 @@ class RepositoryLayout:
             forge_directory=forge_directory,
             active_directory=forge_directory / "active",
             archive_directory=forge_directory / "archive",
+            idempotency_directory=forge_directory / "idempotency",
             objects_directory=forge_directory / "objects",
             object_directory=forge_directory / "objects" / "sha256",
             local_directory=local_directory,
@@ -65,6 +67,7 @@ class RepositoryLayout:
             self.forge_directory,
             self.active_directory,
             self.archive_directory,
+            self.idempotency_directory,
             self.objects_directory,
             self.object_directory,
             self.local_directory,

@@ -26,8 +26,8 @@ authorization remain assigned to Increment 3.
 
 The public registry covers identity and authority, initiatives, workflows and gates, artifacts
 and revisions, provenance, decisions and governance changes, claims, checks, evidence,
-acceptance, runs, handoffs and returned files, packs, capabilities, audit events, materialized
-state, and project configuration.
+acceptance, runs, handoffs and returned files, packs, capabilities, audit events, idempotency
+receipts, materialized state, and project configuration.
 
 Run:
 
@@ -64,3 +64,7 @@ M1 Increment 7 adds `ClosureRecord`, `ArchiveManifest`, `ArchivedFile`, and
 manifest is a read-only preservation index whose digest covers its semantic fields and whose file
 entries cover the exact archived bytes. This is preliminary M1 tamper evidence, not the external
 hash-chain root or corruption-hardening guarantee assigned to M2.
+
+M2 Increment 3 adds `IdempotencyReceipt` and its exact event references. Each receipt binds one
+repository-wide command key and request digest to the IDs, initiative IDs, sequences, and hashes
+of every event committed by the completed command.

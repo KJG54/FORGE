@@ -3,7 +3,9 @@
 M1 Increment 7 implements successful closure only. It proves owner authority, lifecycle
 termination, exact accepted-byte references, inspectable archive contents, and immutability through
 supported commands. It does not implement abandonment, successors, hash chains, concurrent-writer
-protection, idempotent retry, or interrupted-closure recovery; those remain M2 responsibilities.
+protection, idempotent retry, or interrupted-closure recovery; those were assigned to M2.
+M2 Increments 1 through 3 now supply hash chains, locking, and completed-command idempotency, while
+archive recovery, abandonment, and successors remain deferred.
 
 ## Closure gate
 
@@ -68,5 +70,5 @@ Increment 7 deliberately does not claim atomic multi-file archival or recovery. 
 remains the governance commit point; the archive is then built in a staging directory and promoted
 before active state is retired. If that later phase is interrupted, `forge status` reports an
 integrity error and supported mutations remain disabled. FORGE does not silently repair, retry, or
-remove the terminal record. M2 adds hash chaining, locks, idempotency, interruption recovery, and
-fully hardened atomic closure.
+remove the terminal record. M2 Increments 1 through 3 add hash chaining, locks, and idempotency;
+interruption recovery and fully hardened atomic closure remain later work.

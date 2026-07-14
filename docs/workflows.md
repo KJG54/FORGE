@@ -86,5 +86,6 @@ cancellation rule or external/sensitive side effects move the step to `blocked` 
 
 Successful M1 closure is owner-only and derives readiness from the locked workflow, current
 acceptances, exact artifact revisions, and preserved objects. Closed archives never reopen through
-supported commands. Abandonment and successor initiatives remain M2 work, as do hash chaining,
-recovery, cross-process locking, idempotent retry, and interruption hardening.
+supported commands. M2 Increments 1 through 3 provide hash chaining, cross-process locking, and
+idempotent retry. Recovery, abandonment, successors, and remaining interruption hardening stay
+deferred.

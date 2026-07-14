@@ -115,10 +115,13 @@ def read_journal(path: Path) -> tuple[AuditEvent, ...]:
 
 def append_event(path: Path, event: AuditEvent) -> tuple[AuditEvent, ...]:
     """Seal, append, synchronize, and verify one event as the commit point."""
+    from forge.storage.idempotency import stamp_event_for_current_mutation
+
     if not path.parent.is_dir():
         raise ConflictError(f"Event journal parent directory does not exist: {path.parent}")
     if path.parent.is_symlink() or path.is_symlink():
         raise SecurityError(f"Refusing to append through a symbolic link: {path}")
+    event = stamp_event_for_current_mutation(event)
     existing = read_journal(path)
     if existing and existing[-1].event_hash is None:
         raise ConflictError(
