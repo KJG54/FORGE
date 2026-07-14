@@ -238,7 +238,7 @@ def create_initiative(
                 path.unlink(missing_ok=True)
         raise
     active = ActiveInitiative(layout, initiative, pack.manifest, trust, workflow, state)
-    return InitiativeCreationResult(active, event)
+    return InitiativeCreationResult(active, read_journal(layout.event_journal_file)[-1])
 
 
 def load_active_initiative(

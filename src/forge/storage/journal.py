@@ -11,23 +11,32 @@ from pydantic import ValidationError
 
 from forge.contracts.events import AuditEvent
 from forge.errors import ConflictError, IntegrityError, SecurityError
+from forge.storage.canonical import canonical_json_bytes, canonical_json_digest
 
 MAX_EVENT_BYTES = 1_048_576
 
 
 def render_event(event: AuditEvent) -> bytes:
     """Render one event deterministically as a newline-terminated JSON record."""
-    payload = json.dumps(
-        event.model_dump(mode="json"),
-        ensure_ascii=False,
-        separators=(",", ":"),
-        sort_keys=True,
-    )
-    return payload.encode("utf-8") + b"\n"
+    return canonical_json_bytes(event.model_dump(mode="json")) + b"\n"
+
+
+def calculate_event_hash(event: AuditEvent) -> str:
+    """Hash every canonical event field except the self-referential event hash."""
+    payload = event.model_dump(mode="json", exclude={"event_hash"})
+    return canonical_json_digest(payload)
+
+
+def seal_event(event: AuditEvent, previous_hash: str | None) -> AuditEvent:
+    """Return an immutable event bound to the preceding validated journal head."""
+    if event.previous_event_hash is not None or event.event_hash is not None:
+        raise ConflictError("New journal events must be unsealed; FORGE assigns chain hashes")
+    linked = event.model_copy(update={"previous_event_hash": previous_hash})
+    return linked.model_copy(update={"event_hash": calculate_event_hash(linked)})
 
 
 def validate_event_sequence(events: tuple[AuditEvent, ...]) -> None:
-    """Validate M1 ordering and single-initiative journal invariants."""
+    """Validate ordering, identity, and either a complete M2 chain or legacy M1 form."""
     initiative_id: UUID | None = None
     event_ids: set[UUID] = set()
     for expected_sequence, event in enumerate(events, start=1):
@@ -43,10 +52,26 @@ def validate_event_sequence(events: tuple[AuditEvent, ...]) -> None:
         if event.id in event_ids:
             raise IntegrityError(f"Event journal contains duplicate event ID: {event.id}")
         event_ids.add(event.id)
-        if event.previous_event_hash is not None or event.event_hash is not None:
+    if not events:
+        return
+    legacy = all(
+        event.previous_event_hash is None and event.event_hash is None for event in events
+    )
+    hashed = all(event.event_hash is not None for event in events)
+    if legacy:
+        return
+    if not hashed:
+        raise IntegrityError("Event journal mixes legacy unsealed and M2 hash-chained records")
+    previous_hash: str | None = None
+    for event in events:
+        if event.previous_event_hash != previous_hash:
             raise IntegrityError(
-                "M1 journals must not claim hash chaining; canonical event hashes begin in M2"
+                f"Event journal previous-hash mismatch at sequence {event.sequence}"
             )
+        expected_hash = calculate_event_hash(event)
+        if event.event_hash != expected_hash:
+            raise IntegrityError(f"Event hash mismatch at sequence {event.sequence}")
+        previous_hash = event.event_hash
 
 
 def read_journal(path: Path) -> tuple[AuditEvent, ...]:
@@ -89,15 +114,20 @@ def read_journal(path: Path) -> tuple[AuditEvent, ...]:
 
 
 def append_event(path: Path, event: AuditEvent) -> tuple[AuditEvent, ...]:
-    """Append one validated event and synchronize it as the M1 commit point."""
+    """Seal, append, synchronize, and verify one event as the commit point."""
     if not path.parent.is_dir():
         raise ConflictError(f"Event journal parent directory does not exist: {path.parent}")
     if path.parent.is_symlink() or path.is_symlink():
         raise SecurityError(f"Refusing to append through a symbolic link: {path}")
     existing = read_journal(path)
-    candidate = (*existing, event)
+    if existing and existing[-1].event_hash is None:
+        raise ConflictError(
+            "Legacy M1 journal is read-only until the authorized M2 migration increment"
+        )
+    sealed = seal_event(event, existing[-1].event_hash if existing else None)
+    candidate = (*existing, sealed)
     validate_event_sequence(candidate)
-    rendered = render_event(event)
+    rendered = render_event(sealed)
     if len(rendered) - 1 > MAX_EVENT_BYTES:
         raise IntegrityError(f"Event exceeds the {MAX_EVENT_BYTES}-byte journal record limit")
 

@@ -29,6 +29,8 @@ semantic-version commitments begin at v1.0.0.
 - M1 end-to-end acceptance with a restarted-process software walkthrough, a data-only synthetic
   community-research workflow, repository diagnostics, Standard/Guided presentation, and immutable
   event-derived run inspection and cancellation.
+- M2 canonical UTF-8 event serialization, SHA-256 previous-hash chaining, snapshot head binding,
+  corruption detection, and explicit read-only compatibility for legacy M1 journals.
 
 ### Limitations
 

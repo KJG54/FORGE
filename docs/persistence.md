@@ -35,12 +35,16 @@ serialization, and comparison. It accepts a reducer function rather than interpr
 events itself. The domain-neutral lifecycle reducer and authorization rules belong to M1
 Increment 3.
 
-## Explicit M2 deferrals
+## M2 Increment 1 integrity chain
 
-M1 event hash fields remain empty. Canonical event hashes, previous-hash chaining, cross-process
-locking, idempotent retry, corruption recovery, stale-lock handling, and interruption fault
-hardening remain Milestone 2 work. Increment 2 detects journal/snapshot disagreement but does not
-repair it or expose a recovery command.
+New journals use the canonical serialization and SHA-256 chain defined by
+[ADR-0012](adr/ADR-0012-canonical-event-hash-chain.md). Every read validates event content hashes,
+previous-hash links, sequence and initiative identity, and complete-record termination. Replay
+binds `state.json` to the exact journal-head sequence and hash.
+
+Complete M1 journals with empty hash fields remain readable but are read-only until an explicit
+later migration preserves the original bytes and records provenance. Cross-process locking,
+idempotent retry, recovery, stale-lock handling, and interruption hardening remain later M2 work.
 
 ## Increment 7 archive layer
 

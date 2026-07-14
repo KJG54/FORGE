@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import hashlib
-import json
 from dataclasses import dataclass
 from pathlib import Path
 
 from forge.errors import ConflictError, IntegrityError, SecurityError
 from forge.storage.atomic import atomic_write_bytes
+from forge.storage.canonical import canonical_json_digest as _canonical_json_digest
+from forge.storage.canonical import sha256_digest
 from forge.storage.repository import RepositoryLayout
 
 
@@ -21,18 +21,9 @@ class PreservedObject:
     created: bool
 
 
-def sha256_digest(content: bytes) -> str:
-    return f"sha256:{hashlib.sha256(content).hexdigest()}"
-
-
 def canonical_json_digest(payload: object) -> str:
-    rendered = json.dumps(
-        payload,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        sort_keys=True,
-    ).encode("utf-8")
-    return sha256_digest(rendered)
+    """Compatibility export for existing core callers."""
+    return _canonical_json_digest(payload)
 
 
 def _object_location(layout: RepositoryLayout, digest: str) -> tuple[Path, str]:

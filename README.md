@@ -39,6 +39,10 @@ walkthrough, and a data-only synthetic community-research workflow proving the c
 software-specific. The complete evidence and limitations are recorded in the
 [M1 evidence report](docs/milestones/m1-report.md).
 
+M2 Increment 1 adds canonical event serialization, SHA-256 previous-hash chaining, snapshot
+journal-head binding, and explicit read-only compatibility for complete M1 journals. Migration,
+locking, recovery, and the remaining M2 hardening are not yet implemented.
+
 The M1 archive is explicitly preliminary. M2 remains responsible for abandonment, successors,
 event hash chains, recovery, concurrency, idempotency, and interruption hardening.
 
@@ -89,6 +93,7 @@ forge --help
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [M1 evidence report](docs/milestones/m1-report.md)
+- [M2 Increment 1 integrity boundary](docs/milestones/m2-increment-1.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

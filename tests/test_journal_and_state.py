@@ -13,8 +13,9 @@ from forge.contracts import (
     RepositoryState,
 )
 from forge.contracts.base import utc_now
-from forge.errors import IntegrityError
+from forge.errors import ConflictError, IntegrityError
 from forge.storage.atomic import atomic_write_bytes
+from forge.storage.canonical import canonical_json_bytes
 from forge.storage.journal import append_event, read_journal, render_event
 from forge.storage.snapshots import (
     append_event_and_update_snapshot,
@@ -112,6 +113,7 @@ def test_events_append_in_order_and_replay_to_an_atomic_snapshot(tmp_path: Path)
 
     assert first.journal_head_sequence == 1
     assert second.journal_head_sequence == 2
+    assert second.journal_head_hash is not None
     assert second.lifecycle_state is InitiativeLifecycleState.PAUSED
     assert read_journal(journal)[-1].sequence == 2
     assert load_snapshot(snapshot) == second
@@ -127,15 +129,15 @@ def test_journal_rejects_sequence_gaps_and_preserves_the_committed_prefix(
     journal = tmp_path / "events.jsonl"
     initiative_id = uuid4()
     first = _event(initiative_id, 1, "initiative-created")
-    append_event(journal, first)
+    sealed_first = append_event(journal, first)[-1]
 
     with pytest.raises(IntegrityError, match="expected 2, found 3"):
         append_event(journal, _event(initiative_id, 3, "initiative-paused"))
 
-    assert read_journal(journal) == (first,)
+    assert read_journal(journal) == (sealed_first,)
 
 
-def test_journal_rejects_mixed_initiatives_duplicate_ids_and_m2_hashes(
+def test_journal_rejects_mixed_initiatives_duplicate_ids_and_invalid_hashes(
     tmp_path: Path,
 ) -> None:
     initiative_id = uuid4()
@@ -168,8 +170,66 @@ def test_journal_rejects_mixed_initiatives_duplicate_ids_and_m2_hashes(
             )
         )
     )
-    with pytest.raises(IntegrityError, match="hash chaining"):
+    with pytest.raises(IntegrityError, match="Event hash mismatch"):
         read_journal(hash_claim)
+
+
+def test_canonical_json_is_stable_and_rejects_non_finite_numbers() -> None:
+    assert canonical_json_bytes({"z": 1, "a": "é"}) == b'{"a":"\xc3\xa9","z":1}'
+    with pytest.raises(IntegrityError, match="canonical JSON"):
+        canonical_json_bytes({"invalid": float("nan")})
+
+
+def test_hash_chain_detects_changed_removed_reordered_and_relinked_events(
+    tmp_path: Path,
+) -> None:
+    journal = tmp_path / "events.jsonl"
+    initiative_id = uuid4()
+    for sequence, event_type in enumerate(
+        ("initiative-created", "initiative-paused", "initiative-resumed"), start=1
+    ):
+        append_event(journal, _event(initiative_id, sequence, event_type))
+    events = read_journal(journal)
+    assert events[0].previous_event_hash is None
+    assert events[1].previous_event_hash == events[0].event_hash
+    assert events[2].previous_event_hash == events[1].event_hash
+
+    changed = events[1].model_copy(update={"metadata": {"tampered": True}})
+    journal.write_bytes(b"".join(render_event(item) for item in (events[0], changed, events[2])))
+    with pytest.raises(IntegrityError, match="Event hash mismatch at sequence 2"):
+        read_journal(journal)
+
+    journal.write_bytes(render_event(events[0]) + render_event(events[2]))
+    with pytest.raises(IntegrityError, match="expected 2, found 3"):
+        read_journal(journal)
+
+    journal.write_bytes(render_event(events[1]) + render_event(events[0]) + render_event(events[2]))
+    with pytest.raises(IntegrityError, match="expected 1, found 2"):
+        read_journal(journal)
+
+    relinked = events[1].model_copy(update={"previous_event_hash": "sha256:" + "0" * 64})
+    journal.write_bytes(
+        render_event(events[0]) + render_event(relinked) + render_event(events[2])
+    )
+    with pytest.raises(IntegrityError, match="previous-hash mismatch at sequence 2"):
+        read_journal(journal)
+
+
+def test_legacy_m1_journal_is_readable_but_cannot_be_extended(tmp_path: Path) -> None:
+    journal = tmp_path / "events.jsonl"
+    initiative_id = uuid4()
+    legacy = _event(initiative_id, 1, "initiative-created")
+    journal.write_bytes(render_event(legacy))
+    assert read_journal(journal) == (legacy,)
+    with pytest.raises(ConflictError, match="Legacy M1 journal is read-only"):
+        append_event(journal, _event(initiative_id, 2, "initiative-paused"))
+
+    sealed = append_event(tmp_path / "hashed.jsonl", legacy)[-1]
+    mixed = tmp_path / "mixed-chain.jsonl"
+    second = _event(initiative_id, 2, "initiative-paused")
+    mixed.write_bytes(render_event(sealed) + render_event(second))
+    with pytest.raises(IntegrityError, match="mixes legacy unsealed"):
+        read_journal(mixed)
 
 
 def test_journal_rejects_truncated_or_blank_records(tmp_path: Path) -> None:
@@ -249,7 +309,10 @@ def test_snapshot_failure_leaves_detectable_committed_journal(
     with pytest.raises(IntegrityError, match="simulated snapshot failure"):
         append_event_and_update_snapshot(journal, snapshot, event, _workflow_reducer)
 
-    assert read_journal(journal) == (event,)
+    committed = read_journal(journal)
+    assert len(committed) == 1
+    assert committed[0].id == event.id
+    assert committed[0].event_hash is not None
     report = inspect_snapshot_integrity(journal, snapshot, _workflow_reducer)
     assert report.integrity_state is IntegrityState.INTEGRITY_ERROR
     assert report.diagnostics == (
