@@ -8,6 +8,7 @@ import typer
 
 from forge import __version__
 from forge.contracts.capabilities import SideEffectClass
+from forge.contracts.state import ExplanationProfile
 from forge.contracts.verification import CheckOutcome
 from forge.core.acceptance import (
     list_acceptances,
@@ -19,10 +20,12 @@ from forge.core.archival import close_initiative
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
 from forge.core.authorization import owner_actor
 from forge.core.decisions import record_decision
+from forge.core.diagnostics import inspect_repository_health
 from forge.core.handoffs import create_handoff
 from forge.core.history import inspect_history
 from forge.core.imports import apply_result_import, preview_result_import
 from forge.core.lifecycle import begin_manual_run, create_initiative
+from forge.core.runs import cancel_run, list_runs, show_run
 from forge.core.status import inspect_status
 from forge.core.verification import (
     complete_step,
@@ -52,6 +55,7 @@ artifact_app = typer.Typer(help="Register and inspect immutable artifact revisio
 check_app = typer.Typer(help="Record and inspect structured manual checks.")
 evidence_app = typer.Typer(help="Register and inspect durable evidence packets.")
 acceptance_app = typer.Typer(help="Record, inspect, or revoke owner acceptance.")
+run_app = typer.Typer(help="Inspect or cancel durable work attempts.")
 app.add_typer(schema_app, name="schema")
 app.add_typer(config_app, name="config")
 app.add_typer(pack_app, name="pack")
@@ -59,6 +63,7 @@ app.add_typer(artifact_app, name="artifact")
 app.add_typer(check_app, name="check")
 app.add_typer(evidence_app, name="evidence")
 app.add_typer(acceptance_app, name="acceptance")
+app.add_typer(run_app, name="run")
 
 
 def _version_callback(value: bool) -> None:
@@ -238,6 +243,13 @@ def create(
         str | None,
         typer.Option("--workflow", help="Workflow ID within the selected pack."),
     ] = None,
+    explanation: Annotated[
+        ExplanationProfile | None,
+        typer.Option(
+            "--explanation",
+            help="M1 presentation profile; governance outcomes remain identical.",
+        ),
+    ] = None,
     trust_pack_data: Annotated[
         bool,
         typer.Option(
@@ -258,6 +270,7 @@ def create(
             trust_pack_data=trust_pack_data,
             pack_id=pack_id,
             workflow_id=workflow_id,
+            explanation_profile=explanation,
         )
     except ForgeError as error:
         _fail(error)
@@ -268,6 +281,31 @@ def create(
         f"{result.active.workflow.id} {result.active.workflow.version}"
     )
     typer.echo(f"Next: {', '.join(result.active.state.permitted_next_actions)}")
+    typer.echo(
+        f"Guidance ({result.active.initiative.explanation_profile.value}): "
+        f"{result.active.explanation}"
+    )
+
+
+@app.command("doctor")
+def doctor(
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory to diagnose."),
+    ] = Path("."),
+) -> None:
+    """Validate implemented M1 boundaries without repairing or mutating them."""
+    try:
+        layout = discover_repository(directory)
+        report = inspect_repository_health(layout)
+    except ForgeError as error:
+        _fail(error)
+        return
+    for check in report.checks:
+        typer.echo(f"OK: {check}")
+    for warning in report.warnings:
+        typer.echo(f"Warning: {warning}")
+    typer.echo("FORGE repository health: healthy")
 
 
 @app.command("status")
@@ -294,6 +332,7 @@ def status(
         typer.echo("Initiative: none")
     else:
         typer.echo(f"Initiative: {report.initiative.id} — {report.initiative.objective}")
+        typer.echo(f"Explanation profile: {report.initiative.explanation_profile.value}")
     for identifier in report.archived_initiative_ids:
         typer.echo(f"Archived initiative: {identifier}")
     if report.state is not None:
@@ -460,6 +499,79 @@ def begin(
         return
     typer.echo(f"Started manual run {result.run.id} for step {step_id}")
     typer.echo("Run success will remain separate from checks, evidence, and owner acceptance")
+
+
+@run_app.command("list")
+def run_list(
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """List durable run attempts with effective event-derived status."""
+    try:
+        layout = discover_repository(directory)
+        runs = list_runs(layout)
+    except ForgeError as error:
+        _fail(error)
+        return
+    if not runs:
+        typer.echo("No runs")
+    for run in runs:
+        typer.echo(f"{run.record.id} step={run.record.step_id} status={run.status.value}")
+
+
+@run_app.command("show")
+def run_show(
+    run_id: Annotated[UUID, typer.Argument(help="Durable run UUID.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Show immutable run metadata and its event-derived terminal state."""
+    try:
+        layout = discover_repository(directory)
+        run = show_run(layout, run_id)
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Run: {run.record.id}")
+    typer.echo(f"Step: {run.record.step_id}")
+    typer.echo(f"Status: {run.status.value}")
+    typer.echo(f"Worker: {run.record.worker.actor_type.value}:{run.record.worker.id}")
+    typer.echo(f"Side effects: {run.record.side_effect_class.value}")
+    typer.echo(f"Input context: {run.record.input_context_digest}")
+    if run.cancellation_details is not None:
+        typer.echo(f"Cancellation: {run.cancellation_details}")
+
+
+@run_app.command("cancel")
+def run_cancel(
+    run_id: Annotated[UUID, typer.Argument(help="Active run UUID.")],
+    reason: Annotated[str, typer.Option("--reason", help="Explicit cancellation reason.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Cancel active work without implying completion or acceptance."""
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = cancel_run(
+            layout,
+            run_id=run_id,
+            reason=reason,
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    destination = result.state.step_states[result.run.record.step_id]
+    typer.echo(f"Cancelled run {run_id}")
+    typer.echo(f"Step {result.run.record.step_id}: {destination.value}")
+    typer.echo("Cancellation is terminal for the run and never implies step success")
 
 
 @app.command("handoff")

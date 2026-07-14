@@ -71,6 +71,17 @@ forge history --archive <initiative-id>
 Both commands reload locked records, replay the complete journal, compare `state.json`, and report
 integrity errors without silently repairing them.
 
+## Explanation profiles and run cancellation
+
+M1 supports Standard and Guided presentation. The selected profile chooses only locked pack
+explanation text; transition definitions, authority, record requirements, and materialized next
+actions are identical.
+
+Run records remain immutable. `forge run list|show` derives effective `running`, `succeeded`, or
+`cancelled` state from the journal. `forge run cancel` records a terminal cancellation event and
+never implies step completion: safe work may return to `ready`, while the workflow's stricter
+cancellation rule or external/sensitive side effects move the step to `blocked` for owner review.
+
 ## Closure boundary and deferred guarantees
 
 Successful M1 closure is owner-only and derives readiness from the locked workflow, current

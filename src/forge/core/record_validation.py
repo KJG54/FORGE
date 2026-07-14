@@ -10,10 +10,11 @@ from forge.contracts.actors import ActorType
 from forge.contracts.agents import AgentResult
 from forge.contracts.archives import ClosureRecord
 from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
+from forge.contracts.capabilities import SideEffectClass
 from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, DecisionSupersession
 from forge.contracts.events import AuditEvent
 from forge.contracts.runs import RunRecord
-from forge.contracts.state import InitiativeLifecycleState, MaterializedState, StepState
+from forge.contracts.state import InitiativeLifecycleState, MaterializedState, RunState, StepState
 from forge.contracts.verification import (
     AcceptanceRecord,
     CheckOutcome,
@@ -21,7 +22,7 @@ from forge.contracts.verification import (
     Claim,
     EvidencePacket,
 )
-from forge.contracts.workflows import WorkflowDefinition
+from forge.contracts.workflows import CancellationBehavior, WorkflowDefinition
 from forge.core.transitions import (
     ACCEPTANCE_RECORDED,
     ACCEPTANCE_REVOKED,
@@ -34,6 +35,7 @@ from forge.core.transitions import (
     EVIDENCE_REGISTERED,
     INITIATIVE_CLOSED,
     RESULT_IMPORTED,
+    RUN_CANCELLED,
     STEP_TRANSITIONED,
 )
 from forge.errors import IntegrityError, SecurityError
@@ -216,6 +218,7 @@ def validate_governed_records(
     expected_supersessions: set[Path] = set()
     expected_imported_results: set[Path] = set()
     expected_closures: set[Path] = set()
+    expected_runs: set[Path] = set()
     revisions_by_id: dict[UUID, ArtifactRevision] = {}
     artifact_roles: dict[UUID, str] = {}
     current_revision_ids: dict[UUID, UUID] = {}
@@ -225,6 +228,7 @@ def validate_governed_records(
     acceptances_by_id: dict[UUID, AcceptanceRecord] = {}
     acceptance_steps: dict[UUID, str] = {}
     decisions_by_id: dict[UUID, DecisionRecord] = {}
+    runs_by_id: dict[UUID, RunRecord] = {}
     revoked_acceptance_ids: set[UUID] = set()
     stale_ids: set[UUID] = set()
     seen_event_record_ids: set[UUID] = set()
@@ -448,6 +452,38 @@ def validate_governed_records(
             if effects != import_stale or not effects.issubset(event.affected_record_ids):
                 raise IntegrityError(f"Import event {event.id} has invalid stale effects")
             stale_ids.update(effects)
+        elif event.event_type == RUN_CANCELLED:
+            if event.run_id is None or event.run_id not in runs_by_id:
+                raise IntegrityError(f"Cancellation event {event.id} references an unknown run")
+            run = runs_by_id[event.run_id]
+            step = next((item for item in workflow.steps if item.id == run.step_id), None)
+            externally_risky = run.side_effect_class in {
+                SideEffectClass.EXTERNAL_REVERSIBLE,
+                SideEffectClass.EXTERNAL_IRREVERSIBLE,
+                SideEffectClass.SENSITIVE,
+            }
+            expected_destination = (
+                StepState.BLOCKED
+                if externally_risky
+                or step is None
+                or step.cancellation_behavior is CancellationBehavior.BLOCK_FOR_OWNER_REVIEW
+                else StepState.READY
+            )
+            if (
+                (
+                    event.actor != run.worker
+                    and not (
+                        event.actor.actor_type is ActorType.OWNER
+                        and event.actor.id == owner_id
+                    )
+                )
+                or event.metadata.get("step_id") != run.step_id
+                or event.metadata.get("source_state") != StepState.IN_PROGRESS.value
+                or event.metadata.get("destination_state") != expected_destination.value
+                or not isinstance(event.metadata.get("reason"), str)
+                or not event.metadata.get("reason")
+            ):
+                raise IntegrityError(f"Cancellation event {event.id} violates run policy")
         elif event.event_type == CLAIM_RECORDED:
             claim_id = _uuid_metadata(event, "claim_id")
             path = _claim_path(layout, claim_id)
@@ -683,6 +719,22 @@ def validate_governed_records(
             step = next((item for item in workflow.steps if item.id == step_id), None)
             if step is None:
                 raise IntegrityError(f"Transition event {event.id} references an unknown step")
+            if destination == StepState.IN_PROGRESS.value:
+                if event.run_id is None:
+                    raise IntegrityError("Begin transition has no run ID")
+                run_path = layout.governed_run_directory / f"{event.run_id}.json"
+                expected_runs.add(run_path)
+                run = load_record(run_path, RunRecord)
+                _validate_common(run, event, run.id)
+                if (
+                    run.id != event.run_id
+                    or run.worker != event.actor
+                    or run.step_id != step.id
+                    or run.status is not RunState.RUNNING
+                    or run.started_at is None
+                ):
+                    raise IntegrityError(f"Run record does not match begin event {event.id}")
+                runs_by_id[run.id] = run
             current_outputs = {
                 revision_id
                 for artifact_id, revision_id in current_revision_ids.items()
@@ -765,6 +817,7 @@ def validate_governed_records(
     _validate_directory(layout.decision_supersession_directory, expected_supersessions)
     _validate_directory(layout.imported_result_directory, expected_imported_results)
     _validate_directory(layout.closure_directory, expected_closures)
+    _validate_directory(layout.governed_run_directory, expected_runs)
     expected_state = {
         artifact_id: revisions_by_id[revision_id].revision_number
         for artifact_id, revision_id in current_revision_ids.items()

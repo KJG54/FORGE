@@ -1,0 +1,94 @@
+schema_version: "1.0"
+id: community-research
+version: 1.0.0
+pack_id: community-research-test
+name: Community Research Test
+description: A synthetic non-software workflow used only to prove domain-neutral M1 services.
+steps:
+  - id: frame
+    purpose: Define the community question and participation boundaries.
+    instructions: Record the question and participant safeguards before gathering observations.
+    prerequisites: []
+    required_inputs: []
+    required_outputs: [question-brief, participation-boundaries]
+    claim_requirements: [outputs-produced]
+    check_requirements: [framing-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [initiative-objective]
+  - id: gather
+    purpose: Gather bounded community observations.
+    instructions: Record observations without adding identifying participant information.
+    prerequisites: [frame]
+    required_inputs: [question-brief, participation-boundaries]
+    required_outputs: [observation-log]
+    claim_requirements: [outputs-produced]
+    check_requirements: [observations-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: block_for_owner_review
+    context_selection_rules: [accepted-framing]
+  - id: synthesize
+    purpose: Summarize findings, limitations, and follow-up questions.
+    instructions: Produce a bounded synthesis that distinguishes observations from conclusions.
+    prerequisites: [gather]
+    required_inputs: [observation-log]
+    required_outputs: [findings-summary, limitations-note]
+    claim_requirements: [outputs-produced]
+    check_requirements: [synthesis-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [accepted-observations]
+transitions:
+  - id: begin
+    source_state: ready
+    destination_state: in_progress
+    conditions: []
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: submit
+    source_state: in_progress
+    destination_state: awaiting_verification
+    conditions: [claim-recorded]
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: rework
+    source_state: invalidated
+    destination_state: in_progress
+    conditions: []
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: verify
+    source_state: awaiting_verification
+    destination_state: awaiting_acceptance
+    conditions: [required-checks-passed, required-evidence-registered]
+    authority_requirement: forge-cli
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: accept
+    source_state: awaiting_acceptance
+    destination_state: completed
+    conditions: [owner-acceptance-recorded]
+    authority_requirement: owner
+    invalidation_effects: []
+    event_type: step-transitioned
+required_gates: []
+required_artifact_classes:
+  - question-brief
+  - participation-boundaries
+  - observation-log
+  - findings-summary
+  - limitations-note
+required_evidence_classes: [review-evidence]
+explanation_content:
+  standard: Follow each research step while keeping observations, checks, evidence, and acceptance separate.
+  guided: FORGE explains each research boundary, required record, review, and owner decision in detail.
+compatibility_constraints: [forge-contracts-1]

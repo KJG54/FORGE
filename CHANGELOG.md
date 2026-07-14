@@ -26,6 +26,9 @@ semantic-version commitments begin at v1.0.0.
 - Owner-only successful closure with complete-workflow and current-acceptance gates, exact-byte
   archive manifests, preserved-object verification, read-only archived status and history, and
   terminal command-level immutability.
+- M1 end-to-end acceptance with a restarted-process software walkthrough, a data-only synthetic
+  community-research workflow, repository diagnostics, Standard/Guided presentation, and immutable
+  event-derived run inspection and cancellation.
 
 ### Limitations
 

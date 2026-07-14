@@ -10,12 +10,12 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Pre-alpha foundation:** The name, distribution name, public marks, contracts, and CLI remain
-> provisional. Milestone 1 is being delivered in bounded internal increments and is not a public
-> production release.
+> provisional. Milestone 1 implementation is complete and awaiting owner review; this is not a
+> public production release.
 
 ## Current capabilities
 
-M1 Increments 1 through 7 provide strict versioned data contracts, deterministic JSON Schema export,
+M1 Increments 1 through 8 provide strict versioned data contracts, deterministic JSON Schema export,
 project configuration validation, owner identity bootstrap, repository discovery, safe path
 resolution, non-destructive `forge init`, ordered event journals, deterministic replay, atomic
 snapshot replacement, explicit journal/snapshot mismatch detection, safe declarative pack loading,
@@ -32,6 +32,12 @@ and single-event artifact registration.
 Increment 7 adds owner-only successful closure, complete-step and current-acceptance gates,
 exact-byte archive manifests, preserved-object verification, read-only archived status and history,
 and terminal immutability through supported commands.
+
+Increment 8 adds read-only repository diagnostics, event-derived run inspection and cancellation,
+selectable Standard/Guided presentation, a restarted-process end-to-end software acceptance
+walkthrough, and a data-only synthetic community-research workflow proving the core is not
+software-specific. The complete evidence and limitations are recorded in the
+[M1 evidence report](docs/milestones/m1-report.md).
 
 The M1 archive is explicitly preliminary. M2 remains responsible for abandonment, successors,
 event hash chains, recovery, concurrency, idempotency, and interruption hardening.
@@ -82,6 +88,7 @@ forge --help
 - [Preliminary closure and archive inspection](docs/closure-and-archives.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
+- [M1 evidence report](docs/milestones/m1-report.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

@@ -30,6 +30,7 @@ DECISION_RECORDED = "decision-recorded"
 DECISION_SUPERSEDED = "decision-superseded"
 RESULT_IMPORTED = "result-imported"
 INITIATIVE_CLOSED = "initiative-closed"
+RUN_CANCELLED = "run-cancelled"
 
 
 def _metadata_string(event: AuditEvent, key: str) -> str:
@@ -220,6 +221,39 @@ class WorkflowStateReducer:
             )
         return state.model_copy(update={"current_artifact_revisions": revisions})
 
+    def _apply_run_cancelled(
+        self,
+        state: MaterializedState,
+        event: AuditEvent,
+    ) -> MaterializedState:
+        if state.lifecycle_state is not InitiativeLifecycleState.ACTIVE:
+            raise IntegrityError("Run cancellation requires an active initiative")
+        if event.run_id is None or event.run_id not in state.active_run_ids:
+            raise IntegrityError("Run cancellation must reference exactly one active run")
+        step = self._step(_metadata_string(event, "step_id"))
+        if state.step_states.get(step.id) is not StepState.IN_PROGRESS:
+            raise IntegrityError("Run cancellation requires an in-progress workflow step")
+        if _metadata_string(event, "source_state") != StepState.IN_PROGRESS.value:
+            raise IntegrityError("Run cancellation source state must be in_progress")
+        try:
+            destination = StepState(_metadata_string(event, "destination_state"))
+        except ValueError as error:
+            raise IntegrityError("Run cancellation has an invalid destination state") from error
+        if destination not in {StepState.READY, StepState.BLOCKED}:
+            raise IntegrityError("Run cancellation may only return to ready or become blocked")
+        _metadata_string(event, "reason")
+        states = dict(state.step_states)
+        states[step.id] = destination
+        active_runs = tuple(item for item in state.active_run_ids if item != event.run_id)
+        return state.model_copy(
+            update={
+                "step_states": states,
+                "current_step_id": self._current_step(states),
+                "active_run_ids": active_runs,
+                "permitted_next_actions": self._next_actions(states),
+            }
+        )
+
     def _apply_invalidation(
         self,
         state: MaterializedState,
@@ -386,6 +420,8 @@ class WorkflowStateReducer:
             return self._apply_closure_event(state, event)
         if event.event_type == STEP_TRANSITIONED:
             return self._apply_step_transition(state, event)
+        if event.event_type == RUN_CANCELLED:
+            return self._apply_run_cancelled(state, event)
         if event.event_type in {ARTIFACT_REGISTERED, ARTIFACT_REVISED}:
             return self._apply_artifact_event(state, event)
         if event.event_type in {DECISION_RECORDED, DECISION_SUPERSEDED}:

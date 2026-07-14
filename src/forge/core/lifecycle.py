@@ -60,6 +60,17 @@ class ActiveInitiative:
     def reducer(self) -> WorkflowStateReducer:
         return WorkflowStateReducer(self.workflow, self.initiative.owner_identity_id)
 
+    @property
+    def explanation(self) -> str:
+        """Return presentation-only guidance for the selected M1 profile."""
+        profile = self.initiative.explanation_profile.value
+        try:
+            return self.workflow.explanation_content[profile]
+        except KeyError as error:
+            raise IntegrityError(
+                f"Locked workflow lacks explanation content for profile {profile!r}"
+            ) from error
+
 
 @dataclass(frozen=True)
 class InitiativeCreationResult:
@@ -513,13 +524,14 @@ def begin_manual_run(
     run_path = layout.governed_run_directory / f"{run_id}.json"
     write_record(run_path, run)
     try:
-        transition = transition_step(
-            layout,
+        transition = apply_record_backed_transition(
+            active,
             step_id=step_id,
             transition_id=begin_transition.id,
             actor=actor,
             run_id=run_id,
             affected_record_ids=(run_id,),
+            condition_record_ids={},
         )
     except Exception:
         events = read_journal(layout.event_journal_file)

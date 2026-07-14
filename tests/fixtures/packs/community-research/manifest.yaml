@@ -1,0 +1,10 @@
+schema_version: "1.0"
+id: community-research-test
+version: 1.0.0
+schema_compatibility: [forge-contracts-1]
+provided_workflow_ids: [community-research]
+template_paths: []
+explanation_paths: []
+data_resource_paths: []
+declared_capability_ids: []
+integrity_digest: sha256:2ab1ef80e229e3b2d312b0244e40bfc017abc62e47b43027153982c00278be91
