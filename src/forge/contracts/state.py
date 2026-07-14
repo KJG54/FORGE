@@ -4,7 +4,7 @@ from enum import StrEnum
 from typing import Annotated
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from forge.contracts.base import (
     NonEmptyString,
@@ -61,6 +61,10 @@ class ExplanationProfile(StrEnum):
     MENTORED = "mentored"
 
 
+def _empty_artifact_revisions() -> dict[UUID, int]:
+    return {}
+
+
 class MaterializedState(VersionedModel):
     """Reconstructable snapshot shape; replay behavior arrives in Increment 2."""
 
@@ -72,8 +76,8 @@ class MaterializedState(VersionedModel):
     workflow_version: SemanticVersion | None = None
     current_step_id: SymbolicId | None = None
     step_states: dict[SymbolicId, StepState] = Field(default_factory=dict)
-    current_artifact_revisions: dict[UUID, Annotated[int, Field(ge=1)]] = Field(
-        default_factory=dict
+    current_artifact_revisions: dict[UUID, int] = Field(
+        default_factory=_empty_artifact_revisions
     )
     stale_record_ids: tuple[UUID, ...] = ()
     open_gate_ids: tuple[SymbolicId, ...] = ()
@@ -82,3 +86,10 @@ class MaterializedState(VersionedModel):
     permitted_next_actions: tuple[NonEmptyString, ...] = ()
     journal_head_sequence: Annotated[int, Field(ge=0)] = 0
     journal_head_hash: Sha256Digest | None = None
+
+    @field_validator("current_artifact_revisions")
+    @classmethod
+    def validate_revision_numbers(cls, revisions: dict[UUID, int]) -> dict[UUID, int]:
+        if any(revision < 1 for revision in revisions.values()):
+            raise ValueError("artifact revision numbers must be positive")
+        return revisions

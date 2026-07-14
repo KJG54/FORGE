@@ -1,8 +1,9 @@
 """Bounded YAML loading and deterministic writing for ``forge.yaml``."""
 
 import re
+from collections.abc import Callable, Iterable
 from pathlib import Path
-from typing import Any
+from typing import cast
 
 import yaml
 from pydantic import ValidationError
@@ -20,13 +21,15 @@ _CREDENTIAL_PATTERNS = (
 )
 
 
-def _contains_recognizable_credential(value: Any) -> bool:
+def _contains_recognizable_credential(value: object) -> bool:
     if isinstance(value, str):
         return any(pattern.search(value) for pattern in _CREDENTIAL_PATTERNS)
     if isinstance(value, dict):
-        return any(_contains_recognizable_credential(item) for item in value.values())
+        values = cast("dict[object, object]", value).values()
+        return any(_contains_recognizable_credential(item) for item in values)
     if isinstance(value, list):
-        return any(_contains_recognizable_credential(item) for item in value)
+        items = cast("list[object]", value)
+        return any(_contains_recognizable_credential(item) for item in items)
     return False
 
 
@@ -57,16 +60,20 @@ def load_configuration(path: Path) -> ProjectConfiguration:
     except UnicodeDecodeError as error:
         raise ConfigurationError(f"FORGE configuration must be UTF-8: {path}") from error
     try:
-        if any(isinstance(token, (AliasToken, AnchorToken)) for token in yaml.scan(text)):
+        scan_yaml = cast(
+            "Callable[[str], Iterable[object]]",
+            yaml.scan,  # pyright: ignore[reportUnknownMemberType]
+        )
+        if any(isinstance(token, (AliasToken, AnchorToken)) for token in scan_yaml(text)):
             raise ConfigurationError("FORGE configuration must not contain YAML anchors or aliases")
-        data = yaml.safe_load(text)
+        data = cast(object, yaml.safe_load(text))
     except ConfigurationError:
         raise
     except yaml.YAMLError as error:
         raise ConfigurationError(f"FORGE configuration is not valid safe YAML: {path}") from error
     if not isinstance(data, dict):
         raise ConfigurationError("FORGE configuration must contain a YAML mapping at its root")
-    if _contains_recognizable_credential(data):
+    if _contains_recognizable_credential(cast("dict[object, object]", data)):
         raise ConfigurationError(
             "FORGE configuration appears to contain a credential; keep secrets outside forge.yaml"
         )

@@ -63,8 +63,6 @@ def validate_repository_relative_path(value: str) -> str:
     This validator makes persisted paths portable and rejects absolute or traversing
     representations on every supported operating system.
     """
-    if not isinstance(value, str):
-        raise TypeError("repository path must be a string")
     if "\x00" in value:
         raise ValueError("repository path must not contain a NUL byte")
 

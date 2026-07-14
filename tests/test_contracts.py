@@ -6,7 +6,15 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from forge.contracts import CONTRACT_MODELS, Actor, ActorType, AuditEvent, OwnerIdentity
+from forge.contracts import (
+    CONTRACT_MODELS,
+    Actor,
+    ActorType,
+    AuditEvent,
+    MaterializedState,
+    OwnerIdentity,
+    RepositoryState,
+)
 from forge.contracts.base import SCHEMA_VERSION, utc_now
 from forge.errors import ConflictError
 from forge.schemas.export import export_schema_bundle, schema_bundle
@@ -36,6 +44,14 @@ def test_contracts_reject_unknown_fields_and_future_schema_versions() -> None:
 def test_contracts_require_aware_timestamps() -> None:
     with pytest.raises(ValidationError, match="timezone info"):
         OwnerIdentity(id=uuid4(), display_name="Owner", created_at=datetime(2026, 1, 1))
+
+
+def test_materialized_state_requires_positive_artifact_revisions() -> None:
+    with pytest.raises(ValidationError, match="revision numbers must be positive"):
+        MaterializedState(
+            repository_state=RepositoryState.INITIALIZED,
+            current_artifact_revisions={uuid4(): 0},
+        )
 
 
 def test_audit_event_json_round_trip_preserves_independent_state_metadata() -> None:
