@@ -43,8 +43,16 @@ previous-hash links, sequence and initiative identity, and complete-record termi
 binds `state.json` to the exact journal-head sequence and hash.
 
 Complete M1 journals with empty hash fields remain readable but are read-only until an explicit
-later migration preserves the original bytes and records provenance. Cross-process locking,
-idempotent retry, recovery, stale-lock handling, and interruption hardening remain later M2 work.
+later migration preserves the original bytes and records provenance. Idempotent retry, recovery,
+explicit stale-lock remediation, and interruption hardening remain later M2 work.
+
+## M2 Increment 2 mutation locking
+
+Supported governed mutations acquire the repository-wide lock defined by
+[ADR-0013](adr/ADR-0013-cross-process-mutation-lock.md). Exclusive creation prevents overlapping
+processes, ownership metadata makes contention inspectable, and token verification prevents one
+owner from releasing another owner's lock. Stale status is diagnostic only: this increment never
+silently removes a lock. Idempotency and explicit recovery remain deferred.
 
 ## Increment 7 archive layer
 

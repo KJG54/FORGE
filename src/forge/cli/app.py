@@ -1,5 +1,7 @@
 """Command-line presentation for the currently authorized FORGE increment."""
 
+from collections.abc import Callable
+from functools import wraps
 from pathlib import Path
 from typing import Annotated
 from uuid import UUID
@@ -41,6 +43,7 @@ from forge.errors import ConfigurationError, ForgeError
 from forge.packs.loader import available_packs, find_pack
 from forge.schemas import export_schema_bundle
 from forge.storage.configuration import load_configuration, render_configuration
+from forge.storage.locking import repository_mutation_lock
 from forge.storage.repository import discover_repository, initialize_repository
 
 app = typer.Typer(
@@ -97,6 +100,22 @@ def _assignment_map(values: list[str] | None, label: str) -> dict[str, str]:
             raise ConfigurationError(f"Duplicate {label} assignment for {path!r}")
         assignments[path] = value
     return assignments
+
+
+def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
+    @wraps(function)
+    def locked(*args: P.args, **kwargs: P.kwargs) -> None:
+        directory = kwargs.get("directory", Path("."))
+        try:
+            if not isinstance(directory, Path):
+                raise ConfigurationError("Mutation command directory must be a filesystem path")
+            layout = discover_repository(directory)
+            with repository_mutation_lock(layout, command=function.__name__):
+                function(*args, **kwargs)
+        except ForgeError as error:
+            _fail(error)
+
+    return locked
 
 
 @app.command("init")
@@ -228,6 +247,7 @@ def validate_pack_command(
 
 
 @app.command("create")
+@_locked_mutation
 def create(
     objective: Annotated[str, typer.Argument(help="Initiative objective.")],
     scope: Annotated[str, typer.Option("--scope", help="Declared bounded scope summary.")],
@@ -418,6 +438,7 @@ def history(
 
 
 @app.command("close")
+@_locked_mutation
 def close(
     summary: Annotated[
         str,
@@ -473,6 +494,7 @@ def next_actions(
 
 
 @app.command("begin")
+@_locked_mutation
 def begin(
     step_id: Annotated[str, typer.Argument(help="Ready workflow step ID.")],
     directory: Annotated[
@@ -547,6 +569,7 @@ def run_show(
 
 
 @run_app.command("cancel")
+@_locked_mutation
 def run_cancel(
     run_id: Annotated[UUID, typer.Argument(help="Active run UUID.")],
     reason: Annotated[str, typer.Option("--reason", help="Explicit cancellation reason.")],
@@ -603,6 +626,7 @@ def handoff(
 
 
 @app.command("import-result")
+@_locked_mutation
 def import_result(
     manifest: Annotated[Path, typer.Argument(help="AgentResult JSON manifest path.")],
     directory: Annotated[
@@ -670,6 +694,7 @@ def import_result(
 
 
 @artifact_app.command("add")
+@_locked_mutation
 def artifact_add(
     path: Annotated[str, typer.Argument(help="Repository-relative project file path.")],
     role: Annotated[str, typer.Option("--role", help="Declared workflow artifact role.")],
@@ -705,6 +730,7 @@ def artifact_add(
 
 
 @artifact_app.command("revise")
+@_locked_mutation
 def artifact_revise(
     artifact_id: Annotated[UUID, typer.Argument(help="Logical artifact UUID.")],
     path: Annotated[str, typer.Argument(help="Repository-relative file for the new revision.")],
@@ -798,6 +824,7 @@ def artifact_show(
 
 
 @app.command("complete")
+@_locked_mutation
 def complete(
     step_id: Annotated[str, typer.Argument(help="In-progress workflow step ID.")],
     assertion: Annotated[
@@ -833,6 +860,7 @@ def complete(
 
 
 @check_app.command("record")
+@_locked_mutation
 def check_record(
     step_id: Annotated[str, typer.Argument(help="Step awaiting verification.")],
     check_id: Annotated[str, typer.Argument(help="Declared check identity.")],
@@ -902,6 +930,7 @@ def check_list(
 
 
 @evidence_app.command("add")
+@_locked_mutation
 def evidence_add(
     step_id: Annotated[str, typer.Argument(help="Step awaiting verification.")],
     purpose: Annotated[str, typer.Option("--purpose", help="Evidence purpose and scope.")],
@@ -997,6 +1026,7 @@ def evidence_show(
 
 
 @app.command("verify")
+@_locked_mutation
 def verify(
     step_id: Annotated[str, typer.Argument(help="Step awaiting verification.")],
     directory: Annotated[
@@ -1016,6 +1046,7 @@ def verify(
 
 
 @acceptance_app.command("record")
+@_locked_mutation
 def acceptance_record(
     step_id: Annotated[str, typer.Argument(help="Step awaiting owner acceptance.")],
     accepted_scope: Annotated[
@@ -1055,6 +1086,7 @@ def acceptance_record(
 
 
 @acceptance_app.command("revoke")
+@_locked_mutation
 def acceptance_revoke(
     acceptance_id: Annotated[UUID, typer.Argument(help="Acceptance UUID to revoke.")],
     reason: Annotated[str, typer.Option("--reason", help="Explicit revocation reason.")],
@@ -1114,6 +1146,7 @@ def acceptance_show(
 
 
 @app.command("decide")
+@_locked_mutation
 def decide(
     decision_type: Annotated[str, typer.Option("--type", help="Stable decision type.")],
     question: Annotated[str, typer.Option("--question", help="Question being decided.")],

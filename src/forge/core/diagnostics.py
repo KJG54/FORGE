@@ -10,6 +10,7 @@ from forge.core.status import inspect_status
 from forge.errors import IntegrityError
 from forge.packs.loader import available_packs
 from forge.storage.configuration import load_configuration
+from forge.storage.locking import lock_diagnostic
 from forge.storage.repository import GITIGNORE_RULE, RepositoryLayout
 
 
@@ -53,6 +54,9 @@ def inspect_repository_health(layout: RepositoryLayout) -> DiagnosticReport:
         for blocker in status.blockers
         if blocker.startswith("Working copy changed for artifact")
     )
+    lock_status = lock_diagnostic(layout)
+    if lock_status is not None:
+        warnings = (*warnings, lock_status)
     checks = (
         f"configuration schema {configuration.schema_version}",
         f"repository layout ({len(layout.required_directories)} managed directories)",
@@ -60,6 +64,6 @@ def inspect_repository_health(layout: RepositoryLayout) -> DiagnosticReport:
         "journal, snapshot, locked workflow, and governed records",
         f"archives ({len(status.archived_initiative_ids)})",
         f"Git policy ({GITIGNORE_RULE})",
-        "capabilities and adapters (none configured in M1)",
+        "capabilities and adapters (none configured)",
     )
     return DiagnosticReport(checks, warnings)

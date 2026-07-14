@@ -31,6 +31,8 @@ semantic-version commitments begin at v1.0.0.
   event-derived run inspection and cancellation.
 - M2 canonical UTF-8 event serialization, SHA-256 previous-hash chaining, snapshot head binding,
   corruption detection, and explicit read-only compatibility for legacy M1 journals.
+- M2 repository-wide cross-process mutation locking with bounded owner metadata, live contention
+  refusal, stale-lock diagnostics, and ownership-verified release.
 
 ### Limitations
 

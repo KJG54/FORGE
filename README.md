@@ -43,6 +43,10 @@ M2 Increment 1 adds canonical event serialization, SHA-256 previous-hash chainin
 journal-head binding, and explicit read-only compatibility for complete M1 journals. Migration,
 locking, recovery, and the remaining M2 hardening are not yet implemented.
 
+M2 Increment 2 adds repository-wide cross-process locking for supported mutations, inspectable
+owner metadata, live contention refusal, and non-destructive stale-lock diagnostics. Idempotency and
+recovery remain later M2 work.
+
 The M1 archive is explicitly preliminary. M2 remains responsible for abandonment, successors,
 event hash chains, recovery, concurrency, idempotency, and interruption hardening.
 
@@ -94,6 +98,7 @@ forge --help
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [M1 evidence report](docs/milestones/m1-report.md)
 - [M2 Increment 1 integrity boundary](docs/milestones/m2-increment-1.md)
+- [M2 Increment 2 locking boundary](docs/milestones/m2-increment-2.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 
