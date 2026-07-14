@@ -83,6 +83,26 @@ class RepositoryLayout:
     def state_file(self) -> Path:
         return self.active_directory / "state.json"
 
+    @property
+    def initiative_file(self) -> Path:
+        return self.active_directory / "initiative.json"
+
+    @property
+    def workflow_lock_file(self) -> Path:
+        return self.active_directory / "workflow.lock.json"
+
+    @property
+    def pack_lock_file(self) -> Path:
+        return self.active_directory / "pack.lock.json"
+
+    @property
+    def pack_trust_file(self) -> Path:
+        return self.active_directory / "pack-trust.json"
+
+    @property
+    def governed_run_directory(self) -> Path:
+        return self.active_directory / "runs"
+
 
 @dataclass(frozen=True)
 class InitializationResult:
@@ -117,6 +137,12 @@ def _preflight_managed_paths(layout: RepositoryLayout) -> None:
         raise ConflictError(f"Expected a file at {layout.configuration_file}")
     if layout.forge_directory.exists() and not layout.forge_directory.is_dir():
         raise ConflictError(f"Expected a directory at {layout.forge_directory}")
+    for directory in layout.required_directories:
+        if not directory.exists():
+            continue
+        _assert_managed_entry_is_not_symlink(directory)
+        relative = directory.relative_to(layout.root).as_posix()
+        resolve_repository_path(layout.root, relative, must_exist=True)
 
 
 def _read_gitignore(path: Path) -> bytes:
@@ -182,6 +208,16 @@ def _remove_empty_directories(directories: tuple[Path, ...]) -> None:
             directory.rmdir()
 
 
+def _validate_available_packs(
+    layout: RepositoryLayout,
+    configuration: ProjectConfiguration,
+) -> None:
+    # Local import avoids a module cycle: pack discovery consumes RepositoryLayout.
+    from forge.packs.loader import available_packs
+
+    available_packs(layout, configuration)
+
+
 def discover_repository(start: Path) -> RepositoryLayout:
     """Find the nearest initialized FORGE repository at or above ``start``."""
     if not start.exists():
@@ -215,6 +251,7 @@ def initialize_repository(
 
     if layout.configuration_file.exists():
         configuration = load_configuration(layout.configuration_file)
+        _validate_available_packs(layout, configuration)
         _create_required_directories(layout)
         changed = _merge_gitignore(gitignore_path, original_gitignore)
         return InitializationResult(layout, configuration, False, changed)
@@ -234,6 +271,7 @@ def initialize_repository(
             created_at=utc_now(),
         ),
     )
+    _validate_available_packs(layout, configuration)
     created_directories = _create_required_directories(layout)
     configuration_created = False
     try:

@@ -35,3 +35,11 @@ class SecurityError(ForgeError):
 
 class IntegrityError(ForgeError):
     exit_code = ExitCode.INTEGRITY
+
+
+class AuthorizationError(ForgeError):
+    exit_code = ExitCode.AUTHORIZATION
+
+
+class TransitionError(ForgeError):
+    exit_code = ExitCode.TRANSITION

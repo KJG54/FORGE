@@ -1,0 +1,130 @@
+schema_version: "1.0"
+id: software-basic
+version: 0.1.0
+pack_id: software-basic
+name: Software Basic
+description: A governed six-step workflow for ordinary software initiatives.
+steps:
+  - id: discover
+    purpose: Establish the objective, constraints, and requirements.
+    instructions: Produce the declared discovery outputs before requesting verification.
+    prerequisites: []
+    required_inputs: []
+    required_outputs: [objective-and-constraints, requirements]
+    claim_requirements: [outputs-produced]
+    check_requirements: [outputs-present]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor]
+    allowed_transitions: [begin, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [initiative-objective]
+  - id: plan
+    purpose: Define the implementation plan.
+    instructions: Produce a plan traceable to the accepted discovery outputs.
+    prerequisites: [discover]
+    required_inputs: [requirements]
+    required_outputs: [implementation-plan]
+    claim_requirements: [outputs-produced]
+    check_requirements: [outputs-present]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor]
+    allowed_transitions: [begin, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [accepted-discovery]
+  - id: execute
+    purpose: Produce the governed project work.
+    instructions: Work only within the accepted objective, scope, and plan.
+    prerequisites: [plan]
+    required_inputs: [implementation-plan]
+    required_outputs: [project-artifacts]
+    claim_requirements: [outputs-produced]
+    check_requirements: [declared-checks]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor]
+    allowed_transitions: [begin, submit, verify, accept]
+    cancellation_behavior: block_for_owner_review
+    context_selection_rules: [accepted-plan]
+  - id: verify
+    purpose: Check the governed work against declared requirements.
+    instructions: Record checks and evidence without treating process success as acceptance.
+    prerequisites: [execute]
+    required_inputs: [project-artifacts]
+    required_outputs: [verification-report]
+    claim_requirements: [outputs-produced]
+    check_requirements: [declared-checks]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor]
+    allowed_transitions: [begin, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [requirements, project-artifacts]
+  - id: review
+    purpose: Review outcomes, limitations, and residual risks.
+    instructions: Produce a review record bound to the verified artifact revisions.
+    prerequisites: [verify]
+    required_inputs: [verification-report]
+    required_outputs: [review-report]
+    claim_requirements: [outputs-produced]
+    check_requirements: [review-complete]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor]
+    allowed_transitions: [begin, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [verification-report]
+  - id: close
+    purpose: Prepare accepted work and lessons for governed closure.
+    instructions: Record lessons and closure materials without bypassing final acceptance.
+    prerequisites: [review]
+    required_inputs: [review-report]
+    required_outputs: [lessons, closure-record]
+    claim_requirements: [outputs-produced]
+    check_requirements: [closure-readiness]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor]
+    allowed_transitions: [begin, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [accepted-review]
+transitions:
+  - id: begin
+    source_state: ready
+    destination_state: in_progress
+    conditions: []
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: submit
+    source_state: in_progress
+    destination_state: awaiting_verification
+    conditions: [claim-recorded]
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: verify
+    source_state: awaiting_verification
+    destination_state: awaiting_acceptance
+    conditions: [required-checks-passed, required-evidence-registered]
+    authority_requirement: forge-cli
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: accept
+    source_state: awaiting_acceptance
+    destination_state: completed
+    conditions: [owner-acceptance-recorded]
+    authority_requirement: owner
+    invalidation_effects: []
+    event_type: step-transitioned
+required_gates: []
+required_artifact_classes:
+  - objective-and-constraints
+  - requirements
+  - implementation-plan
+  - project-artifacts
+  - verification-report
+  - review-report
+  - lessons
+required_evidence_classes:
+  - check-evidence
+explanation_content:
+  standard: Follow each declared step and keep claims, checks, evidence, and acceptance separate.
+  guided: FORGE will explain each required input, output, blocker, and owner decision in detail.
+compatibility_constraints:
+  - forge-contracts-1

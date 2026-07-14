@@ -1,0 +1,200 @@
+"""Deterministic workflow reduction and transition invariant checks."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import cast
+from uuid import UUID
+
+from forge.contracts.events import AuditEvent
+from forge.contracts.state import (
+    InitiativeLifecycleState,
+    MaterializedState,
+    RepositoryState,
+    StepState,
+)
+from forge.contracts.workflows import StepDefinition, TransitionDefinition, WorkflowDefinition
+from forge.core.authorization import authorize_transition, require_owner
+from forge.errors import IntegrityError, TransitionError
+
+INITIATIVE_CREATED = "initiative-created"
+STEP_TRANSITIONED = "step-transitioned"
+
+
+def _metadata_string(event: AuditEvent, key: str) -> str:
+    value = event.metadata.get(key)
+    if not isinstance(value, str) or not value:
+        raise IntegrityError(f"Event {event.id} requires string metadata field {key!r}")
+    return value
+
+
+def _verified_conditions(event: AuditEvent) -> set[str]:
+    value = event.metadata.get("verified_conditions", [])
+    if not isinstance(value, list):
+        raise IntegrityError(f"Event {event.id} has invalid verified_conditions metadata")
+    items = cast("list[object]", value)
+    if not all(isinstance(item, str) for item in items):
+        raise IntegrityError(f"Event {event.id} has invalid verified_conditions metadata")
+    return set(cast("list[str]", items))
+
+
+@dataclass(frozen=True)
+class WorkflowStateReducer:
+    workflow: WorkflowDefinition
+    owner_identity_id: UUID
+
+    def _step(self, step_id: str) -> StepDefinition:
+        for step in self.workflow.steps:
+            if step.id == step_id:
+                return step
+        raise IntegrityError(f"Journal references unknown workflow step {step_id!r}")
+
+    def _transition(self, transition_id: str) -> TransitionDefinition:
+        for transition in self.workflow.transitions:
+            if transition.id == transition_id:
+                return transition
+        raise IntegrityError(f"Journal references unknown transition {transition_id!r}")
+
+    def _next_actions(self, states: dict[str, StepState]) -> tuple[str, ...]:
+        actions: list[str] = []
+        for step in self.workflow.steps:
+            state = states[step.id]
+            if state is StepState.READY:
+                actions.append(f"begin:{step.id}")
+            elif state is StepState.IN_PROGRESS:
+                actions.append(f"complete:{step.id}")
+            elif state is StepState.AWAITING_VERIFICATION:
+                actions.append(f"verify:{step.id}")
+            elif state is StepState.AWAITING_ACCEPTANCE:
+                actions.append(f"acceptance-record:{step.id}")
+        return tuple(actions)
+
+    def _current_step(self, states: dict[str, StepState]) -> str | None:
+        for step in self.workflow.steps:
+            if states[step.id] not in {StepState.COMPLETED, StepState.SKIPPED}:
+                return step.id
+        return None
+
+    def _initial_state(self, event: AuditEvent) -> MaterializedState:
+        require_owner(event.actor, self.owner_identity_id, "create an initiative")
+        if _metadata_string(event, "workflow_id") != self.workflow.id:
+            raise IntegrityError("Initiative event does not match the locked workflow ID")
+        if _metadata_string(event, "workflow_version") != self.workflow.version:
+            raise IntegrityError("Initiative event does not match the locked workflow version")
+        states = {step.id: StepState.PENDING for step in self.workflow.steps}
+        first = self.workflow.steps[0]
+        states[first.id] = StepState.READY
+        return MaterializedState(
+            repository_state=RepositoryState.INITIALIZED,
+            initiative_id=event.initiative_id,
+            lifecycle_state=InitiativeLifecycleState.ACTIVE,
+            workflow_id=self.workflow.id,
+            workflow_version=self.workflow.version,
+            current_step_id=first.id,
+            step_states=states,
+            open_gate_ids=tuple(gate.id for gate in self.workflow.required_gates),
+            permitted_next_actions=self._next_actions(states),
+        )
+
+    def _apply_step_transition(
+        self,
+        state: MaterializedState,
+        event: AuditEvent,
+    ) -> MaterializedState:
+        if state.lifecycle_state is not InitiativeLifecycleState.ACTIVE:
+            raise IntegrityError("Normal step transitions require an active initiative")
+        step = self._step(_metadata_string(event, "step_id"))
+        transition = self._transition(_metadata_string(event, "transition_id"))
+        if transition.id not in step.allowed_transitions:
+            raise IntegrityError(
+                f"Transition {transition.id} is not allowed for workflow step {step.id}"
+            )
+        if event.event_type != transition.event_type:
+            raise IntegrityError(
+                f"Event type {event.event_type} does not match transition {transition.event_type}"
+            )
+        current = state.step_states.get(step.id)
+        if current is not transition.source_state:
+            raise IntegrityError(
+                f"Transition {transition.id} expected {transition.source_state.value} for "
+                f"step {step.id}, found {current}"
+            )
+        recorded_source = _metadata_string(event, "source_state")
+        recorded_destination = _metadata_string(event, "destination_state")
+        if recorded_source != transition.source_state.value:
+            raise IntegrityError("Event source state does not match locked transition")
+        if recorded_destination != transition.destination_state.value:
+            raise IntegrityError("Event destination state does not match locked transition")
+        missing_conditions = set(transition.conditions) - _verified_conditions(event)
+        if missing_conditions:
+            raise IntegrityError(
+                f"Transition {transition.id} lacks verified conditions: "
+                f"{sorted(missing_conditions)}"
+            )
+        authorize_transition(event.actor, self.owner_identity_id, step, transition)
+
+        states = dict(state.step_states)
+        states[step.id] = transition.destination_state
+        if transition.destination_state is StepState.COMPLETED:
+            for candidate in self.workflow.steps:
+                if states[candidate.id] is not StepState.PENDING:
+                    continue
+                if all(
+                    states[required] is StepState.COMPLETED
+                    for required in candidate.prerequisites
+                ):
+                    states[candidate.id] = StepState.READY
+
+        active_runs = list(state.active_run_ids)
+        if transition.destination_state is StepState.IN_PROGRESS:
+            if event.run_id is None:
+                raise IntegrityError("Beginning a step requires a run ID")
+            active_runs.append(event.run_id)
+        elif transition.source_state is StepState.IN_PROGRESS and event.run_id is not None:
+            active_runs = [run_id for run_id in active_runs if run_id != event.run_id]
+        return state.model_copy(
+            update={
+                "step_states": states,
+                "current_step_id": self._current_step(states),
+                "active_run_ids": tuple(active_runs),
+                "permitted_next_actions": self._next_actions(states),
+            }
+        )
+
+    def __call__(
+        self,
+        state: MaterializedState | None,
+        event: AuditEvent,
+    ) -> MaterializedState:
+        if state is None:
+            if event.event_type != INITIATIVE_CREATED or event.sequence != 1:
+                raise IntegrityError("The first initiative event must be initiative-created")
+            return self._initial_state(event)
+        if event.event_type == STEP_TRANSITIONED:
+            return self._apply_step_transition(state, event)
+        return state
+
+
+def resolve_transition(
+    workflow: WorkflowDefinition,
+    step_id: str,
+    transition_id: str,
+    current_state: StepState,
+) -> tuple[StepDefinition, TransitionDefinition]:
+    step = next((item for item in workflow.steps if item.id == step_id), None)
+    if step is None:
+        raise TransitionError(f"Unknown workflow step {step_id!r}")
+    if transition_id not in step.allowed_transitions:
+        raise TransitionError(f"Transition {transition_id!r} is not allowed for step {step_id}")
+    transition = next(
+        (item for item in workflow.transitions if item.id == transition_id),
+        None,
+    )
+    if transition is None:
+        raise TransitionError(f"Unknown workflow transition {transition_id!r}")
+    if current_state is not transition.source_state:
+        raise TransitionError(
+            f"Step {step_id} is {current_state.value}; transition {transition_id} requires "
+            f"{transition.source_state.value}"
+        )
+    return step, transition

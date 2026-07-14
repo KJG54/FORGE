@@ -1,9 +1,10 @@
+import os
 from pathlib import Path
 
 import pytest
 
 from forge.contracts.state import ExplanationProfile
-from forge.errors import ConfigurationError, ConflictError
+from forge.errors import ConfigurationError, ConflictError, SecurityError
 from forge.storage.configuration import load_configuration
 from forge.storage.repository import discover_repository, initialize_repository
 
@@ -115,3 +116,34 @@ def test_init_does_not_write_recognizable_credentials(tmp_path: Path) -> None:
             owner_display_name="ghp_abcdefghijklmnopqrstuvwxyz",
         )
     assert not (tmp_path / "forge.yaml").exists()
+
+
+def test_discovery_rejects_replaced_managed_directory_symlink(tmp_path: Path) -> None:
+    result = initialize_repository(tmp_path, owner_display_name="Owner")
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    result.layout.active_directory.rmdir()
+    try:
+        os.symlink(outside, result.layout.active_directory, target_is_directory=True)
+    except OSError as error:
+        result.layout.active_directory.mkdir()
+        pytest.skip(f"symlink creation is unavailable: {error}")
+
+    with pytest.raises(SecurityError, match="symbolic link"):
+        discover_repository(tmp_path)
+
+
+def test_init_validates_packs_before_writing_repository_files(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def reject_packs(*_: object) -> tuple[object, ...]:
+        raise ConfigurationError("simulated invalid bundled pack")
+
+    monkeypatch.setattr("forge.packs.loader.available_packs", reject_packs)
+
+    with pytest.raises(ConfigurationError, match="invalid bundled pack"):
+        initialize_repository(tmp_path, owner_display_name="Owner")
+    assert not (tmp_path / "forge.yaml").exists()
+    assert not (tmp_path / ".forge").exists()
+    assert not (tmp_path / ".gitignore").exists()
