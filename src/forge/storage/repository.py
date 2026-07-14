@@ -75,6 +75,14 @@ class RepositoryLayout:
             self.secret_directory,
         )
 
+    @property
+    def event_journal_file(self) -> Path:
+        return self.active_directory / "events.jsonl"
+
+    @property
+    def state_file(self) -> Path:
+        return self.active_directory / "state.json"
+
 
 @dataclass(frozen=True)
 class InitializationResult:

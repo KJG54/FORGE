@@ -1,0 +1,273 @@
+from pathlib import Path
+from uuid import UUID, uuid4
+
+import pytest
+
+from forge.contracts import (
+    Actor,
+    ActorType,
+    AuditEvent,
+    InitiativeLifecycleState,
+    IntegrityState,
+    MaterializedState,
+    RepositoryState,
+)
+from forge.contracts.base import utc_now
+from forge.errors import IntegrityError
+from forge.storage.atomic import atomic_write_bytes
+from forge.storage.journal import append_event, read_journal, render_event
+from forge.storage.snapshots import (
+    append_event_and_update_snapshot,
+    inspect_snapshot_integrity,
+    load_snapshot,
+    render_snapshot,
+    replay_events,
+    write_snapshot,
+)
+
+
+def _actor() -> Actor:
+    return Actor(
+        id=uuid4(),
+        actor_type=ActorType.FORGE_CLI,
+        display_label="FORGE CLI",
+        tool_reference="forge 0.1.0a0",
+    )
+
+
+def _event(
+    initiative_id: UUID,
+    sequence: int,
+    event_type: str,
+    *,
+    event_id: UUID | None = None,
+    event_hash: str | None = None,
+) -> AuditEvent:
+    return AuditEvent(
+        id=event_id or uuid4(),
+        initiative_id=initiative_id,
+        sequence=sequence,
+        timestamp=utc_now(),
+        event_type=event_type,
+        actor=_actor(),
+        authorization_basis="owner invoked supported CLI command",
+        event_hash=event_hash,
+    )
+
+
+def _workflow_reducer(
+    state: MaterializedState | None,
+    event: AuditEvent,
+) -> MaterializedState:
+    if state is None:
+        state = MaterializedState(
+            repository_state=RepositoryState.INITIALIZED,
+            initiative_id=event.initiative_id,
+            lifecycle_state=InitiativeLifecycleState.ACTIVE,
+        )
+    if event.event_type == "initiative-paused":
+        return state.model_copy(
+            update={"lifecycle_state": InitiativeLifecycleState.PAUSED}
+        )
+    if event.event_type == "initiative-resumed":
+        return state.model_copy(
+            update={"lifecycle_state": InitiativeLifecycleState.ACTIVE}
+        )
+    return state
+
+
+def test_atomic_write_validates_before_replace_and_cleans_temporary_files(
+    tmp_path: Path,
+) -> None:
+    destination = tmp_path / "state.json"
+    destination.write_bytes(b"original\n")
+
+    def reject(_: Path) -> None:
+        raise IntegrityError("invalid temporary content")
+
+    with pytest.raises(IntegrityError, match="invalid temporary content"):
+        atomic_write_bytes(destination, b"replacement\n", validator=reject)
+
+    assert destination.read_bytes() == b"original\n"
+    assert list(tmp_path.glob(".state.json.*.tmp")) == []
+
+
+def test_events_append_in_order_and_replay_to_an_atomic_snapshot(tmp_path: Path) -> None:
+    journal = tmp_path / "events.jsonl"
+    snapshot = tmp_path / "state.json"
+    initiative_id = uuid4()
+
+    first = append_event_and_update_snapshot(
+        journal,
+        snapshot,
+        _event(initiative_id, 1, "initiative-created"),
+        _workflow_reducer,
+    )
+    second = append_event_and_update_snapshot(
+        journal,
+        snapshot,
+        _event(initiative_id, 2, "initiative-paused"),
+        _workflow_reducer,
+    )
+
+    assert first.journal_head_sequence == 1
+    assert second.journal_head_sequence == 2
+    assert second.lifecycle_state is InitiativeLifecycleState.PAUSED
+    assert read_journal(journal)[-1].sequence == 2
+    assert load_snapshot(snapshot) == second
+    assert snapshot.read_bytes() == render_snapshot(second)
+    report = inspect_snapshot_integrity(journal, snapshot, _workflow_reducer)
+    assert report.is_healthy
+    assert report.diagnostics == ()
+
+
+def test_journal_rejects_sequence_gaps_and_preserves_the_committed_prefix(
+    tmp_path: Path,
+) -> None:
+    journal = tmp_path / "events.jsonl"
+    initiative_id = uuid4()
+    first = _event(initiative_id, 1, "initiative-created")
+    append_event(journal, first)
+
+    with pytest.raises(IntegrityError, match="expected 2, found 3"):
+        append_event(journal, _event(initiative_id, 3, "initiative-paused"))
+
+    assert read_journal(journal) == (first,)
+
+
+def test_journal_rejects_mixed_initiatives_duplicate_ids_and_m2_hashes(
+    tmp_path: Path,
+) -> None:
+    initiative_id = uuid4()
+    event_id = uuid4()
+    first = _event(initiative_id, 1, "initiative-created", event_id=event_id)
+
+    mixed = tmp_path / "mixed.jsonl"
+    mixed.write_bytes(
+        render_event(first) + render_event(_event(uuid4(), 2, "initiative-paused"))
+    )
+    with pytest.raises(IntegrityError, match="more than one initiative"):
+        read_journal(mixed)
+
+    duplicate = tmp_path / "duplicate.jsonl"
+    duplicate.write_bytes(
+        render_event(first)
+        + render_event(_event(initiative_id, 2, "initiative-paused", event_id=event_id))
+    )
+    with pytest.raises(IntegrityError, match="duplicate event ID"):
+        read_journal(duplicate)
+
+    hash_claim = tmp_path / "hash-claim.jsonl"
+    hash_claim.write_bytes(
+        render_event(
+            _event(
+                initiative_id,
+                1,
+                "initiative-created",
+                event_hash="sha256:" + "0" * 64,
+            )
+        )
+    )
+    with pytest.raises(IntegrityError, match="hash chaining"):
+        read_journal(hash_claim)
+
+
+def test_journal_rejects_truncated_or_blank_records(tmp_path: Path) -> None:
+    journal = tmp_path / "events.jsonl"
+    event = _event(uuid4(), 1, "initiative-created")
+    journal.write_bytes(render_event(event).rstrip(b"\n"))
+    with pytest.raises(IntegrityError, match="incomplete record"):
+        read_journal(journal)
+
+    journal.write_bytes(render_event(event) + b"\n")
+    with pytest.raises(IntegrityError, match="blank record"):
+        read_journal(journal)
+
+
+def test_valid_but_stale_snapshot_reports_integrity_error_and_blocks_append(
+    tmp_path: Path,
+) -> None:
+    journal = tmp_path / "events.jsonl"
+    snapshot = tmp_path / "state.json"
+    initiative_id = uuid4()
+    state = append_event_and_update_snapshot(
+        journal,
+        snapshot,
+        _event(initiative_id, 1, "initiative-created"),
+        _workflow_reducer,
+    )
+    altered = state.model_copy(
+        update={"lifecycle_state": InitiativeLifecycleState.PAUSED}
+    )
+    write_snapshot(snapshot, altered)
+
+    report = inspect_snapshot_integrity(journal, snapshot, _workflow_reducer)
+    assert report.integrity_state is IntegrityState.INTEGRITY_ERROR
+    assert report.reported_state is not None
+    assert report.reported_state.integrity_state is IntegrityState.INTEGRITY_ERROR
+    assert report.diagnostics == (
+        "state.json does not match deterministic journal replay",
+    )
+
+    with pytest.raises(IntegrityError, match="does not match"):
+        append_event_and_update_snapshot(
+            journal,
+            snapshot,
+            _event(initiative_id, 2, "initiative-paused"),
+            _workflow_reducer,
+        )
+    assert len(read_journal(journal)) == 1
+
+
+def test_invalid_snapshot_is_reported_as_integrity_error(tmp_path: Path) -> None:
+    journal = tmp_path / "events.jsonl"
+    snapshot = tmp_path / "state.json"
+    event = _event(uuid4(), 1, "initiative-created")
+    append_event(journal, event)
+    snapshot.write_text("{not valid json}\n", encoding="utf-8")
+
+    report = inspect_snapshot_integrity(journal, snapshot, _workflow_reducer)
+
+    assert report.integrity_state is IntegrityState.INTEGRITY_ERROR
+    assert report.reported_state is not None
+    assert report.reported_state.integrity_state is IntegrityState.INTEGRITY_ERROR
+    assert report.diagnostics[0].startswith("Invalid materialized snapshot")
+
+
+def test_snapshot_failure_leaves_detectable_committed_journal(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    journal = tmp_path / "events.jsonl"
+    snapshot = tmp_path / "state.json"
+    event = _event(uuid4(), 1, "initiative-created")
+
+    def fail_snapshot(_: Path, __: MaterializedState) -> None:
+        raise IntegrityError("simulated snapshot failure")
+
+    monkeypatch.setattr("forge.storage.snapshots.write_snapshot", fail_snapshot)
+    with pytest.raises(IntegrityError, match="simulated snapshot failure"):
+        append_event_and_update_snapshot(journal, snapshot, event, _workflow_reducer)
+
+    assert read_journal(journal) == (event,)
+    report = inspect_snapshot_integrity(journal, snapshot, _workflow_reducer)
+    assert report.integrity_state is IntegrityState.INTEGRITY_ERROR
+    assert report.diagnostics == (
+        "The event journal has committed records but state.json is missing",
+    )
+
+
+def test_replay_rejects_a_reducer_that_changes_initiative_identity() -> None:
+    event = _event(uuid4(), 1, "initiative-created")
+
+    def invalid_reducer(
+        _: MaterializedState | None,
+        __: AuditEvent,
+    ) -> MaterializedState:
+        return MaterializedState(
+            repository_state=RepositoryState.INITIALIZED,
+            initiative_id=uuid4(),
+        )
+
+    with pytest.raises(IntegrityError, match="Reducer produced initiative"):
+        replay_events((event,), invalid_reducer)

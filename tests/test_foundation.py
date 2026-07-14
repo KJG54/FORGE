@@ -20,18 +20,18 @@ def test_public_project_files_exist() -> None:
     assert not missing, f"Missing foundational files: {missing}"
 
 
-def test_m1_increment_1_does_not_contain_later_increment_modules() -> None:
+def test_m1_increment_2_does_not_contain_later_increment_modules() -> None:
     package = ROOT / "src" / "forge"
     deferred = {"core", "agents", "capabilities", "packs"}
     present = sorted(name for name in deferred if (package / name).exists())
-    assert not present, f"Increment 1 created deferred implementation modules: {present}"
+    assert not present, f"Increment 2 created deferred implementation modules: {present}"
 
     storage = package / "storage"
-    forbidden_storage = {"atomic.py", "journal.py", "locking.py", "snapshots.py"}
+    forbidden_storage = {"locking.py", "migrations.py"}
     present_storage = sorted(
         path.name for path in storage.glob("*.py") if path.name in forbidden_storage
     )
-    assert not present_storage, f"Increment 2 storage exists prematurely: {present_storage}"
+    assert not present_storage, f"M2 storage exists prematurely: {present_storage}"
 
 
 def test_local_markdown_links_resolve() -> None:

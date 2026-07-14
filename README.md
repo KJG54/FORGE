@@ -15,13 +15,15 @@ or a same-user security sandbox.
 
 ## Current capabilities
 
-M1 Increment 1 provides strict versioned data contracts, deterministic JSON Schema export,
+M1 Increments 1 and 2 provide strict versioned data contracts, deterministic JSON Schema export,
 project configuration validation, owner identity bootstrap, repository discovery, safe path
-resolution, and non-destructive `forge init` behavior.
+resolution, non-destructive `forge init`, ordered event journals, deterministic replay, atomic
+snapshot replacement, and explicit journal/snapshot mismatch detection.
 
-It deliberately does not implement an initiative journal, materialized state, workflow loading,
-lifecycle transitions, artifact registration, evidence, or acceptance. Those behaviors belong to
-later authorized M1 increments.
+It deliberately does not yet implement workflow loading, lifecycle transitions, initiative
+creation, artifact registration, evidence, or acceptance. Those behaviors belong to later
+authorized M1 increments. M2 remains responsible for event hash chains, recovery, concurrency,
+and interruption hardening.
 
 Initialize an ordinary project repository with:
 
@@ -57,6 +59,7 @@ forge --help
 - [Architecture decisions](docs/adr/README.md)
 - [Dependency rationale](docs/dependencies.md)
 - [Versioned contracts](docs/contracts.md)
+- [Journal and materialized state](docs/persistence.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [Contributing](CONTRIBUTING.md)

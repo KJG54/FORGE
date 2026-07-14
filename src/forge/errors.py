@@ -31,3 +31,7 @@ class ConflictError(ForgeError):
 
 class SecurityError(ForgeError):
     exit_code = ExitCode.SECURITY
+
+
+class IntegrityError(ForgeError):
+    exit_code = ExitCode.INTEGRITY

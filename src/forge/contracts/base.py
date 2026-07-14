@@ -45,7 +45,14 @@ Sha256Digest = Annotated[
     str,
     StringConstraints(pattern=r"^sha256:[0-9a-f]{64}$"),
 ]
-UtcDateTime = Annotated[datetime, AwareDatetime]
+
+
+def normalize_utc_datetime(value: datetime) -> datetime:
+    """Normalize every persisted aware timestamp to canonical UTC."""
+    return value.astimezone(UTC)
+
+
+UtcDateTime = Annotated[datetime, AwareDatetime, AfterValidator(normalize_utc_datetime)]
 RecordSequence = Annotated[int, Field(ge=1)]
 
 _WINDOWS_DRIVE = re.compile(r"^[A-Za-z]:")

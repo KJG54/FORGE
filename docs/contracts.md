@@ -18,8 +18,9 @@ Every independently persisted contract:
 
 Initiative-scoped governance facts also carry their actor ID, UTC timestamp, initiative-local
 event sequence, authorization basis, optional correlation and run IDs, tool version where
-applicable, and affected records or digests. The schemas define these fields now; event append,
-replay, and materialized-state behavior remain assigned to Increment 2.
+applicable, and affected records or digests. M1 Increment 2 persists audit events in validated
+sequence and rebuilds `state.json` through an injected reducer. Workflow-specific reduction and
+authorization remain assigned to Increment 3.
 
 ## Schema inventory
 

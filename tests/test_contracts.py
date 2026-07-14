@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import UTC, datetime, timedelta, timezone
 from pathlib import Path
 from uuid import uuid4
 
@@ -44,6 +44,16 @@ def test_contracts_reject_unknown_fields_and_future_schema_versions() -> None:
 def test_contracts_require_aware_timestamps() -> None:
     with pytest.raises(ValidationError, match="timezone info"):
         OwnerIdentity(id=uuid4(), display_name="Owner", created_at=datetime(2026, 1, 1))
+
+
+def test_contracts_normalize_aware_timestamps_to_utc() -> None:
+    owner = OwnerIdentity(
+        id=uuid4(),
+        display_name="Owner",
+        created_at=datetime(2026, 1, 1, 7, tzinfo=timezone(timedelta(hours=2))),
+    )
+    assert owner.created_at == datetime(2026, 1, 1, 5, tzinfo=UTC)
+    assert owner.model_dump(mode="json")["created_at"].endswith("Z")
 
 
 def test_materialized_state_requires_positive_artifact_revisions() -> None:
