@@ -15,9 +15,12 @@ semantic-version commitments begin at v1.0.0.
 - Ordered event journals, deterministic replay, atomic snapshots, and mismatch detection.
 - Data-only pack validation, immutable pack/workflow locks, initiative creation, manual runs,
   workflow authority checks, status, and next-action reporting.
+- Immutable artifact revisions with content-addressed preservation, drift detection, heuristic
+  secret screening, worker claims, manual check results, evidence packets, dependency references,
+  and record-backed verification transitions.
 
 ### Limitations
 
-- Artifact, claim, check, evidence, acceptance, handoff, import, and closure services are not yet
-  implemented. Conditioned transitions remain blocked until their governed records exist.
+- Acceptance, revocation, stale-record propagation, handoff, import, and closure services are not
+  yet implemented. Owner-acceptance transitions remain blocked until Increment 5.
 - Project and distribution naming remain provisional.

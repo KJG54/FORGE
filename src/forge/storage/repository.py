@@ -103,6 +103,30 @@ class RepositoryLayout:
     def governed_run_directory(self) -> Path:
         return self.active_directory / "runs"
 
+    @property
+    def artifact_directory(self) -> Path:
+        return self.active_directory / "artifacts"
+
+    @property
+    def artifact_record_directory(self) -> Path:
+        return self.artifact_directory / "records"
+
+    @property
+    def artifact_revision_directory(self) -> Path:
+        return self.artifact_directory / "revisions"
+
+    @property
+    def claim_directory(self) -> Path:
+        return self.active_directory / "claims"
+
+    @property
+    def check_directory(self) -> Path:
+        return self.active_directory / "checks"
+
+    @property
+    def evidence_directory(self) -> Path:
+        return self.active_directory / "evidence"
+
 
 @dataclass(frozen=True)
 class InitializationResult:

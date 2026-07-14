@@ -19,6 +19,11 @@ from forge.errors import IntegrityError, TransitionError
 
 INITIATIVE_CREATED = "initiative-created"
 STEP_TRANSITIONED = "step-transitioned"
+ARTIFACT_REGISTERED = "artifact-registered"
+ARTIFACT_REVISED = "artifact-revised"
+CLAIM_RECORDED = "claim-recorded"
+CHECK_RECORDED = "check-recorded"
+EVIDENCE_REGISTERED = "evidence-registered"
 
 
 def _metadata_string(event: AuditEvent, key: str) -> str:
@@ -161,6 +166,29 @@ class WorkflowStateReducer:
             }
         )
 
+    def _apply_artifact_event(
+        self,
+        state: MaterializedState,
+        event: AuditEvent,
+    ) -> MaterializedState:
+        artifact_value = _metadata_string(event, "artifact_id")
+        try:
+            artifact_id = UUID(artifact_value)
+        except ValueError as error:
+            raise IntegrityError(f"Event {event.id} has an invalid artifact ID") from error
+        revision_value = event.metadata.get("revision_number")
+        if not isinstance(revision_value, int) or isinstance(revision_value, bool):
+            raise IntegrityError(f"Event {event.id} has an invalid artifact revision number")
+        revisions = dict(state.current_artifact_revisions)
+        current = revisions.get(artifact_id)
+        if event.event_type == ARTIFACT_REGISTERED:
+            if current is not None or revision_value != 1:
+                raise IntegrityError("Artifact registration must create revision 1 exactly once")
+        elif current is None or revision_value != current + 1:
+            raise IntegrityError("Artifact revision event is not contiguous with current state")
+        revisions[artifact_id] = revision_value
+        return state.model_copy(update={"current_artifact_revisions": revisions})
+
     def __call__(
         self,
         state: MaterializedState | None,
@@ -172,6 +200,8 @@ class WorkflowStateReducer:
             return self._initial_state(event)
         if event.event_type == STEP_TRANSITIONED:
             return self._apply_step_transition(state, event)
+        if event.event_type in {ARTIFACT_REGISTERED, ARTIFACT_REVISED}:
+            return self._apply_artifact_event(state, event)
         return state
 
 

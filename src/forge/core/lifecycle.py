@@ -285,6 +285,14 @@ def load_active_initiative(layout: RepositoryLayout) -> ActiveInitiative:
         raise IntegrityError("; ".join(details))
     if report.replayed_state.initiative_id != initiative.id:
         raise IntegrityError("Materialized state belongs to a different initiative")
+    from forge.core.record_validation import validate_increment4_records
+
+    validate_increment4_records(
+        layout,
+        events,
+        report.replayed_state,
+        workflow,
+    )
     for run_id in report.replayed_state.active_run_ids:
         run = load_record(layout.governed_run_directory / f"{run_id}.json", RunRecord)
         run_event = next(
@@ -324,14 +332,48 @@ def transition_step(
     affected_record_ids: tuple[UUID, ...] = (),
 ) -> TransitionResult:
     active = load_active_initiative(layout)
+    return apply_record_backed_transition(
+        active,
+        step_id=step_id,
+        transition_id=transition_id,
+        actor=actor,
+        run_id=run_id,
+        affected_record_ids=affected_record_ids,
+        condition_record_ids={},
+    )
+
+
+def apply_record_backed_transition(
+    active: ActiveInitiative,
+    *,
+    step_id: str,
+    transition_id: str,
+    actor: Actor,
+    run_id: UUID | None = None,
+    affected_record_ids: tuple[UUID, ...] = (),
+    condition_record_ids: dict[str, tuple[UUID, ...]],
+) -> TransitionResult:
+    layout = active.layout
     current = active.state.step_states.get(step_id)
     if current is None:
         raise TransitionError(f"Unknown workflow step {step_id!r}")
     step, transition = resolve_transition(active.workflow, step_id, transition_id, current)
-    if transition.conditions:
+    required_conditions = set(transition.conditions)
+    supplied_conditions = set(condition_record_ids)
+    if required_conditions != supplied_conditions or any(
+        not record_ids for record_ids in condition_record_ids.values()
+    ):
+        missing = sorted(required_conditions - supplied_conditions)
+        unsupported = sorted(supplied_conditions - required_conditions)
+        details: list[str] = []
+        if missing:
+            details.append(f"unmet conditions: {missing}")
+        if unsupported:
+            details.append(f"unsupported conditions: {unsupported}")
+        if not details:
+            details.append("every condition requires governed supporting records")
         raise TransitionError(
-            f"Transition {transition.id} is blocked by unmet conditions: "
-            f"{sorted(transition.conditions)}"
+            f"Transition {transition.id} is blocked; {'; '.join(details)}"
         )
     authorize_transition(actor, active.initiative.owner_identity_id, step, transition)
     sequence = active.state.journal_head_sequence + 1
@@ -348,6 +390,23 @@ def transition_step(
             or run.event_sequence != sequence
         ):
             raise IntegrityError(f"Run record does not authorize transition {transition.id}")
+    elif transition.source_state is StepState.IN_PROGRESS:
+        if run_id is None or run_id not in active.state.active_run_ids:
+            raise TransitionError(f"Transition {transition.id} requires the active step run ID")
+        run = load_record(layout.governed_run_directory / f"{run_id}.json", RunRecord)
+        if (
+            run.initiative_id != active.initiative.id
+            or run.step_id != step_id
+            or run.worker != actor
+            or run.status is not RunState.RUNNING
+        ):
+            raise IntegrityError(f"Active run does not authorize transition {transition.id}")
+    supporting_ids = tuple(
+        record_id
+        for condition in sorted(condition_record_ids)
+        for record_id in condition_record_ids[condition]
+    )
+    all_affected_ids = tuple(dict.fromkeys((*affected_record_ids, *supporting_ids)))
     event = AuditEvent(
         id=uuid4(),
         initiative_id=active.initiative.id,
@@ -359,13 +418,17 @@ def transition_step(
         authorization_basis=(
             f"actor satisfied locked authority requirement {transition.authority_requirement}"
         ),
-        affected_record_ids=affected_record_ids,
+        affected_record_ids=all_affected_ids,
         metadata={
             "destination_state": transition.destination_state.value,
             "source_state": transition.source_state.value,
             "step_id": step.id,
             "transition_id": transition.id,
-            "verified_conditions": [],
+            "verified_conditions": sorted(condition_record_ids),
+            "condition_record_ids": {
+                condition: [str(record_id) for record_id in record_ids]
+                for condition, record_ids in sorted(condition_record_ids.items())
+            },
         },
     )
     state = append_event_and_update_snapshot(

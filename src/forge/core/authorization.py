@@ -1,6 +1,6 @@
 """Supported-command actor and transition authorization."""
 
-from uuid import UUID
+from uuid import NAMESPACE_URL, UUID, uuid5
 
 from forge import __version__
 from forge.contracts.actors import Actor, ActorType, OwnerIdentity
@@ -14,6 +14,16 @@ def owner_actor(owner: OwnerIdentity) -> Actor:
         id=owner.id,
         actor_type=ActorType.OWNER,
         display_label=owner.display_name,
+        tool_reference=f"forge {__version__}",
+    )
+
+
+def forge_cli_actor() -> Actor:
+    """Return the stable service actor used for deterministic CLI-only transitions."""
+    return Actor(
+        id=uuid5(NAMESPACE_URL, "https://forge.local/actors/forge-cli"),
+        actor_type=ActorType.FORGE_CLI,
+        display_label="FORGE CLI",
         tool_reference=f"forge {__version__}",
     )
 

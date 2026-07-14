@@ -51,10 +51,21 @@ def inspect_status(layout: RepositoryLayout) -> StatusReport:
             next_actions=(),
             blockers=(str(error),),
         )
+    from forge.core.artifacts import list_artifacts
+
+    drifted = tuple(view for view in list_artifacts(layout) if not view.working_copy_matches)
+    blockers = tuple(
+        f"Working copy changed for artifact {view.artifact.id}; register an explicit revision"
+        for view in drifted
+    )
+    next_actions = active.state.permitted_next_actions
+    if drifted:
+        next_actions = tuple(f"artifact-revise:{view.artifact.id}" for view in drifted)
     return StatusReport(
         repository_state=RepositoryState.INITIALIZED,
         integrity_state=active.state.integrity_state,
         initiative=active.initiative,
         state=active.state,
-        next_actions=active.state.permitted_next_actions,
+        next_actions=next_actions,
+        blockers=blockers,
     )

@@ -121,3 +121,140 @@ def test_pack_create_status_next_and_begin_commands(tmp_path: Path) -> None:
     assert "Step discover: in_progress" in status.stdout
     assert "Active run:" in status.stdout
     assert "Next: complete:discover" in status.stdout
+
+
+def _line_value(output: str, prefix: str) -> str:
+    return next(
+        line.removeprefix(prefix)
+        for line in output.splitlines()
+        if line.startswith(prefix)
+    )
+
+
+def test_artifact_claim_check_evidence_and_verify_commands(tmp_path: Path) -> None:
+    assert runner.invoke(
+        app,
+        ["init", str(tmp_path), "--owner-name", "Repository Owner"],
+    ).exit_code == 0
+    assert runner.invoke(
+        app,
+        [
+            "create",
+            "Objective",
+            "--scope",
+            "Bounded scope",
+            "--trust-pack-data",
+            "-C",
+            str(tmp_path),
+        ],
+    ).exit_code == 0
+    assert runner.invoke(app, ["begin", "discover", "-C", str(tmp_path)]).exit_code == 0
+    (tmp_path / "objective.md").write_text("Objective", encoding="utf-8")
+    (tmp_path / "requirements.md").write_text("Requirements", encoding="utf-8")
+
+    objective = runner.invoke(
+        app,
+        [
+            "artifact",
+            "add",
+            "objective.md",
+            "--role",
+            "objective-and-constraints",
+            "--title",
+            "Objective",
+            "-C",
+            str(tmp_path),
+        ],
+    )
+    requirements = runner.invoke(
+        app,
+        [
+            "artifact",
+            "add",
+            "requirements.md",
+            "--role",
+            "requirements",
+            "--title",
+            "Requirements",
+            "-C",
+            str(tmp_path),
+        ],
+    )
+    assert objective.exit_code == 0, objective.stdout
+    assert requirements.exit_code == 0, requirements.stdout
+    revision_ids = (
+        _line_value(objective.stdout, "Revision ID: "),
+        _line_value(requirements.stdout, "Revision ID: "),
+    )
+
+    invalid_claim = runner.invoke(
+        app,
+        ["complete", "discover", "--assertion", " ", "-C", str(tmp_path)],
+    )
+    assert invalid_claim.exit_code == 10
+    assert "Claim assertion must not be empty" in invalid_claim.stderr
+    assert "Traceback" not in invalid_claim.stderr
+
+    completed = runner.invoke(
+        app,
+        [
+            "complete",
+            "discover",
+            "--assertion",
+            "Discovery outputs produced",
+            "-C",
+            str(tmp_path),
+        ],
+    )
+    assert completed.exit_code == 0, completed.stdout
+    claim_id = _line_value(completed.stdout, "Recorded claim ")
+
+    checked = runner.invoke(
+        app,
+        [
+            "check",
+            "record",
+            "discover",
+            "outputs-present",
+            "--invocation",
+            "manual file review",
+            "--outcome",
+            "passed",
+            "--exit-status",
+            "0",
+            "-C",
+            str(tmp_path),
+        ],
+    )
+    assert checked.exit_code == 0, checked.stdout
+    check_id = _line_value(checked.stdout, "Recorded check result ").split(":", 1)[0]
+
+    evidenced = runner.invoke(
+        app,
+        [
+            "evidence",
+            "add",
+            "discover",
+            "--purpose",
+            "Support the output check",
+            "--artifact-revision",
+            revision_ids[0],
+            "--artifact-revision",
+            revision_ids[1],
+            "--check-result",
+            check_id,
+            "--claim",
+            claim_id,
+            "--limitation",
+            "Owner acceptance remains required",
+            "-C",
+            str(tmp_path),
+        ],
+    )
+    assert evidenced.exit_code == 0, evidenced.stdout
+    assert "does not automatically establish truth" in evidenced.stdout
+
+    verified = runner.invoke(app, ["verify", "discover", "-C", str(tmp_path)])
+    assert verified.exit_code == 0, verified.stdout
+    assert "Step discover: awaiting_acceptance" in verified.stdout
+    assert "Increment 5" in verified.stdout

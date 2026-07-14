@@ -15,17 +15,18 @@ or a same-user security sandbox.
 
 ## Current capabilities
 
-M1 Increments 1 through 3 provide strict versioned data contracts, deterministic JSON Schema export,
+M1 Increments 1 through 4 provide strict versioned data contracts, deterministic JSON Schema export,
 project configuration validation, owner identity bootstrap, repository discovery, safe path
 resolution, non-destructive `forge init`, ordered event journals, deterministic replay, atomic
 snapshot replacement, explicit journal/snapshot mismatch detection, safe declarative pack loading,
 immutable workflow locks, owner-authorized initiative creation, manual runs, and restart-safe status
-and next-action reporting.
+and next-action reporting. Increment 4 adds immutable artifact revisions, conservative exact-byte
+preservation, working-copy drift reporting, worker claims, manual structured checks, evidence
+packets, dependency references, and record-backed verification transitions.
 
-It deliberately does not yet implement artifact registration, claims, checks, evidence,
-acceptance, handoffs, imports, or closure. Those behaviors belong to later authorized M1
-increments. M2 remains responsible for event hash chains, recovery, concurrency, and interruption
-hardening.
+It deliberately does not yet implement owner acceptance or revocation, stale-record propagation,
+handoffs, imports, or closure. Those behaviors belong to later M1 increments. M2 remains
+responsible for event hash chains, recovery, concurrency, and interruption hardening.
 
 Initialize an ordinary project repository with:
 
@@ -35,6 +36,7 @@ forge config validate
 forge pack validate software-basic
 forge create "Objective" --scope "Bounded scope" --trust-pack-data
 forge status
+forge artifact add requirements.md --role requirements --title "Requirements"
 forge schema export --output schemas
 ```
 
@@ -66,6 +68,7 @@ forge --help
 - [Versioned contracts](docs/contracts.md)
 - [Journal and materialized state](docs/persistence.md)
 - [Packs, initiatives, and manual runs](docs/workflows.md)
+- [Artifacts, claims, checks, and evidence](docs/artifacts-and-evidence.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [Contributing](CONTRIBUTING.md)

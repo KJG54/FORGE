@@ -1,7 +1,8 @@
 # Packs, Initiative Creation, and Manual Runs
 
-M1 Increment 3 adds the first domain-neutral workflow services. It does not yet make worker claims,
-checks, evidence, or acceptance available.
+M1 Increment 3 adds the first domain-neutral workflow services. M1 Increment 4 now supplies worker
+claims, checks, and evidence through the separate services documented in
+[`artifacts-and-evidence.md`](artifacts-and-evidence.md). Owner acceptance remains unavailable.
 
 ## Declarative pack loading
 
@@ -50,9 +51,9 @@ authorize a transition by itself.
 step to `in_progress`. A running process or manual effort is not a claim, check, evidence packet, or
 acceptance decision.
 
-Conditioned transitions remain blocked in this increment. In particular, a caller cannot claim
-that `claim-recorded`, check, evidence, or acceptance conditions are satisfied. Increment 4 will
-derive applicable conditions from governed artifact, claim, check, and evidence records.
+Conditioned transitions cannot be asserted by a caller. Increment 4 derives `claim-recorded`,
+`required-checks-passed`, and `required-evidence-registered` from governed records. The
+`owner-acceptance-recorded` condition remains unavailable until Increment 5.
 
 Use read-only commands after any process restart:
 
@@ -66,6 +67,6 @@ integrity errors without silently repairing them.
 
 ## Deferred guarantees
 
-This increment does not add artifact or evidence registration, completion claims, acceptance,
-handoffs, imports, closure, hash chaining, recovery, cross-process locking, or idempotent retry.
-Those remain assigned to later approved increments or M2.
+The implemented M1 surface still excludes acceptance, handoffs, imports, closure, hash chaining,
+recovery, cross-process locking, and idempotent retry. Those remain assigned to later increments
+or M2.
