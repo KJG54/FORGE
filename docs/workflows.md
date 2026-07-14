@@ -4,6 +4,8 @@ M1 Increment 3 adds the first domain-neutral workflow services. M1 Increment 4 s
 claims, checks, and evidence through the separate services documented in
 [`artifacts-and-evidence.md`](artifacts-and-evidence.md). M1 Increment 5 supplies owner acceptance,
 revocation, decisions, and invalidation.
+M1 Increment 7 adds successful terminal closure after every declared step is complete and currently
+accepted.
 
 ## Declarative pack loading
 
@@ -56,17 +58,22 @@ Conditioned transitions cannot be asserted by a caller. FORGE derives `claim-rec
 `required-checks-passed`, `required-evidence-registered`, and `owner-acceptance-recorded` from
 governed records.
 
-Use read-only commands after any process restart:
+Use read-only commands after any process restart or to inspect a closed archive:
 
 ```console
 forge status
 forge next
+forge history
+forge status --archive <initiative-id>
+forge history --archive <initiative-id>
 ```
 
 Both commands reload locked records, replay the complete journal, compare `state.json`, and report
 integrity errors without silently repairing them.
 
-## Deferred guarantees
+## Closure boundary and deferred guarantees
 
-The implemented M1 surface still excludes closure, hash chaining, recovery, cross-process locking,
-and idempotent retry. Closure is assigned to Increment 7; the hardening guarantees remain M2 work.
+Successful M1 closure is owner-only and derives readiness from the locked workflow, current
+acceptances, exact artifact revisions, and preserved objects. Closed archives never reopen through
+supported commands. Abandonment and successor initiatives remain M2 work, as do hash chaining,
+recovery, cross-process locking, idempotent retry, and interruption hardening.

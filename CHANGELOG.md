@@ -23,9 +23,12 @@ semantic-version commitments begin at v1.0.0.
 - Provider-neutral manual handoff bundles and two-phase untrusted result import with bounded
   staging, inventory/path/symlink/secret safeguards, previews, explicit collision actions,
   content-addressed preservation, and single-event artifact registration.
+- Owner-only successful closure with complete-workflow and current-acceptance gates, exact-byte
+  archive manifests, preserved-object verification, read-only archived status and history, and
+  terminal command-level immutability.
 
 ### Limitations
 
-- Closure and archive-preservation services are not yet implemented; they remain assigned to M1
-  Increment 7.
+- M1 archives are preliminary and do not claim hash chains, concurrent-writer safety, idempotent
+  retry, interruption recovery, abandonment, or successor initiatives; those remain M2 work.
 - Project and distribution naming remain provisional.

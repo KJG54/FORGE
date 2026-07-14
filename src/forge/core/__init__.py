@@ -1,4 +1,4 @@
-"""Domain-neutral lifecycle services introduced through M1 Increment 3."""
+"""Domain-neutral governance services implemented through M1 Increment 7."""
 
 from forge.core.authorization import owner_actor, require_owner
 from forge.core.lifecycle import (

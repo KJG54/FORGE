@@ -15,10 +15,12 @@ from forge.core.acceptance import (
     revoke_acceptance,
     show_acceptance,
 )
+from forge.core.archival import close_initiative
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
 from forge.core.authorization import owner_actor
 from forge.core.decisions import record_decision
 from forge.core.handoffs import create_handoff
+from forge.core.history import inspect_history
 from forge.core.imports import apply_result_import, preview_result_import
 from forge.core.lifecycle import begin_manual_run, create_initiative
 from forge.core.status import inspect_status
@@ -274,11 +276,15 @@ def status(
         Path,
         typer.Option("--directory", "-C", help="Repository or child directory to inspect."),
     ] = Path("."),
+    archive_id: Annotated[
+        UUID | None,
+        typer.Option("--archive", help="Archived initiative ID to validate and inspect."),
+    ] = None,
 ) -> None:
     """Validate and display current repository and initiative state."""
     try:
         layout = discover_repository(directory)
-        report = inspect_status(layout)
+        report = inspect_status(layout, archive_id=archive_id)
     except ForgeError as error:
         _fail(error)
         return
@@ -288,6 +294,8 @@ def status(
         typer.echo("Initiative: none")
     else:
         typer.echo(f"Initiative: {report.initiative.id} — {report.initiative.objective}")
+    for identifier in report.archived_initiative_ids:
+        typer.echo(f"Archived initiative: {identifier}")
     if report.state is not None:
         typer.echo(f"Lifecycle: {report.state.lifecycle_state}")
         for step_id, step_state in report.state.step_states.items():
@@ -300,10 +308,106 @@ def status(
             typer.echo(f"Open decision: {decision_id}")
         for record_id in report.state.stale_record_ids:
             typer.echo(f"Stale record: {record_id}")
+    if report.archive_manifest is not None and report.closure is not None:
+        typer.echo(f"Archive: {report.closure.archive_reference}")
+        typer.echo(f"Archive digest: {report.archive_manifest.archive_digest}")
+        typer.echo(f"Closing summary: {report.closure.closing_summary}")
+        typer.echo("Archive guarantee: preliminary M1 command-level immutability")
     for action in report.next_actions:
         typer.echo(f"Next: {action}")
     for blocker in report.blockers:
         typer.echo(f"Blocker: {blocker}")
+
+
+@app.command("history")
+def history(
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory to inspect."),
+    ] = Path("."),
+    archive_id: Annotated[
+        UUID | None,
+        typer.Option("--archive", help="Archived initiative ID to inspect."),
+    ] = None,
+    event_type: Annotated[
+        str | None,
+        typer.Option("--event-type", help="Exact event type filter."),
+    ] = None,
+    step_id: Annotated[
+        str | None,
+        typer.Option("--step", help="Exact workflow step filter."),
+    ] = None,
+    actor: Annotated[
+        str | None,
+        typer.Option("--actor", help="Actor ID, type, or display-label filter."),
+    ] = None,
+    run_id: Annotated[
+        UUID | None,
+        typer.Option("--run", help="Exact governed run ID filter."),
+    ] = None,
+) -> None:
+    """Display validated active or archived event history without mutation."""
+    try:
+        layout = discover_repository(directory)
+        events = inspect_history(
+            layout,
+            archive_id=archive_id,
+            event_type=event_type,
+            step_id=step_id,
+            actor=actor,
+            run_id=run_id,
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    if not events:
+        typer.echo("No matching events")
+        return
+    for event in events:
+        details = [
+            f"{event.sequence}",
+            event.timestamp.isoformat(),
+            event.event_type,
+            f"actor={event.actor.actor_type.value}:{event.actor.id}",
+        ]
+        step = event.metadata.get("step_id")
+        if isinstance(step, str):
+            details.append(f"step={step}")
+        if event.run_id is not None:
+            details.append(f"run={event.run_id}")
+        typer.echo(" ".join(details))
+
+
+@app.command("close")
+def close(
+    summary: Annotated[
+        str,
+        typer.Option("--summary", help="Final owner closure decision and summary."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Close fully accepted work into a preliminary immutable M1 archive."""
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = close_initiative(
+            layout,
+            closing_summary=summary,
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Closed initiative {result.closure.initiative_id}")
+    typer.echo(f"Closure record: {result.closure.id}")
+    typer.echo(f"Archive: {result.closure.archive_reference}")
+    typer.echo(f"Archive digest: {result.archive.manifest.archive_digest}")
+    typer.echo(
+        "Preliminary M1 archive created; hash chains and interruption recovery remain M2"
+    )
 
 
 @app.command("next")

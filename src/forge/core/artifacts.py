@@ -6,6 +6,7 @@ import re
 from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
+from typing import cast
 from uuid import UUID, uuid4
 
 from forge import __version__
@@ -182,12 +183,13 @@ def _revisions_for_artifact(
     revisions: list[ArtifactRevision] = []
     for event in read_journal(layout.event_journal_file):
         if event.event_type == RESULT_IMPORTED:
-            updates = event.metadata.get("artifact_updates")
-            if not isinstance(updates, list):
+            raw_updates = event.metadata.get("artifact_updates")
+            if not isinstance(raw_updates, list):
                 raise IntegrityError(f"Import event {event.id} lacks artifact updates")
-            for update in updates:
-                if not isinstance(update, dict):
+            for raw_update in cast("list[object]", raw_updates):
+                if not isinstance(raw_update, dict):
                     raise IntegrityError(f"Import event {event.id} has invalid artifact updates")
+                update = cast("dict[object, object]", raw_update)
                 if update.get("artifact_id") != str(artifact_id):
                     continue
                 revision_value = update.get("revision_id")

@@ -148,6 +148,14 @@ class RepositoryLayout:
         return self.active_directory / "imported-results"
 
     @property
+    def closure_directory(self) -> Path:
+        return self.active_directory / "closure"
+
+    @property
+    def archive_manifest_file(self) -> Path:
+        return self.active_directory / "archive-manifest.json"
+
+    @property
     def handoff_directory(self) -> Path:
         return self.local_directory / "handoffs"
 

@@ -26,7 +26,12 @@ from forge.security.paths import normalize_repository_path
 from forge.storage.atomic import atomic_write_bytes
 from forge.storage.configuration import load_configuration
 from forge.storage.journal import read_journal
-from forge.storage.objects import canonical_json_digest, preserve_bytes, sha256_digest
+from forge.storage.objects import (
+    PreservedObject,
+    canonical_json_digest,
+    preserve_bytes,
+    sha256_digest,
+)
 from forge.storage.records import load_record, write_record
 from forge.storage.repository import RepositoryLayout
 from forge.storage.snapshots import append_event_and_update_snapshot
@@ -346,7 +351,7 @@ def apply_result_import(
     )
     artifacts: list[ArtifactRecord] = []
     revisions: list[ArtifactRevision] = []
-    preserved_objects = []
+    preserved_objects: list[PreservedObject] = []
     updates: list[dict[str, object]] = []
     for action in preview.actions:
         content = (preview.staged.directory / "files" / action.source_path).read_bytes()

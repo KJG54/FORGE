@@ -15,7 +15,7 @@ or a same-user security sandbox.
 
 ## Current capabilities
 
-M1 Increments 1 through 6 provide strict versioned data contracts, deterministic JSON Schema export,
+M1 Increments 1 through 7 provide strict versioned data contracts, deterministic JSON Schema export,
 project configuration validation, owner identity bootstrap, repository discovery, safe path
 resolution, non-destructive `forge init`, ordered event journals, deterministic replay, atomic
 snapshot replacement, explicit journal/snapshot mismatch detection, safe declarative pack loading,
@@ -29,9 +29,12 @@ Increment 6 adds provider-neutral manual handoffs and a two-phase staged result-
 bounded schemas, path and symlink controls, secret screening, previews, explicit collision actions,
 and single-event artifact registration.
 
-It deliberately does not yet implement closure or archival preservation. Those behaviors belong to
-the next M1 increment. M2 remains responsible for event hash chains, recovery, concurrency, and
-interruption hardening.
+Increment 7 adds owner-only successful closure, complete-step and current-acceptance gates,
+exact-byte archive manifests, preserved-object verification, read-only archived status and history,
+and terminal immutability through supported commands.
+
+The M1 archive is explicitly preliminary. M2 remains responsible for abandonment, successors,
+event hash chains, recovery, concurrency, idempotency, and interruption hardening.
 
 Initialize an ordinary project repository with:
 
@@ -76,6 +79,7 @@ forge --help
 - [Artifacts, claims, checks, and evidence](docs/artifacts-and-evidence.md)
 - [Acceptance, decisions, and invalidation](docs/acceptance-and-invalidation.md)
 - [Manual handoffs and safe result import](docs/handoffs-and-imports.md)
+- [Preliminary closure and archive inspection](docs/closure-and-archives.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [Contributing](CONTRIBUTING.md)

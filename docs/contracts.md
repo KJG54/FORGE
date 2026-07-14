@@ -58,3 +58,9 @@ M1 Increment 6 uses `AgentHandoff`, `AgentResult`, and `ReturnedFile` at the man
 Handoffs remain disposable local views. A validated `AgentResult` is persisted only when its staged
 files are explicitly applied; the result and every imported artifact revision are then cross-checked
 against one `result-imported` event. Import records acknowledge provenance, not approval.
+
+M1 Increment 7 adds `ClosureRecord`, `ArchiveManifest`, `ArchivedFile`, and
+`ArchivedObjectReference`. The owner closure record is journal-bound governance. The archive
+manifest is a read-only preservation index whose digest covers its semantic fields and whose file
+entries cover the exact archived bytes. This is preliminary M1 tamper evidence, not the external
+hash-chain root or corruption-hardening guarantee assigned to M2.

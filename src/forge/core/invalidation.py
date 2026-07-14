@@ -69,36 +69,43 @@ def _inventory(active: ActiveInitiative) -> _DependencyInventory:
     decisions: dict[UUID, DecisionRecord] = {}
     record_steps: dict[UUID, str] = {}
     for event in read_journal(active.layout.event_journal_file):
-        key: str | None = None
-        directory = None
-        model: type[Claim] | type[CheckResult] | type[EvidencePacket] | type[AcceptanceRecord]
-        target: dict[UUID, object]
+        record_id: UUID | None = None
         if event.event_type == CLAIM_RECORDED:
-            key, directory, model, target = "claim_id", active.layout.claim_directory, Claim, claims
+            record_id = _uuid_metadata(
+                event.metadata.get("claim_id"), event_id=event.id, key="claim_id"
+            )
+            claims[record_id] = load_record(
+                active.layout.claim_directory / f"{record_id}.json", Claim
+            )
         elif event.event_type == CHECK_RECORDED:
-            key, directory, model, target = (
-                "check_result_id",
-                active.layout.check_directory,
-                CheckResult,
-                checks,
+            record_id = _uuid_metadata(
+                event.metadata.get("check_result_id"),
+                event_id=event.id,
+                key="check_result_id",
+            )
+            checks[record_id] = load_record(
+                active.layout.check_directory / f"{record_id}.json", CheckResult
             )
         elif event.event_type == EVIDENCE_REGISTERED:
-            key, directory, model, target = (
-                "evidence_id",
-                active.layout.evidence_directory,
-                EvidencePacket,
-                evidence,
+            record_id = _uuid_metadata(
+                event.metadata.get("evidence_id"),
+                event_id=event.id,
+                key="evidence_id",
+            )
+            evidence[record_id] = load_record(
+                active.layout.evidence_directory / f"{record_id}.json", EvidencePacket
             )
         elif event.event_type == ACCEPTANCE_RECORDED:
-            key, directory, model, target = (
-                "acceptance_id",
-                active.layout.acceptance_directory,
-                AcceptanceRecord,
-                acceptances,
+            record_id = _uuid_metadata(
+                event.metadata.get("acceptance_id"),
+                event_id=event.id,
+                key="acceptance_id",
             )
-        if key is not None and directory is not None:
-            record_id = _uuid_metadata(event.metadata.get(key), event_id=event.id, key=key)
-            target[record_id] = load_record(directory / f"{record_id}.json", model)
+            acceptances[record_id] = load_record(
+                active.layout.acceptance_directory / f"{record_id}.json",
+                AcceptanceRecord,
+            )
+        if record_id is not None:
             step_id = event.metadata.get("step_id")
             if not isinstance(step_id, str):
                 raise IntegrityError(f"Event {event.id} lacks step_id metadata")

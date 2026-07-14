@@ -174,6 +174,7 @@ def test_governed_collision_requires_and_creates_explicit_revision(tmp_path: Pat
         role_assignments={"objective.md": "objective-and-constraints"},
     )
     first = list_artifacts(initialized.layout)[0]
+    assert first.current_revision.preserved_object_path is not None
     first_object = initialized.layout.root / first.current_revision.preserved_object_path
     first_bytes = first_object.read_bytes()
     second_manifest, _ = _bundle(
@@ -342,7 +343,7 @@ def test_unsafe_paths_are_rejected(
     bundle.mkdir()
     if source == "objective.md":
         (bundle / source).write_text("content", encoding="utf-8")
-    payload = {
+    payload: dict[str, object] = {
         "schema_version": "1.0",
         "id": str(uuid4()),
         "source_run_or_handoff_id": str(handoff.handoff.id),

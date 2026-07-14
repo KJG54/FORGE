@@ -87,6 +87,12 @@ def _require_empty_active_directory(layout: RepositoryLayout) -> None:
             "An active initiative or unmanaged active-state content already exists: "
             f"{[path.name for path in contents]}"
         )
+    archives = tuple(layout.archive_directory.iterdir())
+    if archives:
+        raise ConflictError(
+            "This repository already contains archived work; continued work requires the "
+            "successor-initiative flow assigned to M2"
+        )
 
 
 def _input_context_digest(active: ActiveInitiative, step_id: str) -> str:
@@ -224,7 +230,11 @@ def create_initiative(
     return InitiativeCreationResult(active, event)
 
 
-def load_active_initiative(layout: RepositoryLayout) -> ActiveInitiative:
+def load_active_initiative(
+    layout: RepositoryLayout,
+    *,
+    allow_terminal: bool = False,
+) -> ActiveInitiative:
     if not layout.initiative_file.exists():
         raise ConflictError("No active initiative exists; run 'forge create' first")
     configuration = load_configuration(layout.configuration_file)
@@ -293,6 +303,15 @@ def load_active_initiative(layout: RepositoryLayout) -> ActiveInitiative:
         report.replayed_state,
         workflow,
     )
+    if (
+        report.replayed_state.lifecycle_state
+        in {InitiativeLifecycleState.CLOSED, InitiativeLifecycleState.ABANDONED}
+        and not allow_terminal
+    ):
+        raise IntegrityError(
+            "Terminal initiative state remains under .forge/active; supported mutations are "
+            "disabled"
+        )
     for run_id in report.replayed_state.active_run_ids:
         run = load_record(layout.governed_run_directory / f"{run_id}.json", RunRecord)
         run_event = next(

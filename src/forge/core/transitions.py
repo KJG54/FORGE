@@ -29,6 +29,7 @@ ACCEPTANCE_REVOKED = "acceptance-revoked"
 DECISION_RECORDED = "decision-recorded"
 DECISION_SUPERSEDED = "decision-superseded"
 RESULT_IMPORTED = "result-imported"
+INITIATIVE_CLOSED = "initiative-closed"
 
 
 def _metadata_string(event: AuditEvent, key: str) -> str:
@@ -338,6 +339,35 @@ class WorkflowStateReducer:
             event,
         )
 
+    def _apply_closure_event(
+        self,
+        state: MaterializedState,
+        event: AuditEvent,
+    ) -> MaterializedState:
+        if state.lifecycle_state is not InitiativeLifecycleState.ACTIVE:
+            raise IntegrityError("Only an active initiative may close")
+        incomplete = [
+            step_id
+            for step_id, step_state in state.step_states.items()
+            if step_state is not StepState.COMPLETED
+        ]
+        if incomplete:
+            raise IntegrityError(
+                f"Closure event has incomplete workflow steps: {sorted(incomplete)}"
+            )
+        if state.active_run_ids:
+            raise IntegrityError("Closure event cannot retain active runs")
+        require_owner(event.actor, self.owner_identity_id, "close an initiative")
+        _metadata_string(event, "closure_record_id")
+        _metadata_string(event, "archive_reference")
+        return state.model_copy(
+            update={
+                "lifecycle_state": InitiativeLifecycleState.CLOSED,
+                "current_step_id": None,
+                "permitted_next_actions": (),
+            }
+        )
+
     def __call__(
         self,
         state: MaterializedState | None,
@@ -347,6 +377,13 @@ class WorkflowStateReducer:
             if event.event_type != INITIATIVE_CREATED or event.sequence != 1:
                 raise IntegrityError("The first initiative event must be initiative-created")
             return self._initial_state(event)
+        if state.lifecycle_state in {
+            InitiativeLifecycleState.CLOSED,
+            InitiativeLifecycleState.ABANDONED,
+        }:
+            raise IntegrityError("Terminal initiatives cannot accept later events")
+        if event.event_type == INITIATIVE_CLOSED:
+            return self._apply_closure_event(state, event)
         if event.event_type == STEP_TRANSITIONED:
             return self._apply_step_transition(state, event)
         if event.event_type in {ARTIFACT_REGISTERED, ARTIFACT_REVISED}:

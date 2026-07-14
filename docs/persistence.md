@@ -41,3 +41,17 @@ M1 event hash fields remain empty. Canonical event hashes, previous-hash chainin
 locking, idempotent retry, corruption recovery, stale-lock handling, and interruption fault
 hardening remain Milestone 2 work. Increment 2 detects journal/snapshot disagreement but does not
 repair it or expose a recovery command.
+
+## Increment 7 archive layer
+
+Successful closure appends an owner-authorized terminal event and writes the final snapshot before
+building a complete archive in a sibling staging directory. `archive-manifest.json` covers every
+archived file by exact digest and size and references the already content-addressed artifact objects.
+After validation, the staged archive is promoted and `.forge/active` is retired to an empty
+directory.
+
+This ordering provides deterministic, inspectable successful closure and command-level archive
+immutability. It does not make the journal, snapshot, archive promotion, and active-state retirement
+one atomic transaction. An interruption is reported as an integrity error and is never silently
+repaired. Hash chains, cross-process locks, idempotent close retries, and interrupted-archive
+recovery remain explicit M2 work.

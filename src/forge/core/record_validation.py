@@ -8,11 +8,12 @@ from uuid import UUID
 
 from forge.contracts.actors import ActorType
 from forge.contracts.agents import AgentResult
+from forge.contracts.archives import ClosureRecord
 from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
 from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, DecisionSupersession
 from forge.contracts.events import AuditEvent
 from forge.contracts.runs import RunRecord
-from forge.contracts.state import MaterializedState, StepState
+from forge.contracts.state import InitiativeLifecycleState, MaterializedState, StepState
 from forge.contracts.verification import (
     AcceptanceRecord,
     CheckOutcome,
@@ -31,6 +32,7 @@ from forge.core.transitions import (
     DECISION_RECORDED,
     DECISION_SUPERSEDED,
     EVIDENCE_REGISTERED,
+    INITIATIVE_CLOSED,
     RESULT_IMPORTED,
     STEP_TRANSITIONED,
 )
@@ -102,6 +104,10 @@ def _supersession_path(layout: RepositoryLayout, supersession_id: UUID) -> Path:
 
 def _imported_result_path(layout: RepositoryLayout, result_id: UUID) -> Path:
     return layout.imported_result_directory / f"{result_id}.json"
+
+
+def _closure_path(layout: RepositoryLayout, closure_id: UUID) -> Path:
+    return layout.closure_directory / f"{closure_id}.json"
 
 
 def _validate_common(record: object, event: AuditEvent, record_id: UUID) -> None:
@@ -209,6 +215,7 @@ def validate_governed_records(
     expected_decisions: set[Path] = set()
     expected_supersessions: set[Path] = set()
     expected_imported_results: set[Path] = set()
+    expected_closures: set[Path] = set()
     revisions_by_id: dict[UUID, ArtifactRevision] = {}
     artifact_roles: dict[UUID, str] = {}
     current_revision_ids: dict[UUID, UUID] = {}
@@ -595,6 +602,81 @@ def validate_governed_records(
                 raise IntegrityError(f"Acceptance revocation does not match event {event.id}")
             revoked_acceptance_ids.add(acceptance_id)
             stale_ids.update(effects)
+        elif event.event_type == INITIATIVE_CLOSED:
+            closure_id = _uuid_metadata(event, "closure_record_id")
+            final_acceptance_ids = _uuid_list_metadata(event, "final_acceptance_ids")
+            current_artifact_ids = _uuid_list_metadata(
+                event, "current_artifact_revision_ids"
+            )
+            accepted_artifact_ids = _uuid_list_metadata(
+                event, "accepted_artifact_revision_ids"
+            )
+            path = _closure_path(layout, closure_id)
+            expected_closures.add(path)
+            closure = load_record(path, ClosureRecord)
+            _validate_common(closure, event, closure_id)
+            archive_reference = event.metadata.get("archive_reference")
+            selected_acceptances = [
+                acceptances_by_id[item]
+                for item in final_acceptance_ids
+                if item in acceptances_by_id
+            ]
+            expected_steps = {step.id for step in workflow.steps}
+            selected_steps = {
+                acceptance_steps[item.id] for item in selected_acceptances
+            }
+            selected_step_order = tuple(
+                acceptance_steps[item.id] for item in selected_acceptances
+            )
+            expected_current_ids = tuple(
+                sorted(current_revision_ids.values(), key=str)
+            )
+            expected_accepted_ids = tuple(
+                sorted(
+                    {
+                        revision_id
+                        for acceptance in selected_acceptances
+                        for revision_id in acceptance.accepted_artifact_revision_ids
+                    },
+                    key=str,
+                )
+            )
+            expected_archive = f".forge/archive/{event.initiative_id}"
+            current_digests = {
+                revisions_by_id[item].content_digest for item in expected_current_ids
+            }
+            if (
+                event is not events[-1]
+                or closure.id != closure_id
+                or closure.owner_actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or closure.terminal_state is not InitiativeLifecycleState.CLOSED
+                or closure.closure_event_id != event.id
+                or closure.final_acceptance_ids != final_acceptance_ids
+                or closure.current_artifact_revision_ids != current_artifact_ids
+                or closure.accepted_artifact_revision_ids != accepted_artifact_ids
+                or closure.archive_reference != archive_reference
+                or archive_reference != expected_archive
+                or len(selected_acceptances) != len(final_acceptance_ids)
+                or selected_steps != expected_steps
+                or selected_step_order != tuple(step.id for step in workflow.steps)
+                or len(final_acceptance_ids) != len(expected_steps)
+                or set(final_acceptance_ids) & (stale_ids | revoked_acceptance_ids)
+                or current_artifact_ids != expected_current_ids
+                or accepted_artifact_ids != expected_accepted_ids
+                or not set(accepted_artifact_ids).issubset(current_artifact_ids)
+                or set((closure_id, *final_acceptance_ids, *current_artifact_ids))
+                - set(event.affected_record_ids)
+                or current_digests - set(event.affected_digests)
+                or set(closure.affected_digests) != current_digests
+                or set(closure.affected_record_ids)
+                != set((*final_acceptance_ids, *current_artifact_ids, *accepted_artifact_ids))
+                or canonical_json_digest(closure.model_dump(mode="json"))
+                not in event.affected_digests
+                or state.lifecycle_state is not InitiativeLifecycleState.CLOSED
+            ):
+                raise IntegrityError(f"Closure record does not match event {event.id}")
         elif event.event_type == STEP_TRANSITIONED:
             destination = event.metadata.get("destination_state")
             step_id = event.metadata.get("step_id")
@@ -682,6 +764,7 @@ def validate_governed_records(
     _validate_directory(layout.decision_directory, expected_decisions)
     _validate_directory(layout.decision_supersession_directory, expected_supersessions)
     _validate_directory(layout.imported_result_directory, expected_imported_results)
+    _validate_directory(layout.closure_directory, expected_closures)
     expected_state = {
         artifact_id: revisions_by_id[revision_id].revision_number
         for artifact_id, revision_id in current_revision_ids.items()
