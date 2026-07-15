@@ -87,3 +87,9 @@ unfinished-work summary, unresolved risks, unfinished step IDs, current governed
 revisions, and archive destination. `ArchiveManifest` now identifies exactly one terminal record
 kind: closure fields for `closed`, or abandonment fields for `abandoned`. Abandoned object
 references are always marked unaccepted so archive inspection cannot imply closure success.
+
+M2 Increment 8 activates the existing `InitiativeReference` contract for canonical `successor-of`
+links. Each link binds an archived initiative UUID to `.forge/archive/<initiative-id>` and is also
+embedded in the successor creation event and affected-record sets. Successor artifact reuse creates
+a new `ArtifactRecord` and `ArtifactRevision`; its `ProvenanceRecord` binds the predecessor
+initiative, terminal revision, content digest, and archived revision reference.

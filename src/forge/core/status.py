@@ -110,7 +110,7 @@ def inspect_status(
             integrity_state=IntegrityState.HEALTHY,
             initiative=None,
             state=None,
-            next_actions=("create",) if not archived_ids else (),
+            next_actions=("create",) if not archived_ids else ("create-successor",),
             archived_initiative_ids=archived_ids,
         )
     try:

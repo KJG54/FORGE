@@ -102,4 +102,31 @@ Abandonment does not require passed checks, completed steps, or current acceptan
 record preserve the unfinished step set and current governed artifact revisions, then use the same
 validated resumable archive transaction as closure. Its manifest is terminal `abandoned`, carries
 only abandonment IDs, and marks every object reference unaccepted. Abandoned archives never reopen.
-Successor creation remains deferred.
+
+## Successor initiatives
+
+After terminal archival, continued work uses a new initiative rather than reopening history:
+
+```console
+forge create "Continue the objective" --scope "Fresh bounded scope" \
+  --predecessor <archive-id> --trust-pack-data
+```
+
+Repeat `--predecessor` to merge lineage from multiple valid closed or abandoned archives. FORGE
+validates every repository archive before mutation, rejects duplicate, unknown, self, or noncanonical
+references, and binds sorted predecessor links into both the new initiative and creation event.
+
+The successor gets a new immutable ID, pack trust decision, workflow lock, journal, snapshot, and
+initial step state. It inherits no artifact records, claims, checks, evidence, decisions, stale
+state, or acceptance. Predecessor archives are read and validated but never modified.
+
+To reuse a terminal predecessor artifact, keep or restore its exact bytes at a project path and run:
+
+```console
+forge artifact add path/to/file --role <role> --title "Reused input" \
+  --predecessor-revision <terminal-revision-id>
+```
+
+FORGE requires an exact digest and size match, then creates a new successor artifact and revision
+whose provenance identifies the predecessor initiative and revision. This is reuse, not inherited
+approval; the new revision must pass the successor workflow's checks and acceptance independently.

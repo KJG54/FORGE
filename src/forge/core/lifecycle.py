@@ -25,6 +25,10 @@ from forge.contracts.state import (
 )
 from forge.contracts.workflows import WorkflowDefinition
 from forge.core.authorization import authorize_transition, require_owner
+from forge.core.successors import (
+    build_predecessor_references,
+    validate_predecessor_references,
+)
 from forge.core.transitions import (
     INITIATIVE_CREATED,
     STEP_TRANSITIONED,
@@ -102,12 +106,6 @@ def _require_empty_active_directory(layout: RepositoryLayout) -> None:
             "An active initiative or unmanaged active-state content already exists: "
             f"{[path.name for path in contents]}"
         )
-    archives = tuple(layout.archive_directory.iterdir())
-    if archives:
-        raise ConflictError(
-            "This repository already contains archived work; continued work requires the "
-            "successor-initiative flow assigned to M2"
-        )
 
 
 def _input_context_digest(active: ActiveInitiative, step_id: str) -> str:
@@ -132,6 +130,7 @@ def create_initiative(
     pack_id: str = "software-basic",
     workflow_id: str | None = None,
     explanation_profile: ExplanationProfile | None = None,
+    predecessor_ids: tuple[UUID, ...] = (),
 ) -> InitiativeCreationResult:
     configuration = load_configuration(layout.configuration_file)
     require_owner(actor, configuration.owner.id, "create an initiative")
@@ -145,6 +144,10 @@ def create_initiative(
             "is trusted as data; executable capabilities remain separately disabled"
         )
     _require_empty_active_directory(layout)
+    predecessor_references = build_predecessor_references(layout, predecessor_ids)
+    bound_predecessor_ids = tuple(
+        item.initiative_id for item in predecessor_references
+    )
     pack = find_pack(layout, configuration, pack_id)
     workflow = pack.workflow(workflow_id)
     selected_profile = explanation_profile or configuration.behavior.explanation_profile
@@ -157,7 +160,12 @@ def create_initiative(
     event_id = uuid4()
     trust_id = uuid4()
     authorization_basis = (
-        "configured owner explicitly trusted the selected pack as data and created the initiative"
+        "configured owner explicitly trusted the selected pack as data and created a successor"
+        if predecessor_references
+        else (
+            "configured owner explicitly trusted the selected pack as data and created the "
+            "initiative"
+        )
     )
     trust = PackTrustDecision(
         id=trust_id,
@@ -181,7 +189,7 @@ def create_initiative(
         recorded_at=now,
         event_sequence=1,
         authorization_basis=authorization_basis,
-        affected_record_ids=(trust_id,),
+        affected_record_ids=(trust_id, *bound_predecessor_ids),
         affected_digests=(pack.manifest.integrity_digest,),
         objective=objective,
         pack_id=pack.manifest.id,
@@ -191,6 +199,7 @@ def create_initiative(
         owner_identity_id=configuration.owner.id,
         creation_event_id=event_id,
         lifecycle_state=InitiativeLifecycleState.ACTIVE,
+        predecessor_references=predecessor_references,
         explanation_profile=selected_profile,
         declared_scope_summary=declared_scope_summary,
     )
@@ -202,7 +211,7 @@ def create_initiative(
         event_type=INITIATIVE_CREATED,
         actor=actor,
         authorization_basis=authorization_basis,
-        affected_record_ids=(initiative_id, trust_id),
+        affected_record_ids=(initiative_id, trust_id, *bound_predecessor_ids),
         affected_digests=(pack.manifest.integrity_digest,),
         metadata={
             "pack_id": pack.manifest.id,
@@ -210,6 +219,9 @@ def create_initiative(
             "pack_trust_decision_id": str(trust_id),
             "workflow_id": workflow.id,
             "workflow_version": workflow.version,
+            "predecessor_references": [
+                item.model_dump(mode="json") for item in predecessor_references
+            ],
         },
     )
     created: list[Path] = []
@@ -299,6 +311,7 @@ def load_replayed_active_initiative(
         or creation_metadata.get("pack_trust_decision_id") != str(trust.id)
     ):
         raise IntegrityError("Initiative creation event does not match locked records")
+    validate_predecessor_references(layout, initiative, events[0])
     reducer = WorkflowStateReducer(workflow, configuration.owner.id)
     try:
         replayed_state = replay_events(events, reducer)

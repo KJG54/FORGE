@@ -165,7 +165,7 @@ def test_close_preserves_exact_bytes_and_supports_read_only_restart(
     default_status = inspect_status(initialized.layout)
     assert default_status.initiative is None
     assert default_status.archived_initiative_ids == (initiative_id,)
-    assert not default_status.next_actions
+    assert default_status.next_actions == ("create-successor",)
     archived_status = inspect_status(initialized.layout, archive_id=initiative_id)
     assert archived_status.integrity_state.value == "healthy"
     assert archived_status.selected_archive_id == initiative_id
@@ -176,14 +176,16 @@ def test_close_preserves_exact_bytes_and_supports_read_only_restart(
         archive_id=initiative_id,
         event_type="initiative-closed",
     ) == (history[-1],)
-    with pytest.raises(ConflictError, match="successor-initiative"):
-        create_initiative(
-            initialized.layout,
-            objective="Unsupported continuation",
-            declared_scope_summary="Would omit predecessor provenance",
-            actor=actor,
-            trust_pack_data=True,
-        )
+    successor = create_initiative(
+        initialized.layout,
+        objective="Continue from accepted archived work",
+        declared_scope_summary="Fresh governed work with explicit predecessor provenance",
+        actor=actor,
+        trust_pack_data=True,
+        predecessor_ids=(initiative_id,),
+    )
+    assert successor.active.initiative.id != initiative_id
+    assert successor.active.initiative.predecessor_references[0].initiative_id == initiative_id
 
 
 def test_close_rejects_changed_working_bytes(tmp_path: Path) -> None:

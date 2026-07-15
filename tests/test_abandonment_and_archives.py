@@ -155,15 +155,16 @@ def test_abandon_status_history_cli_and_terminal_immutability(tmp_path: Path) ->
     assert "Archive guarantee: atomic M2 abandoned" in status.stdout
     history = inspect_history(initialized.layout, archive_id=initiative_id)
     assert history[-1].event_type == "initiative-abandoned"
-    assert not inspect_status(initialized.layout).next_actions
-    with pytest.raises(ConflictError, match="successor-initiative"):
-        create_initiative(
-            initialized.layout,
-            objective="Unsupported reopening",
-            declared_scope_summary="Would erase predecessor semantics",
-            actor=actor,
-            trust_pack_data=True,
-        )
+    assert inspect_status(initialized.layout).next_actions == ("create-successor",)
+    successor = create_initiative(
+        initialized.layout,
+        objective="Continue after an abandoned attempt",
+        declared_scope_summary="Fresh work linked to the abandoned predecessor",
+        actor=actor,
+        trust_pack_data=True,
+        predecessor_ids=(initiative_id,),
+    )
+    assert successor.active.initiative.id != initiative_id
 
 
 def test_abandoned_archive_tampering_is_detected(tmp_path: Path) -> None:

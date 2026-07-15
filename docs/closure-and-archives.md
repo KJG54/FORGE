@@ -72,4 +72,4 @@ forge history --archive <initiative-id> --event-type initiative-abandoned
 
 New manifests report `preliminary: false` with no preliminary limitations. Existing M1 closure
 archives remain readable with their original guarantee. Closed and abandoned archives cannot
-reopen; continued work requires the separately authorized successor initiative increment.
+reopen; continued work uses `forge create --predecessor <archive-id>` to create a fresh successor.

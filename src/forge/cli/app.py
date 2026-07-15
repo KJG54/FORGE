@@ -308,6 +308,13 @@ def create(
             help="M1 presentation profile; governance outcomes remain identical.",
         ),
     ] = None,
+    predecessor: Annotated[
+        list[UUID] | None,
+        typer.Option(
+            "--predecessor",
+            help="Archived predecessor UUID; repeat to create a multi-predecessor successor.",
+        ),
+    ] = None,
     trust_pack_data: Annotated[
         bool,
         typer.Option(
@@ -330,11 +337,16 @@ def create(
             pack_id=pack_id,
             workflow_id=workflow_id,
             explanation_profile=explanation,
+            predecessor_ids=tuple(predecessor or ()),
         )
     except ForgeError as error:
         _fail(error)
         return
     typer.echo(f"Created initiative {result.active.initiative.id}")
+    for reference in result.active.initiative.predecessor_references:
+        typer.echo(
+            f"Predecessor: {reference.initiative_id} ({reference.archive_reference})"
+        )
     typer.echo(
         f"Locked {result.active.pack_manifest.id} {result.active.pack_manifest.version} / "
         f"{result.active.workflow.id} {result.active.workflow.version}"
@@ -908,6 +920,13 @@ def artifact_add(
         str,
         typer.Option("--media-type", help="Stable media type for this exact revision."),
     ] = "application/octet-stream",
+    predecessor_revision: Annotated[
+        UUID | None,
+        typer.Option(
+            "--predecessor-revision",
+            help="Terminal artifact revision UUID from a declared predecessor.",
+        ),
+    ] = None,
     idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Register a logical artifact and preserve its exact first revision."""
@@ -921,6 +940,7 @@ def artifact_add(
             title=title,
             actor=owner_actor(configuration.owner),
             media_type=media_type,
+            predecessor_revision_id=predecessor_revision,
         )
     except ForgeError as error:
         _fail(error)

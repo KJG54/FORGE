@@ -15,6 +15,10 @@ from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision, Provenan
 from forge.contracts.base import utc_now
 from forge.contracts.events import AuditEvent
 from forge.core.lifecycle import ActiveInitiative, load_active_initiative
+from forge.core.successors import (
+    load_predecessor_artifact_revision,
+    predecessor_artifact_source_reference,
+)
 from forge.core.transitions import ARTIFACT_REGISTERED, ARTIFACT_REVISED, RESULT_IMPORTED
 from forge.errors import ConfigurationError, ConflictError, IntegrityError, SecurityError
 from forge.security.paths import normalize_repository_path, resolve_repository_path
@@ -308,6 +312,7 @@ def add_artifact(
     media_type: str = "application/octet-stream",
     source_type: str = "local-file",
     source_reference: str | None = None,
+    predecessor_revision_id: UUID | None = None,
 ) -> ArtifactMutationResult:
     active = load_active_initiative(layout)
     _validate_artifact_metadata(
@@ -323,7 +328,29 @@ def add_artifact(
         raise ConflictError(
             f"Artifact role {role!r} is not declared by the locked workflow"
         )
+    predecessor_id: UUID | None = None
+    predecessor_revision: ArtifactRevision | None = None
+    if predecessor_revision_id is not None:
+        predecessor_id, predecessor_revision = load_predecessor_artifact_revision(
+            layout,
+            active.initiative,
+            predecessor_revision_id,
+        )
+        source_type = "predecessor-artifact"
+        source_reference = predecessor_artifact_source_reference(
+            predecessor_id,
+            predecessor_revision_id,
+        )
     normalized, content, preserved = _preserve_project_file(layout, path)
+    if predecessor_revision is not None and (
+        predecessor_revision.content_digest != preserved.digest
+        or predecessor_revision.byte_size != len(content)
+    ):
+        if preserved.created:
+            preserved.filesystem_path.unlink(missing_ok=True)
+        raise ConflictError(
+            "Working bytes do not match the selected predecessor artifact revision"
+        )
     for view in list_artifacts(layout):
         if view.current_revision.path == normalized:
             if preserved.created:
@@ -342,8 +369,24 @@ def add_artifact(
         source_reference=source_reference or normalized,
         actor_id=actor.id,
         recorded_at=now,
+        metadata=(
+            {
+                "predecessor_initiative_id": str(predecessor_id),
+                "predecessor_revision_id": str(predecessor_revision_id),
+                "predecessor_content_digest": predecessor_revision.content_digest,
+            }
+            if predecessor_revision is not None
+            else {}
+        ),
     )
-    basis = "participant registered an exact preserved project artifact revision"
+    basis = (
+        "participant explicitly reused exact predecessor bytes as a new governed artifact"
+        if predecessor_revision is not None
+        else "participant registered an exact preserved project artifact revision"
+    )
+    predecessor_affected_ids = (
+        (predecessor_revision_id,) if predecessor_revision_id is not None else ()
+    )
     artifact = ArtifactRecord(
         id=artifact_id,
         initiative_id=active.initiative.id,
@@ -352,7 +395,7 @@ def add_artifact(
         event_sequence=sequence,
         authorization_basis=basis,
         tool_version=__version__,
-        affected_record_ids=(revision_id,),
+        affected_record_ids=(revision_id, *predecessor_affected_ids),
         affected_digests=(preserved.digest,),
         role=role,
         title=title,
@@ -367,7 +410,7 @@ def add_artifact(
         event_sequence=sequence,
         authorization_basis=basis,
         tool_version=__version__,
-        affected_record_ids=(artifact_id,),
+        affected_record_ids=(artifact_id, *predecessor_affected_ids),
         affected_digests=(preserved.digest,),
         artifact_id=artifact_id,
         revision_number=1,
@@ -388,13 +431,18 @@ def add_artifact(
         event_type=ARTIFACT_REGISTERED,
         actor=actor,
         authorization_basis=basis,
-        affected_record_ids=(artifact_id, revision_id),
+        affected_record_ids=(artifact_id, revision_id, *predecessor_affected_ids),
         affected_digests=(preserved.digest,),
         metadata={
             "artifact_id": str(artifact_id),
             "artifact_role": role,
             "revision_id": str(revision_id),
             "revision_number": 1,
+            "predecessor_revision_id": (
+                str(predecessor_revision_id)
+                if predecessor_revision_id is not None
+                else None
+            ),
         },
     )
     created_directories: list[Path] = []

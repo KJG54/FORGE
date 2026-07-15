@@ -13,6 +13,7 @@ from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
 from forge.contracts.capabilities import SideEffectClass
 from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, DecisionSupersession
 from forge.contracts.events import AuditEvent
+from forge.contracts.initiatives import Initiative
 from forge.contracts.recovery import RecoveryRecord, SnapshotCondition
 from forge.contracts.runs import RunRecord
 from forge.contracts.state import InitiativeLifecycleState, MaterializedState, RunState, StepState
@@ -24,6 +25,10 @@ from forge.contracts.verification import (
     EvidencePacket,
 )
 from forge.contracts.workflows import CancellationBehavior, WorkflowDefinition
+from forge.core.successors import (
+    load_predecessor_artifact_revision,
+    predecessor_artifact_source_reference,
+)
 from forge.core.transitions import (
     ACCEPTANCE_RECORDED,
     ACCEPTANCE_REVOKED,
@@ -258,6 +263,7 @@ def validate_governed_records(
     stale_ids: set[UUID] = set()
     seen_event_record_ids: set[UUID] = set()
     owner_id = load_configuration(layout.configuration_file).owner.id
+    initiative = load_record(layout.initiative_file, Initiative)
 
     for event in events:
         if event.event_type in {ARTIFACT_REGISTERED, ARTIFACT_REVISED}:
@@ -289,6 +295,49 @@ def validate_governed_records(
             if event.event_type == ARTIFACT_REGISTERED:
                 if revision_number != 1 or revision.superseded_revision_number is not None:
                     raise IntegrityError("First artifact revision has invalid predecessor data")
+                raw_predecessor_revision_id = event.metadata.get(
+                    "predecessor_revision_id"
+                )
+                if revision.provenance.source_type == "predecessor-artifact":
+                    if not isinstance(raw_predecessor_revision_id, str):
+                        raise IntegrityError(
+                            "Predecessor artifact registration lacks its source revision"
+                        )
+                    try:
+                        predecessor_revision_id = UUID(raw_predecessor_revision_id)
+                    except ValueError as error:
+                        raise IntegrityError(
+                            "Predecessor artifact registration has an invalid source revision"
+                        ) from error
+                    predecessor_id, predecessor_revision = (
+                        load_predecessor_artifact_revision(
+                            layout,
+                            initiative,
+                            predecessor_revision_id,
+                        )
+                    )
+                    expected_metadata = {
+                        "predecessor_initiative_id": str(predecessor_id),
+                        "predecessor_revision_id": str(predecessor_revision_id),
+                        "predecessor_content_digest": predecessor_revision.content_digest,
+                    }
+                    if (
+                        revision.provenance.source_reference
+                        != predecessor_artifact_source_reference(
+                            predecessor_id, predecessor_revision_id
+                        )
+                        or revision.provenance.metadata != expected_metadata
+                        or revision.content_digest != predecessor_revision.content_digest
+                        or revision.byte_size != predecessor_revision.byte_size
+                        or predecessor_revision_id not in event.affected_record_ids
+                    ):
+                        raise IntegrityError(
+                            "Predecessor artifact provenance does not match archived bytes"
+                        )
+                elif raw_predecessor_revision_id is not None:
+                    raise IntegrityError(
+                        "Ordinary artifact registration claims predecessor revision metadata"
+                    )
             else:
                 previous_id = _uuid_metadata(event, "superseded_revision_id")
                 previous = revisions_by_id.get(previous_id)
