@@ -34,6 +34,7 @@ DECISION_RECORDED = "decision-recorded"
 DECISION_SUPERSEDED = "decision-superseded"
 RESULT_IMPORTED = "result-imported"
 INITIATIVE_CLOSED = "initiative-closed"
+INITIATIVE_ABANDONED = "initiative-abandoned"
 RUN_CANCELLED = "run-cancelled"
 
 
@@ -462,6 +463,34 @@ class WorkflowStateReducer:
             }
         )
 
+    def _apply_abandonment_event(
+        self,
+        state: MaterializedState,
+        event: AuditEvent,
+    ) -> MaterializedState:
+        if state.lifecycle_state not in {
+            InitiativeLifecycleState.ACTIVE,
+            InitiativeLifecycleState.PAUSED,
+        }:
+            raise IntegrityError("Only an active or paused initiative may be abandoned")
+        require_owner(event.actor, self.owner_identity_id, "abandon an initiative")
+        if state.active_run_ids:
+            raise IntegrityError("An initiative with active governed runs cannot be abandoned")
+        _metadata_string(event, "abandonment_record_id")
+        _metadata_string(event, "archive_reference")
+        _metadata_string(event, "reason")
+        _metadata_string(event, "unfinished_work_summary")
+        if not _metadata_string_list(event, "unresolved_risks"):
+            raise IntegrityError("Abandonment requires at least one unresolved risk statement")
+        return state.model_copy(
+            update={
+                "lifecycle_state": InitiativeLifecycleState.ABANDONED,
+                "current_step_id": None,
+                "active_pause_event_id": None,
+                "permitted_next_actions": (),
+            }
+        )
+
     def __call__(
         self,
         state: MaterializedState | None,
@@ -477,6 +506,8 @@ class WorkflowStateReducer:
         }:
             raise IntegrityError("Terminal initiatives cannot accept later events")
         if state.lifecycle_state is InitiativeLifecycleState.PAUSED:
+            if event.event_type == INITIATIVE_ABANDONED:
+                return self._apply_abandonment_event(state, event)
             if event.event_type == INITIATIVE_RESUMED:
                 return self._apply_resume_event(state, event)
             if event.event_type == INTEGRITY_RECOVERED:
@@ -489,6 +520,8 @@ class WorkflowStateReducer:
             return self._apply_resume_event(state, event)
         if event.event_type == INITIATIVE_CLOSED:
             return self._apply_closure_event(state, event)
+        if event.event_type == INITIATIVE_ABANDONED:
+            return self._apply_abandonment_event(state, event)
         if event.event_type == STEP_TRANSITIONED:
             return self._apply_step_transition(state, event)
         if event.event_type == RUN_CANCELLED:

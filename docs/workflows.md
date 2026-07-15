@@ -88,5 +88,18 @@ Successful closure is owner-only and derives readiness from the locked workflow,
 acceptances, exact artifact revisions, and preserved objects. M2 Increment 6 adds validated atomic
 archive promotion and resumable active-state retirement. Repeating an interrupted close with the
 same idempotency key completes the existing terminal transaction rather than creating a new event.
-Closed archives never reopen through supported commands. Abandonment, successors, migration, and
-unrelated interruption recovery stay deferred.
+Closed archives never reopen through supported commands. Successors, migration, and unrelated
+interruption recovery stay deferred.
+
+## Atomic abandonment boundary
+
+Abandonment is a separate owner-only terminal decision. `forge abandon` requires a reason, an
+unfinished-work summary, and at least one unresolved-risk statement. It may start from active or
+paused state, but never while a governed run remains active. The owner must cancel such runs first,
+making their outcome explicit in history.
+
+Abandonment does not require passed checks, completed steps, or current acceptances. Its event and
+record preserve the unfinished step set and current governed artifact revisions, then use the same
+validated resumable archive transaction as closure. Its manifest is terminal `abandoned`, carries
+only abandonment IDs, and marks every object reference unaccepted. Abandoned archives never reopen.
+Successor creation remains deferred.

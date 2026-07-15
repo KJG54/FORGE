@@ -1,4 +1,4 @@
-"""Successful closure with resumable atomic archive promotion."""
+"""Terminal decisions with resumable atomic archive promotion."""
 
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ from uuid import UUID, uuid4
 from forge import __version__
 from forge.contracts.actors import Actor
 from forge.contracts.archives import (
+    AbandonmentRecord,
     ArchivedFile,
     ArchivedObjectReference,
     ArchiveManifest,
@@ -27,7 +28,7 @@ from forge.core.acceptance import AcceptanceView, list_acceptances
 from forge.core.artifacts import list_artifacts, load_artifact_revision
 from forge.core.authorization import require_owner
 from forge.core.lifecycle import ActiveInitiative, load_active_initiative
-from forge.core.transitions import INITIATIVE_CLOSED
+from forge.core.transitions import INITIATIVE_ABANDONED, INITIATIVE_CLOSED
 from forge.errors import (
     ConfigurationError,
     ConflictError,
@@ -52,9 +53,9 @@ _ZERO_DIGEST = f"sha256:{'0' * 64}"
 _STAGING_NAME = re.compile(
     r"^\.(?P<initiative>[0-9a-f-]{36})\.(?P<event>[0-9a-f-]{36})\.staging$"
 )
-_RETIRED_PREFIX = "closed-active-"
 _ACTIVE_TOP_LEVEL = {
     "acceptance",
+    "abandonment",
     "artifacts",
     "checks",
     "claims",
@@ -80,9 +81,17 @@ _ACTIVE_TOP_LEVEL = {
 class ArchiveView:
     layout: RepositoryLayout
     active: ActiveInitiative
-    closure: ClosureRecord
+    closure: ClosureRecord | None
+    abandonment: AbandonmentRecord | None
     manifest: ArchiveManifest
     events: tuple[AuditEvent, ...]
+
+    @property
+    def terminal_record(self) -> TerminalRecord:
+        record = self.closure if self.closure is not None else self.abandonment
+        if record is None:
+            raise IntegrityError("Archive has no terminal record")
+        return record
 
 
 @dataclass(frozen=True)
@@ -90,6 +99,16 @@ class ClosureResult:
     closure: ClosureRecord
     event: AuditEvent
     archive: ArchiveView
+
+
+@dataclass(frozen=True)
+class AbandonmentResult:
+    abandonment: AbandonmentRecord
+    event: AuditEvent
+    archive: ArchiveView
+
+
+TerminalRecord = ClosureRecord | AbandonmentRecord
 
 
 def _require_text(label: str, value: str) -> str:
@@ -107,8 +126,12 @@ def _staging_path(layout: RepositoryLayout, initiative_id: UUID, event_id: UUID)
     return layout.archive_directory / f".{initiative_id}.{event_id}.staging"
 
 
-def _retired_path(layout: RepositoryLayout, initiative_id: UUID) -> Path:
-    return layout.local_directory / f"{_RETIRED_PREFIX}{initiative_id}"
+def _retired_path(
+    layout: RepositoryLayout,
+    initiative_id: UUID,
+    terminal_state: InitiativeLifecycleState,
+) -> Path:
+    return layout.local_directory / f"{terminal_state.value}-active-{initiative_id}"
 
 
 def _archive_layout(layout: RepositoryLayout, path: Path) -> RepositoryLayout:
@@ -117,6 +140,20 @@ def _archive_layout(layout: RepositoryLayout, path: Path) -> RepositoryLayout:
 
 def _closure_path(layout: RepositoryLayout, closure_id: UUID) -> Path:
     return layout.closure_directory / f"{closure_id}.json"
+
+
+def _abandonment_path(layout: RepositoryLayout, abandonment_id: UUID) -> Path:
+    return layout.abandonment_directory / f"{abandonment_id}.json"
+
+
+def _terminal_event_id(record: TerminalRecord) -> UUID:
+    if isinstance(record, ClosureRecord):
+        return record.closure_event_id
+    return record.abandonment_event_id
+
+
+def _terminal_label(record: TerminalRecord) -> str:
+    return "closure" if isinstance(record, ClosureRecord) else "abandonment"
 
 
 def _event_committed(layout: RepositoryLayout, event_id: UUID) -> bool:
@@ -287,23 +324,36 @@ def _object_references(
 
 def _build_manifest(
     active: ActiveInitiative,
-    closure: ClosureRecord,
+    record: TerminalRecord,
     path: Path,
 ) -> ArchiveManifest:
     revisions = tuple(
         load_artifact_revision(active.layout, revision_id)
-        for revision_id in closure.current_artifact_revision_ids
+        for revision_id in record.current_artifact_revision_ids
+    )
+    accepted_ids: set[UUID] = (
+        set(record.accepted_artifact_revision_ids)
+        if isinstance(record, ClosureRecord)
+        else set()
     )
     manifest = ArchiveManifest(
         initiative_id=active.initiative.id,
-        terminal_state=InitiativeLifecycleState.CLOSED,
-        closure_record_id=closure.id,
-        closure_event_id=closure.closure_event_id,
+        terminal_state=record.terminal_state,
+        closure_record_id=record.id if isinstance(record, ClosureRecord) else None,
+        closure_event_id=(
+            record.closure_event_id if isinstance(record, ClosureRecord) else None
+        ),
+        abandonment_record_id=(
+            record.id if isinstance(record, AbandonmentRecord) else None
+        ),
+        abandonment_event_id=(
+            record.abandonment_event_id
+            if isinstance(record, AbandonmentRecord)
+            else None
+        ),
         created_at=utc_now(),
         files=_inventory(path),
-        object_references=_object_references(
-            revisions, set(closure.accepted_artifact_revision_ids)
-        ),
+        object_references=_object_references(revisions, accepted_ids),
         archive_digest=_ZERO_DIGEST,
         preliminary=False,
         limitations=(),
@@ -327,30 +377,52 @@ def _validate_archive_directory(
     active = load_active_initiative(archived_layout, allow_terminal=True)
     if (
         active.initiative.id != initiative_id
-        or active.state.lifecycle_state is not InitiativeLifecycleState.CLOSED
+        or active.state.lifecycle_state is not manifest.terminal_state
         or manifest.initiative_id != initiative_id
-        or manifest.terminal_state is not InitiativeLifecycleState.CLOSED
+        or manifest.terminal_state
+        not in {InitiativeLifecycleState.CLOSED, InitiativeLifecycleState.ABANDONED}
     ):
         raise IntegrityError(f"Archive identity or terminal state is invalid: {path}")
-    closure = load_record(
-        archived_layout.closure_directory / f"{manifest.closure_record_id}.json",
-        ClosureRecord,
-    )
+    closure: ClosureRecord | None = None
+    abandonment: AbandonmentRecord | None = None
+    if manifest.terminal_state is InitiativeLifecycleState.CLOSED:
+        assert manifest.closure_record_id is not None
+        closure = load_record(
+            archived_layout.closure_directory / f"{manifest.closure_record_id}.json",
+            ClosureRecord,
+        )
+        record: TerminalRecord = closure
+        if closure.closure_event_id != manifest.closure_event_id:
+            raise IntegrityError(f"Archive manifest does not match its closure record: {path}")
+        accepted_ids = set(closure.accepted_artifact_revision_ids)
+    else:
+        assert manifest.abandonment_record_id is not None
+        abandonment = load_record(
+            archived_layout.abandonment_directory
+            / f"{manifest.abandonment_record_id}.json",
+            AbandonmentRecord,
+        )
+        record = abandonment
+        if abandonment.abandonment_event_id != manifest.abandonment_event_id:
+            raise IntegrityError(
+                f"Archive manifest does not match its abandonment record: {path}"
+            )
+        accepted_ids = set[UUID]()
     if (
-        closure.id != manifest.closure_record_id
-        or closure.closure_event_id != manifest.closure_event_id
-        or closure.archive_reference != f".forge/archive/{initiative_id}"
+        record.id
+        not in {manifest.closure_record_id, manifest.abandonment_record_id}
+        or record.archive_reference != f".forge/archive/{initiative_id}"
     ):
-        raise IntegrityError(f"Archive manifest does not match its closure record: {path}")
+        raise IntegrityError(f"Archive manifest does not match its terminal record: {path}")
     expected_references = _object_references(
         tuple(
             load_artifact_revision(archived_layout, revision_id)
-            for revision_id in closure.current_artifact_revision_ids
+            for revision_id in record.current_artifact_revision_ids
         ),
-        set(closure.accepted_artifact_revision_ids),
+        accepted_ids,
     )
     if manifest.object_references != expected_references:
-        raise IntegrityError(f"Archive object references do not match closure records: {path}")
+        raise IntegrityError(f"Archive object references do not match terminal records: {path}")
     for reference in manifest.object_references:
         verify_preserved_object(
             layout,
@@ -359,9 +431,9 @@ def _validate_archive_directory(
             expected_size=reference.byte_size,
         )
     events = read_journal(archived_layout.event_journal_file)
-    if not events or events[-1].id != closure.closure_event_id:
-        raise IntegrityError(f"Archive journal does not end at its closure event: {path}")
-    return ArchiveView(archived_layout, active, closure, manifest, events)
+    if not events or events[-1].id != _terminal_event_id(record):
+        raise IntegrityError(f"Archive journal does not end at its terminal event: {path}")
+    return ArchiveView(archived_layout, active, closure, abandonment, manifest, events)
 
 
 def list_archive_ids(layout: RepositoryLayout) -> tuple[UUID, ...]:
@@ -446,7 +518,11 @@ def _closure_from_terminal_active(
 def _archive_matches_active_request(archive: ArchiveView) -> bool:
     request = active_idempotency_request()
     if request is None:
-        return _retired_path(archive.layout, archive.active.initiative.id).exists()
+        return _retired_path(
+            archive.layout,
+            archive.active.initiative.id,
+            archive.manifest.terminal_state,
+        ).exists()
     raw = archive.events[-1].metadata.get(IDEMPOTENCY_METADATA_KEY)
     return raw == request.model_dump(mode="json")
 
@@ -463,6 +539,8 @@ def _closure_from_interrupted_retirement(
         if not _archive_matches_active_request(archive):
             continue
         closure = archive.closure
+        if closure is None:
+            continue
         event = archive.events[-1]
         if (
             closure.closing_summary == closing_summary
@@ -472,6 +550,95 @@ def _closure_from_interrupted_retirement(
             matches.append((closure, event))
     if len(matches) > 1:
         raise IntegrityError("Closure retry matches more than one archived initiative")
+    return matches[0] if matches else None
+
+
+def _validate_committed_abandonment(
+    active: ActiveInitiative,
+    abandonment: AbandonmentRecord,
+    event: AuditEvent,
+    *,
+    reason: str,
+    unfinished_work_summary: str,
+    unresolved_risks: tuple[str, ...],
+    actor: Actor,
+) -> None:
+    if (
+        event.event_type != INITIATIVE_ABANDONED
+        or event.id != abandonment.abandonment_event_id
+        or event.initiative_id != abandonment.initiative_id
+        or event.sequence != abandonment.event_sequence
+        or event.actor != actor
+        or abandonment.owner_actor != actor
+        or abandonment.reason != reason
+        or abandonment.unfinished_work_summary != unfinished_work_summary
+        or abandonment.unresolved_risks != unresolved_risks
+        or abandonment.initiative_id != active.initiative.id
+    ):
+        raise IntegrityError("Committed abandonment does not match the requested owner decision")
+
+
+def _abandonment_from_terminal_active(
+    active: ActiveInitiative,
+    *,
+    reason: str,
+    unfinished_work_summary: str,
+    unresolved_risks: tuple[str, ...],
+    actor: Actor,
+) -> tuple[AbandonmentRecord, AuditEvent]:
+    events = read_journal(active.layout.event_journal_file)
+    if not events or events[-1].event_type != INITIATIVE_ABANDONED:
+        raise IntegrityError("Terminal active state does not end at an abandonment event")
+    event = events[-1]
+    raw_record_id = event.metadata.get("abandonment_record_id")
+    if not isinstance(raw_record_id, str):
+        raise IntegrityError("Abandonment event does not identify its record")
+    try:
+        record_id = UUID(raw_record_id)
+    except ValueError as error:
+        raise IntegrityError("Abandonment event has an invalid record ID") from error
+    abandonment = load_record(
+        _abandonment_path(active.layout, record_id), AbandonmentRecord
+    )
+    _validate_committed_abandonment(
+        active,
+        abandonment,
+        event,
+        reason=reason,
+        unfinished_work_summary=unfinished_work_summary,
+        unresolved_risks=unresolved_risks,
+        actor=actor,
+    )
+    return abandonment, event
+
+
+def _abandonment_from_interrupted_retirement(
+    layout: RepositoryLayout,
+    *,
+    reason: str,
+    unfinished_work_summary: str,
+    unresolved_risks: tuple[str, ...],
+    actor: Actor,
+) -> tuple[AbandonmentRecord, AuditEvent] | None:
+    matches: list[tuple[AbandonmentRecord, AuditEvent]] = []
+    for initiative_id in list_archive_ids(layout):
+        archive = load_archive(layout, initiative_id)
+        if not _archive_matches_active_request(archive):
+            continue
+        abandonment = archive.abandonment
+        if abandonment is None:
+            continue
+        event = archive.events[-1]
+        if (
+            abandonment.reason == reason
+            and abandonment.unfinished_work_summary == unfinished_work_summary
+            and abandonment.unresolved_risks == unresolved_risks
+            and abandonment.owner_actor == actor
+            and event.actor == actor
+        ):
+            matches.append((abandonment, event))
+    if len(matches) > 1:
+        raise IntegrityError("Abandonment retry matches more than one archived initiative")
     return matches[0] if matches else None
 
 
@@ -487,53 +654,57 @@ def _remove_staging(path: Path) -> None:
 def _promote_archive(
     layout: RepositoryLayout,
     active: ActiveInitiative | None,
-    closure: ClosureRecord,
+    record: TerminalRecord,
     event: AuditEvent,
 ) -> ArchiveView:
-    destination = _archive_path(layout, closure.initiative_id)
-    staging = _staging_path(layout, closure.initiative_id, event.id)
+    label = _terminal_label(record)
+    destination = _archive_path(layout, record.initiative_id)
+    staging = _staging_path(layout, record.initiative_id, event.id)
     if destination.exists() or destination.is_symlink():
-        archive = load_archive(layout, closure.initiative_id)
+        archive = load_archive(layout, record.initiative_id)
         if (
-            archive.closure != closure
+            archive.terminal_record != record
             or archive.events[-1].id != event.id
             or archive.manifest.preliminary
         ):
-            raise IntegrityError("Existing archive does not match the hardened closure transaction")
+            raise IntegrityError(
+                f"Existing archive does not match the hardened {label} transaction"
+            )
         if staging.exists() or staging.is_symlink():
             _remove_staging(staging)
         return archive
     if active is None:
         raise IntegrityError(
-            "Closure event is committed but neither its archive nor terminal active state exists"
+            f"{label.title()} event is committed but neither its archive nor terminal active "
+            "state exists"
         )
     if staging.exists() or staging.is_symlink():
         _remove_staging(staging)
     try:
         _copy_active_tree(active.layout.active_directory, staging)
-        manifest = _build_manifest(active, closure, staging)
+        manifest = _build_manifest(active, record, staging)
         write_record(staging / _MANIFEST_NAME, manifest)
-        candidate = _validate_archive_directory(layout, staging, closure.initiative_id)
-        if candidate.closure != closure or candidate.events[-1].id != event.id:
-            raise IntegrityError("Closure staging does not match the committed closure")
+        candidate = _validate_archive_directory(layout, staging, record.initiative_id)
+        if candidate.terminal_record != record or candidate.events[-1].id != event.id:
+            raise IntegrityError(f"{label.title()} staging does not match the committed decision")
         sync_directory(staging)
         os.replace(staging, destination)
         sync_directory(layout.archive_directory)
     except OSError as error:
         raise IntegrityError(
-            "Atomic archive promotion was interrupted; retry 'forge close' with the same "
+            f"Atomic archive promotion was interrupted; retry 'forge {label}' with the same "
             f"idempotency key: {error}"
         ) from error
-    archive = load_archive(layout, closure.initiative_id)
+    archive = load_archive(layout, record.initiative_id)
     if archive.manifest.preliminary:
-        raise IntegrityError("New closure unexpectedly produced a preliminary archive")
+        raise IntegrityError(f"New {label} unexpectedly produced a preliminary archive")
     return archive
 
 
 def _validate_terminal_tree(
     layout: RepositoryLayout,
     path: Path,
-    closure: ClosureRecord,
+    record: TerminalRecord,
     event: AuditEvent,
 ) -> None:
     if path.is_symlink() or not path.is_dir():
@@ -542,44 +713,45 @@ def _validate_terminal_tree(
     terminal = load_active_initiative(terminal_layout, allow_terminal=True)
     events = read_journal(terminal_layout.event_journal_file)
     if (
-        terminal.initiative.id != closure.initiative_id
-        or terminal.state.lifecycle_state is not InitiativeLifecycleState.CLOSED
+        terminal.initiative.id != record.initiative_id
+        or terminal.state.lifecycle_state is not record.terminal_state
         or not events
         or events[-1].id != event.id
     ):
-        raise IntegrityError("Retired active state does not match the committed closure")
+        raise IntegrityError("Retired active state does not match the committed terminal decision")
 
 
 def _retire_active_state(
     layout: RepositoryLayout,
-    closure: ClosureRecord,
+    record: TerminalRecord,
     event: AuditEvent,
 ) -> None:
+    label = _terminal_label(record)
     active = layout.active_directory
-    retired = _retired_path(layout, closure.initiative_id)
+    retired = _retired_path(layout, record.initiative_id, record.terminal_state)
     if retired.exists() or retired.is_symlink():
-        _validate_terminal_tree(layout, retired, closure, event)
+        _validate_terminal_tree(layout, retired, record, event)
     if active.exists() or active.is_symlink():
         if active.is_symlink() or not active.is_dir():
             raise SecurityError(f"Active governance path is unsafe: {active}")
         contents = tuple(active.iterdir())
         if contents:
-            _validate_terminal_tree(layout, active, closure, event)
+            _validate_terminal_tree(layout, active, record, event)
             if retired.exists() or retired.is_symlink():
-                raise IntegrityError("Both active and retired closure state contain records")
+                raise IntegrityError("Both active and retired terminal state contain records")
             try:
                 os.replace(active, retired)
                 sync_directory(layout.forge_directory)
                 sync_directory(layout.local_directory)
             except OSError as error:
                 raise IntegrityError(
-                    "Active-state retirement was interrupted; retry 'forge close' with the "
+                    f"Active-state retirement was interrupted; retry 'forge {label}' with the "
                     f"same idempotency key: {error}"
                 ) from error
         elif not retired.exists():
             return
     if retired.exists() or retired.is_symlink():
-        _validate_terminal_tree(layout, retired, closure, event)
+        _validate_terminal_tree(layout, retired, record, event)
     try:
         if not active.exists():
             active.mkdir()
@@ -589,7 +761,7 @@ def _retire_active_state(
             sync_directory(layout.local_directory)
     except OSError as error:
         raise IntegrityError(
-            "Active-state retirement was interrupted; retry 'forge close' with the same "
+            f"Active-state retirement was interrupted; retry 'forge {label}' with the same "
             f"idempotency key: {error}"
         ) from error
 
@@ -603,6 +775,17 @@ def _finalize_committed_closure(
     archive = _promote_archive(layout, active, closure, event)
     _retire_active_state(layout, closure, event)
     return ClosureResult(closure, event, archive)
+
+
+def _finalize_committed_abandonment(
+    layout: RepositoryLayout,
+    active: ActiveInitiative | None,
+    abandonment: AbandonmentRecord,
+    event: AuditEvent,
+) -> AbandonmentResult:
+    archive = _promote_archive(layout, active, abandonment, event)
+    _retire_active_state(layout, abandonment, event)
+    return AbandonmentResult(abandonment, event, archive)
 
 
 def close_initiative(
@@ -738,3 +921,154 @@ def close_initiative(
 
     closed = load_active_initiative(layout, allow_terminal=True)
     return _finalize_committed_closure(layout, closed, closure, event)
+
+
+def abandon_initiative(
+    layout: RepositoryLayout,
+    *,
+    reason: str,
+    unfinished_work_summary: str,
+    unresolved_risks: tuple[str, ...],
+    actor: Actor,
+) -> AbandonmentResult:
+    reason = _require_text("Abandonment reason", reason)
+    unfinished_work_summary = _require_text(
+        "Unfinished work summary", unfinished_work_summary
+    )
+    unresolved_risks = tuple(
+        _require_text("Unresolved risk", item) for item in unresolved_risks
+    )
+    if not unresolved_risks:
+        raise ConfigurationError("At least one unresolved risk statement is required")
+
+    active: ActiveInitiative | None = None
+    if layout.initiative_file.exists():
+        active = load_active_initiative(layout, allow_terminal=True, allow_paused=True)
+        if active.state.lifecycle_state is InitiativeLifecycleState.ABANDONED:
+            require_owner(actor, active.initiative.owner_identity_id, "recover abandonment")
+            abandonment, event = _abandonment_from_terminal_active(
+                active,
+                reason=reason,
+                unfinished_work_summary=unfinished_work_summary,
+                unresolved_risks=unresolved_risks,
+                actor=actor,
+            )
+            return _finalize_committed_abandonment(layout, active, abandonment, event)
+    else:
+        interrupted = _abandonment_from_interrupted_retirement(
+            layout,
+            reason=reason,
+            unfinished_work_summary=unfinished_work_summary,
+            unresolved_risks=unresolved_risks,
+            actor=actor,
+        )
+        if interrupted is not None:
+            abandonment, event = interrupted
+            return _finalize_committed_abandonment(layout, None, abandonment, event)
+        raise ConflictError("No active initiative exists; run 'forge create' first")
+
+    require_owner(actor, active.initiative.owner_identity_id, "abandon an initiative")
+    if active.state.lifecycle_state not in {
+        InitiativeLifecycleState.ACTIVE,
+        InitiativeLifecycleState.PAUSED,
+    }:
+        raise ConflictError("Only an active or paused initiative may be abandoned")
+    if active.state.active_run_ids:
+        raise ConflictError(
+            "Abandonment requires every governed run to be inactive; cancel active runs first"
+        )
+    destination = _archive_path(layout, active.initiative.id)
+    if destination.exists() or destination.is_symlink():
+        raise ConflictError(f"Archive destination already exists: {destination}")
+
+    revisions = tuple(
+        sorted(
+            (item.current_revision for item in list_artifacts(active.layout)),
+            key=lambda item: str(item.id),
+        )
+    )
+    unfinished_step_ids = tuple(
+        step.id
+        for step in active.workflow.steps
+        if active.state.step_states[step.id] is not StepState.COMPLETED
+    )
+    now = utc_now()
+    sequence = active.state.journal_head_sequence + 1
+    abandonment_id = uuid4()
+    event_id = uuid4()
+    current_revision_ids = tuple(item.id for item in revisions)
+    archive_reference = f".forge/archive/{active.initiative.id}"
+    affected_ids = (abandonment_id, *current_revision_ids)
+    basis = "configured owner abandoned unfinished work for atomic M2 archival"
+    abandonment = AbandonmentRecord(
+        id=abandonment_id,
+        initiative_id=active.initiative.id,
+        actor_id=actor.id,
+        recorded_at=now,
+        event_sequence=sequence,
+        authorization_basis=basis,
+        tool_version=__version__,
+        affected_record_ids=current_revision_ids,
+        affected_digests=tuple(item.content_digest for item in revisions),
+        owner_actor=actor,
+        terminal_state=InitiativeLifecycleState.ABANDONED,
+        abandonment_event_id=event_id,
+        reason=reason,
+        unfinished_work_summary=unfinished_work_summary,
+        unresolved_risks=unresolved_risks,
+        unfinished_step_ids=unfinished_step_ids,
+        current_artifact_revision_ids=current_revision_ids,
+        archive_reference=archive_reference,
+    )
+    record_digest = canonical_json_digest(abandonment.model_dump(mode="json"))
+    event = AuditEvent(
+        id=event_id,
+        initiative_id=active.initiative.id,
+        sequence=sequence,
+        timestamp=now,
+        event_type=INITIATIVE_ABANDONED,
+        actor=actor,
+        authorization_basis=basis,
+        affected_record_ids=affected_ids,
+        affected_digests=tuple(
+            dict.fromkeys((*abandonment.affected_digests, record_digest))
+        ),
+        metadata={
+            "abandonment_record_id": str(abandonment_id),
+            "archive_reference": archive_reference,
+            "reason": reason,
+            "unfinished_work_summary": unfinished_work_summary,
+            "unresolved_risks": list(unresolved_risks),
+            "unfinished_step_ids": list(unfinished_step_ids),
+            "current_artifact_revision_ids": [str(item) for item in current_revision_ids],
+            "archive_guarantee": "atomic-m2-resumable",
+        },
+    )
+    created_directory = False
+    if not layout.abandonment_directory.exists():
+        try:
+            layout.abandonment_directory.mkdir()
+        except OSError as error:
+            raise IntegrityError(
+                f"Cannot create abandonment record directory: {error}"
+            ) from error
+        created_directory = True
+    record_path = _abandonment_path(layout, abandonment_id)
+    try:
+        write_record(record_path, abandonment)
+        append_event_and_update_snapshot(
+            layout.event_journal_file,
+            layout.state_file,
+            event,
+            active.reducer,
+        )
+    except Exception:
+        if not _event_committed(layout, event_id):
+            record_path.unlink(missing_ok=True)
+            if created_directory:
+                with suppress(OSError):
+                    layout.abandonment_directory.rmdir()
+        raise
+
+    abandoned = load_active_initiative(layout, allow_terminal=True)
+    return _finalize_committed_abandonment(layout, abandoned, abandonment, event)

@@ -8,7 +8,7 @@ from uuid import UUID
 
 from forge.contracts.actors import ActorType
 from forge.contracts.agents import AgentResult
-from forge.contracts.archives import ClosureRecord
+from forge.contracts.archives import AbandonmentRecord, ClosureRecord
 from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
 from forge.contracts.capabilities import SideEffectClass
 from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, DecisionSupersession
@@ -34,6 +34,7 @@ from forge.core.transitions import (
     DECISION_RECORDED,
     DECISION_SUPERSEDED,
     EVIDENCE_REGISTERED,
+    INITIATIVE_ABANDONED,
     INITIATIVE_CLOSED,
     INTEGRITY_RECOVERED,
     RESULT_IMPORTED,
@@ -70,6 +71,15 @@ def _uuid_list_metadata(event: AuditEvent, key: str) -> tuple[UUID, ...]:
         return tuple(UUID(item) for item in cast("list[str]", value))
     except ValueError as error:
         raise IntegrityError(f"Event {event.id} has invalid UUID metadata field {key!r}") from error
+
+
+def _string_list_matches(value: object, expected: tuple[str, ...]) -> bool:
+    if not isinstance(value, list):
+        return False
+    items = cast("list[object]", value)
+    return all(isinstance(item, str) for item in items) and tuple(
+        cast("list[str]", items)
+    ) == expected
 
 
 def _record_path(layout: RepositoryLayout, artifact_id: UUID, revision_number: int) -> Path:
@@ -114,6 +124,10 @@ def _imported_result_path(layout: RepositoryLayout, result_id: UUID) -> Path:
 
 def _closure_path(layout: RepositoryLayout, closure_id: UUID) -> Path:
     return layout.closure_directory / f"{closure_id}.json"
+
+
+def _abandonment_path(layout: RepositoryLayout, abandonment_id: UUID) -> Path:
+    return layout.abandonment_directory / f"{abandonment_id}.json"
 
 
 def _recovery_path(layout: RepositoryLayout, recovery_id: UUID) -> Path:
@@ -226,6 +240,7 @@ def validate_governed_records(
     expected_supersessions: set[Path] = set()
     expected_imported_results: set[Path] = set()
     expected_closures: set[Path] = set()
+    expected_abandonments: set[Path] = set()
     expected_runs: set[Path] = set()
     expected_recoveries: set[Path] = set()
     expected_recovery_snapshots: set[Path] = set()
@@ -791,6 +806,62 @@ def validate_governed_records(
                 or state.lifecycle_state is not InitiativeLifecycleState.CLOSED
             ):
                 raise IntegrityError(f"Closure record does not match event {event.id}")
+        elif event.event_type == INITIATIVE_ABANDONED:
+            abandonment_id = _uuid_metadata(event, "abandonment_record_id")
+            current_artifact_ids = _uuid_list_metadata(
+                event, "current_artifact_revision_ids"
+            )
+            path = _abandonment_path(layout, abandonment_id)
+            expected_abandonments.add(path)
+            abandonment = load_record(path, AbandonmentRecord)
+            _validate_common(abandonment, event, abandonment_id)
+            archive_reference = event.metadata.get("archive_reference")
+            unresolved_risks = event.metadata.get("unresolved_risks")
+            unfinished_steps = event.metadata.get("unfinished_step_ids")
+            risks_match = _string_list_matches(
+                unresolved_risks, abandonment.unresolved_risks
+            )
+            steps_match = _string_list_matches(
+                unfinished_steps, abandonment.unfinished_step_ids
+            )
+            expected_current_ids = tuple(sorted(current_revision_ids.values(), key=str))
+            expected_unfinished = tuple(
+                step.id
+                for step in workflow.steps
+                if state.step_states[step.id] is not StepState.COMPLETED
+            )
+            expected_archive = f".forge/archive/{event.initiative_id}"
+            current_digests = {
+                revisions_by_id[item].content_digest for item in expected_current_ids
+            }
+            if (
+                event is not events[-1]
+                or abandonment.id != abandonment_id
+                or abandonment.owner_actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or abandonment.terminal_state is not InitiativeLifecycleState.ABANDONED
+                or abandonment.abandonment_event_id != event.id
+                or abandonment.reason != event.metadata.get("reason")
+                or abandonment.unfinished_work_summary
+                != event.metadata.get("unfinished_work_summary")
+                or not risks_match
+                or not steps_match
+                or abandonment.unfinished_step_ids != expected_unfinished
+                or abandonment.current_artifact_revision_ids != current_artifact_ids
+                or current_artifact_ids != expected_current_ids
+                or abandonment.archive_reference != archive_reference
+                or archive_reference != expected_archive
+                or set((abandonment_id, *current_artifact_ids))
+                - set(event.affected_record_ids)
+                or current_digests - set(event.affected_digests)
+                or set(abandonment.affected_digests) != current_digests
+                or set(abandonment.affected_record_ids) != set(current_artifact_ids)
+                or canonical_json_digest(abandonment.model_dump(mode="json"))
+                not in event.affected_digests
+                or state.lifecycle_state is not InitiativeLifecycleState.ABANDONED
+            ):
+                raise IntegrityError(f"Abandonment record does not match event {event.id}")
         elif event.event_type == STEP_TRANSITIONED:
             destination = event.metadata.get("destination_state")
             step_id = event.metadata.get("step_id")
@@ -895,6 +966,7 @@ def validate_governed_records(
     _validate_directory(layout.decision_supersession_directory, expected_supersessions)
     _validate_directory(layout.imported_result_directory, expected_imported_results)
     _validate_directory(layout.closure_directory, expected_closures)
+    _validate_directory(layout.abandonment_directory, expected_abandonments)
     _validate_directory(layout.governed_run_directory, expected_runs)
     _validate_directory(layout.recovery_record_directory, expected_recoveries)
     _validate_directory(layout.recovery_snapshot_directory, expected_recovery_snapshots)

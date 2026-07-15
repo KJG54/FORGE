@@ -81,3 +81,9 @@ M2 Increment 6 keeps `ClosureRecord` stable and makes `ArchiveManifest.prelimina
 compatibility flag. Existing M1 manifests remain `true` with declared limitations; newly hardened
 archives are `false` with no preliminary limitations. The closure event, record, manifest, file
 inventory, and preserved-object references must identify the same terminal transaction.
+
+M2 Increment 7 adds `AbandonmentRecord`. It binds the owner, terminal event, explicit reason,
+unfinished-work summary, unresolved risks, unfinished step IDs, current governed artifact
+revisions, and archive destination. `ArchiveManifest` now identifies exactly one terminal record
+kind: closure fields for `closed`, or abandonment fields for `abandoned`. Abandoned object
+references are always marked unaccepted so archive inspection cannot imply closure success.

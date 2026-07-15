@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from forge.contracts.actors import Actor, ActorType, AuthorityGrant, OwnerIdentity
 from forge.contracts.agents import AgentHandoff, AgentResult, ReturnedFile
 from forge.contracts.archives import (
+    AbandonmentRecord,
     ArchivedFile,
     ArchivedObjectReference,
     ArchiveManifest,
@@ -66,6 +67,7 @@ from forge.contracts.workflows import (
 
 CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "acceptance-record": AcceptanceRecord,
+    "abandonment-record": AbandonmentRecord,
     "actor": Actor,
     "agent-handoff": AgentHandoff,
     "agent-result": AgentResult,
@@ -109,6 +111,7 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
 __all__ = [
     "CONTRACT_MODELS",
     "SCHEMA_VERSION",
+    "AbandonmentRecord",
     "AcceptanceRecord",
     "Actor",
     "ActorType",

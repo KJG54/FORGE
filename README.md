@@ -64,8 +64,13 @@ staging, atomic promotion, archive-before-retirement validation, and same-idempo
 for interruptions after the closure event commits. Existing M1 archives remain readable with their
 original preliminary label.
 
+M2 Increment 7 adds owner-authorized `forge abandon` with required reason, unfinished-work summary,
+and unresolved-risk statements. Abandonment is allowed from healthy active or paused work after
+all governed runs stop, and creates a distinct non-success terminal record and resumable atomic
+archive without requiring completed checks or acceptances.
+
 Later M2 increments remain responsible for damaged-journal handling, unrelated interrupted-command
-resolution, stale-lock remediation, migration, abandonment, and successor initiatives.
+resolution, stale-lock remediation, migration, and successor initiatives.
 
 Initialize an ordinary project repository with:
 
@@ -79,6 +84,8 @@ forge status
 forge pause --reason "Waiting for owner review"
 forge resume
 forge recover --reason "Rebuild derived state after an interrupted write"
+forge abandon --reason "Stop this initiative" --unfinished-work "Remaining work" \
+  --risk "Intended outcome was not delivered"
 forge artifact add requirements.md --role requirements --title "Requirements"
 forge schema export --output schemas
 ```
@@ -114,7 +121,7 @@ forge --help
 - [Artifacts, claims, checks, and evidence](docs/artifacts-and-evidence.md)
 - [Acceptance, decisions, and invalidation](docs/acceptance-and-invalidation.md)
 - [Manual handoffs and safe result import](docs/handoffs-and-imports.md)
-- [Atomic closure and archive inspection](docs/closure-and-archives.md)
+- [Atomic terminal decisions and archive inspection](docs/closure-and-archives.md)
 - [Idempotent mutation retries](docs/idempotency.md)
 - [Explicit active-snapshot recovery](docs/recovery.md)
 - [Pause and long-gap resume](docs/continuity.md)
@@ -127,6 +134,7 @@ forge --help
 - [M2 Increment 4 recovery boundary](docs/milestones/m2-increment-4.md)
 - [M2 Increment 5 continuity boundary](docs/milestones/m2-increment-5.md)
 - [M2 Increment 6 atomic closure boundary](docs/milestones/m2-increment-6.md)
+- [M2 Increment 7 atomic abandonment boundary](docs/milestones/m2-increment-7.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

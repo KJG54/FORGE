@@ -19,7 +19,7 @@ from forge.core.acceptance import (
     revoke_acceptance,
     show_acceptance,
 )
-from forge.core.archival import close_initiative
+from forge.core.archival import abandon_initiative, close_initiative
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
 from forge.core.authorization import owner_actor
 from forge.core.continuity import pause_initiative, resume_initiative
@@ -139,7 +139,7 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
                     command=function.__name__,
                     provided_key=provided_key,
                     parameters=parameters,
-                    resume_incomplete=function.__name__ in {"close", "recover"},
+                    resume_incomplete=function.__name__ in {"abandon", "close", "recover"},
                 ) as invocation:
                     typer.echo(f"Idempotency key: {invocation.key}")
                     if invocation.is_replay:
@@ -406,15 +406,30 @@ def status(
             typer.echo(f"Open decision: {decision_id}")
         for record_id in report.state.stale_record_ids:
             typer.echo(f"Stale record: {record_id}")
-    if report.archive_manifest is not None and report.closure is not None:
-        typer.echo(f"Archive: {report.closure.archive_reference}")
+    if report.archive_manifest is not None and (
+        report.closure is not None or report.abandonment is not None
+    ):
+        terminal = report.closure or report.abandonment
+        assert terminal is not None
+        typer.echo(f"Archive: {terminal.archive_reference}")
         typer.echo(f"Archive digest: {report.archive_manifest.archive_digest}")
-        typer.echo(f"Closing summary: {report.closure.closing_summary}")
-        guarantee = (
-            "preliminary M1 command-level immutability"
-            if report.archive_manifest.preliminary
-            else "atomic M2 closure with resumable archival"
-        )
+        if report.closure is not None:
+            typer.echo(f"Closing summary: {report.closure.closing_summary}")
+        else:
+            assert report.abandonment is not None
+            typer.echo(f"Abandonment reason: {report.abandonment.reason}")
+            typer.echo(
+                f"Unfinished work: {report.abandonment.unfinished_work_summary}"
+            )
+            for risk in report.abandonment.unresolved_risks:
+                typer.echo(f"Unresolved risk: {risk}")
+        if report.archive_manifest.preliminary:
+            guarantee = "preliminary M1 command-level immutability"
+        else:
+            guarantee = (
+                f"atomic M2 {report.archive_manifest.terminal_state.value} "
+                "with resumable archival"
+            )
         typer.echo(f"Archive guarantee: {guarantee}")
     for action in report.next_actions:
         typer.echo(f"Next: {action}")
@@ -603,6 +618,54 @@ def close(
     typer.echo(f"Archive: {result.closure.archive_reference}")
     typer.echo(f"Archive digest: {result.archive.manifest.archive_digest}")
     typer.echo("Atomic M2 archive created; closure retry is interruption-safe")
+
+
+@app.command("abandon")
+@_locked_mutation
+def abandon(
+    reason: Annotated[
+        str,
+        typer.Option("--reason", help="Owner reason for abandoning the initiative."),
+    ],
+    unfinished_work: Annotated[
+        str,
+        typer.Option(
+            "--unfinished-work",
+            help="Summary of work that remains unfinished.",
+        ),
+    ],
+    risk: Annotated[
+        list[str],
+        typer.Option(
+            "--risk",
+            help="Repeat for each unresolved risk; state 'None known' when appropriate.",
+        ),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Abandon unfinished work into a distinct interruption-recoverable archive."""
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = abandon_initiative(
+            layout,
+            reason=reason,
+            unfinished_work_summary=unfinished_work,
+            unresolved_risks=tuple(risk),
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Abandoned initiative {result.abandonment.initiative_id}")
+    typer.echo(f"Abandonment record: {result.abandonment.id}")
+    typer.echo(f"Archive: {result.abandonment.archive_reference}")
+    typer.echo(f"Archive digest: {result.archive.manifest.archive_digest}")
+    typer.echo("Atomic M2 abandonment archive created; retry is interruption-safe")
 
 
 @app.command("next")

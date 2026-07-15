@@ -155,6 +155,10 @@ class RepositoryLayout:
         return self.active_directory / "closure"
 
     @property
+    def abandonment_directory(self) -> Path:
+        return self.active_directory / "abandonment"
+
+    @property
     def recovery_record_directory(self) -> Path:
         return self.active_directory / "recovery-records"
 

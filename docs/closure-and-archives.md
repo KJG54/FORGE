@@ -1,8 +1,8 @@
-# Atomic Closure and Archive Inspection
+# Atomic Terminal Decisions and Archive Inspection
 
-M2 Increment 6 upgrades successful closure from the preliminary M1 process to a resumable,
-interruption-safe transaction. It does not implement abandonment, successor initiatives, schema
-migration, stale-lock removal, or generic recovery for unrelated commands.
+M2 Increments 6 and 7 provide distinct resumable, interruption-safe archive transactions for
+successful closure and owner-authorized abandonment. They do not implement successor initiatives,
+schema migration, stale-lock removal, or generic recovery for unrelated commands.
 
 ## Closure gate
 
@@ -12,51 +12,64 @@ exact current working bytes, valid preserved objects, a non-empty final owner su
 integrity, and a clean Git worktree when configured.
 
 The final `initiative-closed` event is the governance commit point. It binds the `ClosureRecord`,
-current artifact revisions, final acceptances, archive destination, and the command idempotency
-identity. Replay moves the initiative to terminal `closed`; later events remain invalid.
+current artifact revisions, final acceptances, archive destination, and command identity. Replay
+moves the initiative to terminal `closed`; later events remain invalid.
+
+## Abandonment decision
+
+`forge abandon --reason <text> --unfinished-work <text> --risk <text>` is owner-only and accepts a
+healthy active or paused initiative. At least one risk statement is required; repeat `--risk` for
+multiple risks or explicitly state `None known`. Every governed run must already be inactive, so
+the owner uses `forge run cancel` before abandonment when necessary.
+
+Unlike closure, abandonment does not require completed workflow steps, successful checks, current
+acceptance, exact mutable working bytes, or clean Git. It preserves the valid governed journal,
+records, and registered artifact bytes as they stand. The `initiative-abandoned` event is its
+governance commit point and can never be presented as closure success.
 
 ## Resumable transaction
 
-After the closure event and terminal snapshot are durable, FORGE performs four recoverable phases:
+After either terminal event and snapshot are durable, FORGE performs four recoverable phases:
 
 1. copy terminal active state into a same-filesystem, deterministically named staging directory;
-2. build and validate a non-preliminary `archive-manifest.json` over every archived file and
-   preserved object reference;
+2. build and validate a non-preliminary manifest over every file and preserved object reference;
 3. atomically promote staging to `.forge/archive/<initiative-id>/`; and
 4. atomically rename terminal `.forge/active`, recreate an empty active directory, validate the
    retired tree against the archive, and remove the retired copy.
 
-The archive is validated before terminal active state is retired. The terminal journal, hardened
-archive, deterministic staging name, and deterministic retired name make every post-commit phase
-observable and reconstructable. FORGE does not roll back a committed closure event.
+The archive is validated before terminal active state is retired. The journal, hardened archive,
+deterministic staging name, and terminal-specific retired name make each post-commit phase
+observable and reconstructable. FORGE never rolls back a committed terminal event.
 
-If a phase is interrupted, `forge status` reports an integrity blocker. Repeat the exact close
-request with the same idempotency key:
+If a phase is interrupted, repeat the exact request with the same idempotency key:
 
 ```console
 forge close --summary "All governed outputs are accepted" \
   --idempotency-key close-release-1
+
+forge abandon --reason "Stop this initiative" --unfinished-work "Remaining work" \
+  --risk "No accepted outcome exists" --idempotency-key abandon-release-1
 ```
 
-The retry validates the committed owner decision, rebuilds incomplete staging when needed,
-reuses an already valid promoted archive, finishes active-state retirement, and only then writes
-the idempotency completion receipt. It never appends a duplicate closure event.
+The retry validates the committed owner decision, rebuilds incomplete staging when needed, reuses
+only an exactly matching promoted archive, finishes retirement, and only then writes the completion
+receipt. It never appends a duplicate terminal event.
 
 ## Archive contents and inspection
 
-The archive contains the complete terminal journal and snapshot, initiative and locked workflow
-identity, governed records, closure record, and manifest. Manifest entries bind each file by path,
-byte count, and SHA-256 digest. Object references continue to verify exact accepted bytes under
-`.forge/objects/sha256/` independently of mutable project files.
+The archive contains the complete terminal journal and snapshot, initiative and locked workflow,
+governed records, one terminal record, and a manifest. Manifest entries bind each file by path,
+byte count, and SHA-256 digest. Object references verify governed bytes under
+`.forge/objects/sha256/` independently of mutable project files. Closed references identify
+accepted bytes; abandoned references are deliberately unaccepted.
 
 ```console
 forge status --archive <initiative-id>
 forge history --archive <initiative-id>
 forge history --archive <initiative-id> --event-type initiative-closed
+forge history --archive <initiative-id> --event-type initiative-abandoned
 ```
 
-New manifests report `preliminary: false` and no preliminary limitations. Existing preliminary M1
-archives remain readable as their original guarantee; this increment does not rewrite them.
-
-Closed archives cannot reopen. Continued work still requires the separately authorized successor
-initiative increment.
+New manifests report `preliminary: false` with no preliminary limitations. Existing M1 closure
+archives remain readable with their original guarantee. Closed and abandoned archives cannot
+reopen; continued work requires the separately authorized successor initiative increment.

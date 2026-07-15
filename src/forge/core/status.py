@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from uuid import UUID
 
-from forge.contracts.archives import ArchiveManifest, ClosureRecord
+from forge.contracts.archives import AbandonmentRecord, ArchiveManifest, ClosureRecord
 from forge.contracts.initiatives import Initiative
 from forge.contracts.state import (
     InitiativeLifecycleState,
@@ -31,6 +31,7 @@ class StatusReport:
     selected_archive_id: UUID | None = None
     archive_manifest: ArchiveManifest | None = None
     closure: ClosureRecord | None = None
+    abandonment: AbandonmentRecord | None = None
 
 
 def inspect_status(
@@ -54,6 +55,7 @@ def inspect_status(
                 selected_archive_id=archive_id,
                 archive_manifest=archived.manifest,
                 closure=archived.closure,
+                abandonment=archived.abandonment,
             )
         for identifier in archived_ids:
             load_archive(layout, identifier)
@@ -74,7 +76,7 @@ def inspect_status(
     retired = tuple(
         path.name
         for path in layout.local_directory.iterdir()
-        if path.name.startswith("closed-active-")
+        if path.name.startswith(("closed-active-", "abandoned-active-"))
     )
     if not layout.active_directory.exists():
         return StatusReport(
@@ -84,7 +86,7 @@ def inspect_status(
             state=None,
             next_actions=(),
             blockers=(
-                "Closure retirement is incomplete; retry 'forge close' with the same "
+                "Terminal retirement is incomplete; retry the terminal command with the same "
                 "idempotency key",
             ),
             archived_initiative_ids=archived_ids,
@@ -99,7 +101,7 @@ def inspect_status(
                 state=None,
                 next_actions=(),
                 blockers=(
-                    "Closure transaction is incomplete; retry 'forge close' with the same "
+                    "Terminal transaction is incomplete; retry the terminal command with the same "
                     f"idempotency key (active={unexpected}, staging={staging}, retired={retired})",
                 ),
             )
@@ -131,6 +133,11 @@ def inspect_status(
         InitiativeLifecycleState.CLOSED,
         InitiativeLifecycleState.ABANDONED,
     }:
+        terminal_command = (
+            "close"
+            if active.state.lifecycle_state is InitiativeLifecycleState.CLOSED
+            else "abandon"
+        )
         return StatusReport(
             repository_state=RepositoryState.INITIALIZED,
             integrity_state=IntegrityState.INTEGRITY_ERROR,
@@ -138,8 +145,9 @@ def inspect_status(
             state=active.state,
             next_actions=(),
             blockers=(
-                "Terminal state remains under .forge/active; retry 'forge close' with the same "
-                "idempotency key to finish atomic archival",
+                "Terminal state remains under .forge/active; retry "
+                f"'forge {terminal_command}' "
+                "with the same idempotency key to finish atomic archival",
             ),
             archived_initiative_ids=archived_ids,
         )

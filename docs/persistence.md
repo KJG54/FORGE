@@ -110,3 +110,15 @@ The event is the governance commit point; the overall multi-directory operation 
 than falsely presented as one filesystem primitive. A retry with the same close parameters and
 idempotency key rebuilds staging or finishes retirement without duplicating the terminal event. The
 completion receipt is written only after the archive is valid and `.forge/active` is empty.
+
+## M2 Increment 7 atomic abandonment layer
+
+The owner-authorized `initiative-abandoned` event is the abandonment commit point. It binds a
+durable `AbandonmentRecord` containing the reason, unfinished work, unresolved risks, unfinished
+step IDs, current governed artifact revisions, and destination. Replay transitions either healthy
+active or paused state to terminal `abandoned`; active runs make the event invalid.
+
+Abandonment reuses deterministic staging, manifest validation, atomic promotion, and active-state
+retirement. A matching retry can rebuild staging or finish retirement without appending a second
+terminal event. The manifest and archive validator require abandonment-specific IDs and prohibit
+closure IDs, so this path cannot be confused with successful closure.
