@@ -64,12 +64,16 @@ def _windows_process_alive(pid: int) -> bool:
     the POSIX liveness idiom is therefore unsafe on Windows.
     """
     import ctypes
+    from collections.abc import Callable
     from ctypes import wintypes
+    from typing import cast
 
     process_query_limited_information = 0x1000
     error_invalid_parameter = 87
     still_active = 259
-    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    win_dll = cast(type[ctypes.CDLL], ctypes.__dict__["WinDLL"])
+    get_last_error = cast(Callable[[], int], ctypes.__dict__["get_last_error"])
+    kernel32 = win_dll("kernel32", use_last_error=True)
     open_process = kernel32.OpenProcess
     open_process.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
     open_process.restype = wintypes.HANDLE
@@ -84,7 +88,7 @@ def _windows_process_alive(pid: int) -> bool:
     if not handle:
         # Access denied is conservatively treated as live; only a definitively invalid
         # process identifier is stale.
-        return ctypes.get_last_error() != error_invalid_parameter
+        return get_last_error() != error_invalid_parameter
     exit_code = wintypes.DWORD()
     try:
         if not get_exit_code(handle, ctypes.byref(exit_code)):
