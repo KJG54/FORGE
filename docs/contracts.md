@@ -93,3 +93,8 @@ links. Each link binds an archived initiative UUID to `.forge/archive/<initiativ
 embedded in the successor creation event and affected-record sets. Successor artifact reuse creates
 a new `ArtifactRecord` and `ArtifactRevision`; its `ProvenanceRecord` binds the predecessor
 initiative, terminal revision, content digest, and archived revision reference.
+
+M2 Increment 10 adds `MigrationRecord`. It binds configured-owner authorization and the stable
+migration service actor to one registered source/target edge, the exact preserved source path,
+size and digest, the source event count, and the single `schema-migrated` commit event. The first
+edge changes the event-journal format while retaining contract schema version `1.0`.

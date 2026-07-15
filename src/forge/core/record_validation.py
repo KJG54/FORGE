@@ -14,6 +14,7 @@ from forge.contracts.capabilities import SideEffectClass
 from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, DecisionSupersession
 from forge.contracts.events import AuditEvent
 from forge.contracts.initiatives import Initiative
+from forge.contracts.migrations import MigrationRecord
 from forge.contracts.recovery import RecoveryRecord, SnapshotCondition
 from forge.contracts.runs import RunRecord
 from forge.contracts.state import InitiativeLifecycleState, MaterializedState, RunState, StepState
@@ -25,6 +26,7 @@ from forge.contracts.verification import (
     EvidencePacket,
 )
 from forge.contracts.workflows import CancellationBehavior, WorkflowDefinition
+from forge.core.authorization import migration_actor
 from forge.core.successors import (
     load_predecessor_artifact_revision,
     predecessor_artifact_source_reference,
@@ -44,11 +46,18 @@ from forge.core.transitions import (
     INTEGRITY_RECOVERED,
     RESULT_IMPORTED,
     RUN_CANCELLED,
+    SCHEMA_MIGRATED,
     STEP_TRANSITIONED,
 )
 from forge.errors import IntegrityError, SecurityError
 from forge.storage.canonical import sha256_digest
 from forge.storage.configuration import load_configuration
+from forge.storage.journal import read_journal
+from forge.storage.migrations import (
+    LEGACY_JOURNAL_MIGRATION,
+    LEGACY_JOURNAL_MIGRATION_ID,
+    MAX_MIGRATION_SOURCE_BYTES,
+)
 from forge.storage.objects import canonical_json_digest, verify_preserved_object
 from forge.storage.records import load_record
 from forge.storage.repository import RepositoryLayout
@@ -137,6 +146,14 @@ def _abandonment_path(layout: RepositoryLayout, abandonment_id: UUID) -> Path:
 
 def _recovery_path(layout: RepositoryLayout, recovery_id: UUID) -> Path:
     return layout.recovery_record_directory / f"{recovery_id}.json"
+
+
+def _migration_path(layout: RepositoryLayout, migration_id: UUID) -> Path:
+    return layout.migration_record_directory / f"{migration_id}.json"
+
+
+def _migration_source_path(layout: RepositoryLayout, migration_id: UUID) -> Path:
+    return layout.migration_source_directory / f"{migration_id}.events.jsonl"
 
 
 def _validate_common(record: object, event: AuditEvent, record_id: UUID) -> None:
@@ -249,6 +266,8 @@ def validate_governed_records(
     expected_runs: set[Path] = set()
     expected_recoveries: set[Path] = set()
     expected_recovery_snapshots: set[Path] = set()
+    expected_migrations: set[Path] = set()
+    expected_migration_sources: set[Path] = set()
     revisions_by_id: dict[UUID, ArtifactRevision] = {}
     artifact_roles: dict[UUID, str] = {}
     current_revision_ids: dict[UUID, UUID] = {}
@@ -780,6 +799,87 @@ def validate_governed_records(
                 ):
                     raise IntegrityError(f"Preserved recovery snapshot is invalid: {event.id}")
 
+        elif event.event_type == SCHEMA_MIGRATED:
+            migration_id = _uuid_metadata(event, "migration_record_id")
+            record_path = _migration_path(layout, migration_id)
+            source_path = _migration_source_path(layout, migration_id)
+            expected_migrations.add(record_path)
+            expected_migration_sources.add(source_path)
+            migration = load_record(record_path, MigrationRecord)
+            _validate_common(migration, event, migration_id)
+            record_digest = canonical_json_digest(migration.model_dump(mode="json"))
+            if (
+                migration.id != migration_id
+                or migration.migration_event_id != event.id
+                or migration.migration_id != LEGACY_JOURNAL_MIGRATION_ID
+                or migration.migration_actor != event.actor
+                or migration.migration_actor != migration_actor()
+                or event.actor.actor_type is not ActorType.MIGRATION
+                or migration.owner_actor.actor_type is not ActorType.OWNER
+                or migration.owner_actor.id != owner_id
+                or migration.source_event_count != event.sequence - 1
+                or migration.source_schema_version
+                != LEGACY_JOURNAL_MIGRATION.source_schema_version
+                or migration.target_schema_version
+                != LEGACY_JOURNAL_MIGRATION.target_schema_version
+                or migration.source_format != LEGACY_JOURNAL_MIGRATION.source_format
+                or migration.target_format != LEGACY_JOURNAL_MIGRATION.target_format
+                or migration.affected_digests != (migration.preserved_source_digest,)
+                or event.metadata.get("migration_id") != migration.migration_id
+                or event.metadata.get("owner_actor_id") != str(owner_id)
+                or event.metadata.get("source_schema_version")
+                != migration.source_schema_version
+                or event.metadata.get("target_schema_version")
+                != migration.target_schema_version
+                or event.metadata.get("source_format") != migration.source_format
+                or event.metadata.get("target_format") != migration.target_format
+                or event.metadata.get("source_event_count")
+                != migration.source_event_count
+                or event.metadata.get("preserved_source_path")
+                != migration.preserved_source_path
+                or event.metadata.get("preserved_source_digest")
+                != migration.preserved_source_digest
+                or event.metadata.get("preserved_source_size")
+                != migration.preserved_source_size
+                or record_digest not in event.affected_digests
+                or migration.preserved_source_digest not in event.affected_digests
+            ):
+                raise IntegrityError(f"Migration record does not match event {event.id}")
+            expected_source_reference = (
+                f".forge/active/migration-sources/{migration_id}.events.jsonl"
+            )
+            if migration.preserved_source_path != expected_source_reference:
+                raise IntegrityError(f"Migration source path is not canonical: {event.id}")
+            if source_path.is_symlink() or not source_path.is_file():
+                raise IntegrityError(f"Migration source is missing or unsafe: {event.id}")
+            try:
+                source_bytes = source_path.read_bytes()
+            except OSError as error:
+                raise IntegrityError(f"Cannot read preserved migration source: {error}") from error
+            if (
+                not source_bytes
+                or len(source_bytes) > MAX_MIGRATION_SOURCE_BYTES
+                or len(source_bytes) != migration.preserved_source_size
+                or sha256_digest(source_bytes) != migration.preserved_source_digest
+            ):
+                raise IntegrityError(f"Preserved migration source is invalid: {event.id}")
+            source_events = read_journal(source_path)
+            migrated_prefix = events[: migration.source_event_count]
+            unsealed_prefix = tuple(
+                item.model_copy(
+                    update={"previous_event_hash": None, "event_hash": None}
+                )
+                for item in migrated_prefix
+            )
+            if (
+                len(source_events) != migration.source_event_count
+                or any(item.event_hash is not None for item in source_events)
+                or source_events != unsealed_prefix
+                or not migrated_prefix
+                or event.previous_event_hash != migrated_prefix[-1].event_hash
+            ):
+                raise IntegrityError(f"Migrated journal differs from preserved source: {event.id}")
+
         elif event.event_type == INITIATIVE_CLOSED:
             closure_id = _uuid_metadata(event, "closure_record_id")
             final_acceptance_ids = _uuid_list_metadata(event, "final_acceptance_ids")
@@ -1019,6 +1119,8 @@ def validate_governed_records(
     _validate_directory(layout.governed_run_directory, expected_runs)
     _validate_directory(layout.recovery_record_directory, expected_recoveries)
     _validate_directory(layout.recovery_snapshot_directory, expected_recovery_snapshots)
+    _validate_directory(layout.migration_record_directory, expected_migrations)
+    _validate_directory(layout.migration_source_directory, expected_migration_sources)
     expected_state = {
         artifact_id: revisions_by_id[revision_id].revision_number
         for artifact_id, revision_id in current_revision_ids.items()

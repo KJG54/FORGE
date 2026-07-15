@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import cast
 from uuid import UUID
 
+from forge.contracts.actors import ActorType
 from forge.contracts.events import AuditEvent
 from forge.contracts.state import (
     InitiativeLifecycleState,
@@ -22,6 +23,7 @@ INITIATIVE_CREATED = "initiative-created"
 INITIATIVE_PAUSED = "initiative-paused"
 INITIATIVE_RESUMED = "initiative-resumed"
 INTEGRITY_RECOVERED = "integrity-recovered"
+SCHEMA_MIGRATED = "schema-migrated"
 STEP_TRANSITIONED = "step-transitioned"
 ARTIFACT_REGISTERED = "artifact-registered"
 ARTIFACT_REVISED = "artifact-revised"
@@ -513,6 +515,10 @@ class WorkflowStateReducer:
             if event.event_type == INTEGRITY_RECOVERED:
                 require_owner(event.actor, self.owner_identity_id, "recover materialized state")
                 return state
+            if event.event_type == SCHEMA_MIGRATED:
+                if event.actor.actor_type is not ActorType.MIGRATION:
+                    raise IntegrityError("Schema migration requires the migration service actor")
+                return state
             raise IntegrityError("Paused initiatives may only be resumed or recovered")
         if event.event_type == INITIATIVE_PAUSED:
             return self._apply_pause_event(state, event)
@@ -536,6 +542,10 @@ class WorkflowStateReducer:
             return self._apply_import_event(state, event)
         if event.event_type == INTEGRITY_RECOVERED:
             require_owner(event.actor, self.owner_identity_id, "recover materialized state")
+            return state
+        if event.event_type == SCHEMA_MIGRATED:
+            if event.actor.actor_type is not ActorType.MIGRATION:
+                raise IntegrityError("Schema migration requires the migration service actor")
             return state
         return state
 

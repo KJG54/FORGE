@@ -13,7 +13,7 @@ from forge.core.acceptance import record_acceptance
 from forge.core.archival import close_initiative, list_archive_ids, load_archive
 from forge.core.artifacts import add_artifact, current_revisions_for_roles
 from forge.core.authorization import owner_actor
-from forge.core.history import inspect_history
+from forge.core.history import inspect_history, inspect_history_report
 from forge.core.lifecycle import begin_manual_run, create_initiative, load_active_initiative
 from forge.core.status import inspect_status
 from forge.core.verification import (
@@ -171,6 +171,10 @@ def test_close_preserves_exact_bytes_and_supports_read_only_restart(
     assert archived_status.selected_archive_id == initiative_id
     history = inspect_history(initialized.layout, archive_id=initiative_id)
     assert history[-1].event_type == "initiative-closed"
+    history_report = inspect_history_report(initialized.layout, archive_id=initiative_id)
+    assert history_report.archive_manifest == restarted.manifest
+    assert history_report.total_event_count == len(history)
+    assert history_report.journal_head_hash == restarted.active.state.journal_head_hash
     assert inspect_history(
         initialized.layout,
         archive_id=initiative_id,

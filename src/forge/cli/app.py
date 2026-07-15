@@ -26,9 +26,10 @@ from forge.core.continuity import pause_initiative, resume_initiative
 from forge.core.decisions import record_decision
 from forge.core.diagnostics import inspect_repository_health
 from forge.core.handoffs import create_handoff
-from forge.core.history import inspect_history
+from forge.core.history import inspect_history_report
 from forge.core.imports import apply_result_import, preview_result_import
 from forge.core.lifecycle import begin_manual_run, create_initiative
+from forge.core.migrations import inspect_active_migration, migrate_active_repository
 from forge.core.recovery import recover_active_snapshot
 from forge.core.runs import cancel_run, list_runs, show_run
 from forge.core.status import inspect_status
@@ -127,7 +128,7 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
                 parameters = dict(bound.arguments)
                 provided_key = parameters.pop("idempotency_key", None)
                 parameters.pop("directory", None)
-                if function.__name__ == "import_result" and not parameters.get(
+                if function.__name__ in {"import_result", "migrate"} and not parameters.get(
                     "apply_changes"
                 ):
                     function(*args, **kwargs)
@@ -139,7 +140,8 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
                     command=function.__name__,
                     provided_key=provided_key,
                     parameters=parameters,
-                    resume_incomplete=function.__name__ in {"abandon", "close", "recover"},
+                    resume_incomplete=function.__name__
+                    in {"abandon", "close", "migrate", "recover"},
                 ) as invocation:
                     typer.echo(f"Idempotency key: {invocation.key}")
                     if invocation.is_replay:
@@ -404,8 +406,13 @@ def status(
     else:
         typer.echo(f"Initiative: {report.initiative.id} — {report.initiative.objective}")
         typer.echo(f"Explanation profile: {report.initiative.explanation_profile.value}")
-    for identifier in report.archived_initiative_ids:
-        typer.echo(f"Archived initiative: {identifier}")
+    for summary in report.archive_summaries:
+        guarantee = "preliminary" if summary.preliminary else "hardened"
+        typer.echo(
+            f"Archived initiative: {summary.initiative_id} - "
+            f"{summary.terminal_state.value} - {summary.objective} "
+            f"({guarantee}, {summary.event_count} events)"
+        )
     if report.state is not None:
         typer.echo(f"Lifecycle: {report.state.lifecycle_state}")
         for step_id, step_state in report.state.step_states.items():
@@ -424,9 +431,45 @@ def status(
         terminal = report.closure or report.abandonment
         assert terminal is not None
         typer.echo(f"Archive: {terminal.archive_reference}")
+        typer.echo(f"Archived at: {report.archive_manifest.created_at.isoformat()}")
         typer.echo(f"Archive digest: {report.archive_manifest.archive_digest}")
+        typer.echo(f"Terminal record: {terminal.id}")
+        if report.closure is not None:
+            terminal_event_id = report.closure.closure_event_id
+        else:
+            assert report.abandonment is not None
+            terminal_event_id = report.abandonment.abandonment_event_id
+        typer.echo(f"Terminal event: {terminal_event_id}")
+        typer.echo(
+            "Terminal owner: "
+            f"{terminal.owner_actor.display_label} ({terminal.owner_actor.id})"
+        )
+        typer.echo(f"Archive files: {len(report.archive_manifest.files)}")
+        typer.echo(f"Preserved objects: {len(report.archive_manifest.object_references)}")
+        typer.echo(
+            "Accepted preserved objects: "
+            f"{sum(item.accepted for item in report.archive_manifest.object_references)}"
+        )
+        if report.state is not None:
+            typer.echo(f"Journal events: {report.state.journal_head_sequence}")
+            typer.echo(f"Journal head hash: {report.state.journal_head_hash or 'legacy-unhashed'}")
+        assert report.initiative is not None
+        typer.echo(f"Declared scope: {report.initiative.declared_scope_summary}")
+        if report.initiative.predecessor_references:
+            for predecessor in report.initiative.predecessor_references:
+                typer.echo(
+                    f"Predecessor: {predecessor.initiative_id} "
+                    f"({predecessor.archive_reference})"
+                )
+        else:
+            typer.echo("Predecessors: none")
         if report.closure is not None:
             typer.echo(f"Closing summary: {report.closure.closing_summary}")
+            typer.echo(f"Final acceptances: {len(report.closure.final_acceptance_ids)}")
+            typer.echo(
+                "Accepted artifact revisions: "
+                f"{len(report.closure.accepted_artifact_revision_ids)}"
+            )
         else:
             assert report.abandonment is not None
             typer.echo(f"Abandonment reason: {report.abandonment.reason}")
@@ -435,6 +478,8 @@ def status(
             )
             for risk in report.abandonment.unresolved_risks:
                 typer.echo(f"Unresolved risk: {risk}")
+            for step_id in report.abandonment.unfinished_step_ids:
+                typer.echo(f"Unfinished step: {step_id}")
         if report.archive_manifest.preliminary:
             guarantee = "preliminary M1 command-level immutability"
         else:
@@ -443,10 +488,62 @@ def status(
                 "with resumable archival"
             )
         typer.echo(f"Archive guarantee: {guarantee}")
+        for limitation in report.archive_manifest.limitations:
+            typer.echo(f"Archive limitation: {limitation}")
     for action in report.next_actions:
         typer.echo(f"Next: {action}")
     for blocker in report.blockers:
         typer.echo(f"Blocker: {blocker}")
+
+
+@app.command("migrate")
+@_locked_mutation
+def migrate(
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    apply_changes: Annotated[
+        bool,
+        typer.Option(
+            "--apply",
+            help="Apply the displayed registered migration; omission is read-only preview.",
+        ),
+    ] = False,
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Preview or explicitly apply the next registered active-state migration."""
+    try:
+        layout = discover_repository(directory)
+        if not apply_changes:
+            inspection = inspect_active_migration(layout)
+            typer.echo(f"Initiative: {inspection.initiative_id}")
+            typer.echo(f"Current format: {inspection.plan.current_format}")
+            typer.echo(f"Target format: {inspection.plan.target_format}")
+            typer.echo(f"Journal events: {inspection.plan.event_count}")
+            if inspection.plan.definition is None:
+                typer.echo("Migration required: no")
+            else:
+                typer.echo("Migration required: yes")
+                typer.echo(f"Migration: {inspection.plan.definition.id}")
+                typer.echo("Apply with: forge migrate --apply --idempotency-key <key>")
+            return
+        configuration = load_configuration(layout.configuration_file)
+        result = migrate_active_repository(
+            layout,
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    action = "Resumed" if result.resumed else "Completed"
+    typer.echo(f"{action} migration {result.record.migration_id}")
+    typer.echo(f"Migration record: {result.record.id}")
+    typer.echo(f"Migration event: {result.event.id}")
+    typer.echo(f"Preserved source: {result.record.preserved_source_path}")
+    typer.echo(f"Preserved digest: {result.record.preserved_source_digest}")
+    typer.echo(f"Journal head hash: {result.state.journal_head_hash}")
+    typer.echo("Integrity: healthy")
 
 
 @app.command("recover")
@@ -571,7 +668,7 @@ def history(
     """Display validated active or archived event history without mutation."""
     try:
         layout = discover_repository(directory)
-        events = inspect_history(
+        report = inspect_history_report(
             layout,
             archive_id=archive_id,
             event_type=event_type,
@@ -582,15 +679,35 @@ def history(
     except ForgeError as error:
         _fail(error)
         return
-    if not events:
+    source = (
+        f"archive {report.initiative_id}"
+        if report.archive_manifest is not None
+        else f"active initiative {report.initiative_id}"
+    )
+    typer.echo(f"History source: {source}")
+    typer.echo(f"Lifecycle: {report.lifecycle_state.value}")
+    typer.echo("Integrity: healthy")
+    typer.echo(f"Events: {len(report.events)} of {report.total_event_count}")
+    typer.echo(f"Journal head sequence: {report.journal_head_sequence}")
+    typer.echo(f"Journal head hash: {report.journal_head_hash or 'legacy-unhashed'}")
+    if report.archive_manifest is not None:
+        typer.echo(f"Archive digest: {report.archive_manifest.archive_digest}")
+    if not report.events:
         typer.echo("No matching events")
         return
-    for event in events:
+    for event in report.events:
+        if event.event_hash is None:
+            previous_hash = "legacy-unhashed"
+        else:
+            previous_hash = event.previous_event_hash or "chain-root"
         details = [
             f"{event.sequence}",
             event.timestamp.isoformat(),
             event.event_type,
             f"actor={event.actor.actor_type.value}:{event.actor.id}",
+            f"id={event.id}",
+            f"hash={event.event_hash or 'legacy-unhashed'}",
+            f"previous={previous_hash}",
         ]
         step = event.metadata.get("step_id")
         if isinstance(step, str):

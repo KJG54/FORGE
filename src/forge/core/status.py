@@ -13,6 +13,7 @@ from forge.contracts.state import (
     MaterializedState,
     RepositoryState,
 )
+from forge.core.archival import ArchiveSummary
 from forge.core.lifecycle import load_active_initiative
 from forge.errors import IntegrityError
 from forge.storage.journal import read_journal
@@ -32,6 +33,7 @@ class StatusReport:
     archive_manifest: ArchiveManifest | None = None
     closure: ClosureRecord | None = None
     abandonment: AbandonmentRecord | None = None
+    archive_summaries: tuple[ArchiveSummary, ...] = ()
 
 
 def inspect_status(
@@ -39,10 +41,11 @@ def inspect_status(
     *,
     archive_id: UUID | None = None,
 ) -> StatusReport:
-    from forge.core.archival import list_archive_ids, load_archive
+    from forge.core.archival import list_archive_summaries, load_archive
 
     try:
-        archived_ids = list_archive_ids(layout)
+        archive_summaries = list_archive_summaries(layout)
+        archived_ids = tuple(summary.initiative_id for summary in archive_summaries)
         if archive_id is not None:
             archived = load_archive(layout, archive_id)
             return StatusReport(
@@ -56,9 +59,8 @@ def inspect_status(
                 archive_manifest=archived.manifest,
                 closure=archived.closure,
                 abandonment=archived.abandonment,
+                archive_summaries=archive_summaries,
             )
-        for identifier in archived_ids:
-            load_archive(layout, identifier)
     except IntegrityError as error:
         return StatusReport(
             repository_state=RepositoryState.INITIALIZED,
@@ -90,6 +92,7 @@ def inspect_status(
                 "idempotency key",
             ),
             archived_initiative_ids=archived_ids,
+            archive_summaries=archive_summaries,
         )
     if not layout.initiative_file.exists():
         unexpected = tuple(path.name for path in layout.active_directory.iterdir())
@@ -104,6 +107,8 @@ def inspect_status(
                     "Terminal transaction is incomplete; retry the terminal command with the same "
                     f"idempotency key (active={unexpected}, staging={staging}, retired={retired})",
                 ),
+                archived_initiative_ids=archived_ids,
+                archive_summaries=archive_summaries,
             )
         return StatusReport(
             repository_state=RepositoryState.INITIALIZED,
@@ -112,6 +117,7 @@ def inspect_status(
             state=None,
             next_actions=("create",) if not archived_ids else ("create-successor",),
             archived_initiative_ids=archived_ids,
+            archive_summaries=archive_summaries,
         )
     try:
         active = load_active_initiative(
@@ -128,6 +134,7 @@ def inspect_status(
             next_actions=(),
             blockers=(str(error),),
             archived_initiative_ids=archived_ids,
+            archive_summaries=archive_summaries,
         )
     if active.state.lifecycle_state in {
         InitiativeLifecycleState.CLOSED,
@@ -150,6 +157,7 @@ def inspect_status(
                 "with the same idempotency key to finish atomic archival",
             ),
             archived_initiative_ids=archived_ids,
+            archive_summaries=archive_summaries,
         )
     from forge.core.artifacts import list_artifacts
 
@@ -172,6 +180,12 @@ def inspect_status(
         next_actions = ("resume",)
     elif drifted:
         next_actions = tuple(f"artifact-revise:{view.artifact.id}" for view in drifted)
+    if active.state.journal_head_hash is None:
+        blockers = (
+            "Legacy M1 journal is read-only; preview and apply its registered migration",
+            *blockers,
+        )
+        next_actions = ("migrate",)
     return StatusReport(
         repository_state=RepositoryState.INITIALIZED,
         integrity_state=active.state.integrity_state,
@@ -180,4 +194,5 @@ def inspect_status(
         next_actions=next_actions,
         blockers=blockers,
         archived_initiative_ids=archived_ids,
+        archive_summaries=archive_summaries,
     )

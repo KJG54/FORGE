@@ -43,7 +43,7 @@ previous-hash links, sequence and initiative identity, and complete-record termi
 binds `state.json` to the exact journal-head sequence and hash.
 
 Complete M1 journals with empty hash fields remain readable but are read-only until an explicit
-later migration preserves the original bytes and records provenance. Active-snapshot recovery
+registered migration preserves the original bytes and records provenance. Active-snapshot recovery
 requires a fully hash-chained journal; explicit stale-lock remediation remains later M2 work.
 
 ## M2 Increment 2 mutation locking
@@ -122,3 +122,15 @@ Abandonment reuses deterministic staging, manifest validation, atomic promotion,
 retirement. A matching retry can rebuild staging or finish retirement without appending a second
 terminal event. The manifest and archive validator require abandonment-specific IDs and prohibit
 closure IDs, so this path cannot be confused with successful closure.
+
+## M2 Increment 10 schema migration framework
+
+The registered framework in [ADR-0021](adr/ADR-0021-explicit-schema-migration-framework.md) selects
+only explicit directed source/target edges. Its first edge preserves a valid legacy M1 journal
+byte-for-byte, records its digest and owner authorization, deterministically seals the existing
+events, and adds one `schema-migrated` event attributed to the stable migration service.
+
+The whole migrated journal is validated before one atomic replacement. That replacement commits
+the migration; snapshot reconstruction and idempotency receipt completion are safely resumable.
+Restart validation compares the preserved source with the unsealed semantic form of every migrated
+prefix event. Archives are validated but never rewritten.

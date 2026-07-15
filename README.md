@@ -74,8 +74,17 @@ links. Every predecessor must be a valid immutable archive; the successor receiv
 workflow, journal, pack-trust decision, and empty governance state. Exact terminal predecessor
 artifact bytes may be explicitly registered as new revisions with verified provenance.
 
+M2 Increment 9 expands read-only archive inspection. Normal status now summarizes every validated
+archive, selected status exposes terminal ownership, lineage, manifest and journal details, and
+archived history identifies its source while displaying the verified M2 event hash chain.
+
+M2 Increment 10 adds explicit registered schema migration. `forge migrate` previews without
+persistent mutation; `forge migrate --apply` preserves exact legacy M1 journal bytes, atomically
+installs the M2 hash chain and migration provenance, and resumes safely with the same idempotency
+key after a post-commit interruption.
+
 Later M2 increments remain responsible for damaged-journal handling, unrelated interrupted-command
-resolution, stale-lock remediation, migration, and expanded archive views.
+resolution, stale-lock remediation, and hybrid Git policy.
 
 Initialize an ordinary project repository with:
 
@@ -86,6 +95,7 @@ forge pack validate software-basic
 forge create "Objective" --scope "Bounded scope" --trust-pack-data \
   --idempotency-key create-objective
 forge status
+forge migrate
 forge pause --reason "Waiting for owner review"
 forge resume
 forge recover --reason "Rebuild derived state after an interrupted write"

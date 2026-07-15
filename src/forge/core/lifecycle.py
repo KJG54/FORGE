@@ -367,7 +367,8 @@ def load_active_initiative(
         and not allow_paused
     ):
         raise ConflictError(
-            "Initiative is paused; only inspection, recovery, and 'forge resume' are allowed"
+            "Initiative is paused; only inspection, migration, recovery, and 'forge resume' "
+            "are allowed"
         )
     for run_id in report.replayed_state.active_run_ids:
         run = load_record(layout.governed_run_directory / f"{run_id}.json", RunRecord)

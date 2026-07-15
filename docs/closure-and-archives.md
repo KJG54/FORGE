@@ -64,11 +64,21 @@ byte count, and SHA-256 digest. Object references verify governed bytes under
 accepted bytes; abandoned references are deliberately unaccepted.
 
 ```console
+forge status
 forge status --archive <initiative-id>
 forge history --archive <initiative-id>
 forge history --archive <initiative-id> --event-type initiative-closed
 forge history --archive <initiative-id> --event-type initiative-abandoned
 ```
+
+Normal status validates every archive and summarizes its objective, terminal outcome, guarantee,
+and event count so an initiative ID can be selected without inspecting `.forge` directly. Selected
+archive status shows terminal ownership and records, predecessor lineage, manifest and preserved
+object counts, journal head, archive digest, and closure- or abandonment-specific facts.
+
+Archived history identifies the validated archive source, terminal lifecycle, filtered and total
+event counts, journal and archive digests, and event IDs with their M2 hash-chain links. Filters are
+applied only after the complete archive and journal validate. Both commands are strictly read-only.
 
 New manifests report `preliminary: false` with no preliminary limitations. Existing M1 closure
 archives remain readable with their original guarantee. Closed and abandoned archives cannot

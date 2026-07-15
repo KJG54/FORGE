@@ -28,6 +28,16 @@ def forge_cli_actor() -> Actor:
     )
 
 
+def migration_actor() -> Actor:
+    """Return the stable service identity used for governed migration events."""
+    return Actor(
+        id=uuid5(NAMESPACE_URL, "https://forge.local/actors/migration"),
+        actor_type=ActorType.MIGRATION,
+        display_label="FORGE migration service",
+        tool_reference=f"forge {__version__}",
+    )
+
+
 def require_owner(actor: Actor, owner_identity_id: UUID, action: str) -> None:
     if actor.actor_type is not ActorType.OWNER or actor.id != owner_identity_id:
         raise AuthorizationError(

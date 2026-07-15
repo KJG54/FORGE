@@ -167,6 +167,14 @@ class RepositoryLayout:
         return self.active_directory / "recovery-snapshots"
 
     @property
+    def migration_record_directory(self) -> Path:
+        return self.active_directory / "migration-records"
+
+    @property
+    def migration_source_directory(self) -> Path:
+        return self.active_directory / "migration-sources"
+
+    @property
     def archive_manifest_file(self) -> Path:
         return self.active_directory / "archive-manifest.json"
 

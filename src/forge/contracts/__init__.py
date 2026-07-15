@@ -38,6 +38,7 @@ from forge.contracts.idempotency import (
     IdempotencyReceipt,
 )
 from forge.contracts.initiatives import Initiative, InitiativeReference
+from forge.contracts.migrations import MigrationRecord
 from forge.contracts.packs import PackManifest, PackTrustDecision, PackTrustState
 from forge.contracts.recovery import RecoveryRecord, SnapshotCondition
 from forge.contracts.runs import RunRecord
@@ -92,6 +93,7 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "initiative-reference": InitiativeReference,
     "idempotency-receipt": IdempotencyReceipt,
     "materialized-state": MaterializedState,
+    "migration-record": MigrationRecord,
     "owner-identity": OwnerIdentity,
     "pack-manifest": PackManifest,
     "pack-trust-decision": PackTrustDecision,
@@ -147,6 +149,7 @@ __all__ = [
     "InitiativeReference",
     "IntegrityState",
     "MaterializedState",
+    "MigrationRecord",
     "OwnerIdentity",
     "PackManifest",
     "PackTrustDecision",

@@ -51,9 +51,13 @@ semantic-version commitments begin at v1.0.0.
 - M2 successor initiative creation with one or more validated archived predecessors, canonical
   lineage links, fresh identities and governance state, no inherited approval, and exact-byte
   predecessor artifact reuse through new provenance-bound registrations.
+- M2 validated multi-archive status summaries, detailed terminal and lineage inspection, and
+  source-aware filtered archive history with visible journal hash-chain identities.
+- M2 registered schema migration with read-only planning, explicit owner apply, exact legacy-byte
+  preservation, atomic event-chain conversion, durable provenance, and interruption-safe retry.
 
 ### Limitations
 
 - Existing M1 archives retain their preliminary guarantee; active-snapshot recovery does not repair
-  damaged journals or unrelated interrupted mutations, and expanded archive views remain deferred.
+  damaged journals or unrelated interrupted mutations.
 - Project and distribution naming remain provisional.

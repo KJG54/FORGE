@@ -8,6 +8,7 @@ import shutil
 import subprocess
 from contextlib import suppress
 from dataclasses import dataclass, replace
+from datetime import datetime
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -66,6 +67,8 @@ _ACTIVE_TOP_LEVEL = {
     "evidence",
     "imported-results",
     "initiative.json",
+    "migration-records",
+    "migration-sources",
     "pack-trust.json",
     "pack.lock.json",
     "revocations",
@@ -92,6 +95,25 @@ class ArchiveView:
         if record is None:
             raise IntegrityError("Archive has no terminal record")
         return record
+
+
+@dataclass(frozen=True)
+class ArchiveSummary:
+    """Validated presentation summary for one immutable archive."""
+
+    initiative_id: UUID
+    objective: str
+    terminal_state: InitiativeLifecycleState
+    archived_at: datetime
+    event_count: int
+    journal_head_sequence: int
+    journal_head_hash: str | None
+    file_count: int
+    object_count: int
+    accepted_object_count: int
+    archive_digest: str
+    preliminary: bool
+    predecessor_ids: tuple[UUID, ...]
 
 
 @dataclass(frozen=True)
@@ -464,6 +486,36 @@ def load_archive(layout: RepositoryLayout, initiative_id: UUID) -> ArchiveView:
     if not path.exists():
         raise ConflictError(f"Unknown archived initiative {initiative_id}")
     return _validate_archive_directory(layout, path, initiative_id)
+
+
+def summarize_archive(archive: ArchiveView) -> ArchiveSummary:
+    """Build a display-only summary from an already validated archive."""
+    state = archive.active.state
+    return ArchiveSummary(
+        initiative_id=archive.active.initiative.id,
+        objective=archive.active.initiative.objective,
+        terminal_state=archive.manifest.terminal_state,
+        archived_at=archive.manifest.created_at,
+        event_count=len(archive.events),
+        journal_head_sequence=state.journal_head_sequence,
+        journal_head_hash=state.journal_head_hash,
+        file_count=len(archive.manifest.files),
+        object_count=len(archive.manifest.object_references),
+        accepted_object_count=sum(
+            reference.accepted for reference in archive.manifest.object_references
+        ),
+        archive_digest=archive.manifest.archive_digest,
+        preliminary=archive.manifest.preliminary,
+        predecessor_ids=tuple(
+            reference.initiative_id
+            for reference in archive.active.initiative.predecessor_references
+        ),
+    )
+
+
+def list_archive_summaries(layout: RepositoryLayout) -> tuple[ArchiveSummary, ...]:
+    """Validate every archive and summarize it in canonical initiative-ID order."""
+    return tuple(summarize_archive(load_archive(layout, item)) for item in list_archive_ids(layout))
 
 
 def _validate_committed_closure(

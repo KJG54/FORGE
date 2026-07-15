@@ -13,6 +13,7 @@ from forge.core.archival import abandon_initiative, load_archive
 from forge.core.artifacts import add_artifact
 from forge.core.authorization import owner_actor
 from forge.core.lifecycle import create_initiative, load_active_initiative
+from forge.core.status import inspect_status
 from forge.errors import AuthorizationError, ConfigurationError, ConflictError, IntegrityError
 from forge.storage.records import load_record, write_record
 from forge.storage.repository import InitializationResult, initialize_repository
@@ -161,6 +162,66 @@ def test_successor_supports_multiple_predecessors_and_validates_persisted_links(
     write_record(initialized.layout.initiative_file, tampered, overwrite=True)
     with pytest.raises(IntegrityError, match="predecessor reference"):
         load_active_initiative(initialized.layout)
+
+
+def test_archive_views_summarize_multiple_archives_and_are_read_only(tmp_path: Path) -> None:
+    initialized, actor = _initialized(tmp_path)
+    first_id = _create(initialized, actor, objective="First archived attempt")
+    _abandon(initialized, actor)
+    second_id = _create(
+        initialized,
+        actor,
+        objective="Second archived attempt",
+        predecessor_ids=(first_id,),
+    )
+    _abandon(initialized, actor)
+    _create(
+        initialized,
+        actor,
+        objective="Current combined successor",
+        predecessor_ids=(first_id, second_id),
+    )
+    before = {
+        path.relative_to(initialized.layout.root): path.read_bytes()
+        for path in initialized.layout.local_directory.rglob("*")
+        if path.is_file()
+    }
+
+    report = inspect_status(initialized.layout)
+    assert tuple(item.initiative_id for item in report.archive_summaries) == tuple(
+        sorted((first_id, second_id), key=str)
+    )
+    summaries = {item.initiative_id: item for item in report.archive_summaries}
+    assert summaries[first_id].objective == "First archived attempt"
+    assert summaries[second_id].predecessor_ids == (first_id,)
+    assert all(item.event_count == item.journal_head_sequence for item in report.archive_summaries)
+    assert all(item.journal_head_hash is not None for item in report.archive_summaries)
+
+    status = runner.invoke(
+        app,
+        ["status", "--archive", str(second_id), "-C", str(initialized.layout.root)],
+    )
+    assert status.exit_code == 0, status.stderr
+    assert f"Archived initiative: {first_id} - abandoned" in status.stdout
+    assert f"Predecessor: {first_id}" in status.stdout
+    assert "Archive files:" in status.stdout
+    assert "Journal head hash: sha256:" in status.stdout
+    history = runner.invoke(
+        app,
+        ["history", "--archive", str(second_id), "-C", str(initialized.layout.root)],
+    )
+    assert history.exit_code == 0, history.stderr
+    assert f"History source: archive {second_id}" in history.stdout
+    assert "Events: 2 of 2" in history.stdout
+    assert "hash=sha256:" in history.stdout
+    assert "previous=chain-root" in history.stdout
+
+    after = {
+        path.relative_to(initialized.layout.root): path.read_bytes()
+        for path in initialized.layout.local_directory.rglob("*")
+        if path.is_file()
+    }
+    assert after == before
 
 
 def test_create_successor_cli_reports_lineage(tmp_path: Path) -> None:

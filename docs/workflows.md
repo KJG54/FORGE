@@ -88,8 +88,15 @@ Successful closure is owner-only and derives readiness from the locked workflow,
 acceptances, exact artifact revisions, and preserved objects. M2 Increment 6 adds validated atomic
 archive promotion and resumable active-state retirement. Repeating an interrupted close with the
 same idempotency key completes the existing terminal transaction rather than creating a new event.
-Closed archives never reopen through supported commands. Successors, migration, and unrelated
-interruption recovery stay deferred.
+Closed archives never reopen through supported commands. Continued work uses a fresh successor;
+unrelated interruption recovery stays deferred.
+
+## Explicit active-state migration
+
+`forge migrate` previews the next registered source/target edge. Increment 10 implements explicit
+owner-authorized `--apply` for complete legacy M1 active journals, preserves their exact source
+bytes, atomically commits the M2 hash chain and migration event, and supports same-key retry. See
+[`migrations.md`](migrations.md). Immutable archives are validated but never migrated.
 
 ## Atomic abandonment boundary
 
