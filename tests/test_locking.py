@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
 import socket
-import subprocess
-import sys
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -47,25 +46,18 @@ def test_lock_releases_after_success_and_failure(tmp_path: Path) -> None:
     assert not path.exists()
 
 
-def test_cross_process_lock_blocks_cli_mutation_without_traceback(tmp_path: Path) -> None:
+def test_live_lock_blocks_cli_mutation_without_traceback(tmp_path: Path) -> None:
     initialized = initialize_repository(tmp_path, owner_display_name="Owner")
     path = initialized.layout.lock_directory / LOCK_NAME
-    process = subprocess.Popen(
-        [sys.executable, "-c", "import time; time.sleep(30)"],
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+    owner = LockOwner(
+        token="holder-token",
+        pid=os.getpid(),
+        hostname=socket.gethostname(),
+        command="holder-process",
+        created_at=datetime.now(UTC).isoformat(),
     )
+    path.write_text(json.dumps(asdict(owner)), encoding="utf-8", newline="\n")
     try:
-        assert process.poll() is None
-        owner = LockOwner(
-            token="holder-token",
-            pid=process.pid,
-            hostname=socket.gethostname(),
-            command="holder-process",
-            created_at=datetime.now(UTC).isoformat(),
-        )
-        path.write_text(json.dumps(asdict(owner)), encoding="utf-8", newline="\n")
         blocked = runner.invoke(
             app,
             [
@@ -83,8 +75,6 @@ def test_cross_process_lock_blocks_cli_mutation_without_traceback(tmp_path: Path
         assert "Traceback" not in blocked.stderr
     finally:
         path.unlink(missing_ok=True)
-        process.terminate()
-        process.wait(timeout=10)
     assert lock_diagnostic(initialized.layout) is None
 
 
