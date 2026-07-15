@@ -2,7 +2,7 @@
 
 M2 Increments 6 and 7 provide distinct resumable, interruption-safe archive transactions for
 successful closure and owner-authorized abandonment. They do not implement successor initiatives,
-schema migration, stale-lock removal, or generic recovery for unrelated commands.
+schema migration, stale-lock removal, or receipt recovery for terminal archive transactions.
 
 ## Closure gate
 

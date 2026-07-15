@@ -93,8 +93,12 @@ unambiguously EOF-truncated final record after a complete valid M2 prefix. FORGE
 entire damaged journal and observed snapshot, atomically commits the valid prefix plus recovery
 provenance, and refuses complete, malformed, legacy, archived, or otherwise ambiguous histories.
 
-Later M2 increments remain responsible for unrelated interrupted-command resolution and stale-lock
-remediation.
+M2 Increment 13 adds owner-authorized recovery for one mechanically complete active command whose
+journal events committed before its receipt. Registered event patterns prevent partial multi-event
+commands from being marked complete; exact recovery provenance and same-key resume preserve the
+original effects without repeating them.
+
+Later M2 work remains responsible for explicit stale-lock remediation.
 
 Initialize an ordinary project repository with:
 
@@ -109,6 +113,8 @@ forge migrate
 forge pause --reason "Waiting for owner review"
 forge resume
 forge recover --reason "Rebuild derived state after an interrupted write"
+forge recover-command <interrupted-key> --reason "Receipt write was interrupted" \
+  --idempotency-key <distinct-recovery-key>
 forge abandon --reason "Stop this initiative" --unfinished-work "Remaining work" \
   --risk "Intended outcome was not delivered"
 forge create "Successor objective" --scope "Fresh bounded scope" \
@@ -169,6 +175,7 @@ forge --help
 - [M2 Increment 10 migration boundary](docs/milestones/m2-increment-10.md)
 - [M2 Increment 11 Git-policy boundary](docs/milestones/m2-increment-11.md)
 - [M2 Increment 12 truncated-journal recovery boundary](docs/milestones/m2-increment-12.md)
+- [M2 Increment 13 interrupted-command recovery boundary](docs/milestones/m2-increment-13.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

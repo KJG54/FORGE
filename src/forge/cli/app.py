@@ -23,6 +23,7 @@ from forge.core.acceptance import (
 from forge.core.archival import abandon_initiative, close_initiative
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
 from forge.core.authorization import owner_actor
+from forge.core.command_recovery import recover_command_receipt
 from forge.core.continuity import pause_initiative, resume_initiative
 from forge.core.decisions import record_decision
 from forge.core.diagnostics import inspect_repository_health
@@ -142,8 +143,13 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
                     provided_key=provided_key,
                     parameters=parameters,
                     resume_incomplete=function.__name__
-                    in {"abandon", "close", "migrate", "recover"},
+                    in {"abandon", "close", "migrate", "recover", "recover_command"},
                     allow_recoverable_active_journal=function.__name__ == "recover",
+                    additional_allowed_incomplete_keys=(
+                        (str(parameters["interrupted_key"]),)
+                        if function.__name__ == "recover_command"
+                        else ()
+                    ),
                 ) as invocation:
                     typer.echo(f"Idempotency key: {invocation.key}")
                     if invocation.is_replay:
@@ -583,6 +589,45 @@ def recover(
         typer.echo(f"Preserved snapshot: {result.record.preserved_snapshot_path}")
     else:
         typer.echo("Preserved snapshot: none (state.json was missing)")
+    typer.echo("Integrity: healthy")
+
+
+@app.command("recover-command")
+@_locked_mutation
+def recover_command(
+    interrupted_key: Annotated[
+        str,
+        typer.Argument(help="Idempotency key whose committed command lacks a receipt."),
+    ],
+    reason: Annotated[
+        str,
+        typer.Option("--reason", help="Owner reason for explicit command receipt recovery."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Recover a missing receipt for one provably complete active command."""
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = recover_command_receipt(
+            layout,
+            actor=owner_actor(configuration.owner),
+            interrupted_key=interrupted_key,
+            reason=reason,
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    action = "Resumed" if result.resumed else "Completed"
+    typer.echo(f"{action} command receipt recovery {result.record.id}")
+    typer.echo(f"Interrupted key: {result.record.interrupted_key}")
+    typer.echo(f"Interrupted command: {result.record.interrupted_command}")
+    typer.echo(f"Recovered event(s): {len(result.receipt.events)}")
+    typer.echo(f"Recovery event: {result.event.id}")
     typer.echo("Integrity: healthy")
 
 

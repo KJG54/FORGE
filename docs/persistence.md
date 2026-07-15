@@ -65,7 +65,8 @@ retirement.
 
 An identical retry returns the existing event references. Different parameters with the same key
 are rejected. If events exist without their completion receipt, mutation stops with an explicit
-recovery requirement; this increment neither duplicates the operation nor invents a receipt.
+recovery requirement. Increment 13 can reconstruct a receipt only after proving a registered
+complete command pattern and its exact active-state effects.
 
 ## M2 Increment 4 active-snapshot recovery
 
@@ -161,3 +162,17 @@ all governance supported by the valid prefix. The atomic replacement contains th
 `journal-recovered` event; it is the commit point. Snapshot and receipt completion are resumable
 with the same idempotency key. Preserved recovery evidence remains governed and is revalidated on
 restart and archival.
+
+## M2 Increment 13 interrupted-command recovery
+
+The owner-only `forge recover-command` path handles one exact event group that committed before its
+receipt. It requires a contiguous active-journal tail, a registered complete event-type pattern,
+one incomplete target, valid governed records and objects, and an atomic pre-command or current
+snapshot observation. This prevents a single event from falsely completing a command that requires
+two events.
+
+One `command-recovered` event commits an immutable `CommandRecoveryRecord`; snapshot refresh and
+the reconstructed target receipt follow. The receipt remains bound only to the original command
+events, while the recovery event is bound to a distinct recovery idempotency key. Same-key retry
+finishes post-commit writes without duplication. Partial transactions and specialized archive,
+migration, or journal-recovery operations are preserved for their own recovery paths.

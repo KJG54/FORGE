@@ -60,6 +60,7 @@ _ACTIVE_TOP_LEVEL = {
     "artifacts",
     "checks",
     "claims",
+    "command-recovery-records",
     "closure",
     "decision-supersessions",
     "decisions",

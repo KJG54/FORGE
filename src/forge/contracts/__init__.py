@@ -33,6 +33,7 @@ from forge.contracts.decisions import (
 )
 from forge.contracts.events import AuditEvent
 from forge.contracts.idempotency import (
+    CommandRecoveryRecord,
     IdempotencyEventMetadata,
     IdempotencyEventReference,
     IdempotencyReceipt,
@@ -89,6 +90,7 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "capability-definition": CapabilityDefinition,
     "check-result": CheckResult,
     "claim": Claim,
+    "command-recovery-record": CommandRecoveryRecord,
     "closure-record": ClosureRecord,
     "decision-record": DecisionRecord,
     "decision-supersession": DecisionSupersession,
@@ -141,6 +143,7 @@ __all__ = [
     "CheckResult",
     "Claim",
     "ClosureRecord",
+    "CommandRecoveryRecord",
     "DecisionRecord",
     "DecisionStatus",
     "DecisionSupersession",

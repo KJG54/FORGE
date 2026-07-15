@@ -13,6 +13,11 @@ from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
 from forge.contracts.capabilities import SideEffectClass
 from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, DecisionSupersession
 from forge.contracts.events import AuditEvent
+from forge.contracts.idempotency import (
+    CommandRecoveryRecord,
+    IdempotencyEventReference,
+    IdempotencyReceipt,
+)
 from forge.contracts.initiatives import Initiative
 from forge.contracts.migrations import MigrationRecord
 from forge.contracts.recovery import (
@@ -44,6 +49,7 @@ from forge.core.transitions import (
     ARTIFACT_REVISED,
     CHECK_RECORDED,
     CLAIM_RECORDED,
+    COMMAND_RECOVERED,
     DECISION_RECORDED,
     DECISION_SUPERSEDED,
     EVIDENCE_REGISTERED,
@@ -158,6 +164,10 @@ def _abandonment_path(layout: RepositoryLayout, abandonment_id: UUID) -> Path:
 
 def _recovery_path(layout: RepositoryLayout, recovery_id: UUID) -> Path:
     return layout.recovery_record_directory / f"{recovery_id}.json"
+
+
+def _command_recovery_path(layout: RepositoryLayout, recovery_id: UUID) -> Path:
+    return layout.command_recovery_record_directory / f"{recovery_id}.json"
 
 
 def _recovery_journal_path(layout: RepositoryLayout, recovery_id: UUID) -> Path:
@@ -280,6 +290,7 @@ def validate_governed_records(
     expected_closures: set[Path] = set()
     expected_abandonments: set[Path] = set()
     expected_runs: set[Path] = set()
+    expected_command_recoveries: set[Path] = set()
     expected_recoveries: set[Path] = set()
     expected_recovery_snapshots: set[Path] = set()
     expected_recovery_journals: set[Path] = set()
@@ -748,6 +759,77 @@ def validate_governed_records(
                 raise IntegrityError(f"Acceptance revocation does not match event {event.id}")
             revoked_acceptance_ids.add(acceptance_id)
             stale_ids.update(effects)
+        elif event.event_type == COMMAND_RECOVERED:
+            recovery_id = _uuid_metadata(event, "command_recovery_record_id")
+            recovery_path = _command_recovery_path(layout, recovery_id)
+            expected_command_recoveries.add(recovery_path)
+            recovery = load_record(recovery_path, CommandRecoveryRecord)
+            _validate_common(recovery, event, recovery_id)
+            record_digest = canonical_json_digest(recovery.model_dump(mode="json"))
+            receipt = IdempotencyReceipt(
+                key=recovery.interrupted_key,
+                command=recovery.interrupted_command,
+                request_digest=recovery.interrupted_request_digest,
+                completed_at=recovery.receipt_completed_at,
+                events=recovery.recovered_events,
+            )
+            receipt_digest = canonical_json_digest(receipt.model_dump(mode="json"))
+            recovered_ids = tuple(item.event_id for item in recovery.recovered_events)
+            actual_events = tuple(item for item in events if item.id in set(recovered_ids))
+            actual_references = tuple(
+                IdempotencyEventReference(
+                    event_id=item.id,
+                    initiative_id=item.initiative_id,
+                    sequence=item.sequence,
+                    event_hash=item.event_hash,
+                )
+                for item in actual_events
+                if item.event_hash is not None
+            )
+            expected_identity = {
+                "key": recovery.interrupted_key,
+                "command": recovery.interrupted_command,
+                "request_digest": recovery.interrupted_request_digest,
+            }
+            expected_sequences = tuple(
+                range(event.sequence - len(recovery.recovered_events), event.sequence)
+            )
+            if (
+                recovery.id != recovery_id
+                or recovery.recovery_event_id != event.id
+                or recovery.actor != event.actor
+                or recovery.actor_id != owner_id
+                or recovery.recorded_at != event.timestamp
+                or recovery.authorization_basis != event.authorization_basis
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or recovery.recovered_receipt_digest != receipt_digest
+                or recovery.affected_digests != (receipt_digest,)
+                or event.affected_record_ids != (recovery_id,)
+                or event.affected_digests != (record_digest, receipt_digest)
+                or actual_references != recovery.recovered_events
+                or tuple(item.sequence for item in recovery.recovered_events)
+                != expected_sequences
+                or any(
+                    item.metadata.get("idempotency") != expected_identity
+                    for item in actual_events
+                )
+                or event.metadata.get("reason") != recovery.reason
+                or event.metadata.get("interrupted_key") != recovery.interrupted_key
+                or event.metadata.get("interrupted_command")
+                != recovery.interrupted_command
+                or event.metadata.get("interrupted_request_digest")
+                != recovery.interrupted_request_digest
+                or event.metadata.get("receipt_completed_at")
+                != recovery.model_dump(mode="json")["receipt_completed_at"]
+                or not _string_list_matches(
+                    event.metadata.get("recovered_event_ids"),
+                    tuple(str(item) for item in recovered_ids),
+                )
+                or event.metadata.get("recovered_receipt_digest") != receipt_digest
+            ):
+                raise IntegrityError(f"Command recovery record does not match event {event.id}")
+
         elif event.event_type == INTEGRITY_RECOVERED:
             recovery_id = _uuid_metadata(event, "recovery_record_id")
             recovery_path = _recovery_path(layout, recovery_id)
@@ -1289,6 +1371,10 @@ def validate_governed_records(
     _validate_directory(layout.closure_directory, expected_closures)
     _validate_directory(layout.abandonment_directory, expected_abandonments)
     _validate_directory(layout.governed_run_directory, expected_runs)
+    _validate_directory(
+        layout.command_recovery_record_directory,
+        expected_command_recoveries,
+    )
     _validate_directory(layout.recovery_record_directory, expected_recoveries)
     _validate_directory(layout.recovery_snapshot_directory, expected_recovery_snapshots)
     _validate_directory(layout.recovery_journal_directory, expected_recovery_journals)

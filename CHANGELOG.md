@@ -61,11 +61,14 @@ semantic-version commitments begin at v1.0.0.
 - M2 conservative active-journal recovery for unambiguous EOF-truncated final records, with exact
   damaged-source and snapshot preservation, atomic valid-prefix replacement, owner provenance,
   ambiguity refusal, tamper detection, and interruption-safe retry.
+- M2 conservative interrupted-command recovery for one complete active-tail event pattern, with
+  owner provenance, exact receipt reconstruction, atomic snapshot-boundary validation, partial
+  multi-event refusal, and duplicate-free post-commit resume.
 
 ### Limitations
 
 - Existing M1 archives retain their preliminary guarantee; recovery does not alter archive journals,
-  infer missing events, or resolve unrelated interrupted mutations.
+  infer missing events, or mark partial interrupted mutations complete.
 - Git is optional collaboration and transport infrastructure; FORGE never stages, commits, cleans,
   or synchronizes a repository on the owner's behalf.
 - Project and distribution naming remain provisional.

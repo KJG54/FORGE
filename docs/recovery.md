@@ -60,3 +60,29 @@ completion receipt; those operations are outside this increment.
 Resume is deliberately narrow: the current snapshot must either already match replay or still be
 the exact condition and bytes observed by the committed recovery record. A different post-commit
 snapshot change is refused as a new integrity incident.
+
+## Interrupted command receipts
+
+`forge recover-command` is separate from snapshot and journal recovery. Use it only when FORGE
+reports that one command has committed events without a completion receipt:
+
+```console
+forge recover-command <interrupted-key> \
+  --reason "Receipt persistence stopped after command completion" \
+  --idempotency-key <distinct-recovery-key>
+```
+
+FORGE does not assume that an event means the whole command completed. The target must be the only
+unrelated incomplete key, its exact event group must be contiguous at the active journal tail, and
+the group must match the registered complete pattern for that command. This matters for commands
+such as step completion and acceptance, which each require two committed events.
+
+Locked governance, records, preserved objects, replay, and the snapshot observation are validated
+before a `CommandRecoveryRecord` and `command-recovered` event commit the owner decision. The
+snapshot may be the exact current view or the exact view from immediately before the interrupted
+command, reflecting the two valid outcomes of atomic replacement. The new receipt references only
+the original command events; the recovery operation receives its own receipt.
+
+Partial event groups, specialized close/abandon/migrate/recover transactions, archived targets,
+multiple incomplete commands, changed receipts, and non-atomic snapshot conditions are refused.
+No business event is inferred or appended, and no lock or journal byte is removed.

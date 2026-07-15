@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import re
-from collections.abc import Generator, Mapping, Sequence
+from collections.abc import Collection, Generator, Mapping, Sequence
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass
@@ -47,6 +47,14 @@ class IdempotencyInvocation:
     @property
     def is_replay(self) -> bool:
         return self.receipt is not None
+
+
+@dataclass(frozen=True)
+class IncompleteIdempotencyCommand:
+    key: str
+    command: str
+    request_digest: str
+    events: tuple[IdempotencyEventReference, ...]
 
 
 @dataclass(frozen=True)
@@ -241,14 +249,15 @@ def _read_raw_registry(
 def _validate_registry(
     raw: _RawRegistry,
     *,
-    allowed_incomplete_key: str | None = None,
+    allowed_incomplete_keys: Collection[str] = (),
 ) -> None:
+    allowed = set(allowed_incomplete_keys)
     all_keys = set(raw.receipts) | set(raw.event_groups)
     for key in all_keys:
         receipt = raw.receipts.get(key)
         group = raw.event_groups.get(key, ())
         if receipt is None:
-            if key == allowed_incomplete_key and group:
+            if key in allowed and group:
                 identities = {
                     (metadata.command, metadata.request_digest)
                     for metadata, _event in group
@@ -258,7 +267,8 @@ def _validate_registry(
                 continue
             raise IntegrityError(
                 f"Idempotency key {key!r} has committed events without a completion receipt; "
-                "explicit recovery is required"
+                "explicit recovery is required. Inspect history, then use the command's "
+                "specialized same-key retry or 'forge recover-command' with a distinct key"
             )
         if not group:
             raise IntegrityError(
@@ -294,6 +304,75 @@ def validate_idempotency_store(layout: RepositoryLayout) -> int:
     return len(raw.receipts)
 
 
+def inspect_incomplete_command(
+    layout: RepositoryLayout,
+    *,
+    target_key: str,
+    recovery_key: str,
+    allow_completed_target: bool = False,
+) -> IncompleteIdempotencyCommand:
+    """Return one exact incomplete event group while refusing all other registry damage."""
+    target_key = _validate_key(target_key)
+    recovery_key = _validate_key(recovery_key)
+    if target_key == recovery_key:
+        raise ConflictError("The interrupted key and recovery command key must be different")
+    raw = _read_raw_registry(layout)
+    _validate_registry(
+        raw,
+        allowed_incomplete_keys=(target_key, recovery_key),
+    )
+    if target_key in raw.receipts and not allow_completed_target:
+        raise ConflictError(f"Idempotency key {target_key!r} already has a completion receipt")
+    group = raw.event_groups.get(target_key, ())
+    if not group:
+        raise ConflictError(
+            f"Idempotency key {target_key!r} has no committed events to recover"
+        )
+    identities = {(metadata.command, metadata.request_digest) for metadata, _event in group}
+    if len(identities) != 1:
+        raise IntegrityError(f"Idempotency metadata disagrees for key {target_key!r}")
+    command, digest = identities.pop()
+    return IncompleteIdempotencyCommand(
+        key=target_key,
+        command=command,
+        request_digest=digest,
+        events=_event_references(group),
+    )
+
+
+def write_recovered_receipt(
+    layout: RepositoryLayout,
+    receipt: IdempotencyReceipt,
+    *,
+    recovery_key: str,
+) -> None:
+    """Atomically install an explicitly reconstructed receipt and validate exact history."""
+    recovery_key = _validate_key(recovery_key)
+    raw = _read_raw_registry(layout)
+    _validate_registry(
+        raw,
+        allowed_incomplete_keys=(receipt.key, recovery_key),
+    )
+    if receipt.key in raw.receipts:
+        if raw.receipts[receipt.key] != receipt:
+            raise IntegrityError(
+                f"Recovered receipt for key {receipt.key!r} changed after recovery commitment"
+            )
+        return
+    group = raw.event_groups.get(receipt.key, ())
+    if not group or _event_references(group) != receipt.events:
+        raise IntegrityError(
+            f"Committed events changed for recovered idempotency key {receipt.key!r}"
+        )
+    identity = {(metadata.command, metadata.request_digest) for metadata, _event in group}
+    if identity != {(receipt.command, receipt.request_digest)}:
+        raise IntegrityError(f"Recovered receipt identity disagrees for key {receipt.key!r}")
+    _ensure_receipt_directory(layout)
+    write_record(_receipt_path(layout, receipt.key), receipt)
+    completed = _read_raw_registry(layout)
+    _validate_registry(completed, allowed_incomplete_keys=(recovery_key,))
+
+
 def _event_references(
     group: tuple[tuple[IdempotencyEventMetadata, AuditEvent], ...],
 ) -> tuple[IdempotencyEventReference, ...]:
@@ -321,6 +400,7 @@ def idempotent_mutation(
     parameters: Mapping[str, object],
     resume_incomplete: bool = False,
     allow_recoverable_active_journal: bool = False,
+    additional_allowed_incomplete_keys: Collection[str] = (),
 ) -> Generator[IdempotencyInvocation]:
     """Replay a completed command or bind newly committed events to one receipt."""
     key = _validate_key(provided_key)
@@ -330,10 +410,9 @@ def idempotent_mutation(
         layout,
         allow_recoverable_active_journal=allow_recoverable_active_journal,
     )
-    _validate_registry(
-        raw,
-        allowed_incomplete_key=key if resume_incomplete else None,
-    )
+    additional = tuple(_validate_key(item) for item in additional_allowed_incomplete_keys)
+    allowed = (*additional, *((key,) if resume_incomplete else ()))
+    _validate_registry(raw, allowed_incomplete_keys=allowed)
     existing = raw.receipts.get(key)
     if existing is not None:
         if (existing.command, existing.request_digest) != (command, digest):
@@ -348,7 +427,8 @@ def idempotent_mutation(
         if not resume_incomplete:
             raise IntegrityError(
                 f"Idempotency key {key!r} has committed events without a completion receipt; "
-                "explicit recovery is required"
+                "explicit recovery is required. Inspect history, then use the command's "
+                "specialized same-key retry or 'forge recover-command' with a distinct key"
             )
         if any(
             (metadata.command, metadata.request_digest) != (command, digest)

@@ -71,10 +71,14 @@ forge history --archive <initiative-id>
 Both commands reload locked records, replay the complete journal, compare `state.json`, and report
 integrity errors without silently repairing them.
 
-`forge recover --reason "..."` is the only supported active-state repair entry point. It rebuilds
-a damaged snapshot from a complete valid journal and, as of Increment 12, can recover one
+`forge recover --reason "..."` rebuilds a damaged snapshot from a complete valid journal and, as
+of Increment 12, can recover one
 unambiguously EOF-truncated final record after preserving the complete source. It never guesses a
 missing event or selects among ambiguous histories; see [`recovery.md`](recovery.md).
+
+`forge recover-command <interrupted-key>` is the distinct Increment 13 path for one provably
+complete active command whose receipt is missing. It records owner provenance but does not perform
+the command again or invent a missing transition. Partial command patterns remain blocked.
 
 ## Explanation profiles and run cancellation
 

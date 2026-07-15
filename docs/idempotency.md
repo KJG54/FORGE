@@ -20,9 +20,22 @@ register new content.
 Completion receipts live under `.forge/idempotency/` and are governed project state. Each receipt
 is checked against exact hash-chained events. Do not edit or delete these files. If an interruption
 commits journal events before the completion receipt is durable, FORGE refuses retries and other
-mutations with an explicit recovery-required error. M2 Increment 4 narrowly permits `forge recover`
-to resume its own single committed recovery event with the same request and key. It does not
-synthesize receipts for unrelated interrupted commands.
+mutations with an explicit recovery-required error.
+
+M2 Increment 13 adds explicit owner recovery for an ordinary command whose complete registered
+event pattern is provably committed at the active journal tail:
+
+```console
+forge recover-command <interrupted-key> \
+  --reason "Receipt write stopped after the command events committed" \
+  --idempotency-key <distinct-recovery-key>
+```
+
+The two keys must be different. FORGE validates the exact journal, governed records, preserved
+objects, replayed state, and atomic snapshot boundary before recording owner provenance and
+reconstructing the receipt. It refuses partial multi-event commands, multiple incomplete keys,
+archived events, damaged or existing receipts, and commands with specialized transaction recovery.
+Repeat an interrupted recovery with the same recovery key and request.
 
 `forge init` keeps its existing identity-preserving repeat behavior. `forge import-result` preview
 is read-only, so its key is used only when `--apply` is present.
