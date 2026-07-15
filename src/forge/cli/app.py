@@ -11,6 +11,7 @@ import typer
 
 from forge import __version__
 from forge.contracts.capabilities import SideEffectClass
+from forge.contracts.recovery import JournalRecoveryRecord
 from forge.contracts.state import ExplanationProfile
 from forge.contracts.verification import CheckOutcome
 from forge.core.acceptance import (
@@ -142,6 +143,7 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
                     parameters=parameters,
                     resume_incomplete=function.__name__
                     in {"abandon", "close", "migrate", "recover"},
+                    allow_recoverable_active_journal=function.__name__ == "recover",
                 ) as invocation:
                     typer.echo(f"Idempotency key: {invocation.key}")
                     if invocation.is_replay:
@@ -551,7 +553,7 @@ def migrate(
 def recover(
     reason: Annotated[
         str,
-        typer.Option("--reason", help="Owner reason for explicit snapshot recovery."),
+        typer.Option("--reason", help="Owner reason for explicit governed-state recovery."),
     ],
     directory: Annotated[
         Path,
@@ -559,7 +561,7 @@ def recover(
     ] = Path("."),
     idempotency_key: IdempotencyOption = None,
 ) -> None:
-    """Preserve and rebuild a damaged active snapshot from valid history."""
+    """Explicitly recover a snapshot or unambiguously truncated final journal record."""
     try:
         layout = discover_repository(directory)
         configuration = load_configuration(layout.configuration_file)
@@ -574,6 +576,9 @@ def recover(
     action = "Resumed" if result.resumed else "Completed"
     typer.echo(f"{action} recovery {result.record.id}")
     typer.echo(f"Recovery event: {result.event.id}")
+    if isinstance(result.record, JournalRecoveryRecord):
+        typer.echo(f"Preserved journal: {result.record.preserved_journal_path}")
+        typer.echo(f"Truncated tail bytes: {result.record.truncated_tail_size}")
     if result.record.preserved_snapshot_path is not None:
         typer.echo(f"Preserved snapshot: {result.record.preserved_snapshot_path}")
     else:

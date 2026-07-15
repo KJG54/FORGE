@@ -23,6 +23,7 @@ INITIATIVE_CREATED = "initiative-created"
 INITIATIVE_PAUSED = "initiative-paused"
 INITIATIVE_RESUMED = "initiative-resumed"
 INTEGRITY_RECOVERED = "integrity-recovered"
+JOURNAL_RECOVERED = "journal-recovered"
 SCHEMA_MIGRATED = "schema-migrated"
 STEP_TRANSITIONED = "step-transitioned"
 ARTIFACT_REGISTERED = "artifact-registered"
@@ -512,7 +513,7 @@ class WorkflowStateReducer:
                 return self._apply_abandonment_event(state, event)
             if event.event_type == INITIATIVE_RESUMED:
                 return self._apply_resume_event(state, event)
-            if event.event_type == INTEGRITY_RECOVERED:
+            if event.event_type in {INTEGRITY_RECOVERED, JOURNAL_RECOVERED}:
                 require_owner(event.actor, self.owner_identity_id, "recover materialized state")
                 return state
             if event.event_type == SCHEMA_MIGRATED:
@@ -540,7 +541,7 @@ class WorkflowStateReducer:
             return self._apply_invalidation(state, event)
         if event.event_type == RESULT_IMPORTED:
             return self._apply_import_event(state, event)
-        if event.event_type == INTEGRITY_RECOVERED:
+        if event.event_type in {INTEGRITY_RECOVERED, JOURNAL_RECOVERED}:
             require_owner(event.actor, self.owner_identity_id, "recover materialized state")
             return state
         if event.event_type == SCHEMA_MIGRATED:

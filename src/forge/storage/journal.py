@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+from dataclasses import dataclass
 from pathlib import Path
 from uuid import UUID
 
@@ -14,6 +15,122 @@ from forge.errors import ConflictError, IntegrityError, SecurityError
 from forge.storage.canonical import canonical_json_bytes, canonical_json_digest
 
 MAX_EVENT_BYTES = 1_048_576
+MAX_JOURNAL_RECOVERY_BYTES = 104_857_600
+
+
+@dataclass(frozen=True)
+class JournalRecoveryCandidate:
+    """Exact damaged bytes and the unambiguous complete event prefix they contain."""
+
+    source_bytes: bytes
+    valid_prefix_bytes: bytes
+    events: tuple[AuditEvent, ...]
+    truncated_tail: bytes
+
+
+def _read_journal_bytes(path: Path) -> bytes:
+    if not path.exists():
+        return b""
+    if path.is_symlink():
+        raise SecurityError(f"Refusing to read an event journal through a symbolic link: {path}")
+    if not path.is_file():
+        raise IntegrityError(f"Event journal is not a regular file: {path}")
+    try:
+        return path.read_bytes()
+    except OSError as error:
+        raise IntegrityError(f"Cannot read event journal {path}: {error}") from error
+
+
+def _parse_complete_journal(raw: bytes) -> tuple[AuditEvent, ...]:
+    if not raw:
+        return ()
+    if not raw.endswith(b"\n"):
+        raise IntegrityError("Event journal ends with an incomplete record")
+
+    events: list[AuditEvent] = []
+    for line_number, line in enumerate(raw.splitlines(), start=1):
+        if not line:
+            raise IntegrityError(f"Event journal contains a blank record at line {line_number}")
+        if len(line) > MAX_EVENT_BYTES:
+            raise IntegrityError(
+                f"Event journal record {line_number} exceeds {MAX_EVENT_BYTES} bytes"
+            )
+        try:
+            decoded = json.loads(line)
+            event = AuditEvent.model_validate(decoded)
+        except (UnicodeDecodeError, json.JSONDecodeError, ValidationError) as error:
+            raise IntegrityError(
+                f"Invalid event journal record at line {line_number}: {error}"
+            ) from error
+        events.append(event)
+
+    validated = tuple(events)
+    validate_event_sequence(validated)
+    return validated
+
+
+def _is_eof_json_truncation(error: json.JSONDecodeError, tail: bytes) -> bool:
+    if error.msg.startswith("Unterminated string"):
+        return True
+    return error.pos >= len(tail) - 1 and error.msg in {
+        "Expecting ',' delimiter",
+        "Expecting ':' delimiter",
+        "Expecting property name enclosed in double quotes",
+        "Expecting value",
+    }
+
+
+def inspect_journal_recovery_candidate(path: Path) -> JournalRecoveryCandidate | None:
+    """Return only an unambiguous EOF-truncated final record; reject all other damage."""
+    raw = _read_journal_bytes(path)
+    if not raw or raw.endswith(b"\n"):
+        _parse_complete_journal(raw)
+        return None
+    if len(raw) > MAX_JOURNAL_RECOVERY_BYTES:
+        raise IntegrityError(
+            "Damaged event journal exceeds the explicit recovery preservation limit of "
+            f"{MAX_JOURNAL_RECOVERY_BYTES} bytes"
+        )
+    delimiter = raw.rfind(b"\n")
+    if delimiter < 0:
+        raise IntegrityError(
+            "Damaged event journal has no complete event prefix; recovery is ambiguous"
+        )
+    prefix = raw[: delimiter + 1]
+    tail = raw[delimiter + 1 :]
+    if len(tail) > MAX_EVENT_BYTES:
+        raise IntegrityError(
+            f"Truncated final record exceeds the {MAX_EVENT_BYTES}-byte event limit"
+        )
+    events = _parse_complete_journal(prefix)
+    if not events:
+        raise IntegrityError(
+            "Damaged event journal has no complete event prefix; recovery is ambiguous"
+        )
+    try:
+        decoded = json.loads(tail)
+    except UnicodeDecodeError as error:
+        if error.end != len(tail) or "unexpected end" not in error.reason:
+            raise IntegrityError(
+                "Final event journal record is malformed rather than unambiguously truncated"
+            ) from error
+    except json.JSONDecodeError as error:
+        if not _is_eof_json_truncation(error, tail):
+            raise IntegrityError(
+                "Final event journal record is malformed rather than unambiguously truncated"
+            ) from error
+    else:
+        try:
+            AuditEvent.model_validate(decoded)
+        except ValidationError as error:
+            raise IntegrityError(
+                "Final event journal record is complete but invalid; recovery is ambiguous"
+            ) from error
+        raise IntegrityError(
+            "Final event journal record is complete but lacks its newline delimiter; "
+            "recovery is ambiguous"
+        )
+    return JournalRecoveryCandidate(raw, prefix, events, tail)
 
 
 def render_event(event: AuditEvent) -> bytes:
@@ -75,42 +192,8 @@ def validate_event_sequence(events: tuple[AuditEvent, ...]) -> None:
 
 
 def read_journal(path: Path) -> tuple[AuditEvent, ...]:
-    """Read and strictly validate an entire M1 event journal."""
-    if not path.exists():
-        return ()
-    if path.is_symlink():
-        raise SecurityError(f"Refusing to read an event journal through a symbolic link: {path}")
-    if not path.is_file():
-        raise IntegrityError(f"Event journal is not a regular file: {path}")
-    try:
-        raw = path.read_bytes()
-    except OSError as error:
-        raise IntegrityError(f"Cannot read event journal {path}: {error}") from error
-    if not raw:
-        return ()
-    if not raw.endswith(b"\n"):
-        raise IntegrityError("Event journal ends with an incomplete record")
-
-    events: list[AuditEvent] = []
-    for line_number, line in enumerate(raw.splitlines(), start=1):
-        if not line:
-            raise IntegrityError(f"Event journal contains a blank record at line {line_number}")
-        if len(line) > MAX_EVENT_BYTES:
-            raise IntegrityError(
-                f"Event journal record {line_number} exceeds {MAX_EVENT_BYTES} bytes"
-            )
-        try:
-            decoded = json.loads(line)
-            event = AuditEvent.model_validate(decoded)
-        except (UnicodeDecodeError, json.JSONDecodeError, ValidationError) as error:
-            raise IntegrityError(
-                f"Invalid event journal record at line {line_number}: {error}"
-            ) from error
-        events.append(event)
-
-    validated = tuple(events)
-    validate_event_sequence(validated)
-    return validated
+    """Read and strictly validate an entire event journal without repairing it."""
+    return _parse_complete_journal(_read_journal_bytes(path))
 
 
 def append_event(path: Path, event: AuditEvent) -> tuple[AuditEvent, ...]:

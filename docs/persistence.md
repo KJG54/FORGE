@@ -146,3 +146,18 @@ and already tracked local-only paths fail closed; visible but untracked governed
 action warnings. Without Git, FORGE retains identical filesystem lifecycle behavior. The optional
 clean-close configuration first validates this hybrid policy so ignored authority-bearing files
 cannot make a dirty repository appear clean.
+
+## M2 Increment 12 conservative journal recovery
+
+`forge recover` may now replace a damaged active journal only when the final non-empty record is
+mechanically identifiable as JSON truncated at end-of-file and every preceding record forms a
+complete valid M2 hash chain. Complete records missing a newline, malformed or schema-invalid
+records, invalid hashes or ordering, legacy history, and damage without a complete prefix remain
+immutable because their intended history is ambiguous.
+
+Before replacement, FORGE preserves the exact damaged journal under
+`.forge/active/recovery-journals/`, records the exact tail and snapshot identities, and validates
+all governance supported by the valid prefix. The atomic replacement contains that prefix plus one
+`journal-recovered` event; it is the commit point. Snapshot and receipt completion are resumable
+with the same idempotency key. Preserved recovery evidence remains governed and is revalidated on
+restart and archival.

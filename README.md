@@ -88,8 +88,13 @@ rules while exposing governed configuration and `.forge/**` records and excludin
 Diagnostics evaluate effective Git ignore and index state without staging, committing, or changing
 the index; repositories without Git remain fully usable in filesystem-only mode.
 
-Later M2 increments remain responsible for damaged-journal handling, unrelated interrupted-command
-resolution, and stale-lock remediation.
+M2 Increment 12 extends owner-authorized recovery to one conservative journal case: an
+unambiguously EOF-truncated final record after a complete valid M2 prefix. FORGE preserves the
+entire damaged journal and observed snapshot, atomically commits the valid prefix plus recovery
+provenance, and refuses complete, malformed, legacy, archived, or otherwise ambiguous histories.
+
+Later M2 increments remain responsible for unrelated interrupted-command resolution and stale-lock
+remediation.
 
 Initialize an ordinary project repository with:
 
@@ -146,7 +151,7 @@ forge --help
 - [Atomic terminal decisions and archive inspection](docs/closure-and-archives.md)
 - [Successor initiatives and explicit artifact reuse](docs/successors.md)
 - [Idempotent mutation retries](docs/idempotency.md)
-- [Explicit active-snapshot recovery](docs/recovery.md)
+- [Explicit active-state recovery](docs/recovery.md)
 - [Pause and long-gap resume](docs/continuity.md)
 - [Hybrid Git collaboration policy](docs/git-policy.md)
 - [Repository initialization](docs/user-guide/initialization.md)
@@ -163,6 +168,7 @@ forge --help
 - [M2 Increment 9 archive-view boundary](docs/milestones/m2-increment-9.md)
 - [M2 Increment 10 migration boundary](docs/milestones/m2-increment-10.md)
 - [M2 Increment 11 Git-policy boundary](docs/milestones/m2-increment-11.md)
+- [M2 Increment 12 truncated-journal recovery boundary](docs/milestones/m2-increment-12.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

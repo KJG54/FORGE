@@ -1,4 +1,4 @@
-"""Conservative, owner-authorized active-snapshot recovery."""
+"""Conservative, owner-authorized active-state recovery."""
 
 from __future__ import annotations
 
@@ -7,24 +7,41 @@ from dataclasses import dataclass
 from pathlib import Path
 from uuid import UUID, uuid4
 
+from pydantic import ValidationError
+
 from forge import __version__
 from forge.contracts.actors import Actor
 from forge.contracts.base import utc_now
 from forge.contracts.events import AuditEvent
-from forge.contracts.recovery import RecoveryRecord, SnapshotCondition
+from forge.contracts.recovery import (
+    JournalDamageCondition,
+    JournalRecoveryRecord,
+    JournalRecoverySnapshotCondition,
+    RecoveryRecord,
+    SnapshotCondition,
+)
 from forge.contracts.state import InitiativeLifecycleState, MaterializedState
 from forge.core.authorization import require_owner
 from forge.core.lifecycle import load_replayed_active_initiative
 from forge.core.record_validation import validate_governed_records
-from forge.core.transitions import INTEGRITY_RECOVERED
+from forge.core.transitions import INTEGRITY_RECOVERED, JOURNAL_RECOVERED
 from forge.errors import ConflictError, IntegrityError, SecurityError
 from forge.storage.atomic import atomic_write_bytes
 from forge.storage.canonical import canonical_json_digest, sha256_digest
 from forge.storage.idempotency import (
     IDEMPOTENCY_METADATA_KEY,
     current_idempotency_request,
+    stamp_event_for_current_mutation,
 )
-from forge.storage.journal import append_event, read_journal
+from forge.storage.journal import (
+    JournalRecoveryCandidate,
+    append_event,
+    inspect_journal_recovery_candidate,
+    read_journal,
+    render_event,
+    seal_event,
+    validate_event_sequence,
+)
 from forge.storage.records import load_record, write_record
 from forge.storage.repository import RepositoryLayout
 from forge.storage.snapshots import (
@@ -37,7 +54,7 @@ from forge.storage.snapshots import (
 
 @dataclass(frozen=True)
 class RecoveryResult:
-    record: RecoveryRecord
+    record: RecoveryRecord | JournalRecoveryRecord
     event: AuditEvent
     state: MaterializedState
     resumed: bool
@@ -62,6 +79,10 @@ def _snapshot_path(layout: RepositoryLayout, recovery_id: UUID) -> Path:
     return layout.recovery_snapshot_directory / f"{recovery_id}.bin"
 
 
+def _journal_path(layout: RepositoryLayout, recovery_id: UUID) -> Path:
+    return layout.recovery_journal_directory / f"{recovery_id}.events.jsonl"
+
+
 def _relative(layout: RepositoryLayout, path: Path) -> str:
     return path.relative_to(layout.root).as_posix()
 
@@ -82,34 +103,43 @@ def _resume_event(
         return None
     if (
         len(matches) != 1
-        or matches[0].event_type != INTEGRITY_RECOVERED
+        or matches[0].event_type not in {INTEGRITY_RECOVERED, JOURNAL_RECOVERED}
         or matches[0] != events[-1]
     ):
         raise IntegrityError("Incomplete recovery history is ambiguous")
     return matches[0]
 
 
-def _load_recovery_record(layout: RepositoryLayout, event: AuditEvent) -> RecoveryRecord:
-    raw_id = event.metadata.get("recovery_record_id")
+def _load_recovery_record(
+    layout: RepositoryLayout,
+    event: AuditEvent,
+) -> RecoveryRecord | JournalRecoveryRecord:
+    metadata_key = (
+        "journal_recovery_record_id"
+        if event.event_type == JOURNAL_RECOVERED
+        else "recovery_record_id"
+    )
+    raw_id = event.metadata.get(metadata_key)
     if not isinstance(raw_id, str):
         raise IntegrityError(f"Recovery event {event.id} lacks a recovery record ID")
     try:
         recovery_id = UUID(raw_id)
     except ValueError as error:
         raise IntegrityError(f"Recovery event {event.id} has an invalid record ID") from error
-    return load_record(_recovery_path(layout, recovery_id), RecoveryRecord)
+    model = JournalRecoveryRecord if event.event_type == JOURNAL_RECOVERED else RecoveryRecord
+    return load_record(_recovery_path(layout, recovery_id), model)
 
 
 def _validate_resume_observation(
     layout: RepositoryLayout,
-    record: RecoveryRecord,
+    record: RecoveryRecord | JournalRecoveryRecord,
     *,
     snapshot_is_healthy: bool,
 ) -> None:
     """Refuse to overwrite snapshot changes made after the recovery event."""
     if snapshot_is_healthy:
         return
-    if record.snapshot_condition is SnapshotCondition.MISSING:
+    if record.snapshot_condition.value == SnapshotCondition.MISSING.value:
         if layout.state_file.exists():
             raise IntegrityError(
                 "Snapshot changed after the recovery event; automatic resume is unsafe"
@@ -132,15 +162,208 @@ def _validate_resume_observation(
         )
 
 
+def _journal_snapshot_observation(
+    layout: RepositoryLayout,
+    expected_state: MaterializedState,
+) -> tuple[JournalRecoverySnapshotCondition, bytes | None]:
+    if not layout.state_file.exists():
+        return JournalRecoverySnapshotCondition.MISSING, None
+    if layout.state_file.is_symlink() or not layout.state_file.is_file():
+        raise SecurityError(f"Refusing to preserve unsafe snapshot: {layout.state_file}")
+    try:
+        snapshot_bytes = layout.state_file.read_bytes()
+    except OSError as error:
+        raise IntegrityError(f"Cannot preserve materialized snapshot: {error}") from error
+    if len(snapshot_bytes) > MAX_SNAPSHOT_BYTES:
+        raise IntegrityError(
+            f"Cannot safely preserve snapshot larger than {MAX_SNAPSHOT_BYTES} bytes"
+        )
+    try:
+        observed = MaterializedState.model_validate_json(snapshot_bytes)
+    except ValidationError:
+        condition = JournalRecoverySnapshotCondition.INVALID
+    else:
+        condition = (
+            JournalRecoverySnapshotCondition.HEALTHY
+            if observed == expected_state
+            else JournalRecoverySnapshotCondition.MISMATCHED
+        )
+    return condition, snapshot_bytes
+
+
+def _recover_truncated_journal(
+    layout: RepositoryLayout,
+    *,
+    actor: Actor,
+    reason: str,
+    candidate: JournalRecoveryCandidate,
+) -> RecoveryResult:
+    current_idempotency_request()
+    active, events = load_replayed_active_initiative(
+        layout,
+        journal_events=candidate.events,
+    )
+    require_owner(actor, active.initiative.owner_identity_id, "recover a truncated journal")
+    if active.state.lifecycle_state in {
+        InitiativeLifecycleState.CLOSED,
+        InitiativeLifecycleState.ABANDONED,
+    }:
+        raise ConflictError("Journal recovery does not operate on terminal initiatives")
+    if not events or events[-1].event_hash is None:
+        raise ConflictError(
+            "Journal recovery requires a fully hash-chained M2 prefix; legacy history needs "
+            "migration and cannot be truncated"
+        )
+    validate_governed_records(layout, events, active.state, active.workflow)
+    snapshot_condition, snapshot_bytes = _journal_snapshot_observation(layout, active.state)
+
+    recovery_id = uuid4()
+    recovery_event_id = uuid4()
+    now = utc_now()
+    record_path = _recovery_path(layout, recovery_id)
+    journal_path = _journal_path(layout, recovery_id)
+    snapshot_path = _snapshot_path(layout, recovery_id)
+    journal_digest = sha256_digest(candidate.source_bytes)
+    tail_digest = sha256_digest(candidate.truncated_tail)
+    snapshot_digest = sha256_digest(snapshot_bytes) if snapshot_bytes is not None else None
+    authorization_basis = "configured owner explicitly recovered a truncated final journal record"
+    affected_source_digests = (journal_digest, tail_digest) + (
+        (snapshot_digest,) if snapshot_digest is not None else ()
+    )
+    record = JournalRecoveryRecord(
+        id=recovery_id,
+        initiative_id=active.initiative.id,
+        actor_id=actor.id,
+        actor=actor,
+        recorded_at=now,
+        event_sequence=len(events) + 1,
+        authorization_basis=authorization_basis,
+        tool_version=__version__,
+        affected_digests=affected_source_digests,
+        recovery_event_id=recovery_event_id,
+        reason=reason,
+        damage_condition=JournalDamageCondition.TRUNCATED_FINAL_RECORD,
+        valid_event_count=len(events),
+        source_journal_head_sequence=events[-1].sequence,
+        source_journal_head_hash=events[-1].event_hash,
+        preserved_journal_path=_relative(layout, journal_path),
+        preserved_journal_digest=journal_digest,
+        preserved_journal_size=len(candidate.source_bytes),
+        valid_prefix_size=len(candidate.valid_prefix_bytes),
+        truncated_tail_digest=tail_digest,
+        truncated_tail_size=len(candidate.truncated_tail),
+        snapshot_condition=snapshot_condition,
+        preserved_snapshot_path=(
+            _relative(layout, snapshot_path) if snapshot_bytes is not None else None
+        ),
+        preserved_snapshot_digest=snapshot_digest,
+        preserved_snapshot_size=(len(snapshot_bytes) if snapshot_bytes is not None else None),
+    )
+    record_digest = canonical_json_digest(record.model_dump(mode="json"))
+    unsealed_event = stamp_event_for_current_mutation(
+        AuditEvent(
+            id=recovery_event_id,
+            initiative_id=active.initiative.id,
+            sequence=len(events) + 1,
+            timestamp=now,
+            event_type=JOURNAL_RECOVERED,
+            actor=actor,
+            authorization_basis=authorization_basis,
+            affected_record_ids=(recovery_id,),
+            affected_digests=(record_digest, *affected_source_digests),
+            metadata={
+                "journal_recovery_record_id": str(recovery_id),
+                "reason": record.reason,
+                "damage_condition": record.damage_condition.value,
+                "valid_event_count": record.valid_event_count,
+                "source_journal_head_sequence": record.source_journal_head_sequence,
+                "source_journal_head_hash": record.source_journal_head_hash,
+                "preserved_journal_path": record.preserved_journal_path,
+                "preserved_journal_digest": journal_digest,
+                "preserved_journal_size": record.preserved_journal_size,
+                "valid_prefix_size": record.valid_prefix_size,
+                "truncated_tail_digest": tail_digest,
+                "truncated_tail_size": record.truncated_tail_size,
+                "snapshot_condition": snapshot_condition.value,
+                "preserved_snapshot_path": record.preserved_snapshot_path,
+                "preserved_snapshot_digest": snapshot_digest,
+                "preserved_snapshot_size": record.preserved_snapshot_size,
+            },
+        )
+    )
+    recovery_event = seal_event(unsealed_event, events[-1].event_hash)
+    repaired_events = (*events, recovery_event)
+    validate_event_sequence(repaired_events)
+    rendered_journal = b"".join(render_event(event) for event in repaired_events)
+
+    created: list[Path] = []
+    try:
+        _ensure_directory(layout.recovery_record_directory)
+        _ensure_directory(layout.recovery_journal_directory)
+        atomic_write_bytes(journal_path, candidate.source_bytes)
+        created.append(journal_path)
+        if snapshot_bytes is not None:
+            _ensure_directory(layout.recovery_snapshot_directory)
+            atomic_write_bytes(snapshot_path, snapshot_bytes)
+            created.append(snapshot_path)
+        write_record(record_path, record)
+        created.append(record_path)
+
+        def validate_journal(temporary: Path) -> None:
+            if read_journal(temporary) != repaired_events:
+                raise IntegrityError("Temporary recovered journal did not reproduce its plan")
+
+        atomic_write_bytes(
+            layout.event_journal_file,
+            rendered_journal,
+            validator=validate_journal,
+        )
+        state = replay_events(repaired_events, active.reducer)
+        if state is None:
+            raise IntegrityError("Recovered journal did not produce materialized state")
+        validate_governed_records(layout, repaired_events, state, active.workflow)
+        write_snapshot(layout.state_file, state)
+        report = inspect_snapshot_integrity(
+            layout.event_journal_file,
+            layout.state_file,
+            active.reducer,
+        )
+        if not report.is_healthy:
+            raise IntegrityError("Journal recovery did not restore healthy governed state")
+        return RecoveryResult(record, recovery_event, state, False)
+    except BaseException:
+        committed_ids: set[UUID] = set()
+        with suppress(Exception):
+            committed_ids = {item.id for item in read_journal(layout.event_journal_file)}
+        if recovery_event_id not in committed_ids:
+            for path in reversed(created):
+                path.unlink(missing_ok=True)
+            with suppress(OSError):
+                layout.recovery_snapshot_directory.rmdir()
+            with suppress(OSError):
+                layout.recovery_journal_directory.rmdir()
+            with suppress(OSError):
+                layout.recovery_record_directory.rmdir()
+        raise
+
+
 def recover_active_snapshot(
     layout: RepositoryLayout,
     *,
     actor: Actor,
     reason: str,
 ) -> RecoveryResult:
-    """Reconstruct ``state.json`` only from a complete, unambiguous journal."""
+    """Recover a snapshot or one unambiguous EOF-truncated final journal record."""
     if not reason.strip():
         raise ConflictError("Recovery requires a non-empty owner reason")
+    journal_candidate = inspect_journal_recovery_candidate(layout.event_journal_file)
+    if journal_candidate is not None:
+        return _recover_truncated_journal(
+            layout,
+            actor=actor,
+            reason=reason,
+            candidate=journal_candidate,
+        )
     request = current_idempotency_request()
     active, events = load_replayed_active_initiative(layout)
     require_owner(actor, active.initiative.owner_identity_id, "recover materialized state")

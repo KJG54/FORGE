@@ -58,11 +58,14 @@ semantic-version commitments begin at v1.0.0.
 - M2 hybrid Git policy with byte-preserving ignore-rule merging, governed-path re-inclusion,
   local-only exclusion, effective ignore and index diagnostics, filesystem-only fallback, and a
   clean-closure gate protected from ignored governed state.
+- M2 conservative active-journal recovery for unambiguous EOF-truncated final records, with exact
+  damaged-source and snapshot preservation, atomic valid-prefix replacement, owner provenance,
+  ambiguity refusal, tamper detection, and interruption-safe retry.
 
 ### Limitations
 
-- Existing M1 archives retain their preliminary guarantee; active-snapshot recovery does not repair
-  damaged journals or unrelated interrupted mutations.
+- Existing M1 archives retain their preliminary guarantee; recovery does not alter archive journals,
+  infer missing events, or resolve unrelated interrupted mutations.
 - Git is optional collaboration and transport infrastructure; FORGE never stages, commits, cleans,
   or synchronizes a repository on the owner's behalf.
 - Project and distribution naming remain provisional.

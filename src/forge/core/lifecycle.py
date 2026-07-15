@@ -259,6 +259,8 @@ def create_initiative(
 
 def load_replayed_active_initiative(
     layout: RepositoryLayout,
+    *,
+    journal_events: tuple[AuditEvent, ...] | None = None,
 ) -> tuple[ActiveInitiative, tuple[AuditEvent, ...]]:
     """Validate locked active records and replay the authoritative journal.
 
@@ -299,7 +301,11 @@ def load_replayed_active_initiative(
         require_owner(trust.actor, configuration.owner.id, "record pack data trust")
     except AuthorizationError as error:
         raise IntegrityError(f"Invalid pack trust authority: {error}") from error
-    events = read_journal(layout.event_journal_file)
+    events = (
+        read_journal(layout.event_journal_file)
+        if journal_events is None
+        else journal_events
+    )
     if not events or events[0].id != initiative.creation_event_id:
         raise IntegrityError("Initiative creation event does not match the journal")
     creation_metadata = events[0].metadata

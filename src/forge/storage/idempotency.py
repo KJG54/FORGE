@@ -24,7 +24,7 @@ from forge.contracts.idempotency import (
 )
 from forge.errors import ConfigurationError, ConflictError, IntegrityError, SecurityError
 from forge.storage.canonical import canonical_json_digest
-from forge.storage.journal import read_journal
+from forge.storage.journal import inspect_journal_recovery_candidate, read_journal
 from forge.storage.records import load_record, write_record
 from forge.storage.repository import RepositoryLayout
 
@@ -180,10 +180,22 @@ def _read_receipts(layout: RepositoryLayout) -> dict[str, IdempotencyReceipt]:
     return receipts
 
 
-def _journal_events(layout: RepositoryLayout) -> tuple[AuditEvent, ...]:
+def _journal_events(
+    layout: RepositoryLayout,
+    *,
+    allow_recoverable_active_journal: bool = False,
+) -> tuple[AuditEvent, ...]:
     events: list[AuditEvent] = []
     if layout.event_journal_file.exists():
-        events.extend(read_journal(layout.event_journal_file))
+        if allow_recoverable_active_journal:
+            candidate = inspect_journal_recovery_candidate(layout.event_journal_file)
+            events.extend(
+                candidate.events
+                if candidate is not None
+                else read_journal(layout.event_journal_file)
+            )
+        else:
+            events.extend(read_journal(layout.event_journal_file))
     archive = layout.archive_directory
     if archive.is_symlink() or not archive.is_dir():
         raise SecurityError(f"Archive directory is missing or unsafe: {archive}")
@@ -207,9 +219,16 @@ def _journal_events(layout: RepositoryLayout) -> tuple[AuditEvent, ...]:
     return tuple(events)
 
 
-def _read_raw_registry(layout: RepositoryLayout) -> _RawRegistry:
+def _read_raw_registry(
+    layout: RepositoryLayout,
+    *,
+    allow_recoverable_active_journal: bool = False,
+) -> _RawRegistry:
     groups: dict[str, list[tuple[IdempotencyEventMetadata, AuditEvent]]] = {}
-    for event in _journal_events(layout):
+    for event in _journal_events(
+        layout,
+        allow_recoverable_active_journal=allow_recoverable_active_journal,
+    ):
         metadata = _metadata(event)
         if metadata is not None:
             groups.setdefault(metadata.key, []).append((metadata, event))
@@ -301,12 +320,16 @@ def idempotent_mutation(
     provided_key: str | None,
     parameters: Mapping[str, object],
     resume_incomplete: bool = False,
+    allow_recoverable_active_journal: bool = False,
 ) -> Generator[IdempotencyInvocation]:
     """Replay a completed command or bind newly committed events to one receipt."""
     key = _validate_key(provided_key)
     command = _validate_command(command)
     digest = request_digest(command, parameters)
-    raw = _read_raw_registry(layout)
+    raw = _read_raw_registry(
+        layout,
+        allow_recoverable_active_journal=allow_recoverable_active_journal,
+    )
     _validate_registry(
         raw,
         allowed_incomplete_key=key if resume_incomplete else None,

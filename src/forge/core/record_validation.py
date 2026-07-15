@@ -15,7 +15,13 @@ from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, Decisi
 from forge.contracts.events import AuditEvent
 from forge.contracts.initiatives import Initiative
 from forge.contracts.migrations import MigrationRecord
-from forge.contracts.recovery import RecoveryRecord, SnapshotCondition
+from forge.contracts.recovery import (
+    JournalDamageCondition,
+    JournalRecoveryRecord,
+    JournalRecoverySnapshotCondition,
+    RecoveryRecord,
+    SnapshotCondition,
+)
 from forge.contracts.runs import RunRecord
 from forge.contracts.state import InitiativeLifecycleState, MaterializedState, RunState, StepState
 from forge.contracts.verification import (
@@ -44,15 +50,21 @@ from forge.core.transitions import (
     INITIATIVE_ABANDONED,
     INITIATIVE_CLOSED,
     INTEGRITY_RECOVERED,
+    JOURNAL_RECOVERED,
     RESULT_IMPORTED,
     RUN_CANCELLED,
     SCHEMA_MIGRATED,
     STEP_TRANSITIONED,
+    WorkflowStateReducer,
 )
 from forge.errors import IntegrityError, SecurityError
 from forge.storage.canonical import sha256_digest
 from forge.storage.configuration import load_configuration
-from forge.storage.journal import read_journal
+from forge.storage.journal import (
+    MAX_JOURNAL_RECOVERY_BYTES,
+    inspect_journal_recovery_candidate,
+    read_journal,
+)
 from forge.storage.migrations import (
     LEGACY_JOURNAL_MIGRATION,
     LEGACY_JOURNAL_MIGRATION_ID,
@@ -61,7 +73,7 @@ from forge.storage.migrations import (
 from forge.storage.objects import canonical_json_digest, verify_preserved_object
 from forge.storage.records import load_record
 from forge.storage.repository import RepositoryLayout
-from forge.storage.snapshots import MAX_SNAPSHOT_BYTES
+from forge.storage.snapshots import MAX_SNAPSHOT_BYTES, replay_events
 
 
 def _uuid_metadata(event: AuditEvent, key: str) -> UUID:
@@ -146,6 +158,10 @@ def _abandonment_path(layout: RepositoryLayout, abandonment_id: UUID) -> Path:
 
 def _recovery_path(layout: RepositoryLayout, recovery_id: UUID) -> Path:
     return layout.recovery_record_directory / f"{recovery_id}.json"
+
+
+def _recovery_journal_path(layout: RepositoryLayout, recovery_id: UUID) -> Path:
+    return layout.recovery_journal_directory / f"{recovery_id}.events.jsonl"
 
 
 def _migration_path(layout: RepositoryLayout, migration_id: UUID) -> Path:
@@ -266,6 +282,7 @@ def validate_governed_records(
     expected_runs: set[Path] = set()
     expected_recoveries: set[Path] = set()
     expected_recovery_snapshots: set[Path] = set()
+    expected_recovery_journals: set[Path] = set()
     expected_migrations: set[Path] = set()
     expected_migration_sources: set[Path] = set()
     revisions_by_id: dict[UUID, ArtifactRevision] = {}
@@ -799,6 +816,161 @@ def validate_governed_records(
                 ):
                     raise IntegrityError(f"Preserved recovery snapshot is invalid: {event.id}")
 
+        elif event.event_type == JOURNAL_RECOVERED:
+            recovery_id = _uuid_metadata(event, "journal_recovery_record_id")
+            recovery_path = _recovery_path(layout, recovery_id)
+            source_path = _recovery_journal_path(layout, recovery_id)
+            expected_recoveries.add(recovery_path)
+            expected_recovery_journals.add(source_path)
+            recovery = load_record(recovery_path, JournalRecoveryRecord)
+            _validate_common(recovery, event, recovery_id)
+            record_digest = canonical_json_digest(recovery.model_dump(mode="json"))
+            snapshot_fields = (
+                recovery.preserved_snapshot_path,
+                recovery.preserved_snapshot_digest,
+                recovery.preserved_snapshot_size,
+            )
+            event_snapshot_fields = (
+                event.metadata.get("preserved_snapshot_path"),
+                event.metadata.get("preserved_snapshot_digest"),
+                event.metadata.get("preserved_snapshot_size"),
+            )
+            required_digests = {
+                record_digest,
+                recovery.preserved_journal_digest,
+                recovery.truncated_tail_digest,
+            }
+            if recovery.preserved_snapshot_digest is not None:
+                required_digests.add(recovery.preserved_snapshot_digest)
+            if (
+                recovery.id != recovery_id
+                or recovery.recovery_event_id != event.id
+                or recovery.actor != event.actor
+                or recovery.actor_id != owner_id
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or recovery.damage_condition
+                is not JournalDamageCondition.TRUNCATED_FINAL_RECORD
+                or recovery.valid_event_count != event.sequence - 1
+                or recovery.source_journal_head_sequence != event.sequence - 1
+                or recovery.source_journal_head_hash != event.previous_event_hash
+                or event.metadata.get("reason") != recovery.reason
+                or event.metadata.get("damage_condition")
+                != recovery.damage_condition.value
+                or event.metadata.get("valid_event_count")
+                != recovery.valid_event_count
+                or event.metadata.get("source_journal_head_sequence")
+                != recovery.source_journal_head_sequence
+                or event.metadata.get("source_journal_head_hash")
+                != recovery.source_journal_head_hash
+                or event.metadata.get("preserved_journal_path")
+                != recovery.preserved_journal_path
+                or event.metadata.get("preserved_journal_digest")
+                != recovery.preserved_journal_digest
+                or event.metadata.get("preserved_journal_size")
+                != recovery.preserved_journal_size
+                or event.metadata.get("valid_prefix_size")
+                != recovery.valid_prefix_size
+                or event.metadata.get("truncated_tail_digest")
+                != recovery.truncated_tail_digest
+                or event.metadata.get("truncated_tail_size")
+                != recovery.truncated_tail_size
+                or event.metadata.get("snapshot_condition")
+                != recovery.snapshot_condition.value
+                or event_snapshot_fields != snapshot_fields
+                or not required_digests.issubset(event.affected_digests)
+                or set(recovery.affected_digests)
+                != required_digests - {record_digest}
+            ):
+                raise IntegrityError(f"Journal recovery record does not match event {event.id}")
+            expected_source_reference = (
+                f".forge/active/recovery-journals/{recovery_id}.events.jsonl"
+            )
+            if recovery.preserved_journal_path != expected_source_reference:
+                raise IntegrityError(f"Recovery journal path is not canonical: {event.id}")
+            if source_path.is_symlink() or not source_path.is_file():
+                raise IntegrityError(f"Preserved recovery journal is missing or unsafe: {event.id}")
+            try:
+                source_bytes = source_path.read_bytes()
+            except OSError as error:
+                raise IntegrityError(f"Cannot read preserved recovery journal: {error}") from error
+            if (
+                not source_bytes
+                or len(source_bytes) > MAX_JOURNAL_RECOVERY_BYTES
+                or len(source_bytes) != recovery.preserved_journal_size
+                or sha256_digest(source_bytes) != recovery.preserved_journal_digest
+            ):
+                raise IntegrityError(f"Preserved recovery journal is invalid: {event.id}")
+            source_candidate = inspect_journal_recovery_candidate(source_path)
+            prefix_events = events[: recovery.valid_event_count]
+            if (
+                source_candidate is None
+                or source_candidate.events != prefix_events
+                or len(source_candidate.valid_prefix_bytes) != recovery.valid_prefix_size
+                or len(source_candidate.truncated_tail) != recovery.truncated_tail_size
+                or sha256_digest(source_candidate.truncated_tail)
+                != recovery.truncated_tail_digest
+            ):
+                raise IntegrityError(
+                    f"Preserved journal does not reproduce recovery evidence: {event.id}"
+                )
+
+            if recovery.snapshot_condition is JournalRecoverySnapshotCondition.MISSING:
+                if any(value is not None for value in snapshot_fields):
+                    raise IntegrityError(
+                        f"Missing journal-recovery snapshot has preserved data: {event.id}"
+                    )
+            else:
+                expected_snapshot_path = (
+                    layout.recovery_snapshot_directory / f"{recovery_id}.bin"
+                )
+                preserved_snapshot_path = layout.root / str(
+                    recovery.preserved_snapshot_path
+                )
+                if preserved_snapshot_path != expected_snapshot_path:
+                    raise IntegrityError(
+                        f"Journal-recovery snapshot path is not canonical: {event.id}"
+                    )
+                expected_recovery_snapshots.add(expected_snapshot_path)
+                if expected_snapshot_path.is_symlink() or not expected_snapshot_path.is_file():
+                    raise IntegrityError(
+                        f"Journal-recovery snapshot is missing or unsafe: {event.id}"
+                    )
+                try:
+                    preserved_snapshot = expected_snapshot_path.read_bytes()
+                except OSError as error:
+                    raise IntegrityError(
+                        f"Cannot read journal-recovery snapshot: {error}"
+                    ) from error
+                if (
+                    len(preserved_snapshot) != recovery.preserved_snapshot_size
+                    or sha256_digest(preserved_snapshot)
+                    != recovery.preserved_snapshot_digest
+                ):
+                    raise IntegrityError(
+                        f"Preserved journal-recovery snapshot is invalid: {event.id}"
+                    )
+                try:
+                    observed_snapshot = MaterializedState.model_validate_json(
+                        preserved_snapshot
+                    )
+                except ValueError:
+                    observed_condition = JournalRecoverySnapshotCondition.INVALID
+                else:
+                    prefix_state = replay_events(
+                        prefix_events,
+                        WorkflowStateReducer(workflow, owner_id),
+                    )
+                    observed_condition = (
+                        JournalRecoverySnapshotCondition.HEALTHY
+                        if observed_snapshot == prefix_state
+                        else JournalRecoverySnapshotCondition.MISMATCHED
+                    )
+                if recovery.snapshot_condition is not observed_condition:
+                    raise IntegrityError(
+                        f"Journal-recovery snapshot condition is invalid: {event.id}"
+                    )
+
         elif event.event_type == SCHEMA_MIGRATED:
             migration_id = _uuid_metadata(event, "migration_record_id")
             record_path = _migration_path(layout, migration_id)
@@ -1119,6 +1291,7 @@ def validate_governed_records(
     _validate_directory(layout.governed_run_directory, expected_runs)
     _validate_directory(layout.recovery_record_directory, expected_recoveries)
     _validate_directory(layout.recovery_snapshot_directory, expected_recovery_snapshots)
+    _validate_directory(layout.recovery_journal_directory, expected_recovery_journals)
     _validate_directory(layout.migration_record_directory, expected_migrations)
     _validate_directory(layout.migration_source_directory, expected_migration_sources)
     expected_state = {

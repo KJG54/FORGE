@@ -173,6 +173,10 @@ class RepositoryLayout:
         return self.active_directory / "recovery-snapshots"
 
     @property
+    def recovery_journal_directory(self) -> Path:
+        return self.active_directory / "recovery-journals"
+
+    @property
     def migration_record_directory(self) -> Path:
         return self.active_directory / "migration-records"
 
