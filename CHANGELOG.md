@@ -55,9 +55,14 @@ semantic-version commitments begin at v1.0.0.
   source-aware filtered archive history with visible journal hash-chain identities.
 - M2 registered schema migration with read-only planning, explicit owner apply, exact legacy-byte
   preservation, atomic event-chain conversion, durable provenance, and interruption-safe retry.
+- M2 hybrid Git policy with byte-preserving ignore-rule merging, governed-path re-inclusion,
+  local-only exclusion, effective ignore and index diagnostics, filesystem-only fallback, and a
+  clean-closure gate protected from ignored governed state.
 
 ### Limitations
 
 - Existing M1 archives retain their preliminary guarantee; active-snapshot recovery does not repair
   damaged journals or unrelated interrupted mutations.
+- Git is optional collaboration and transport infrastructure; FORGE never stages, commits, cleans,
+  or synchronizes a repository on the owner's behalf.
 - Project and distribution naming remain provisional.

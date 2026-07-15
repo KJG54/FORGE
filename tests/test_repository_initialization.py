@@ -6,7 +6,7 @@ import pytest
 from forge.contracts.state import ExplanationProfile
 from forge.errors import ConfigurationError, ConflictError, SecurityError
 from forge.storage.configuration import load_configuration
-from forge.storage.repository import discover_repository, initialize_repository
+from forge.storage.repository import GITIGNORE_BLOCK, discover_repository, initialize_repository
 
 
 def test_init_preserves_existing_content_and_bootstraps_owner(tmp_path: Path) -> None:
@@ -24,6 +24,8 @@ def test_init_preserves_existing_content_and_bootstraps_owner(tmp_path: Path) ->
     assert unrelated.read_bytes() == b"unchanged\r\n"
     assert gitignore.read_bytes().startswith(b"dist/\r\ncustom-rule\r\n")
     assert gitignore.read_bytes().endswith(b".forge/local/\r\n")
+    assert b"!/forge.yaml\r\n" in gitignore.read_bytes()
+    assert b"!/.forge/**\r\n" in gitignore.read_bytes()
     assert result.configuration.owner.display_name == "Repository Owner"
     assert result.configuration.behavior.explanation_profile is ExplanationProfile.STANDARD
     assert load_configuration(repository / "forge.yaml") == result.configuration
@@ -53,10 +55,22 @@ def test_init_is_idempotent_and_does_not_replace_identity(tmp_path: Path) -> Non
 
 def test_init_respects_existing_equivalent_gitignore_rule(tmp_path: Path) -> None:
     gitignore = tmp_path / ".gitignore"
-    gitignore.write_text("/.forge/local/\n", encoding="utf-8")
+    policy = "\n".join(GITIGNORE_BLOCK) + "\n"
+    gitignore.write_text(policy, encoding="utf-8")
     result = initialize_repository(tmp_path, owner_display_name="Owner")
     assert result.gitignore_changed is False
-    assert gitignore.read_text(encoding="utf-8") == "/.forge/local/\n"
+    assert gitignore.read_text(encoding="utf-8") == policy
+
+
+def test_init_upgrades_legacy_local_only_gitignore_rule(tmp_path: Path) -> None:
+    gitignore = tmp_path / ".gitignore"
+    gitignore.write_text("/.forge/local/\n", encoding="utf-8")
+
+    result = initialize_repository(tmp_path, owner_display_name="Owner")
+
+    assert result.gitignore_changed is True
+    assert gitignore.read_text(encoding="utf-8").startswith("/.forge/local/\n")
+    assert "!/forge.yaml\n" in gitignore.read_text(encoding="utf-8")
 
 
 def test_init_refuses_to_adopt_nonempty_forge_directory(tmp_path: Path) -> None:

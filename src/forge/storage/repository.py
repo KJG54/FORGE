@@ -17,7 +17,13 @@ from forge.storage.configuration import create_configuration, load_configuration
 CONFIGURATION_FILE = "forge.yaml"
 FORGE_DIRECTORY = ".forge"
 GITIGNORE_RULE = ".forge/local/"
-GITIGNORE_BLOCK = ("# FORGE local state", GITIGNORE_RULE)
+GITIGNORE_BLOCK = (
+    "# FORGE hybrid policy: track governed state, ignore local-only data",
+    "!/forge.yaml",
+    "!/.forge/",
+    "!/.forge/**",
+    "/.forge/local/",
+)
 
 
 @dataclass(frozen=True)
@@ -239,14 +245,34 @@ def _read_gitignore(path: Path) -> bytes:
     return content
 
 
-def _has_gitignore_rule(content: bytes) -> bool:
-    text = content.decode("utf-8-sig")
-    accepted = {".forge/local", ".forge/local/", ".forge/local/**"}
-    return any(line.strip().lstrip("/") in accepted for line in text.splitlines())
+def gitignore_has_hybrid_policy(content: bytes) -> bool:
+    """Return whether all required hybrid-policy rules are present."""
+    try:
+        text = content.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return False
+    lines = {line.strip() for line in text.splitlines()}
+    config_tracked = {"!forge.yaml", "!/forge.yaml"}
+    forge_tracked = {"!.forge/", "!/.forge/"}
+    forge_contents_tracked = {"!.forge/**", "!/.forge/**"}
+    local_ignored = {
+        ".forge/local",
+        ".forge/local/",
+        ".forge/local/**",
+        "/.forge/local",
+        "/.forge/local/",
+        "/.forge/local/**",
+    }
+    return (
+        not lines.isdisjoint(config_tracked)
+        and not lines.isdisjoint(forge_tracked)
+        and not lines.isdisjoint(forge_contents_tracked)
+        and not lines.isdisjoint(local_ignored)
+    )
 
 
-def _merge_gitignore(path: Path, original: bytes) -> bool:
-    if _has_gitignore_rule(original):
+def _merge_gitignore(path: Path, original: bytes, *, force: bool = False) -> bool:
+    if gitignore_has_hybrid_policy(original) and not force:
         return False
     newline = b"\r\n" if b"\r\n" in original else b"\n"
     prefix = b"" if not original or original.endswith((b"\n", b"\r")) else newline
@@ -327,12 +353,22 @@ def initialize_repository(
     _preflight_managed_paths(layout)
     gitignore_path = layout.root / ".gitignore"
     original_gitignore = _read_gitignore(gitignore_path)
+    # Local import keeps repository layout independent from the read-only Git policy
+    # service. A conflicting rule added after an existing FORGE block is repaired by
+    # appending the same policy again; no Git index or history is ever changed.
+    from forge.core.git_policy import ignored_governed_paths
+
+    force_gitignore_refresh = bool(ignored_governed_paths(layout))
 
     if layout.configuration_file.exists():
         configuration = load_configuration(layout.configuration_file)
         _validate_available_packs(layout, configuration)
         _create_required_directories(layout)
-        changed = _merge_gitignore(gitignore_path, original_gitignore)
+        changed = _merge_gitignore(
+            gitignore_path,
+            original_gitignore,
+            force=force_gitignore_refresh,
+        )
         return InitializationResult(layout, configuration, False, changed)
 
     if layout.forge_directory.exists() and any(layout.forge_directory.iterdir()):
@@ -356,7 +392,11 @@ def initialize_repository(
     try:
         create_configuration(layout.configuration_file, configuration)
         configuration_created = True
-        changed = _merge_gitignore(gitignore_path, original_gitignore)
+        changed = _merge_gitignore(
+            gitignore_path,
+            original_gitignore,
+            force=force_gitignore_refresh,
+        )
     except Exception:
         try:
             if configuration_created:

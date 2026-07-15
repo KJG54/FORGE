@@ -5,7 +5,6 @@ from __future__ import annotations
 import os
 import re
 import shutil
-import subprocess
 from contextlib import suppress
 from dataclasses import dataclass, replace
 from datetime import datetime
@@ -28,6 +27,7 @@ from forge.contracts.state import InitiativeLifecycleState, StepState
 from forge.core.acceptance import AcceptanceView, list_acceptances
 from forge.core.artifacts import list_artifacts, load_artifact_revision
 from forge.core.authorization import require_owner
+from forge.core.git_policy import require_clean_worktree
 from forge.core.lifecycle import ActiveInitiative, load_active_initiative
 from forge.core.transitions import INITIATIVE_ABANDONED, INITIATIVE_CLOSED
 from forge.errors import (
@@ -183,29 +183,6 @@ def _event_committed(layout: RepositoryLayout, event_id: UUID) -> bool:
         return any(event.id == event_id for event in read_journal(layout.event_journal_file))
     except IntegrityError:
         return True
-
-
-def _require_clean_git(layout: RepositoryLayout) -> None:
-    try:
-        completed = subprocess.run(
-            ["git", "status", "--porcelain"],
-            cwd=layout.root,
-            capture_output=True,
-            check=False,
-            timeout=10,
-        )
-    except (OSError, subprocess.TimeoutExpired) as error:
-        raise ConflictError(
-            f"Cannot verify the configured clean-Git close policy: {error}"
-        ) from error
-    if completed.returncode != 0:
-        diagnostic = completed.stderr.decode("utf-8", errors="replace").strip()
-        raise ConflictError(
-            "Closure requires a clean Git worktree, but Git status failed"
-            + (f": {diagnostic}" if diagnostic else "")
-        )
-    if completed.stdout.strip():
-        raise ConflictError("Closure requires a clean Git worktree by project configuration")
 
 
 def _final_acceptances(active: ActiveInitiative) -> tuple[AcceptanceView, ...]:
@@ -875,7 +852,7 @@ def close_initiative(
     require_owner(actor, active.initiative.owner_identity_id, "close an initiative")
     configuration = load_configuration(layout.configuration_file)
     if configuration.behavior.require_clean_git_for_close:
-        _require_clean_git(layout)
+        require_clean_worktree(layout)
     acceptances, revisions = _preflight_closure(active)
     destination = _archive_path(layout, active.initiative.id)
     if destination.exists() or destination.is_symlink():

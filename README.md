@@ -83,8 +83,13 @@ persistent mutation; `forge migrate --apply` preserves exact legacy M1 journal b
 installs the M2 hash chain and migration provenance, and resumes safely with the same idempotency
 key after a post-commit interruption.
 
+M2 Increment 11 adds the hybrid Git collaboration policy. Initialization preserves existing ignore
+rules while exposing governed configuration and `.forge/**` records and excluding `.forge/local/`.
+Diagnostics evaluate effective Git ignore and index state without staging, committing, or changing
+the index; repositories without Git remain fully usable in filesystem-only mode.
+
 Later M2 increments remain responsible for damaged-journal handling, unrelated interrupted-command
-resolution, stale-lock remediation, and hybrid Git policy.
+resolution, and stale-lock remediation.
 
 Initialize an ordinary project repository with:
 
@@ -143,6 +148,7 @@ forge --help
 - [Idempotent mutation retries](docs/idempotency.md)
 - [Explicit active-snapshot recovery](docs/recovery.md)
 - [Pause and long-gap resume](docs/continuity.md)
+- [Hybrid Git collaboration policy](docs/git-policy.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [M1 evidence report](docs/milestones/m1-report.md)
@@ -154,6 +160,9 @@ forge --help
 - [M2 Increment 6 atomic closure boundary](docs/milestones/m2-increment-6.md)
 - [M2 Increment 7 atomic abandonment boundary](docs/milestones/m2-increment-7.md)
 - [M2 Increment 8 successor boundary](docs/milestones/m2-increment-8.md)
+- [M2 Increment 9 archive-view boundary](docs/milestones/m2-increment-9.md)
+- [M2 Increment 10 migration boundary](docs/milestones/m2-increment-10.md)
+- [M2 Increment 11 Git-policy boundary](docs/milestones/m2-increment-11.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

@@ -11,6 +11,10 @@ FORGE requires every workflow step to be completed and currently accepted, no ac
 exact current working bytes, valid preserved objects, a non-empty final owner summary, healthy
 integrity, and a clean Git worktree when configured.
 
+The optional clean-worktree gate first validates the hybrid policy described in
+[`git-policy.md`](git-policy.md). It refuses ignored governed paths and tracked local-only paths,
+then evaluates the whole worktree. FORGE does not stage, clean, commit, or synchronize changes.
+
 The final `initiative-closed` event is the governance commit point. It binds the `ClosureRecord`,
 current artifact revisions, final acceptances, archive destination, and command identity. Replay
 moves the initiative to terminal `closed`; later events remain invalid.

@@ -134,3 +134,15 @@ The whole migrated journal is validated before one atomic replacement. That repl
 the migration; snapshot reconstruction and idempotency receipt completion are safely resumable.
 Restart validation compares the preserved source with the unsealed semantic form of every migrated
 prefix event. Archives are validated but never rewritten.
+
+## M2 Increment 11 hybrid Git boundary
+
+Git is an optional collaboration and transport layer, not persistence authority. Initialization
+preserves existing `.gitignore` content and adds root-scoped negations for `forge.yaml` and
+governed `.forge/**` data followed by an exclusion for `.forge/local/`.
+
+Diagnostics validate the effective ignore result and read-only index state. Ignored governed paths
+and already tracked local-only paths fail closed; visible but untracked governed files are owner
+action warnings. Without Git, FORGE retains identical filesystem lifecycle behavior. The optional
+clean-close configuration first validates this hybrid policy so ignored authority-bearing files
+cannot make a dirty repository appear clean.

@@ -182,7 +182,7 @@ def initialize(
     typer.echo(f"Project ID: {result.configuration.project_id}")
     typer.echo(f"Owner: {result.configuration.owner.display_name}")
     if result.gitignore_changed:
-        typer.echo("Added .forge/local/ to .gitignore")
+        typer.echo("Updated .gitignore with the FORGE hybrid Git policy")
 
 
 @schema_app.command("export")
@@ -367,7 +367,7 @@ def doctor(
         typer.Option("--directory", "-C", help="Repository or child directory to diagnose."),
     ] = Path("."),
 ) -> None:
-    """Validate implemented M1 boundaries without repairing or mutating them."""
+    """Validate implemented boundaries without repairing or mutating them."""
     try:
         layout = discover_repository(directory)
         report = inspect_repository_health(layout)

@@ -7,8 +7,10 @@ forge init --owner-name "Repository Owner"
 ```
 
 The command creates `forge.yaml`, bootstraps stable project and owner UUIDs, creates the approved
-`.forge/` directory structure, and appends `.forge/local/` to `.gitignore` when an equivalent rule
-is not already present. Existing unrelated files and existing ignore rules are preserved.
+`.forge/` directory structure, and appends the hybrid Git block documented in
+[`git-policy.md`](../git-policy.md). The block keeps governed configuration and records visible
+while excluding `.forge/local/`. Existing unrelated files, ignore rules, bytes, and newline style
+are preserved.
 
 The configured owner is a governance identity, not authentication. A malicious process running
 with the same operating-system permissions can impersonate it or alter files; FORGE does not
@@ -25,8 +27,9 @@ Initialization refuses to:
 - store a recognizable credential in tracked configuration.
 
 Running `forge init` again validates and reuses the existing project and owner identities. It may
-create a missing required directory or add the ignore rule, but it does not replace configuration
-or change the owner name.
+create a missing required directory, upgrade a legacy local-only ignore rule, or re-append the
+hybrid policy after a later conflicting rule, but it does not replace configuration, change the
+owner name, or mutate the Git index or history.
 
 `forge.yaml` is strict, bounded safe YAML. Unknown fields, unsupported schema versions, anchors,
 aliases, and recognizable credential patterns are rejected. Validate or inspect it with:
