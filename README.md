@@ -59,9 +59,13 @@ M2 Increment 5 adds owner-authorized `forge pause` and `forge resume`, exact res
 binding, active-run safety checks, inspection-only paused behavior, and durable summaries for
 continuing work without relying on prior chat history.
 
-The M1 archive is explicitly preliminary. Later M2 increments remain responsible for damaged
-journal handling, generic interrupted-command resolution, atomic archive hardening, stale-lock
-remediation, migration, abandonment, and successor initiatives.
+M2 Increment 6 upgrades new successful closures to non-preliminary archives with deterministic
+staging, atomic promotion, archive-before-retirement validation, and same-idempotency-key recovery
+for interruptions after the closure event commits. Existing M1 archives remain readable with their
+original preliminary label.
+
+Later M2 increments remain responsible for damaged-journal handling, unrelated interrupted-command
+resolution, stale-lock remediation, migration, abandonment, and successor initiatives.
 
 Initialize an ordinary project repository with:
 
@@ -110,7 +114,7 @@ forge --help
 - [Artifacts, claims, checks, and evidence](docs/artifacts-and-evidence.md)
 - [Acceptance, decisions, and invalidation](docs/acceptance-and-invalidation.md)
 - [Manual handoffs and safe result import](docs/handoffs-and-imports.md)
-- [Preliminary closure and archive inspection](docs/closure-and-archives.md)
+- [Atomic closure and archive inspection](docs/closure-and-archives.md)
 - [Idempotent mutation retries](docs/idempotency.md)
 - [Explicit active-snapshot recovery](docs/recovery.md)
 - [Pause and long-gap resume](docs/continuity.md)
@@ -122,6 +126,7 @@ forge --help
 - [M2 Increment 3 idempotency boundary](docs/milestones/m2-increment-3.md)
 - [M2 Increment 4 recovery boundary](docs/milestones/m2-increment-4.md)
 - [M2 Increment 5 continuity boundary](docs/milestones/m2-increment-5.md)
+- [M2 Increment 6 atomic closure boundary](docs/milestones/m2-increment-6.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

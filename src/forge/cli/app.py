@@ -139,7 +139,7 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
                     command=function.__name__,
                     provided_key=provided_key,
                     parameters=parameters,
-                    resume_incomplete=function.__name__ == "recover",
+                    resume_incomplete=function.__name__ in {"close", "recover"},
                 ) as invocation:
                     typer.echo(f"Idempotency key: {invocation.key}")
                     if invocation.is_replay:
@@ -410,7 +410,12 @@ def status(
         typer.echo(f"Archive: {report.closure.archive_reference}")
         typer.echo(f"Archive digest: {report.archive_manifest.archive_digest}")
         typer.echo(f"Closing summary: {report.closure.closing_summary}")
-        typer.echo("Archive guarantee: preliminary M1 command-level immutability")
+        guarantee = (
+            "preliminary M1 command-level immutability"
+            if report.archive_manifest.preliminary
+            else "atomic M2 closure with resumable archival"
+        )
+        typer.echo(f"Archive guarantee: {guarantee}")
     for action in report.next_actions:
         typer.echo(f"Next: {action}")
     for blocker in report.blockers:
@@ -581,7 +586,7 @@ def close(
     ] = Path("."),
     idempotency_key: IdempotencyOption = None,
 ) -> None:
-    """Close fully accepted work into a preliminary immutable M1 archive."""
+    """Close fully accepted work into an interruption-recoverable archive."""
     try:
         layout = discover_repository(directory)
         configuration = load_configuration(layout.configuration_file)
@@ -597,9 +602,7 @@ def close(
     typer.echo(f"Closure record: {result.closure.id}")
     typer.echo(f"Archive: {result.closure.archive_reference}")
     typer.echo(f"Archive digest: {result.archive.manifest.archive_digest}")
-    typer.echo(
-        "Preliminary M1 archive created; hash chains and interruption recovery remain M2"
-    )
+    typer.echo("Atomic M2 archive created; closure retry is interruption-safe")
 
 
 @app.command("next")

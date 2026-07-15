@@ -1,9 +1,11 @@
-"""Preliminary M1 closure and archive-inspection contracts."""
+"""Successful-closure and archive-inspection contracts."""
 
-from typing import Annotated, Literal
+from __future__ import annotations
+
+from typing import Annotated, Literal, Self
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from forge.contracts.actors import Actor
 from forge.contracts.base import (
@@ -52,7 +54,15 @@ class ArchiveManifest(VersionedModel):
     files: tuple[ArchivedFile, ...]
     object_references: tuple[ArchivedObjectReference, ...]
     archive_digest: Sha256Digest
-    preliminary: Literal[True] = True
+    preliminary: bool = True
     limitations: tuple[NonEmptyString, ...] = (
         "M1 archives are not hash-chained and do not claim interruption recovery",
     )
+
+    @model_validator(mode="after")
+    def validate_guarantee_label(self) -> Self:
+        if self.preliminary and not self.limitations:
+            raise ValueError("preliminary archives must declare their limitations")
+        if not self.preliminary and self.limitations:
+            raise ValueError("hardened archives must not carry preliminary limitations")
+        return self

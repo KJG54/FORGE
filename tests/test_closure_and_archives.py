@@ -34,7 +34,7 @@ def _new_initiative(tmp_path: Path) -> tuple[InitializationResult, Actor]:
     create_initiative(
         initialized.layout,
         objective="Complete and preserve a governed initiative",
-        declared_scope_summary="Exercise preliminary M1 closure only",
+        declared_scope_summary="Exercise resumable atomic closure",
         actor=actor,
         trust_pack_data=True,
     )
@@ -144,7 +144,8 @@ def test_close_preserves_exact_bytes_and_supports_read_only_restart(
 
     assert result.event.event_type == "initiative-closed"
     assert result.closure.terminal_state is InitiativeLifecycleState.CLOSED
-    assert result.archive.manifest.preliminary
+    assert not result.archive.manifest.preliminary
+    assert result.archive.manifest.limitations == ()
     assert result.archive.manifest.archive_digest.startswith("sha256:")
     assert set(list_archive_ids(initialized.layout)) == {initiative_id}
     assert not tuple(initialized.layout.active_directory.iterdir())
@@ -235,14 +236,14 @@ def test_close_status_and_history_cli(tmp_path: Path) -> None:
         ],
     )
     assert closed.exit_code == 0, closed.stdout
-    assert "Preliminary M1 archive created" in closed.stdout
+    assert "Atomic M2 archive created" in closed.stdout
     status = runner.invoke(
         app,
         ["status", "--archive", str(initiative_id), "-C", str(initialized.layout.root)],
     )
     assert status.exit_code == 0, status.stdout
     assert "Lifecycle: closed" in status.stdout
-    assert "Archive guarantee: preliminary M1" in status.stdout
+    assert "Archive guarantee: atomic M2" in status.stdout
     history = runner.invoke(
         app,
         [
@@ -259,7 +260,7 @@ def test_close_status_and_history_cli(tmp_path: Path) -> None:
     assert "initiative-closed" in history.stdout
 
 
-def test_interrupted_preliminary_archive_is_detected_and_mutations_stay_disabled(
+def test_interrupted_archive_promotion_is_detected_and_resumed(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -269,7 +270,7 @@ def test_interrupted_preliminary_archive_is_detected_and_mutations_stay_disabled
         raise OSError("simulated archive interruption")
 
     monkeypatch.setattr(archival, "_copy_active_tree", fail_copy)
-    with pytest.raises(IntegrityError, match="archive creation failed"):
+    with pytest.raises(IntegrityError, match="Atomic archive promotion was interrupted"):
         close_initiative(
             initialized.layout,
             closing_summary="Interruption fixture",
@@ -277,6 +278,91 @@ def test_interrupted_preliminary_archive_is_detected_and_mutations_stay_disabled
         )
     report = inspect_status(initialized.layout)
     assert report.integrity_state.value == "integrity_error"
-    assert any("M2 recovery" in blocker for blocker in report.blockers)
+    assert any("retry 'forge close'" in blocker for blocker in report.blockers)
     with pytest.raises(IntegrityError, match="supported mutations are disabled"):
         begin_manual_run(initialized.layout, step_id="close", actor=actor)
+    monkeypatch.undo()
+    resumed = close_initiative(
+        initialized.layout,
+        closing_summary="Interruption fixture",
+        actor=actor,
+    )
+    assert not resumed.archive.manifest.preliminary
+    assert not tuple(initialized.layout.active_directory.iterdir())
+
+
+def test_cli_close_retry_completes_interrupted_active_retirement(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initialized, _, initiative_id = _completed_initiative(tmp_path)
+    original_rmtree = archival.shutil.rmtree
+    failed = False
+
+    def fail_retired_cleanup(path: Path) -> None:
+        nonlocal failed
+        if path.name == f"closed-active-{initiative_id}" and not failed:
+            failed = True
+            raise OSError("simulated retirement interruption")
+        original_rmtree(path)
+
+    monkeypatch.setattr(archival.shutil, "rmtree", fail_retired_cleanup)
+    arguments = [
+        "close",
+        "--summary",
+        "Retirement recovery fixture",
+        "--idempotency-key",
+        "close-retirement-retry",
+        "-C",
+        str(initialized.layout.root),
+    ]
+    interrupted = runner.invoke(app, arguments)
+    assert interrupted.exit_code != 0
+    assert "same idempotency key" in interrupted.stderr
+    assert load_archive(initialized.layout, initiative_id).manifest.preliminary is False
+    report = inspect_status(initialized.layout)
+    assert report.integrity_state.value == "integrity_error"
+
+    monkeypatch.undo()
+    resumed = runner.invoke(app, arguments)
+    assert resumed.exit_code == 0, resumed.stderr
+    assert "Atomic M2 archive created" in resumed.stdout
+    assert not tuple(initialized.layout.active_directory.iterdir())
+    replay = runner.invoke(app, arguments)
+    assert replay.exit_code == 0
+    assert "Idempotent replay" in replay.stdout
+
+
+def test_cli_close_retry_rebuilds_interrupted_archive_staging(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initialized, _, initiative_id = _completed_initiative(tmp_path)
+    original_copy = archival._copy_active_tree  # pyright: ignore[reportPrivateUsage]
+
+    def interrupt_after_copy(source: Path, destination: Path) -> None:
+        original_copy(source, destination)
+        raise OSError("simulated promotion interruption")
+
+    monkeypatch.setattr(archival, "_copy_active_tree", interrupt_after_copy)
+    arguments = [
+        "close",
+        "--summary",
+        "Promotion recovery fixture",
+        "--idempotency-key",
+        "close-promotion-retry",
+        "-C",
+        str(initialized.layout.root),
+    ]
+    interrupted = runner.invoke(app, arguments)
+    assert interrupted.exit_code != 0
+    assert "same idempotency key" in interrupted.stderr
+    staging = tuple(initialized.layout.archive_directory.glob(f".{initiative_id}.*.staging"))
+    assert len(staging) == 1
+    assert inspect_status(initialized.layout).integrity_state.value == "integrity_error"
+
+    monkeypatch.undo()
+    resumed = runner.invoke(app, arguments)
+    assert resumed.exit_code == 0, resumed.stderr
+    assert not tuple(initialized.layout.archive_directory.glob(f".{initiative_id}.*.staging"))
+    assert load_archive(initialized.layout, initiative_id).manifest.preliminary is False

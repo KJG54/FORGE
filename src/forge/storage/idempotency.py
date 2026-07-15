@@ -139,6 +139,11 @@ def current_idempotency_request() -> IdempotencyEventMetadata:
     return request
 
 
+def active_idempotency_request() -> IdempotencyEventMetadata | None:
+    """Return the active command identity when called inside a mutation context."""
+    return _REQUEST_CONTEXT.get()
+
+
 def _receipt_path(layout: RepositoryLayout, key: str) -> Path:
     filename = hashlib.sha256(key.encode("utf-8")).hexdigest() + ".json"
     return layout.idempotency_directory / filename

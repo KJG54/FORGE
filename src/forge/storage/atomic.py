@@ -12,7 +12,7 @@ from forge.errors import ConflictError, IntegrityError, SecurityError
 AtomicValidator = Callable[[Path], None]
 
 
-def _sync_directory(directory: Path) -> None:
+def sync_directory(directory: Path) -> None:
     """Synchronize directory metadata where the platform exposes that operation."""
     if os.name == "nt":
         return
@@ -56,7 +56,7 @@ def atomic_write_bytes(
         if validator is not None:
             validator(temporary)
         os.replace(temporary, destination)
-        _sync_directory(parent)
+        sync_directory(parent)
         if destination.read_bytes() != content:
             raise IntegrityError(
                 f"Atomic-write verification failed for governed file: {destination}"

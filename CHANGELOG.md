@@ -32,7 +32,8 @@ semantic-version commitments begin at v1.0.0.
 - M2 canonical UTF-8 event serialization, SHA-256 previous-hash chaining, snapshot head binding,
   corruption detection, and explicit read-only compatibility for legacy M1 journals.
 - M2 repository-wide cross-process mutation locking with bounded owner metadata, live contention
-  refusal, stale-lock diagnostics, and ownership-verified release.
+  refusal, platform-safe process liveness checks, stale-lock diagnostics, and ownership-verified
+  release.
 - M2 journal-bound mutation idempotency with generated or caller-provided keys, canonical request
   binding, exact-event completion receipts, duplicate-free retry, and interruption detection.
 - M2 owner-authorized active-snapshot recovery with exact-byte evidence preservation, complete
@@ -41,10 +42,13 @@ semantic-version commitments begin at v1.0.0.
 - M2 owner-authorized pause and resume with resumable-state digests, active-run refusal,
   inspection-only paused behavior, restart-safe lifecycle restoration, and durable resumption
   summaries.
+- M2 resumable successful closure with hardened archive manifests, deterministic staging, atomic
+  promotion, archive-before-retirement validation, interruption diagnostics, and duplicate-free
+  same-idempotency-key completion.
 
 ### Limitations
 
-- M1 archives remain preliminary and do not yet claim atomic interruption recovery, abandonment,
-  or successor initiatives; active-snapshot recovery does not repair damaged journals or generic
+- Existing M1 archives retain their preliminary guarantee; abandonment and successor initiatives
+  remain deferred, and active-snapshot recovery does not repair damaged journals or unrelated
   interrupted mutations.
 - Project and distribution naming remain provisional.

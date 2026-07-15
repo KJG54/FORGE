@@ -82,10 +82,11 @@ Run records remain immutable. `forge run list|show` derives effective `running`,
 never implies step completion: safe work may return to `ready`, while the workflow's stricter
 cancellation rule or external/sensitive side effects move the step to `blocked` for owner review.
 
-## Closure boundary and deferred guarantees
+## Atomic successful closure boundary
 
-Successful M1 closure is owner-only and derives readiness from the locked workflow, current
-acceptances, exact artifact revisions, and preserved objects. Closed archives never reopen through
-supported commands. M2 Increments 1 through 3 provide hash chaining, cross-process locking, and
-idempotent retry. Recovery, abandonment, successors, and remaining interruption hardening stay
-deferred.
+Successful closure is owner-only and derives readiness from the locked workflow, current
+acceptances, exact artifact revisions, and preserved objects. M2 Increment 6 adds validated atomic
+archive promotion and resumable active-state retirement. Repeating an interrupted close with the
+same idempotency key completes the existing terminal transaction rather than creating a new event.
+Closed archives never reopen through supported commands. Abandonment, successors, migration, and
+unrelated interruption recovery stay deferred.

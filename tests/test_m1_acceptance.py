@@ -262,7 +262,7 @@ def test_restarted_process_software_walkthrough_with_import_revision_and_closure
     initiative_id = UUID(_value(close_output, "Closed initiative "))
     archive_status = _run(repository, "status", "--archive", str(initiative_id))
     assert "Lifecycle: closed" in archive_status
-    assert "Archive guarantee: preliminary M1" in archive_status
+    assert "Archive guarantee: atomic M2" in archive_status
     assert "initiative-closed" in _run(
         repository, "history", "--archive", str(initiative_id), "--event-type", "initiative-closed"
     )

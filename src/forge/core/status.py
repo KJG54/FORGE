@@ -66,16 +66,42 @@ def inspect_status(
             next_actions=(),
             blockers=(str(error),),
         )
+    staging = tuple(
+        path.name
+        for path in layout.archive_directory.iterdir()
+        if path.name.startswith(".") and path.name.endswith(".staging")
+    )
+    retired = tuple(
+        path.name
+        for path in layout.local_directory.iterdir()
+        if path.name.startswith("closed-active-")
+    )
+    if not layout.active_directory.exists():
+        return StatusReport(
+            repository_state=RepositoryState.INITIALIZED,
+            integrity_state=IntegrityState.INTEGRITY_ERROR,
+            initiative=None,
+            state=None,
+            next_actions=(),
+            blockers=(
+                "Closure retirement is incomplete; retry 'forge close' with the same "
+                "idempotency key",
+            ),
+            archived_initiative_ids=archived_ids,
+        )
     if not layout.initiative_file.exists():
         unexpected = tuple(path.name for path in layout.active_directory.iterdir())
-        if unexpected:
+        if unexpected or staging or retired:
             return StatusReport(
                 repository_state=RepositoryState.INITIALIZED,
                 integrity_state=IntegrityState.INTEGRITY_ERROR,
                 initiative=None,
                 state=None,
                 next_actions=(),
-                blockers=(f"Active directory contains incomplete records: {unexpected}",),
+                blockers=(
+                    "Closure transaction is incomplete; retry 'forge close' with the same "
+                    f"idempotency key (active={unexpected}, staging={staging}, retired={retired})",
+                ),
             )
         return StatusReport(
             repository_state=RepositoryState.INITIALIZED,
@@ -112,8 +138,8 @@ def inspect_status(
             state=active.state,
             next_actions=(),
             blockers=(
-                "Terminal state remains under .forge/active; preliminary archival did not "
-                "finish and M2 recovery is required",
+                "Terminal state remains under .forge/active; retry 'forge close' with the same "
+                "idempotency key to finish atomic archival",
             ),
             archived_initiative_ids=archived_ids,
         )

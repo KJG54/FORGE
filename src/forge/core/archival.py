@@ -1,8 +1,9 @@
-"""Preliminary M1 successful closure and read-only archive inspection."""
+"""Successful closure with resumable atomic archive promotion."""
 
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 from contextlib import suppress
@@ -33,7 +34,9 @@ from forge.errors import (
     IntegrityError,
     SecurityError,
 )
+from forge.storage.atomic import sync_directory
 from forge.storage.configuration import load_configuration
+from forge.storage.idempotency import IDEMPOTENCY_METADATA_KEY, active_idempotency_request
 from forge.storage.journal import read_journal
 from forge.storage.objects import (
     canonical_json_digest,
@@ -46,6 +49,10 @@ from forge.storage.snapshots import append_event_and_update_snapshot
 
 _MANIFEST_NAME = "archive-manifest.json"
 _ZERO_DIGEST = f"sha256:{'0' * 64}"
+_STAGING_NAME = re.compile(
+    r"^\.(?P<initiative>[0-9a-f-]{36})\.(?P<event>[0-9a-f-]{36})\.staging$"
+)
+_RETIRED_PREFIX = "closed-active-"
 _ACTIVE_TOP_LEVEL = {
     "acceptance",
     "artifacts",
@@ -61,6 +68,8 @@ _ACTIVE_TOP_LEVEL = {
     "pack-trust.json",
     "pack.lock.json",
     "revocations",
+    "recovery-records",
+    "recovery-snapshots",
     "runs",
     "state.json",
     "workflow.lock.json",
@@ -92,6 +101,14 @@ def _require_text(label: str, value: str) -> str:
 
 def _archive_path(layout: RepositoryLayout, initiative_id: UUID) -> Path:
     return layout.archive_directory / str(initiative_id)
+
+
+def _staging_path(layout: RepositoryLayout, initiative_id: UUID, event_id: UUID) -> Path:
+    return layout.archive_directory / f".{initiative_id}.{event_id}.staging"
+
+
+def _retired_path(layout: RepositoryLayout, initiative_id: UUID) -> Path:
+    return layout.local_directory / f"{_RETIRED_PREFIX}{initiative_id}"
 
 
 def _archive_layout(layout: RepositoryLayout, path: Path) -> RepositoryLayout:
@@ -235,8 +252,17 @@ def _copy_active_tree(source: Path, destination: Path) -> None:
             target.mkdir()
         elif candidate.is_file():
             shutil.copyfile(candidate, target)
+            with target.open("r+b") as stream:
+                os.fsync(stream.fileno())
         else:
             raise IntegrityError(f"Active governance entry is not a regular file: {candidate}")
+    directories = sorted(
+        (candidate for candidate in destination.rglob("*") if candidate.is_dir()),
+        key=lambda item: len(item.parts),
+        reverse=True,
+    )
+    for directory in (*directories, destination):
+        sync_directory(directory)
 
 
 def _object_references(
@@ -279,6 +305,8 @@ def _build_manifest(
             revisions, set(closure.accepted_artifact_revision_ids)
         ),
         archive_digest=_ZERO_DIGEST,
+        preliminary=False,
+        limitations=(),
     )
     return manifest.model_copy(
         update={"archive_digest": canonical_json_digest(_manifest_payload(manifest))}
@@ -341,6 +369,10 @@ def list_archive_ids(layout: RepositoryLayout) -> tuple[UUID, ...]:
         raise SecurityError(f"Archive directory is missing or unsafe: {layout.archive_directory}")
     identifiers: list[UUID] = []
     for candidate in layout.archive_directory.iterdir():
+        if _STAGING_NAME.fullmatch(candidate.name):
+            if candidate.is_symlink() or not candidate.is_dir():
+                raise IntegrityError(f"Closure staging entry is unsafe: {candidate}")
+            continue
         if candidate.is_symlink() or not candidate.is_dir():
             raise IntegrityError(f"Archive root contains an unsafe entry: {candidate}")
         try:
@@ -362,15 +394,250 @@ def load_archive(layout: RepositoryLayout, initiative_id: UUID) -> ArchiveView:
     return _validate_archive_directory(layout, path, initiative_id)
 
 
+def _validate_committed_closure(
+    active: ActiveInitiative,
+    closure: ClosureRecord,
+    event: AuditEvent,
+    *,
+    closing_summary: str,
+    actor: Actor,
+) -> None:
+    if (
+        event.event_type != INITIATIVE_CLOSED
+        or event.id != closure.closure_event_id
+        or event.initiative_id != closure.initiative_id
+        or event.sequence != closure.event_sequence
+        or event.actor != actor
+        or closure.owner_actor != actor
+        or closure.closing_summary != closing_summary
+        or closure.initiative_id != active.initiative.id
+    ):
+        raise IntegrityError("Committed closure does not match the requested owner decision")
+
+
+def _closure_from_terminal_active(
+    active: ActiveInitiative,
+    *,
+    closing_summary: str,
+    actor: Actor,
+) -> tuple[ClosureRecord, AuditEvent]:
+    events = read_journal(active.layout.event_journal_file)
+    if not events or events[-1].event_type != INITIATIVE_CLOSED:
+        raise IntegrityError("Terminal active state does not end at a closure event")
+    event = events[-1]
+    raw_closure_id = event.metadata.get("closure_record_id")
+    if not isinstance(raw_closure_id, str):
+        raise IntegrityError("Closure event does not identify its closure record")
+    try:
+        closure_id = UUID(raw_closure_id)
+    except ValueError as error:
+        raise IntegrityError("Closure event has an invalid closure record ID") from error
+    closure = load_record(_closure_path(active.layout, closure_id), ClosureRecord)
+    _validate_committed_closure(
+        active,
+        closure,
+        event,
+        closing_summary=closing_summary,
+        actor=actor,
+    )
+    return closure, event
+
+
+def _archive_matches_active_request(archive: ArchiveView) -> bool:
+    request = active_idempotency_request()
+    if request is None:
+        return _retired_path(archive.layout, archive.active.initiative.id).exists()
+    raw = archive.events[-1].metadata.get(IDEMPOTENCY_METADATA_KEY)
+    return raw == request.model_dump(mode="json")
+
+
+def _closure_from_interrupted_retirement(
+    layout: RepositoryLayout,
+    *,
+    closing_summary: str,
+    actor: Actor,
+) -> tuple[ClosureRecord, AuditEvent] | None:
+    matches: list[tuple[ClosureRecord, AuditEvent]] = []
+    for initiative_id in list_archive_ids(layout):
+        archive = load_archive(layout, initiative_id)
+        if not _archive_matches_active_request(archive):
+            continue
+        closure = archive.closure
+        event = archive.events[-1]
+        if (
+            closure.closing_summary == closing_summary
+            and closure.owner_actor == actor
+            and event.actor == actor
+        ):
+            matches.append((closure, event))
+    if len(matches) > 1:
+        raise IntegrityError("Closure retry matches more than one archived initiative")
+    return matches[0] if matches else None
+
+
+def _remove_staging(path: Path) -> None:
+    if path.is_symlink() or not path.is_dir():
+        raise SecurityError(f"Closure staging path is unsafe: {path}")
+    try:
+        shutil.rmtree(path)
+    except OSError as error:
+        raise IntegrityError(f"Cannot clear interrupted closure staging: {error}") from error
+
+
+def _promote_archive(
+    layout: RepositoryLayout,
+    active: ActiveInitiative | None,
+    closure: ClosureRecord,
+    event: AuditEvent,
+) -> ArchiveView:
+    destination = _archive_path(layout, closure.initiative_id)
+    staging = _staging_path(layout, closure.initiative_id, event.id)
+    if destination.exists() or destination.is_symlink():
+        archive = load_archive(layout, closure.initiative_id)
+        if (
+            archive.closure != closure
+            or archive.events[-1].id != event.id
+            or archive.manifest.preliminary
+        ):
+            raise IntegrityError("Existing archive does not match the hardened closure transaction")
+        if staging.exists() or staging.is_symlink():
+            _remove_staging(staging)
+        return archive
+    if active is None:
+        raise IntegrityError(
+            "Closure event is committed but neither its archive nor terminal active state exists"
+        )
+    if staging.exists() or staging.is_symlink():
+        _remove_staging(staging)
+    try:
+        _copy_active_tree(active.layout.active_directory, staging)
+        manifest = _build_manifest(active, closure, staging)
+        write_record(staging / _MANIFEST_NAME, manifest)
+        candidate = _validate_archive_directory(layout, staging, closure.initiative_id)
+        if candidate.closure != closure or candidate.events[-1].id != event.id:
+            raise IntegrityError("Closure staging does not match the committed closure")
+        sync_directory(staging)
+        os.replace(staging, destination)
+        sync_directory(layout.archive_directory)
+    except OSError as error:
+        raise IntegrityError(
+            "Atomic archive promotion was interrupted; retry 'forge close' with the same "
+            f"idempotency key: {error}"
+        ) from error
+    archive = load_archive(layout, closure.initiative_id)
+    if archive.manifest.preliminary:
+        raise IntegrityError("New closure unexpectedly produced a preliminary archive")
+    return archive
+
+
+def _validate_terminal_tree(
+    layout: RepositoryLayout,
+    path: Path,
+    closure: ClosureRecord,
+    event: AuditEvent,
+) -> None:
+    if path.is_symlink() or not path.is_dir():
+        raise SecurityError(f"Terminal active-state path is unsafe: {path}")
+    terminal_layout = _archive_layout(layout, path)
+    terminal = load_active_initiative(terminal_layout, allow_terminal=True)
+    events = read_journal(terminal_layout.event_journal_file)
+    if (
+        terminal.initiative.id != closure.initiative_id
+        or terminal.state.lifecycle_state is not InitiativeLifecycleState.CLOSED
+        or not events
+        or events[-1].id != event.id
+    ):
+        raise IntegrityError("Retired active state does not match the committed closure")
+
+
+def _retire_active_state(
+    layout: RepositoryLayout,
+    closure: ClosureRecord,
+    event: AuditEvent,
+) -> None:
+    active = layout.active_directory
+    retired = _retired_path(layout, closure.initiative_id)
+    if retired.exists() or retired.is_symlink():
+        _validate_terminal_tree(layout, retired, closure, event)
+    if active.exists() or active.is_symlink():
+        if active.is_symlink() or not active.is_dir():
+            raise SecurityError(f"Active governance path is unsafe: {active}")
+        contents = tuple(active.iterdir())
+        if contents:
+            _validate_terminal_tree(layout, active, closure, event)
+            if retired.exists() or retired.is_symlink():
+                raise IntegrityError("Both active and retired closure state contain records")
+            try:
+                os.replace(active, retired)
+                sync_directory(layout.forge_directory)
+                sync_directory(layout.local_directory)
+            except OSError as error:
+                raise IntegrityError(
+                    "Active-state retirement was interrupted; retry 'forge close' with the "
+                    f"same idempotency key: {error}"
+                ) from error
+        elif not retired.exists():
+            return
+    if retired.exists() or retired.is_symlink():
+        _validate_terminal_tree(layout, retired, closure, event)
+    try:
+        if not active.exists():
+            active.mkdir()
+            sync_directory(layout.forge_directory)
+        if retired.exists():
+            shutil.rmtree(retired)
+            sync_directory(layout.local_directory)
+    except OSError as error:
+        raise IntegrityError(
+            "Active-state retirement was interrupted; retry 'forge close' with the same "
+            f"idempotency key: {error}"
+        ) from error
+
+
+def _finalize_committed_closure(
+    layout: RepositoryLayout,
+    active: ActiveInitiative | None,
+    closure: ClosureRecord,
+    event: AuditEvent,
+) -> ClosureResult:
+    archive = _promote_archive(layout, active, closure, event)
+    _retire_active_state(layout, closure, event)
+    return ClosureResult(closure, event, archive)
+
+
 def close_initiative(
     layout: RepositoryLayout,
     *,
     closing_summary: str,
     actor: Actor,
 ) -> ClosureResult:
-    active = load_active_initiative(layout)
-    require_owner(actor, active.initiative.owner_identity_id, "close an initiative")
     closing_summary = _require_text("Closing summary", closing_summary)
+    active: ActiveInitiative | None = None
+    if layout.initiative_file.exists():
+        active = load_active_initiative(
+            layout,
+            allow_terminal=True,
+            allow_paused=True,
+        )
+        if active.state.lifecycle_state is InitiativeLifecycleState.CLOSED:
+            require_owner(actor, active.initiative.owner_identity_id, "recover closure")
+            closure, event = _closure_from_terminal_active(
+                active,
+                closing_summary=closing_summary,
+                actor=actor,
+            )
+            return _finalize_committed_closure(layout, active, closure, event)
+    else:
+        interrupted = _closure_from_interrupted_retirement(
+            layout,
+            closing_summary=closing_summary,
+            actor=actor,
+        )
+        if interrupted is not None:
+            closure, event = interrupted
+            return _finalize_committed_closure(layout, None, closure, event)
+        raise ConflictError("No active initiative exists; run 'forge create' first")
+    require_owner(actor, active.initiative.owner_identity_id, "close an initiative")
     configuration = load_configuration(layout.configuration_file)
     if configuration.behavior.require_clean_git_for_close:
         _require_clean_git(layout)
@@ -401,7 +668,7 @@ def close_initiative(
             (closure_id, *final_acceptance_ids, *current_revision_ids, *accepted_revision_ids)
         )
     )
-    basis = "configured owner closed fully accepted work for preliminary M1 archival"
+    basis = "configured owner closed fully accepted work for atomic M2 archival"
     closure = ClosureRecord(
         id=closure_id,
         initiative_id=active.initiative.id,
@@ -440,6 +707,7 @@ def close_initiative(
             "final_acceptance_ids": [str(item) for item in final_acceptance_ids],
             "current_artifact_revision_ids": [str(item) for item in current_revision_ids],
             "accepted_artifact_revision_ids": [str(item) for item in accepted_revision_ids],
+            "archive_guarantee": "atomic-m2-resumable",
         },
     )
     created_closure_directory = False
@@ -469,37 +737,4 @@ def close_initiative(
         raise
 
     closed = load_active_initiative(layout, allow_terminal=True)
-    staging = layout.archive_directory / f".{active.initiative.id}.{uuid4()}.staging"
-    finalized = False
-    try:
-        _copy_active_tree(layout.active_directory, staging)
-        manifest = _build_manifest(closed, closure, staging)
-        write_record(staging / _MANIFEST_NAME, manifest)
-        _validate_archive_directory(layout, staging, active.initiative.id)
-        os.replace(staging, destination)
-        finalized = True
-        archive = load_archive(layout, active.initiative.id)
-    except OSError as error:
-        if not finalized and staging.exists():
-            shutil.rmtree(staging, ignore_errors=True)
-        raise IntegrityError(
-            f"Preliminary archive creation failed before active-state retirement: {error}"
-        ) from error
-    except Exception:
-        if not finalized and staging.exists():
-            shutil.rmtree(staging, ignore_errors=True)
-        raise
-
-    retired = layout.local_directory / f"closed-active-{active.initiative.id}"
-    if retired.exists():
-        raise IntegrityError(f"Preliminary closure cleanup path already exists: {retired}")
-    try:
-        os.replace(layout.active_directory, retired)
-        layout.active_directory.mkdir()
-        shutil.rmtree(retired)
-    except OSError as error:
-        raise IntegrityError(
-            "Archive was created but active-state retirement was interrupted; "
-            "M2 recovery is required"
-        ) from error
-    return ClosureResult(closure, event, archive)
+    return _finalize_committed_closure(layout, closed, closure, event)

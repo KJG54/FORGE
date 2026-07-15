@@ -76,3 +76,8 @@ journal head, observed snapshot condition, exact preserved bytes when present, a
 M2 Increment 5 extends `MaterializedState` with the active pause-event identity. Pause and resume
 remain journal events rather than mutable records: the pause event binds the exact resumable state
 digest and the resume event binds its governing pause plus a durable resumption summary.
+
+M2 Increment 6 keeps `ClosureRecord` stable and makes `ArchiveManifest.preliminary` an explicit
+compatibility flag. Existing M1 manifests remain `true` with declared limitations; newly hardened
+archives are `false` with no preliminary limitations. The closure event, record, manifest, file
+inventory, and preserved-object references must identify the same terminal transaction.

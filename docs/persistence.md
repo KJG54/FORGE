@@ -98,16 +98,15 @@ acceptance projections while changing lifecycle state to `paused` and limiting t
 and re-derives legal workflow actions. Both events use the existing journal commit, snapshot,
 locking, and idempotency protocols.
 
-## Increment 7 archive layer
+## M2 Increment 6 atomic closure layer
 
 Successful closure appends an owner-authorized terminal event and writes the final snapshot before
-building a complete archive in a sibling staging directory. `archive-manifest.json` covers every
-archived file by exact digest and size and references the already content-addressed artifact objects.
-After validation, the staged archive is promoted and `.forge/active` is retired to an empty
-directory.
+building a complete archive in a deterministic sibling staging directory. The manifest covers each
+archived file by digest and size and references content-addressed artifact objects. The staging tree
+is validated before atomic promotion, and the promoted archive is validated before active state is
+atomically renamed and retired.
 
-This ordering provides deterministic, inspectable successful closure and command-level archive
-immutability. It does not make the journal, snapshot, archive promotion, and active-state retirement
-one atomic transaction. An interruption is reported as an integrity error and is never silently
-repaired. Interrupted-archive recovery remains explicit later M2 work; completed closure retries
-are protected by the M2 Increment 3 idempotency receipt.
+The event is the governance commit point; the overall multi-directory operation is resumable rather
+than falsely presented as one filesystem primitive. A retry with the same close parameters and
+idempotency key rebuilds staging or finishes retirement without duplicating the terminal event. The
+completion receipt is written only after the archive is valid and `.forge/active` is empty.
