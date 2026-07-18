@@ -61,6 +61,7 @@ _ACTIVE_TOP_LEVEL = {
     "checks",
     "claims",
     "command-recovery-records",
+    "context",
     "closure",
     "decision-supersessions",
     "decisions",

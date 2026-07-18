@@ -112,6 +112,18 @@ class RepositoryLayout:
         return self.active_directory / "pack-trust.json"
 
     @property
+    def agent_context_directory(self) -> Path:
+        return self.active_directory / "context"
+
+    @property
+    def current_agent_context_json_file(self) -> Path:
+        return self.agent_context_directory / "current.json"
+
+    @property
+    def current_agent_context_markdown_file(self) -> Path:
+        return self.agent_context_directory / "current.md"
+
+    @property
     def governed_run_directory(self) -> Path:
         return self.active_directory / "runs"
 

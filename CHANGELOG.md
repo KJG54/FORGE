@@ -68,6 +68,10 @@ semantic-version commitments begin at v1.0.0.
   concurrent-mutation exclusion, exact local lock-byte preservation, versioned provenance,
   same-key interruption recovery, and live, foreign-host, malformed, symbolic, changed, or
   ambiguous lock refusal.
+- M3 canonical provider-neutral agent context with deterministic tracked JSON and Markdown,
+  allowlisted required-input metadata, effective decisions, explicit authority and return
+  boundaries, blocker-aware worker permissions, public schema export, and leakage-resistant
+  exclusion of unrelated, archived, ignored, environment, local-secret, and non-selected content.
 
 ### Limitations
 
@@ -77,4 +81,6 @@ semantic-version commitments begin at v1.0.0.
   or synchronizes a repository on the owner's behalf.
 - Stale-lock remediation evidence contains host runtime metadata and remains local-only under the
   hybrid Git policy; it does not alter or repair governed initiative history.
+- Codex and Claude context targets, managed vendor files, adapter invocation, and governed
+  capabilities remain deferred beyond M3 Increment 1.
 - Project and distribution naming remain provisional.

@@ -20,6 +20,7 @@ from forge.core.acceptance import (
     revoke_acceptance,
     show_acceptance,
 )
+from forge.core.agent_context import AgentContextTarget, generate_agent_context
 from forge.core.archival import abandon_initiative, close_initiative
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
 from forge.core.authorization import owner_actor
@@ -67,6 +68,7 @@ check_app = typer.Typer(help="Record and inspect structured manual checks.")
 evidence_app = typer.Typer(help="Register and inspect durable evidence packets.")
 acceptance_app = typer.Typer(help="Record, inspect, or revoke owner acceptance.")
 run_app = typer.Typer(help="Inspect or cancel durable work attempts.")
+agent_app = typer.Typer(help="Generate neutral worker context and inspect agent integrations.")
 IdempotencyOption = Annotated[
     str | None,
     typer.Option(
@@ -82,6 +84,35 @@ app.add_typer(check_app, name="check")
 app.add_typer(evidence_app, name="evidence")
 app.add_typer(acceptance_app, name="acceptance")
 app.add_typer(run_app, name="run")
+app.add_typer(agent_app, name="agent")
+
+
+@agent_app.command("context")
+def agent_context(
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    target: Annotated[
+        AgentContextTarget,
+        typer.Option(help="Context view to generate: neutral, codex, or claude."),
+    ] = AgentContextTarget.NEUTRAL,
+) -> None:
+    """Generate deterministic bounded context; vendor views arrive separately."""
+    try:
+        layout = discover_repository(directory)
+        result = generate_agent_context(layout, target=target)
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Generated {target.value} canonical agent context")
+    typer.echo(f"JSON: {result.json_path}")
+    typer.echo(f"Markdown: {result.markdown_path}")
+    if result.context.known_blockers:
+        typer.echo("Known blockers:")
+        for blocker in result.context.known_blockers:
+            typer.echo(f"- {blocker}")
+    typer.echo("Generated context is derived; FORGE governed state remains authoritative")
 
 
 def _version_callback(value: bool) -> None:

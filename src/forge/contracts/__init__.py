@@ -5,7 +5,16 @@ from collections.abc import Mapping
 from pydantic import BaseModel
 
 from forge.contracts.actors import Actor, ActorType, AuthorityGrant, OwnerIdentity
-from forge.contracts.agents import AgentHandoff, AgentResult, ReturnedFile
+from forge.contracts.agents import (
+    AgentContextDecision,
+    AgentContextInput,
+    AgentContextReturnContract,
+    AgentContextStep,
+    AgentHandoff,
+    AgentResult,
+    CanonicalAgentContext,
+    ReturnedFile,
+)
 from forge.contracts.archives import (
     AbandonmentRecord,
     ArchivedFile,
@@ -79,6 +88,7 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "abandonment-record": AbandonmentRecord,
     "actor": Actor,
     "agent-handoff": AgentHandoff,
+    "canonical-agent-context": CanonicalAgentContext,
     "agent-result": AgentResult,
     "approval-revocation": ApprovalRevocation,
     "artifact-record": ArtifactRecord,
@@ -128,6 +138,10 @@ __all__ = [
     "AcceptanceRecord",
     "Actor",
     "ActorType",
+    "AgentContextDecision",
+    "AgentContextInput",
+    "AgentContextReturnContract",
+    "AgentContextStep",
     "AgentHandoff",
     "AgentResult",
     "ApprovalRevocation",
@@ -139,6 +153,7 @@ __all__ = [
     "AuditEvent",
     "AuthorityGrant",
     "CancellationBehavior",
+    "CanonicalAgentContext",
     "CapabilityDefinition",
     "CapabilityTrustState",
     "CheckOutcome",

@@ -146,3 +146,15 @@ forge artifact add path/to/file --role <role> --title "Reused input" \
 FORGE requires an exact digest and size match, then creates a new successor artifact and revision
 whose provenance identifies the predecessor initiative and revision. This is reuse, not inherited
 approval; the new revision must pass the successor workflow's checks and acceptance independently.
+
+## Canonical neutral agent context
+
+M3 Increment 1 derives `.forge/active/context/current.json` and `current.md` from the current active
+step without changing lifecycle state. `forge agent context --target neutral` selects only current
+governed input metadata for roles declared in the step's `required_inputs`, includes active owner
+decisions and the normal claims/checks/evidence/acceptance boundary, and removes worker permissions
+when the selected inputs or state are blocked.
+
+The context is the neutral source for later integrations, not an adapter or a run. Existing manual
+handoffs and staged imports remain unchanged. Vendor files, installed-tool discovery, process
+execution, capabilities, and executable pack trust are deferred.

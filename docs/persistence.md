@@ -190,3 +190,16 @@ the reconstructed target receipt follow. The receipt remains bound only to the o
 events, while the recovery event is bound to a distinct recovery idempotency key. Same-key retry
 finishes post-commit writes without duplication. Partial transactions and specialized archive,
 migration, or journal-recovery operations are preserved for their own recovery paths.
+
+## M3 Increment 1 generated agent context
+
+`.forge/active/context/current.json` and `current.md` are deterministic tracked projections of the
+validated active initiative. They are regenerated under the repository mutation lock but append no
+journal event and carry no independent governance authority. The JSON contract contains only the
+approved canonical-context categories; selected artifact inputs are represented by bounded role,
+path, digest, and media-type metadata rather than copied bytes.
+
+Each file is replaced atomically. The pair is intentionally regenerable rather than a multi-record
+transaction: if interruption leaves one view newer, `forge agent context --target neutral` derives
+both again from authoritative governed state. Archive retirement naturally preserves the last
+generated context with the active tree; generation never reads unrelated archives.

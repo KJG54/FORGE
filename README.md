@@ -10,7 +10,7 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Pre-alpha foundation:** The name, distribution name, public marks, contracts, and CLI remain
-> provisional. Milestones 1 and 2 are accepted and Milestone 3 implementation is beginning; this
+> provisional. Milestones 1 and 2 are accepted and Milestone 3 implementation is in progress; this
 > is not a public production release.
 
 ## Current capabilities
@@ -107,6 +107,12 @@ malformed, symbolic, missing, changed, and ambiguous locks are refused.
 M2 is complete and owner-accepted. The final evidence is recorded in the
 [M2 evidence report](docs/milestones/m2-report.md).
 
+M3 Increment 1 adds the canonical provider-neutral agent context. `forge agent context` writes
+deterministic tracked JSON and Markdown views containing only the active governed assignment,
+selected required-input metadata, current decisions, authority boundaries, evidence expectations,
+return contract, and blockers. It never crawls unrelated project, archive, ignored, environment, or
+local-secret content. Vendor views, adapters, and capabilities remain deferred.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -124,6 +130,7 @@ forge recover-command <interrupted-key> --reason "Receipt write was interrupted"
   --idempotency-key <distinct-recovery-key>
 forge remediate-lock --reason "Confirmed the interrupted process exited" \
   --idempotency-key <stable-remediation-key>
+forge agent context --target neutral
 forge abandon --reason "Stop this initiative" --unfinished-work "Remaining work" \
   --risk "Intended outcome was not delivered"
 forge create "Successor objective" --scope "Fresh bounded scope" \
@@ -169,6 +176,7 @@ forge --help
 - [Explicit active-state recovery](docs/recovery.md)
 - [Pause and long-gap resume](docs/continuity.md)
 - [Hybrid Git collaboration policy](docs/git-policy.md)
+- [Canonical neutral agent context](docs/agent-context.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [M1 evidence report](docs/milestones/m1-report.md)
@@ -187,6 +195,7 @@ forge --help
 - [M2 Increment 13 interrupted-command recovery boundary](docs/milestones/m2-increment-13.md)
 - [M2 Increment 14 stale-lock remediation boundary](docs/milestones/m2-increment-14.md)
 - [M2 evidence report](docs/milestones/m2-report.md)
+- [M3 Increment 1 canonical-context boundary](docs/milestones/m3-increment-1.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

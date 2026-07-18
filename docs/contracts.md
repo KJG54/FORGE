@@ -107,3 +107,8 @@ M2 Increment 10 adds `MigrationRecord`. It binds configured-owner authorization 
 migration service actor to one registered source/target edge, the exact preserved source path,
 size and digest, the source event count, and the single `schema-migrated` commit event. The first
 edge changes the event-journal format while retaining contract schema version `1.0`.
+
+M3 Increment 1 adds `CanonicalAgentContext`. Its strict top-level fields match the specification's
+bounded context categories. Nested step, selected-input, decision, and return-contract shapes are
+provider-neutral. The persisted JSON is a tracked generated view, not a governance record, and its
+schema exports as `canonical-agent-context.schema.json`.
