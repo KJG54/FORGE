@@ -112,3 +112,8 @@ M3 Increment 1 adds `CanonicalAgentContext`. Its strict top-level fields match t
 bounded context categories. Nested step, selected-input, decision, and return-contract shapes are
 provider-neutral. The persisted JSON is a tracked generated view, not a governance record, and its
 schema exports as `canonical-agent-context.schema.json`.
+
+M3 Increment 3 adds frozen provider-neutral adapter request, plan, operation, manifest, and
+diagnostic values plus the structural `AgentAdapter` protocol. These values are transient service
+boundaries rather than persistence contracts, so they do not change the public schema bundle.
+Existing handoff, result, run, event, snapshot, configuration, and archive models remain stable.

@@ -80,6 +80,8 @@ Malformed or duplicate markers, symbolic links, non-UTF-8 files, oversized resul
 neutral-context change after preview are refused. The block contains references and the exact
 canonical JSON digest rather than embedding the assignment.
 
-Adapter diagnostics, adapter invocation, capability approval, and executable pack trust remain
-deferred. The existing `forge handoff` and staged `forge import-result` workflow remains the manual
-baseline.
+M3 Increment 3 adds the neutral adapter interface, a process-free manual implementation, and
+read-only `forge agent doctor` selection diagnostics. `forge handoff` derives this same canonical
+context in memory and binds the manual plan to its exact JSON digest; it does not replace the
+tracked current views as a side effect. Installed-tool discovery, external invocation, capability
+approval, and executable pack trust remain deferred.

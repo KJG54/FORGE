@@ -119,6 +119,11 @@ user content; `--apply` explicitly confirms the plan, regenerates neutral contex
 changes only the delimited managed span while preserving all other bytes. Adapters and capabilities
 remain deferred.
 
+M3 Increment 3 adds the provider-neutral `AgentAdapter` lifecycle interface and an always-available
+manual implementation. `forge agent doctor` reports selection, compatibility, limitations, and an
+explicit manual fallback; `forge handoff` now exercises the same digest-bound preparation boundary
+without starting a process or changing governed state. External tool discovery remains deferred.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -139,6 +144,9 @@ forge remediate-lock --reason "Confirmed the interrupted process exited" \
 forge agent context --target neutral
 forge agent context --target codex
 forge agent context --target codex --apply
+forge agent doctor
+forge agent doctor --adapter codex
+forge handoff discover --constraint "Do not modify unrelated files"
 forge abandon --reason "Stop this initiative" --unfinished-work "Remaining work" \
   --risk "Intended outcome was not delivered"
 forge create "Successor objective" --scope "Fresh bounded scope" \
@@ -185,6 +193,7 @@ forge --help
 - [Pause and long-gap resume](docs/continuity.md)
 - [Hybrid Git collaboration policy](docs/git-policy.md)
 - [Canonical neutral agent context](docs/agent-context.md)
+- [Neutral agent adapters and manual fallback](docs/adapters.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [M1 evidence report](docs/milestones/m1-report.md)
@@ -205,6 +214,7 @@ forge --help
 - [M2 evidence report](docs/milestones/m2-report.md)
 - [M3 Increment 1 canonical-context boundary](docs/milestones/m3-increment-1.md)
 - [M3 Increment 2 managed-vendor-reference boundary](docs/milestones/m3-increment-2.md)
+- [M3 Increment 3 neutral-adapter boundary](docs/milestones/m3-increment-3.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

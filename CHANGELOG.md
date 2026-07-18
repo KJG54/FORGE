@@ -75,6 +75,9 @@ semantic-version commitments begin at v1.0.0.
 - M3 managed Codex and Claude context references with digest-bound delimited blocks, non-mutating
   create/append/replace/no-change preview, explicit apply confirmation, exact preservation of user
   bytes, context and file race refusal, bounded UTF-8 handling, and atomic vendor-file replacement.
+- M3 provider-neutral agent adapter lifecycle interface, built-in process-free manual baseline,
+  explicit configured-selection fallback, read-only adapter diagnostics, and canonical-context
+  digest binding for portable handoffs without persistence-format changes.
 
 ### Limitations
 
@@ -84,6 +87,6 @@ semantic-version commitments begin at v1.0.0.
   or synchronizes a repository on the owner's behalf.
 - Stale-lock remediation evidence contains host runtime metadata and remains local-only under the
   hybrid Git policy; it does not alter or repair governed initiative history.
-- Agent interfaces, installed-tool diagnostics, Codex/Claude process invocation, and governed
-  capabilities remain deferred beyond M3 Increment 2.
+- Codex/Claude executable discovery, external process invocation, durable adapter runs, and
+  governed capabilities remain deferred beyond M3 Increment 3.
 - Project and distribution naming remain provisional.

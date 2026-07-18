@@ -164,3 +164,8 @@ marker block in `AGENTS.md` or `CLAUDE.md`; `--apply` regenerates neutral contex
 vendor change. The block grants no workflow permission and does not create a run. Existing user
 content remains byte-for-byte outside the managed span. Installed-tool discovery and all process or
 capability behavior remain deferred.
+
+M3 Increment 3 routes portable handoff preparation through the neutral `AgentAdapter` interface.
+The built-in manual implementation is always available, starts no process, and requires the same
+untrusted `AgentResult` return path. `forge agent doctor` makes selection and fallback visible.
+Adapter preparation is transient and does not create a governed run or change workflow authority.

@@ -20,6 +20,7 @@ from forge.core.acceptance import (
     revoke_acceptance,
     show_acceptance,
 )
+from forge.core.agent_adapters import inspect_agent_adapter, prepare_agent_handoff
 from forge.core.agent_context import AgentContextTarget, generate_agent_context
 from forge.core.archival import abandon_initiative, close_initiative
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
@@ -28,7 +29,6 @@ from forge.core.command_recovery import recover_command_receipt
 from forge.core.continuity import pause_initiative, resume_initiative
 from forge.core.decisions import record_decision
 from forge.core.diagnostics import inspect_repository_health
-from forge.core.handoffs import create_handoff
 from forge.core.history import inspect_history_report
 from forge.core.imports import apply_result_import, preview_result_import
 from forge.core.lifecycle import begin_manual_run, create_initiative
@@ -145,6 +145,46 @@ def agent_context(
     typer.echo(f"JSON: {applied.context.json_path}")
     typer.echo(f"Markdown: {applied.context.markdown_path}")
     typer.echo("Vendor reference is derived; FORGE governed state remains authoritative")
+
+
+@agent_app.command("doctor")
+def agent_doctor(
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    adapter: Annotated[
+        str | None,
+        typer.Option("--adapter", help="Adapter ID; defaults to agents.preferred_adapter."),
+    ] = None,
+) -> None:
+    """Inspect adapter selection and the safe manual fallback without mutation."""
+    try:
+        layout = discover_repository(directory)
+        selection = inspect_agent_adapter(layout, requested_adapter_id=adapter)
+    except ForgeError as error:
+        _fail(error)
+        return
+    diagnostic = selection.diagnostic
+    typer.echo(f"Requested adapter: {selection.requested_adapter_id}")
+    typer.echo(f"Selected adapter: {diagnostic.adapter_id}")
+    if selection.fallback_reason is not None:
+        typer.echo(f"Fallback: {selection.fallback_reason}")
+    availability = "available" if diagnostic.availability.available else "unavailable"
+    typer.echo(f"Availability: {availability}")
+    typer.echo(f"Availability detail: {diagnostic.availability.detail}")
+    typer.echo(f"Version: {diagnostic.detected_version or '<unknown>'}")
+    typer.echo(f"Compatibility: {diagnostic.compatibility.state.value}")
+    typer.echo(f"Compatibility detail: {diagnostic.compatibility.detail}")
+    typer.echo(f"Authentication: {diagnostic.authentication_state}")
+    process_start = "supported" if diagnostic.supports_process_start else "unsupported"
+    cancellation = "supported" if diagnostic.supports_cancellation else "unsupported"
+    output_capture = "supported" if diagnostic.supports_output_capture else "unsupported"
+    typer.echo(f"Process start: {process_start}")
+    typer.echo(f"Cancellation: {cancellation}")
+    typer.echo(f"Output capture: {output_capture}")
+    for limitation in diagnostic.limitations:
+        typer.echo(f"Limitation: {limitation}")
 
 
 def _version_callback(value: bool) -> None:
@@ -1100,14 +1140,18 @@ def handoff(
     """Generate portable neutral Markdown, JSON, and return-schema files."""
     try:
         layout = discover_repository(directory)
-        result = create_handoff(
+        prepared = prepare_agent_handoff(
             layout,
             step_id=step_id,
             constraints=tuple(constraint or ()),
+            requested_adapter_id="manual",
         )
     except ForgeError as error:
         _fail(error)
         return
+    result = prepared.handoff
+    typer.echo(f"Adapter: {prepared.selection.adapter.adapter_id}")
+    typer.echo(f"Context digest: {prepared.plan.context_digest}")
     typer.echo(f"Created handoff {result.handoff.id}")
     typer.echo(f"Directory: {result.directory}")
     typer.echo("Worker output remains untrusted and must use forge import-result")

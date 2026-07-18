@@ -22,6 +22,11 @@ forge handoff discover \
   --constraint "Do not modify unrelated files"
 ```
 
+As of M3 Increment 3, this command prepares the assignment through the built-in manual
+`AgentAdapter`. The plan is bound to the exact canonical-context JSON digest, but context is derived
+in memory: handoff creation still does not write tracked context views or mutate the journal. The
+manual adapter starts no process and preserves the same bundle and staged-import behavior.
+
 ## Result bundle contract
 
 The worker returns an `AgentResult` JSON manifest and only the files declared by its
