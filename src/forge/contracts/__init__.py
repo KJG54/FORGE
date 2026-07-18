@@ -39,6 +39,7 @@ from forge.contracts.idempotency import (
     IdempotencyReceipt,
 )
 from forge.contracts.initiatives import Initiative, InitiativeReference
+from forge.contracts.locking import LockRemediationRecord
 from forge.contracts.migrations import MigrationRecord
 from forge.contracts.packs import PackManifest, PackTrustDecision, PackTrustState
 from forge.contracts.recovery import (
@@ -103,6 +104,7 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "materialized-state": MaterializedState,
     "migration-record": MigrationRecord,
     "journal-recovery-record": JournalRecoveryRecord,
+    "lock-remediation-record": LockRemediationRecord,
     "owner-identity": OwnerIdentity,
     "pack-manifest": PackManifest,
     "pack-trust-decision": PackTrustDecision,
@@ -161,6 +163,7 @@ __all__ = [
     "JournalDamageCondition",
     "JournalRecoveryRecord",
     "JournalRecoverySnapshotCondition",
+    "LockRemediationRecord",
     "MaterializedState",
     "MigrationRecord",
     "OwnerIdentity",

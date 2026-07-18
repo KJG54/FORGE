@@ -10,8 +10,8 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Pre-alpha foundation:** The name, distribution name, public marks, contracts, and CLI remain
-> provisional. Milestone 1 is accepted and Milestone 2 implementation is in progress; this is not
-> a public production release.
+> provisional. Milestones 1 and 2 are accepted and Milestone 3 implementation is beginning; this
+> is not a public production release.
 
 ## Current capabilities
 
@@ -98,7 +98,14 @@ journal events committed before its receipt. Registered event patterns prevent p
 commands from being marked complete; exact recovery provenance and same-key resume preserve the
 original effects without repeating them.
 
-Later M2 work remains responsible for explicit stale-lock remediation.
+M2 Increment 14 adds explicit owner-authorized stale-lock remediation. `forge remediate-lock`
+removes only a strictly valid same-host lock whose PID is definitively dead, atomically preserves
+its exact bytes with local provenance, excludes concurrent mutations through a separate guard, and
+supports same-key restart without touching governed initiative state. Live, foreign-host,
+malformed, symbolic, missing, changed, and ambiguous locks are refused.
+
+M2 is complete and owner-accepted. The final evidence is recorded in the
+[M2 evidence report](docs/milestones/m2-report.md).
 
 Initialize an ordinary project repository with:
 
@@ -115,6 +122,8 @@ forge resume
 forge recover --reason "Rebuild derived state after an interrupted write"
 forge recover-command <interrupted-key> --reason "Receipt write was interrupted" \
   --idempotency-key <distinct-recovery-key>
+forge remediate-lock --reason "Confirmed the interrupted process exited" \
+  --idempotency-key <stable-remediation-key>
 forge abandon --reason "Stop this initiative" --unfinished-work "Remaining work" \
   --risk "Intended outcome was not delivered"
 forge create "Successor objective" --scope "Fresh bounded scope" \
@@ -176,6 +185,8 @@ forge --help
 - [M2 Increment 11 Git-policy boundary](docs/milestones/m2-increment-11.md)
 - [M2 Increment 12 truncated-journal recovery boundary](docs/milestones/m2-increment-12.md)
 - [M2 Increment 13 interrupted-command recovery boundary](docs/milestones/m2-increment-13.md)
+- [M2 Increment 14 stale-lock remediation boundary](docs/milestones/m2-increment-14.md)
+- [M2 evidence report](docs/milestones/m2-report.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

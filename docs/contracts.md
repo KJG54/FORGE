@@ -77,6 +77,11 @@ M2 Increment 13 adds `CommandRecoveryRecord`. It binds the owner reason, interru
 identity, exact original event references, reconstructed receipt digest and completion time, and
 the distinct `command-recovered` provenance event.
 
+M2 Increment 14 adds `LockRemediationRecord`. It is a project-scoped, local-only authorization
+record binding the configured owner, reason, idempotency request, exact stale-lock digest and size,
+observed owner metadata, token digest, and preserved evidence path. It has a public schema but is
+not an initiative governance event because mutation locks contain host runtime state.
+
 M2 Increment 5 extends `MaterializedState` with the active pause-event identity. Pause and resume
 remain journal events rather than mutable records: the pause event binds the exact resumable state
 digest and the resume event binds its governing pause plus a durable resumption summary.

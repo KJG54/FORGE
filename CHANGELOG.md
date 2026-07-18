@@ -64,6 +64,10 @@ semantic-version commitments begin at v1.0.0.
 - M2 conservative interrupted-command recovery for one complete active-tail event pattern, with
   owner provenance, exact receipt reconstruction, atomic snapshot-boundary validation, partial
   multi-event refusal, and duplicate-free post-commit resume.
+- M2 explicit stale-lock remediation with configured-owner authority, same-host dead-process proof,
+  concurrent-mutation exclusion, exact local lock-byte preservation, versioned provenance,
+  same-key interruption recovery, and live, foreign-host, malformed, symbolic, changed, or
+  ambiguous lock refusal.
 
 ### Limitations
 
@@ -71,4 +75,6 @@ semantic-version commitments begin at v1.0.0.
   infer missing events, or mark partial interrupted mutations complete.
 - Git is optional collaboration and transport infrastructure; FORGE never stages, commits, cleans,
   or synchronizes a repository on the owner's behalf.
+- Stale-lock remediation evidence contains host runtime metadata and remains local-only under the
+  hybrid Git policy; it does not alter or repair governed initiative history.
 - Project and distribution naming remain provisional.

@@ -31,6 +31,7 @@ from forge.core.handoffs import create_handoff
 from forge.core.history import inspect_history_report
 from forge.core.imports import apply_result_import, preview_result_import
 from forge.core.lifecycle import begin_manual_run, create_initiative
+from forge.core.lock_remediation import remediate_stale_lock
 from forge.core.migrations import inspect_active_migration, migrate_active_repository
 from forge.core.recovery import recover_active_snapshot
 from forge.core.runs import cancel_run, list_runs, show_run
@@ -49,7 +50,7 @@ from forge.errors import ConfigurationError, ForgeError
 from forge.packs.loader import available_packs, find_pack
 from forge.schemas import export_schema_bundle
 from forge.storage.configuration import load_configuration, render_configuration
-from forge.storage.idempotency import idempotent_mutation
+from forge.storage.idempotency import idempotent_mutation, normalize_idempotency_key
 from forge.storage.locking import repository_mutation_lock
 from forge.storage.repository import discover_repository, initialize_repository
 
@@ -629,6 +630,51 @@ def recover_command(
     typer.echo(f"Recovered event(s): {len(result.receipt.events)}")
     typer.echo(f"Recovery event: {result.event.id}")
     typer.echo("Integrity: healthy")
+
+
+@app.command("remediate-lock")
+def remediate_lock(
+    reason: Annotated[
+        str,
+        typer.Option("--reason", help="Owner reason for removing a definitively stale lock."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Preserve and remove one same-host mutation lock whose owner is dead."""
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        key = normalize_idempotency_key(idempotency_key)
+        typer.echo(f"Idempotency key: {key}")
+        result = remediate_stale_lock(
+            layout,
+            project_id=configuration.project_id,
+            owner_identity_id=configuration.owner.id,
+            actor=owner_actor(configuration.owner),
+            reason=reason,
+            idempotency_key=key,
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    if result.replayed:
+        action = "Idempotent replay of"
+    elif result.resumed:
+        action = "Resumed"
+    else:
+        action = "Completed"
+    typer.echo(f"{action} stale-lock remediation {result.record.id}")
+    typer.echo(
+        f"Removed owner: pid={result.record.source_owner_pid} "
+        f"host={result.record.source_owner_hostname} "
+        f"command={result.record.source_owner_command!r}"
+    )
+    typer.echo(f"Preserved lock: {result.record.preserved_lock_path}")
+    typer.echo("Governed initiative state: unchanged")
 
 
 @app.command("pause")

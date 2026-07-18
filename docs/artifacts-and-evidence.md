@@ -81,7 +81,8 @@ Every governed record is written before its event is committed. If failure occur
 commit, newly created record files are removed. Once the event is committed, the journal remains
 authoritative and snapshot disagreement is reported under the existing transaction model. M2
 Increments 1 through 3 add hash chaining, cross-process locking, and command idempotency. Explicit
-recovery and interruption repair remain later M2 work.
+recovery and conservative interruption handling are supplied by later M2 increments without
+changing this record-before-event boundary.
 
 ## Explicit boundary
 

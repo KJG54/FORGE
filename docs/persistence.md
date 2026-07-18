@@ -44,7 +44,8 @@ binds `state.json` to the exact journal-head sequence and hash.
 
 Complete M1 journals with empty hash fields remain readable but are read-only until an explicit
 registered migration preserves the original bytes and records provenance. Active-snapshot recovery
-requires a fully hash-chained journal; explicit stale-lock remediation remains later M2 work.
+requires a fully hash-chained journal. Increment 14 handles stale locks through a separate explicit
+operation that never changes the journal.
 
 ## M2 Increment 2 mutation locking
 
@@ -85,6 +86,19 @@ receipt without appending another event.
 Recovery refuses healthy snapshots, legacy M1 journals, damaged or truncated journals, ambiguous
 history, missing governed records, and missing preserved objects. It does not truncate history,
 repair journal bytes, resolve unrelated incomplete commands, retire archives, or remove locks.
+
+## M2 Increment 14 explicit stale-lock remediation
+
+The owner-only `forge remediate-lock` operation implements the explicit diagnostic remediation
+required by [ADR-0025](adr/ADR-0025-explicit-stale-lock-remediation.md). It runs outside the ordinary
+mutation wrapper, proves a strictly valid mutation lock belongs to a dead same-host PID, and uses a
+second exclusive guard that ordinary mutations check both before and after lock acquisition.
+
+The operation writes its key-bound authorization record before atomically renaming the exact stale
+lock into `.forge/local/lock-remediations/`. That rename is the removal commit point and retains the
+source bytes, digest, size, owner metadata, owner reason, and request identity for local inspection.
+Same-key retry resumes only the matching prepared operation or replays validated evidence. It never
+appends an initiative event or changes a journal, snapshot, receipt, archive, or governed record.
 
 ## M2 Increment 5 pause and resume
 

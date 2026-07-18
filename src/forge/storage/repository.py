@@ -40,6 +40,7 @@ class RepositoryLayout:
     object_directory: Path
     local_directory: Path
     lock_directory: Path
+    lock_remediation_directory: Path
     import_staging_directory: Path
     run_directory: Path
     cache_directory: Path
@@ -61,6 +62,7 @@ class RepositoryLayout:
             object_directory=forge_directory / "objects" / "sha256",
             local_directory=local_directory,
             lock_directory=local_directory / "locks",
+            lock_remediation_directory=local_directory / "lock-remediations",
             import_staging_directory=local_directory / "import-staging",
             run_directory=local_directory / "runs",
             cache_directory=local_directory / "cache",
@@ -78,6 +80,7 @@ class RepositoryLayout:
             self.object_directory,
             self.local_directory,
             self.lock_directory,
+            self.lock_remediation_directory,
             self.import_staging_directory,
             self.run_directory,
             self.cache_directory,

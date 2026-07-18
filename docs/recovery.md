@@ -86,3 +86,32 @@ the original command events; the recovery operation receives its own receipt.
 Partial event groups, specialized close/abandon/migrate/recover transactions, archived targets,
 multiple incomplete commands, changed receipts, and non-atomic snapshot conditions are refused.
 No business event is inferred or appended, and no lock or journal byte is removed.
+
+## Stale mutation locks
+
+`forge doctor` reports mutation-lock ownership and whether the recorded process appears live or
+stale. Never delete `.forge/local/locks/mutation.lock` manually. First confirm that the command and
+process really ended, then use a stable key and record the reason:
+
+```console
+forge remediate-lock \
+  --reason "Confirmed the interrupted process exited and no mutation remains active" \
+  --idempotency-key stale-lock-2026-07-17
+```
+
+Remediation is deliberately stricter than the diagnostic label. The metadata must be bounded,
+strictly shaped, regular, and non-symbolic; its hostname must equal the current host; and the
+platform-safe process probe must prove that its PID is not live. A lock from another host remains
+ambiguous and is refused, even if diagnostics call it stale because the owner cannot be probed
+locally. Live, missing, malformed, symbolic, changed, or oversized locks are also refused.
+
+A separate remediation guard excludes ordinary mutations during the operation. FORGE writes the
+owner authorization first, then atomically renames the exact lock bytes into the key-scoped
+`.forge/local/lock-remediations/` directory. A retry with the same key can finish that prepared
+rename or validate and replay a completed operation. A different request cannot reuse the key.
+`forge doctor` validates retained record/evidence pairs.
+
+The evidence remains local-only because lock metadata contains host runtime details. No initiative
+event, snapshot, journal, receipt, or archive is changed. After remediation, run `forge doctor` and
+the command that was interrupted. If that command crossed a separate durable boundary, FORGE will
+still require its specific recovery procedure rather than silently repairing it.

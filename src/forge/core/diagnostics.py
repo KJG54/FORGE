@@ -6,12 +6,13 @@ from dataclasses import dataclass
 
 from forge.contracts.state import IntegrityState
 from forge.core.git_policy import inspect_git_policy
+from forge.core.lock_remediation import validate_lock_remediation_store
 from forge.core.status import inspect_status
 from forge.errors import IntegrityError
 from forge.packs.loader import available_packs
 from forge.storage.configuration import load_configuration
 from forge.storage.idempotency import validate_idempotency_store
-from forge.storage.locking import lock_diagnostic
+from forge.storage.locking import lock_diagnostic, remediation_lock_diagnostic
 from forge.storage.repository import (
     GITIGNORE_RULE,
     RepositoryLayout,
@@ -56,9 +57,17 @@ def inspect_repository_health(layout: RepositoryLayout) -> DiagnosticReport:
     lock_status = lock_diagnostic(layout)
     if lock_status is not None:
         warnings = (*warnings, lock_status)
+    remediation_status = remediation_lock_diagnostic(layout)
+    if remediation_status is not None:
+        warnings = (*warnings, remediation_status)
     git_report = inspect_git_policy(layout)
     warnings = (*warnings, *git_report.warnings)
     receipt_count = validate_idempotency_store(layout)
+    remediation_count = validate_lock_remediation_store(
+        layout,
+        project_id=configuration.project_id,
+        owner_identity_id=configuration.owner.id,
+    )
     git_check = (
         f"Git worktree policy ({git_report.tracked_governed_count} tracked governed files)"
         if git_report.inside_worktree
@@ -71,6 +80,7 @@ def inspect_repository_health(layout: RepositoryLayout) -> DiagnosticReport:
         "journal, snapshot, locked workflow, and governed records",
         f"archives ({len(status.archived_initiative_ids)})",
         f"idempotency receipts ({receipt_count})",
+        f"local stale-lock remediations ({remediation_count})",
         git_check,
         "capabilities and adapters (none configured)",
     )

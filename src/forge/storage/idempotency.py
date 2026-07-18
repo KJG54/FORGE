@@ -108,6 +108,11 @@ def _validate_key(value: str | None) -> str:
     return candidate
 
 
+def normalize_idempotency_key(value: str | None) -> str:
+    """Return one generated or strictly validated public idempotency key."""
+    return _validate_key(value)
+
+
 def _validate_command(value: str) -> str:
     candidate = value.strip()
     if len(candidate) > 128 or not _COMMAND_PATTERN.fullmatch(candidate):
