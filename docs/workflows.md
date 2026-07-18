@@ -156,5 +156,11 @@ decisions and the normal claims/checks/evidence/acceptance boundary, and removes
 when the selected inputs or state are blocked.
 
 The context is the neutral source for later integrations, not an adapter or a run. Existing manual
-handoffs and staged imports remain unchanged. Vendor files, installed-tool discovery, process
-execution, capabilities, and executable pack trust are deferred.
+handoffs and staged imports remain unchanged. It does not perform installed-tool discovery, process
+execution, capability handling, or executable pack trust.
+
+M3 Increment 2 adds only managed vendor references. A Codex or Claude target previews a bounded
+marker block in `AGENTS.md` or `CLAUDE.md`; `--apply` regenerates neutral context and confirms the
+vendor change. The block grants no workflow permission and does not create a run. Existing user
+content remains byte-for-byte outside the managed span. Installed-tool discovery and all process or
+capability behavior remain deferred.

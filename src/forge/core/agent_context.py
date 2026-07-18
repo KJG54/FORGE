@@ -321,27 +321,35 @@ def generate_agent_context(
 
     if target is not AgentContextTarget.NEUTRAL:
         raise ConfigurationError(
-            f"Agent context target {target.value!r} requires the deferred "
-            "managed-vendor-view increment"
+            f"Agent context target {target.value!r} must use managed vendor preview/apply"
         )
     with repository_mutation_lock(layout, command="agent-context"):
         context = build_agent_context(layout)
-        json_bytes = render_record(context)
-        markdown_bytes = _render_markdown(context)
-        created = _ensure_context_directory(layout.agent_context_directory)
-        try:
-            atomic_write_bytes(layout.current_agent_context_json_file, json_bytes)
-            atomic_write_bytes(layout.current_agent_context_markdown_file, markdown_bytes)
-        except Exception:
-            if created:
-                for path in (
-                    layout.current_agent_context_markdown_file,
-                    layout.current_agent_context_json_file,
-                ):
-                    path.unlink(missing_ok=True)
-                with suppress(OSError):
-                    layout.agent_context_directory.rmdir()
-            raise
+        return write_agent_context_views(layout, context)
+
+
+def write_agent_context_views(
+    layout: RepositoryLayout,
+    context: CanonicalAgentContext,
+) -> AgentContextGenerationResult:
+    """Replace regenerable context files while the caller holds mutation exclusion."""
+
+    json_bytes = render_record(context)
+    markdown_bytes = _render_markdown(context)
+    created = _ensure_context_directory(layout.agent_context_directory)
+    try:
+        atomic_write_bytes(layout.current_agent_context_json_file, json_bytes)
+        atomic_write_bytes(layout.current_agent_context_markdown_file, markdown_bytes)
+    except Exception:
+        if created:
+            for path in (
+                layout.current_agent_context_markdown_file,
+                layout.current_agent_context_json_file,
+            ):
+                path.unlink(missing_ok=True)
+            with suppress(OSError):
+                layout.agent_context_directory.rmdir()
+        raise
     return AgentContextGenerationResult(
         context=context,
         json_path=layout.current_agent_context_json_file,

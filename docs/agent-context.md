@@ -51,9 +51,35 @@ views are replaced atomically one file at a time while the repository mutation l
 concurrent supported mutation. Re-run the command to regenerate both views after any interruption or
 governed state change.
 
-## Deferred targets
+## Managed vendor references
 
-`--target codex` and `--target claude` are deliberately recognized but refused in Increment 1.
-Managed `AGENTS.md`/`CLAUDE.md` references, preview and confirmation, adapter diagnostics, adapter
-invocation, capability approval, and executable pack trust belong to later bounded M3 increments.
-The existing `forge handoff` and staged `forge import-result` workflow remains the manual baseline.
+M3 Increment 2 supports optional root vendor references:
+
+```console
+forge agent context --target codex
+forge agent context --target codex --apply
+forge agent context --target claude
+forge agent context --target claude --apply
+```
+
+The first command is always a read-only preview. It reports whether FORGE would create, append,
+replace, or leave the target unchanged, displays exact current/proposed/context digests, and shows
+only the managed reference block. It never echoes existing user content. `--apply` explicitly
+confirms the displayed plan, regenerates neutral `current.json` and `current.md`, and updates
+`AGENTS.md` or `CLAUDE.md` atomically.
+
+FORGE owns only the span between these standalone markers:
+
+```text
+<!-- BEGIN FORGE MANAGED CONTEXT -->
+<!-- END FORGE MANAGED CONTEXT -->
+```
+
+All bytes outside that span are preserved. With no block, existing content remains an exact prefix.
+Malformed or duplicate markers, symbolic links, non-UTF-8 files, oversized results, and any file or
+neutral-context change after preview are refused. The block contains references and the exact
+canonical JSON digest rather than embedding the assignment.
+
+Adapter diagnostics, adapter invocation, capability approval, and executable pack trust remain
+deferred. The existing `forge handoff` and staged `forge import-result` workflow remains the manual
+baseline.

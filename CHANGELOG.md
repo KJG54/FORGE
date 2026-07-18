@@ -72,6 +72,9 @@ semantic-version commitments begin at v1.0.0.
   allowlisted required-input metadata, effective decisions, explicit authority and return
   boundaries, blocker-aware worker permissions, public schema export, and leakage-resistant
   exclusion of unrelated, archived, ignored, environment, local-secret, and non-selected content.
+- M3 managed Codex and Claude context references with digest-bound delimited blocks, non-mutating
+  create/append/replace/no-change preview, explicit apply confirmation, exact preservation of user
+  bytes, context and file race refusal, bounded UTF-8 handling, and atomic vendor-file replacement.
 
 ### Limitations
 
@@ -81,6 +84,6 @@ semantic-version commitments begin at v1.0.0.
   or synchronizes a repository on the owner's behalf.
 - Stale-lock remediation evidence contains host runtime metadata and remains local-only under the
   hybrid Git policy; it does not alter or repair governed initiative history.
-- Codex and Claude context targets, managed vendor files, adapter invocation, and governed
-  capabilities remain deferred beyond M3 Increment 1.
+- Agent interfaces, installed-tool diagnostics, Codex/Claude process invocation, and governed
+  capabilities remain deferred beyond M3 Increment 2.
 - Project and distribution naming remain provisional.

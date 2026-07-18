@@ -31,6 +31,11 @@ git add -- forge.yaml .forge/
 
 The local subtree remains excluded by the generated policy.
 
+M3 managed `AGENTS.md` and `CLAUDE.md` references are ordinary derived root documents rather than
+governed `.forge/` state. FORGE creates or updates one only after a read-only preview and explicit
+`--apply`, and never stages or commits it. The owner's existing Git ignore policy continues to
+control whether the optional reference is transported.
+
 ## Diagnostics
 
 `forge doctor` is read-only. Inside a Git worktree it checks effective ignore behavior rather than

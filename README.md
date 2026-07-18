@@ -111,7 +111,13 @@ M3 Increment 1 adds the canonical provider-neutral agent context. `forge agent c
 deterministic tracked JSON and Markdown views containing only the active governed assignment,
 selected required-input metadata, current decisions, authority boundaries, evidence expectations,
 return contract, and blockers. It never crawls unrelated project, archive, ignored, environment, or
-local-secret content. Vendor views, adapters, and capabilities remain deferred.
+local-secret content. It is the neutral source used by later integrations.
+
+M3 Increment 2 adds optional digest-bound managed references in root `AGENTS.md` and `CLAUDE.md`.
+Codex and Claude targets preview create/append/replace/no-change plans without mutation or echoing
+user content; `--apply` explicitly confirms the plan, regenerates neutral context, and atomically
+changes only the delimited managed span while preserving all other bytes. Adapters and capabilities
+remain deferred.
 
 Initialize an ordinary project repository with:
 
@@ -131,6 +137,8 @@ forge recover-command <interrupted-key> --reason "Receipt write was interrupted"
 forge remediate-lock --reason "Confirmed the interrupted process exited" \
   --idempotency-key <stable-remediation-key>
 forge agent context --target neutral
+forge agent context --target codex
+forge agent context --target codex --apply
 forge abandon --reason "Stop this initiative" --unfinished-work "Remaining work" \
   --risk "Intended outcome was not delivered"
 forge create "Successor objective" --scope "Fresh bounded scope" \
@@ -196,6 +204,7 @@ forge --help
 - [M2 Increment 14 stale-lock remediation boundary](docs/milestones/m2-increment-14.md)
 - [M2 evidence report](docs/milestones/m2-report.md)
 - [M3 Increment 1 canonical-context boundary](docs/milestones/m3-increment-1.md)
+- [M3 Increment 2 managed-vendor-reference boundary](docs/milestones/m3-increment-2.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

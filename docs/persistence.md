@@ -203,3 +203,15 @@ Each file is replaced atomically. The pair is intentionally regenerable rather t
 transaction: if interruption leaves one view newer, `forge agent context --target neutral` derives
 both again from authoritative governed state. Archive retirement naturally preserves the last
 generated context with the active tree; generation never reads unrelated archives.
+
+## M3 Increment 2 root vendor references
+
+`AGENTS.md` and `CLAUDE.md` remain ordinary project files outside `.forge/`. FORGE manages only one
+standalone marker span after a read-only preview and explicit `--apply`. The managed bytes reference
+the active canonical files and bind the exact canonical JSON digest; all bytes outside the span are
+preserved exactly.
+
+Vendor references are derived, not journaled, replayed, or archived with an initiative. Apply runs
+under mutation exclusion, binds the previewed vendor and context digests, regenerates canonical
+context, rechecks the vendor bytes, and atomically replaces the one selected root file. A terminal
+archive does not silently edit or remove a root vendor reference.

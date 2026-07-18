@@ -199,19 +199,12 @@ def test_context_reports_selected_input_drift_as_a_blocker(tmp_path: Path) -> No
     assert any("no longer matches" in blocker for blocker in context.known_blockers)
 
 
-def test_vendor_targets_are_explicitly_deferred(tmp_path: Path) -> None:
+def test_vendor_targets_require_the_managed_preview_service(tmp_path: Path) -> None:
     initialized = _initiative(tmp_path)
 
-    with pytest.raises(ConfigurationError, match="managed-vendor-view"):
+    with pytest.raises(ConfigurationError, match="managed vendor preview/apply"):
         generate_agent_context(initialized.layout, target=AgentContextTarget.CODEX)
     assert not initialized.layout.agent_context_directory.exists()
-
-    result = runner.invoke(
-        app,
-        ["agent", "context", "--target", "claude", "-C", str(tmp_path)],
-    )
-    assert result.exit_code != 0
-    assert "managed-vendor-view" in result.stderr
 
 
 def test_agent_context_cli_generates_tracked_neutral_views(tmp_path: Path) -> None:

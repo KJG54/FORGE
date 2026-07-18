@@ -37,6 +37,7 @@ from forge.core.migrations import inspect_active_migration, migrate_active_repos
 from forge.core.recovery import recover_active_snapshot
 from forge.core.runs import cancel_run, list_runs, show_run
 from forge.core.status import inspect_status
+from forge.core.vendor_context import apply_vendor_context, preview_vendor_context
 from forge.core.verification import (
     complete_step,
     dependency_references,
@@ -97,22 +98,53 @@ def agent_context(
         AgentContextTarget,
         typer.Option(help="Context view to generate: neutral, codex, or claude."),
     ] = AgentContextTarget.NEUTRAL,
+    apply_changes: Annotated[
+        bool,
+        typer.Option("--apply", help="Apply the displayed managed vendor-file plan."),
+    ] = False,
 ) -> None:
-    """Generate deterministic bounded context; vendor views arrive separately."""
+    """Generate neutral context or preview/apply one managed vendor reference."""
     try:
         layout = discover_repository(directory)
-        result = generate_agent_context(layout, target=target)
+        if target is AgentContextTarget.NEUTRAL:
+            if apply_changes:
+                raise ConfigurationError("--apply is only valid for codex or claude targets")
+            result = generate_agent_context(layout, target=target)
+            typer.echo(f"Generated {target.value} canonical agent context")
+            typer.echo(f"JSON: {result.json_path}")
+            typer.echo(f"Markdown: {result.markdown_path}")
+            if result.context.known_blockers:
+                typer.echo("Known blockers:")
+                for blocker in result.context.known_blockers:
+                    typer.echo(f"- {blocker}")
+            typer.echo("Generated context is derived; FORGE governed state remains authoritative")
+            return
+        preview = preview_vendor_context(layout, target=target)
+        typer.echo(f"Vendor target: {target.value}")
+        typer.echo(f"Path: {preview.path}")
+        typer.echo(f"Action: {preview.action.value}")
+        typer.echo(f"Current digest: {preview.current_digest or '<missing>'}")
+        typer.echo(f"Proposed digest: {preview.proposed_digest}")
+        typer.echo(f"Neutral context digest: {preview.context_digest}")
+        typer.echo("Managed block preview:")
+        typer.echo(preview.managed_block.decode("utf-8"), nl=False)
+        if not apply_changes:
+            typer.echo("Preview only; rerun with --apply to confirm this vendor-file change")
+            return
+        applied = apply_vendor_context(
+            layout,
+            target=target,
+            expected_current_digest=preview.current_digest,
+            expected_context_digest=preview.context_digest,
+        )
     except ForgeError as error:
         _fail(error)
         return
-    typer.echo(f"Generated {target.value} canonical agent context")
-    typer.echo(f"JSON: {result.json_path}")
-    typer.echo(f"Markdown: {result.markdown_path}")
-    if result.context.known_blockers:
-        typer.echo("Known blockers:")
-        for blocker in result.context.known_blockers:
-            typer.echo(f"- {blocker}")
-    typer.echo("Generated context is derived; FORGE governed state remains authoritative")
+    outcome = "Updated" if applied.vendor_changed else "Already current"
+    typer.echo(f"{outcome}: {applied.preview.path}")
+    typer.echo(f"JSON: {applied.context.json_path}")
+    typer.echo(f"Markdown: {applied.context.markdown_path}")
+    typer.echo("Vendor reference is derived; FORGE governed state remains authoritative")
 
 
 def _version_callback(value: bool) -> None:
