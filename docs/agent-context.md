@@ -90,3 +90,8 @@ M3 Increment 4 can validate this exact JSON payload and prepare it as stdin for 
 persistently authenticated Codex CLI. The prepared command is forced to read-only, ephemeral JSONL
 mode and cannot be started yet. Manual handoff remains the only execution path until isolated
 adapter output and governed run orchestration are implemented.
+
+M3 Increment 5 applies the same exact-payload and digest boundary to a compatible, persistently
+authenticated Claude Code CLI. Its prepared stdin plan uses non-interactive streaming output,
+plan mode, no session persistence, bare startup, no MCP or browser integration, and only the
+`Read`, `Glob`, and `Grep` built-in tools. It also cannot be started yet.

@@ -174,3 +174,9 @@ M3 Increment 4 registers a Codex adapter for bounded executable, stable-feature,
 diagnostics. A compatible adapter can prepare a digest-bound, read-only, ephemeral `codex exec`
 plan, but FORGE does not start it. `forge handoff` remains manual, and no workflow transition, run,
 worker claim, or result import can be implied by adapter availability.
+
+M3 Increment 5 registers a Claude Code adapter under the same selection and fallback rules. A
+compatible adapter can prepare a digest-bound `claude --print` plan with streaming JSON, plan-mode
+permissions, disabled session persistence and extensions, no MCP or browser integration, and only
+read-oriented built-in tools. FORGE does not start it, and manual handoff remains the only worker
+transfer path.

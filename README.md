@@ -130,6 +130,11 @@ Missing, incompatible, or unauthenticated installations fall back visibly to man
 not start Codex or allow it to write project state; manual handoff and staged import remain the
 execution boundary.
 
+M3 Increment 5 registers the symmetric Claude Code adapter with bounded executable, stable-feature,
+and persisted-authentication diagnostics. Its prepared non-interactive plan is digest-bound,
+session-free, extension-free, MCP-free, browser-free, and limited to read-oriented tools in plan
+mode. FORGE still starts no provider process; portable handoff and staged import remain manual.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -152,6 +157,7 @@ forge agent context --target codex
 forge agent context --target codex --apply
 forge agent doctor
 forge agent doctor --adapter codex
+forge agent doctor --adapter claude
 forge handoff discover --constraint "Do not modify unrelated files"
 forge abandon --reason "Stop this initiative" --unfinished-work "Remaining work" \
   --risk "Intended outcome was not delivered"
@@ -222,6 +228,7 @@ forge --help
 - [M3 Increment 2 managed-vendor-reference boundary](docs/milestones/m3-increment-2.md)
 - [M3 Increment 3 neutral-adapter boundary](docs/milestones/m3-increment-3.md)
 - [M3 Increment 4 Codex-adapter boundary](docs/milestones/m3-increment-4.md)
+- [M3 Increment 5 Claude-adapter boundary](docs/milestones/m3-increment-5.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

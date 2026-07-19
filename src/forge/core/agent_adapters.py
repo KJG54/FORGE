@@ -10,6 +10,7 @@ from forge.adapters import (
     AdapterInvocationPlan,
     AdapterInvocationRequest,
     AgentAdapter,
+    ClaudeAgentAdapter,
     CodexAgentAdapter,
     ManualAgentAdapter,
 )
@@ -40,9 +41,11 @@ class AdapterHandoffResult:
 
 _MANUAL_ADAPTER = ManualAgentAdapter()
 _CODEX_ADAPTER = CodexAgentAdapter()
+_CLAUDE_ADAPTER = ClaudeAgentAdapter()
 _ADAPTERS: dict[str, AgentAdapter] = {
     _MANUAL_ADAPTER.adapter_id: _MANUAL_ADAPTER,
     _CODEX_ADAPTER.adapter_id: _CODEX_ADAPTER,
+    _CLAUDE_ADAPTER.adapter_id: _CLAUDE_ADAPTER,
 }
 
 

@@ -121,3 +121,7 @@ Existing handoff, result, run, event, snapshot, configuration, and archive model
 M3 Increment 4 extends only those transient adapter values with canonical context, working
 directory, and standard-input fields needed for deterministic Codex preparation. It introduces no
 new persisted model or exported schema; the public schema bundle remains unchanged.
+
+M3 Increment 5 reuses those same transient values for Claude Code and factors provider-independent
+local-CLI mechanics behind the adapter boundary. No persisted contract changes, and the public
+schema bundle remains unchanged.

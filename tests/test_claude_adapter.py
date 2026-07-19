@@ -1,0 +1,251 @@
+import hashlib
+import sys
+from pathlib import Path
+from typing import cast
+
+import pytest
+from typer.testing import CliRunner
+
+import forge.core.agent_adapters as adapter_core
+from forge.adapters import (
+    AdapterCompatibilityState,
+    AdapterInvocationMode,
+    AdapterInvocationRequest,
+    AdapterOperationState,
+    AgentAdapter,
+    ClaudeAgentAdapter,
+)
+from forge.cli.app import app
+from forge.contracts.configuration import AgentConfiguration
+from forge.core.agent_adapters import prepare_agent_handoff, select_agent_adapter
+from forge.core.authorization import owner_actor
+from forge.core.lifecycle import create_initiative
+from forge.errors import ConfigurationError
+from forge.storage.configuration import render_configuration
+from forge.storage.repository import InitializationResult, initialize_repository
+
+runner = CliRunner()
+
+_CLAUDE_FLAGS = (
+    "--print --input-format --output-format --permission-mode "
+    "--no-session-persistence --bare --tools --strict-mcp-config --no-chrome"
+)
+
+
+def _fake_claude_command(
+    tmp_path: Path,
+    *,
+    version_output: str = "2.1.118 (Claude Code)",
+    help_output: str = _CLAUDE_FLAGS,
+    authenticated: bool = True,
+) -> tuple[str, ...]:
+    script = tmp_path / f"fake-claude-{len(tuple(tmp_path.glob('fake-claude-*.py')))}.py"
+    script.write_text(
+        "import os\n"
+        "import sys\n"
+        "if 'ANTHROPIC_API_KEY' in os.environ:\n"
+        "    raise SystemExit(9)\n"
+        "if 'CLAUDE_CODE_OAUTH_TOKEN' in os.environ:\n"
+        "    raise SystemExit(9)\n"
+        "arguments = sys.argv[1:]\n"
+        "if arguments == ['--version']:\n"
+        f"    print({version_output!r})\n"
+        "    raise SystemExit(0)\n"
+        "if arguments == ['--help']:\n"
+        f"    print({help_output!r})\n"
+        "    raise SystemExit(0)\n"
+        "if arguments == ['auth', 'status']:\n"
+        f"    print({'authenticated' if authenticated else 'not logged in'!r})\n"
+        f"    raise SystemExit({0 if authenticated else 1})\n"
+        "raise SystemExit(2)\n",
+        encoding="utf-8",
+    )
+    return (sys.executable, str(script))
+
+
+def _initiative(tmp_path: Path) -> InitializationResult:
+    repository = tmp_path / "repository"
+    repository.mkdir()
+    initialized = initialize_repository(repository, owner_display_name="Repository Owner")
+    create_initiative(
+        initialized.layout,
+        objective="Produce bounded discovery outputs",
+        declared_scope_summary="Objective and requirements only",
+        actor=owner_actor(initialized.configuration.owner),
+        trust_pack_data=True,
+    )
+    return initialized
+
+
+def _register_claude(
+    monkeypatch: pytest.MonkeyPatch,
+    adapter: ClaudeAgentAdapter,
+) -> None:
+    registry = cast("dict[str, AgentAdapter]", vars(adapter_core)["_ADAPTERS"])
+    monkeypatch.setitem(registry, "claude", adapter)
+
+
+def test_claude_adapter_detects_stable_features_and_persisted_auth(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "must-not-reach-diagnostics")
+    monkeypatch.setenv("CLAUDE_CODE_OAUTH_TOKEN", "must-not-reach-diagnostics")
+    adapter = ClaudeAgentAdapter(command=_fake_claude_command(tmp_path))
+    diagnostic = adapter.diagnostics()
+
+    assert isinstance(adapter, AgentAdapter)
+    assert diagnostic.availability.available
+    assert diagnostic.detected_version == "2.1.118"
+    assert diagnostic.compatibility.state is AdapterCompatibilityState.COMPATIBLE
+    assert diagnostic.authentication_state == "authenticated"
+    assert not diagnostic.supports_process_start
+    assert not diagnostic.supports_cancellation
+    assert not diagnostic.supports_output_capture
+
+    prefixed = ClaudeAgentAdapter(
+        command=_fake_claude_command(tmp_path, version_output="claude-code v2.1.119")
+    ).diagnostics()
+    assert prefixed.detected_version == "2.1.119"
+    assert prefixed.compatibility.state is AdapterCompatibilityState.COMPATIBLE
+
+
+def test_claude_preparation_is_context_bound_read_only_and_non_executing(
+    tmp_path: Path,
+) -> None:
+    command = _fake_claude_command(tmp_path)
+    adapter = ClaudeAgentAdapter(command=command)
+    payload = '{"active_step":{"id":"discover"}}\n'
+    digest = f"sha256:{hashlib.sha256(payload.encode('utf-8')).hexdigest()}"
+
+    plan = adapter.prepare_invocation(
+        AdapterInvocationRequest(
+            step_id="discover",
+            context_digest=digest,
+            required_outputs=("requirements",),
+            constraints=("Do not modify governed state",),
+            context_payload=payload,
+            working_directory=str(tmp_path.resolve()),
+        )
+    )
+
+    assert plan.adapter_id == "claude"
+    assert plan.adapter_version == "2.1.118"
+    assert plan.mode is AdapterInvocationMode.LOCAL_PROCESS
+    assert Path(plan.executable or "").resolve() == Path(sys.executable).resolve()
+    assert plan.arguments == (
+        command[1],
+        "--print",
+        "--input-format",
+        "text",
+        "--output-format",
+        "stream-json",
+        "--permission-mode",
+        "plan",
+        "--no-session-persistence",
+        "--bare",
+        "--tools",
+        "Read,Glob,Grep",
+        "--strict-mcp-config",
+        "--no-chrome",
+    )
+    assert plan.standard_input is not None
+    assert digest in plan.standard_input
+    assert plan.standard_input.endswith(payload)
+    assert plan.output_directory is None
+    assert adapter.start_process(plan).state is AdapterOperationState.NOT_APPLICABLE
+    assert adapter.cancel(None).state is AdapterOperationState.NOT_APPLICABLE
+    assert adapter.capture_output(None).state is AdapterOperationState.NOT_APPLICABLE
+    assert adapter.produce_result_manifest(None).state is AdapterOperationState.MANUAL_REQUIRED
+
+
+def test_claude_diagnostics_fail_closed_for_version_features_auth_and_binary(
+    tmp_path: Path,
+) -> None:
+    unlabelled_version = ClaudeAgentAdapter(
+        command=_fake_claude_command(tmp_path, version_output="launcher warning 2.1.118")
+    ).diagnostics()
+    assert unlabelled_version.availability.available
+    assert unlabelled_version.detected_version is None
+    assert unlabelled_version.compatibility.state is AdapterCompatibilityState.UNKNOWN
+    assert unlabelled_version.authentication_state == "not-checked"
+
+    incompatible = ClaudeAgentAdapter(
+        command=_fake_claude_command(tmp_path, help_output="--print --output-format")
+    ).diagnostics()
+    assert incompatible.availability.available
+    assert incompatible.compatibility.state is AdapterCompatibilityState.INCOMPATIBLE
+    assert incompatible.authentication_state == "not-checked"
+
+    unauthenticated = ClaudeAgentAdapter(
+        command=_fake_claude_command(tmp_path, authenticated=False)
+    )
+    diagnostic = unauthenticated.diagnostics()
+    assert diagnostic.compatibility.state is AdapterCompatibilityState.COMPATIBLE
+    assert diagnostic.authentication_state == "unauthenticated"
+    with pytest.raises(ConfigurationError, match="not authenticated"):
+        unauthenticated.prepare_invocation(
+            AdapterInvocationRequest(
+                step_id="discover",
+                context_digest=f"sha256:{'0' * 64}",
+                required_outputs=("requirements",),
+                context_payload="{}",
+                working_directory=str(tmp_path.resolve()),
+            )
+        )
+
+    unavailable = ClaudeAgentAdapter(
+        command=(str(tmp_path / "missing-claude"),)
+    ).diagnostics()
+    assert not unavailable.availability.available
+    assert unavailable.detected_version is None
+    assert unavailable.compatibility.state is AdapterCompatibilityState.UNKNOWN
+    assert unavailable.authentication_state == "not-checked"
+
+
+def test_registered_claude_is_diagnosed_but_portable_handoff_stays_manual(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initialized = _initiative(tmp_path)
+    adapter = ClaudeAgentAdapter(command=_fake_claude_command(tmp_path))
+    _register_claude(monkeypatch, adapter)
+    configured = initialized.configuration.model_copy(
+        update={"agents": AgentConfiguration(preferred_adapter="claude")}
+    )
+    initialized.layout.configuration_file.write_bytes(render_configuration(configured))
+
+    selected = select_agent_adapter(initialized.layout)
+    assert selected.adapter.adapter_id == "claude"
+    assert selected.fallback_reason is None
+    assert selected.requested_diagnostic == selected.diagnostic
+    prepared = prepare_agent_handoff(initialized.layout, step_id="discover")
+    assert prepared.selection.requested_adapter_id == "claude"
+    assert prepared.selection.adapter.adapter_id == "manual"
+    assert "cannot create a portable handoff" in (prepared.selection.fallback_reason or "")
+    assert prepared.handoff.json_path.is_file()
+
+    doctor = runner.invoke(
+        app,
+        ["agent", "doctor", "--adapter", "claude", "-C", str(initialized.layout.root)],
+    )
+    assert doctor.exit_code == 0, doctor.stdout
+    assert "Requested adapter: claude" in doctor.stdout
+    assert "Selected adapter: claude" in doctor.stdout
+    assert "Version: 2.1.118" in doctor.stdout
+    assert "Authentication: authenticated" in doctor.stdout
+
+    unauthenticated = ClaudeAgentAdapter(
+        command=_fake_claude_command(tmp_path, authenticated=False)
+    )
+    _register_claude(monkeypatch, unauthenticated)
+    fallback = runner.invoke(
+        app,
+        ["agent", "doctor", "--adapter", "claude", "-C", str(initialized.layout.root)],
+    )
+    assert fallback.exit_code == 0, fallback.stdout
+    assert "Requested availability: available" in fallback.stdout
+    assert "Requested compatibility: compatible" in fallback.stdout
+    assert "Requested authentication: unauthenticated" in fallback.stdout
+    assert "Fallback: Adapter 'claude' is not authenticated" in fallback.stdout
+    assert "Selected adapter: manual" in fallback.stdout

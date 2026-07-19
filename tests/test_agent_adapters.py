@@ -104,20 +104,22 @@ def test_missing_preferred_adapter_degrades_explicitly_to_manual(tmp_path: Path)
     configured = initialized.configuration.model_copy(
         update={
             "agents": initialized.configuration.agents.model_copy(
-                update={"preferred_adapter": "claude"}
+                update={"preferred_adapter": "unregistered"}
             )
         }
     )
     initialized.layout.configuration_file.write_bytes(render_configuration(configured))
 
     selected = select_agent_adapter(initialized.layout)
-    assert selected.requested_adapter_id == "claude"
+    assert selected.requested_adapter_id == "unregistered"
     assert selected.adapter.adapter_id == "manual"
-    assert selected.fallback_reason == "Adapter 'claude' is not registered; using manual handoff"
+    assert selected.fallback_reason == (
+        "Adapter 'unregistered' is not registered; using manual handoff"
+    )
     inspection = inspect_agent_adapter(initialized.layout)
     assert inspection.diagnostic.adapter_id == "manual"
     prepared = prepare_agent_handoff(initialized.layout, step_id="discover")
-    assert prepared.selection.requested_adapter_id == "claude"
+    assert prepared.selection.requested_adapter_id == "unregistered"
     assert prepared.selection.adapter.adapter_id == "manual"
     assert prepared.selection.fallback_reason is not None
     assert prepared.handoff.json_path.is_file()
@@ -129,12 +131,12 @@ def test_agent_doctor_and_handoff_cli_expose_manual_selection(tmp_path: Path) ->
 
     doctor = runner.invoke(
         app,
-        ["agent", "doctor", "--adapter", "claude", "-C", str(initialized.layout.root)],
+        ["agent", "doctor", "--adapter", "unregistered", "-C", str(initialized.layout.root)],
     )
     assert doctor.exit_code == 0, doctor.stdout
-    assert "Requested adapter: claude" in doctor.stdout
+    assert "Requested adapter: unregistered" in doctor.stdout
     assert "Selected adapter: manual" in doctor.stdout
-    assert "Fallback: Adapter 'claude' is not registered" in doctor.stdout
+    assert "Fallback: Adapter 'unregistered' is not registered" in doctor.stdout
     assert "Process start: unsupported" in doctor.stdout
     assert initialized.layout.event_journal_file.read_bytes() == before
 
