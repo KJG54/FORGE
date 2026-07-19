@@ -249,7 +249,11 @@ def assert_working_revision_current(
 
 
 def list_artifacts(layout: RepositoryLayout) -> tuple[ArtifactView, ...]:
-    active = load_active_initiative(layout, allow_paused=True)
+    active = load_active_initiative(
+        layout,
+        allow_paused=True,
+        allow_untrusted_pack=True,
+    )
     views: list[ArtifactView] = []
     for artifact_id, revision_number in sorted(
         active.state.current_artifact_revisions.items(), key=lambda item: str(item[0])

@@ -138,3 +138,7 @@ the capability definition digest, provider and detected version, resolved execut
 arguments, working-directory rules, environment access, side-effect class, owner rationale, scope,
 and approval event. Revocation binds a later owner event and reason to the retained approval.
 `RunRecord.capability_approval_ids` makes executable authorization auditable at the attempt boundary.
+
+M3 Increment 8 reuses the existing `PackTrustDecision` and `PackTrustState` public contracts. Later
+trust and untrust records use the same immutable model as initiative creation and are linked through
+state-neutral `pack-trust-changed` events. No public model or JSON Schema changes are required.

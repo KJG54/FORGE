@@ -286,7 +286,11 @@ def list_capability_approvals(
 ) -> tuple[CapabilityApprovalView, ...]:
     if not layout.initiative_file.exists():
         return ()
-    load_active_initiative(layout, allow_paused=True)
+    load_active_initiative(
+        layout,
+        allow_paused=True,
+        allow_untrusted_pack=True,
+    )
     revocations = {item.approval_id: item for item in _load_revocations(layout)}
     used = _used_approval_ids(layout)
     inspections = {
@@ -322,7 +326,7 @@ def approve_capability(
     rationale: str,
     actor: Actor,
 ) -> CapabilityApprovalResult:
-    active = load_active_initiative(layout)
+    active = load_active_initiative(layout, allow_untrusted_pack=True)
     require_owner(actor, active.initiative.owner_identity_id, "approve executable capability")
     if scope is CapabilityTrustState.DISABLED:
         raise ConfigurationError("Use an approval scope that grants execution")
@@ -407,7 +411,7 @@ def revoke_capability_approval(
     reason: str,
     actor: Actor,
 ) -> CapabilityRevocationResult:
-    active = load_active_initiative(layout)
+    active = load_active_initiative(layout, allow_untrusted_pack=True)
     require_owner(actor, active.initiative.owner_identity_id, "revoke capability approval")
     reason = reason.strip()
     if not reason:

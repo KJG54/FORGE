@@ -7,6 +7,7 @@ from uuid import UUID
 
 from forge.contracts.archives import AbandonmentRecord, ArchiveManifest, ClosureRecord
 from forge.contracts.initiatives import Initiative
+from forge.contracts.packs import PackTrustState
 from forge.contracts.state import (
     InitiativeLifecycleState,
     IntegrityState,
@@ -34,6 +35,7 @@ class StatusReport:
     closure: ClosureRecord | None = None
     abandonment: AbandonmentRecord | None = None
     archive_summaries: tuple[ArchiveSummary, ...] = ()
+    pack_trust_state: PackTrustState | None = None
 
 
 def inspect_status(
@@ -60,6 +62,7 @@ def inspect_status(
                 closure=archived.closure,
                 abandonment=archived.abandonment,
                 archive_summaries=archive_summaries,
+                pack_trust_state=archived.active.pack_trust.trust_state,
             )
     except IntegrityError as error:
         return StatusReport(
@@ -124,6 +127,7 @@ def inspect_status(
             layout,
             allow_terminal=True,
             allow_paused=True,
+            allow_untrusted_pack=True,
         )
     except IntegrityError as error:
         return StatusReport(
@@ -158,6 +162,30 @@ def inspect_status(
             ),
             archived_initiative_ids=archived_ids,
             archive_summaries=archive_summaries,
+            pack_trust_state=active.pack_trust.trust_state,
+        )
+    if active.pack_trust.trust_state is PackTrustState.UNTRUSTED:
+        run_actions = tuple(
+            f"run-cancel:{run_id}" for run_id in active.state.active_run_ids
+        )
+        terminal_actions = () if run_actions else ("abandon",)
+        return StatusReport(
+            repository_state=RepositoryState.INITIALIZED,
+            integrity_state=active.state.integrity_state,
+            initiative=active.initiative,
+            state=active.state,
+            next_actions=(
+                f"pack-trust:{active.pack_manifest.id}",
+                *run_actions,
+                *terminal_actions,
+            ),
+            blockers=(
+                f"Locked pack {active.pack_manifest.id}@{active.pack_manifest.version} is "
+                "untrusted as data; workflow-dependent mutation is disabled",
+            ),
+            archived_initiative_ids=archived_ids,
+            archive_summaries=archive_summaries,
+            pack_trust_state=active.pack_trust.trust_state,
         )
     from forge.core.artifacts import list_artifacts
 
@@ -195,4 +223,5 @@ def inspect_status(
         blockers=blockers,
         archived_initiative_ids=archived_ids,
         archive_summaries=archive_summaries,
+        pack_trust_state=active.pack_trust.trust_state,
     )

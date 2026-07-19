@@ -25,6 +25,7 @@ from forge.contracts.idempotency import (
 )
 from forge.contracts.initiatives import Initiative
 from forge.contracts.migrations import MigrationRecord
+from forge.contracts.packs import PackManifest, PackTrustDecision
 from forge.contracts.recovery import (
     JournalDamageCondition,
     JournalRecoveryRecord,
@@ -65,6 +66,7 @@ from forge.core.transitions import (
     INITIATIVE_CLOSED,
     INTEGRITY_RECOVERED,
     JOURNAL_RECOVERED,
+    PACK_TRUST_CHANGED,
     RESULT_IMPORTED,
     RUN_CANCELLED,
     SCHEMA_MIGRATED,
@@ -156,6 +158,10 @@ def _capability_approval_path(layout: RepositoryLayout, approval_id: UUID) -> Pa
 
 def _capability_revocation_path(layout: RepositoryLayout, revocation_id: UUID) -> Path:
     return layout.capability_revocation_directory / f"{revocation_id}.json"
+
+
+def _pack_trust_decision_path(layout: RepositoryLayout, decision_id: UUID) -> Path:
+    return layout.pack_trust_decision_directory / f"{decision_id}.json"
 
 
 def _decision_path(layout: RepositoryLayout, decision_id: UUID) -> Path:
@@ -302,6 +308,7 @@ def validate_governed_records(
     expected_revocations: set[Path] = set()
     expected_capability_approvals: set[Path] = set()
     expected_capability_revocations: set[Path] = set()
+    expected_pack_trust_decisions: set[Path] = set()
     expected_decisions: set[Path] = set()
     expected_supersessions: set[Path] = set()
     expected_imported_results: set[Path] = set()
@@ -327,6 +334,8 @@ def validate_governed_records(
     capability_approvals_by_id: dict[UUID, CapabilityApproval] = {}
     revoked_capability_approval_ids: set[UUID] = set()
     used_capability_approval_ids: set[UUID] = set()
+    current_pack_trust = load_record(layout.pack_trust_file, PackTrustDecision)
+    locked_pack = load_record(layout.pack_lock_file, PackManifest)
     adapter_execution_run_ids: set[UUID] = set()
     revoked_acceptance_ids: set[UUID] = set()
     stale_ids: set[UUID] = set()
@@ -335,7 +344,36 @@ def validate_governed_records(
     initiative = load_record(layout.initiative_file, Initiative)
 
     for event in events:
-        if event.event_type == CAPABILITY_APPROVED:
+        if event.event_type == PACK_TRUST_CHANGED:
+            decision_id = _uuid_metadata(event, "pack_trust_decision_id")
+            prior_id = _uuid_metadata(event, "prior_pack_trust_decision_id")
+            path = _pack_trust_decision_path(layout, decision_id)
+            expected_pack_trust_decisions.add(path)
+            decision = load_record(path, PackTrustDecision)
+            _validate_common(decision, event, decision_id)
+            record_digest = canonical_json_digest(decision.model_dump(mode="json"))
+            if (
+                prior_id != current_pack_trust.id
+                or decision.id != decision_id
+                or decision.actor != event.actor
+                or decision.actor_id != owner_id
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or decision.pack_id != locked_pack.id
+                or decision.pack_version != locked_pack.version
+                or decision.trust_state.value != event.metadata.get("trust_state")
+                or event.metadata.get("pack_id") != locked_pack.id
+                or event.metadata.get("pack_version") != locked_pack.version
+                or decision.trust_state is current_pack_trust.trust_state
+                or decision.affected_record_ids != (prior_id,)
+                or decision.affected_digests != (locked_pack.integrity_digest,)
+                or event.affected_record_ids != (decision_id, prior_id)
+                or locked_pack.integrity_digest not in event.affected_digests
+                or record_digest not in event.affected_digests
+            ):
+                raise IntegrityError(f"Pack trust decision does not match event {event.id}")
+            current_pack_trust = decision
+        elif event.event_type == CAPABILITY_APPROVED:
             approval_id = _uuid_metadata(event, "approval_id")
             path = _capability_approval_path(layout, approval_id)
             expected_capability_approvals.add(path)
@@ -1518,6 +1556,10 @@ def validate_governed_records(
     _validate_directory(
         layout.capability_revocation_directory,
         expected_capability_revocations,
+    )
+    _validate_directory(
+        layout.pack_trust_decision_directory,
+        expected_pack_trust_decisions,
     )
     _validate_directory(layout.decision_directory, expected_decisions)
     _validate_directory(layout.decision_supersession_directory, expected_supersessions)

@@ -8,6 +8,7 @@ from uuid import UUID
 
 from forge.contracts.actors import ActorType
 from forge.contracts.events import AuditEvent
+from forge.contracts.packs import PackTrustState
 from forge.contracts.state import (
     InitiativeLifecycleState,
     MaterializedState,
@@ -43,6 +44,7 @@ RUN_CANCELLED = "run-cancelled"
 ADAPTER_RUN_EXECUTED = "adapter-run-executed"
 CAPABILITY_APPROVED = "capability-approved"
 CAPABILITY_REVOKED = "capability-revoked"
+PACK_TRUST_CHANGED = "pack-trust-changed"
 
 
 def _metadata_string(event: AuditEvent, key: str) -> str:
@@ -498,6 +500,22 @@ class WorkflowStateReducer:
             }
         )
 
+    def _apply_pack_trust_event(
+        self,
+        state: MaterializedState,
+        event: AuditEvent,
+    ) -> MaterializedState:
+        require_owner(event.actor, self.owner_identity_id, "change pack data trust")
+        _metadata_string(event, "pack_id")
+        _metadata_string(event, "pack_version")
+        _metadata_string(event, "pack_trust_decision_id")
+        _metadata_string(event, "prior_pack_trust_decision_id")
+        try:
+            PackTrustState(_metadata_string(event, "trust_state"))
+        except ValueError as error:
+            raise IntegrityError("Pack trust event has an invalid trust state") from error
+        return state
+
     def __call__(
         self,
         state: MaterializedState | None,
@@ -513,6 +531,8 @@ class WorkflowStateReducer:
         }:
             raise IntegrityError("Terminal initiatives cannot accept later events")
         if state.lifecycle_state is InitiativeLifecycleState.PAUSED:
+            if event.event_type == PACK_TRUST_CHANGED:
+                return self._apply_pack_trust_event(state, event)
             if event.event_type == INITIATIVE_ABANDONED:
                 return self._apply_abandonment_event(state, event)
             if event.event_type == INITIATIVE_RESUMED:
@@ -528,7 +548,9 @@ class WorkflowStateReducer:
                 if event.actor.actor_type is not ActorType.MIGRATION:
                     raise IntegrityError("Schema migration requires the migration service actor")
                 return state
-            raise IntegrityError("Paused initiatives may only be resumed or recovered")
+            raise IntegrityError(
+                "Paused initiatives may only change pack trust, be resumed, or be recovered"
+            )
         if event.event_type == INITIATIVE_PAUSED:
             return self._apply_pause_event(state, event)
         if event.event_type == INITIATIVE_RESUMED:
@@ -549,6 +571,8 @@ class WorkflowStateReducer:
             require_owner(event.actor, self.owner_identity_id, "change capability authorization")
             _metadata_string(event, "capability_id")
             return state
+        if event.event_type == PACK_TRUST_CHANGED:
+            return self._apply_pack_trust_event(state, event)
         if event.event_type in {ARTIFACT_REGISTERED, ARTIFACT_REVISED}:
             return self._apply_artifact_event(state, event)
         if event.event_type in {DECISION_RECORDED, DECISION_SUPERSEDED}:

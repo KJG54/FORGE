@@ -88,6 +88,12 @@ semantic-version commitments begin at v1.0.0.
   digest-bound workspaces, allowlisted environments, bounded supervision and output capture,
   source-bound untrusted result staging, explicit run-attributed completion, and no automatic
   project application or verification.
+- M3 default-disabled executable capability authorization with exact invocation-profile preview,
+  owner-scoped approval, immutable revocation, one-time consumption, durable run binding, and
+  validation that trusted pack data cannot authorize execution.
+- M3 owner-controlled pack data-trust lifecycle with exact locked-pack preview, immutable
+  journal-backed trust and untrust decisions, effective-state replay, workflow mutation blocking,
+  tamper detection, safe retrust and abandonment, and no executable-authority implication.
 
 ### Limitations
 
@@ -97,7 +103,7 @@ semantic-version commitments begin at v1.0.0.
   or synchronizes a repository on the owner's behalf.
 - Stale-lock remediation evidence contains host runtime metadata and remains local-only under the
   hybrid Git policy; it does not alter or repair governed initiative history.
-- Provider APIs, background execution, cross-process live cancellation, automatic crash resume,
-  hostile-code isolation guarantees, automatic verification, and governed capabilities remain
-  deferred beyond M3 Increment 6.
+- Provider APIs, executable pack providers, validator execution, background execution,
+  cross-process live cancellation, automatic crash resume, hostile-code isolation guarantees, and
+  automatic verification remain deferred beyond M3 Increment 8.
 - Project and distribution naming remain provisional.

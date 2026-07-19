@@ -46,7 +46,11 @@ def inspect_history_report(
             raise ConflictError(
                 "No active initiative exists; select archived history with --archive"
             )
-        active = load_active_initiative(layout, allow_paused=True)
+        active = load_active_initiative(
+            layout,
+            allow_paused=True,
+            allow_untrusted_pack=True,
+        )
         events = read_journal(layout.event_journal_file)
         manifest = None
     result = events

@@ -98,7 +98,11 @@ def _view(active: ActiveInitiative, run: RunRecord) -> RunView:
 
 
 def list_runs(layout: RepositoryLayout) -> tuple[RunView, ...]:
-    active = load_active_initiative(layout, allow_paused=True)
+    active = load_active_initiative(
+        layout,
+        allow_paused=True,
+        allow_untrusted_pack=True,
+    )
     return tuple(_view(active, record) for record in _load_runs(active))
 
 
@@ -116,7 +120,7 @@ def cancel_run(
     reason: str,
     actor: Actor,
 ) -> RunCancellationResult:
-    active = load_active_initiative(layout)
+    active = load_active_initiative(layout, allow_untrusted_pack=True)
     reason = reason.strip()
     if not reason:
         raise ConflictError("Run cancellation reason must not be empty")

@@ -74,6 +74,7 @@ _ACTIVE_TOP_LEVEL = {
     "migration-records",
     "migration-sources",
     "pack-trust.json",
+    "pack-trust-decisions",
     "pack.lock.json",
     "revocations",
     "recovery-records",
@@ -377,7 +378,11 @@ def _validate_archive_directory(
     if manifest.files != _inventory(path):
         raise IntegrityError(f"Archive file inventory does not match its manifest: {path}")
     archived_layout = _archive_layout(layout, path)
-    active = load_active_initiative(archived_layout, allow_terminal=True)
+    active = load_active_initiative(
+        archived_layout,
+        allow_terminal=True,
+        allow_untrusted_pack=True,
+    )
     if (
         active.initiative.id != initiative_id
         or active.state.lifecycle_state is not manifest.terminal_state
@@ -743,7 +748,11 @@ def _validate_terminal_tree(
     if path.is_symlink() or not path.is_dir():
         raise SecurityError(f"Terminal active-state path is unsafe: {path}")
     terminal_layout = _archive_layout(layout, path)
-    terminal = load_active_initiative(terminal_layout, allow_terminal=True)
+    terminal = load_active_initiative(
+        terminal_layout,
+        allow_terminal=True,
+        allow_untrusted_pack=True,
+    )
     events = read_journal(terminal_layout.event_journal_file)
     if (
         terminal.initiative.id != record.initiative_id
@@ -976,7 +985,12 @@ def abandon_initiative(
 
     active: ActiveInitiative | None = None
     if layout.initiative_file.exists():
-        active = load_active_initiative(layout, allow_terminal=True, allow_paused=True)
+        active = load_active_initiative(
+            layout,
+            allow_terminal=True,
+            allow_paused=True,
+            allow_untrusted_pack=True,
+        )
         if active.state.lifecycle_state is InitiativeLifecycleState.ABANDONED:
             require_owner(actor, active.initiative.owner_identity_id, "recover abandonment")
             abandonment, event = _abandonment_from_terminal_active(
@@ -1103,5 +1117,9 @@ def abandon_initiative(
                     layout.abandonment_directory.rmdir()
         raise
 
-    abandoned = load_active_initiative(layout, allow_terminal=True)
+    abandoned = load_active_initiative(
+        layout,
+        allow_terminal=True,
+        allow_untrusted_pack=True,
+    )
     return _finalize_committed_abandonment(layout, abandoned, abandonment, event)

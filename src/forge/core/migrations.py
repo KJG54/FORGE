@@ -113,7 +113,11 @@ def _load_migration_record(
 
 def inspect_active_migration(layout: RepositoryLayout) -> MigrationInspection:
     """Validate active state and report the one supported next migration, if any."""
-    active = load_active_initiative(layout, allow_paused=True)
+    active = load_active_initiative(
+        layout,
+        allow_paused=True,
+        allow_untrusted_pack=True,
+    )
     events = read_journal(layout.event_journal_file)
     return MigrationInspection(active.initiative.id, plan_event_journal_migration(events))
 
@@ -145,7 +149,11 @@ def migrate_active_repository(
         raise ConflictError("Active FORGE state already uses the current schema format")
     # The ordinary loader proves legacy snapshot agreement and all governed records before bytes
     # that participate in authoritative history are replaced.
-    active = load_active_initiative(layout, allow_paused=True)
+    active = load_active_initiative(
+        layout,
+        allow_paused=True,
+        allow_untrusted_pack=True,
+    )
     try:
         source_bytes = layout.event_journal_file.read_bytes()
     except OSError as error:

@@ -244,3 +244,16 @@ An executable adapter `RunRecord` now binds matching `capability_ids` and
 so no mutable counter can be rolled back or reused after a failed launch. Replay and cross-record
 validation require approval events to precede the run, reject prior revocation, and reject a second
 use of `approved-once`. Local provider output remains below `.forge/local/` and outside authority.
+
+## M3 Increment 8 pack data-trust lifecycle
+
+The creation-time `.forge/active/pack-trust.json` remains immutable. Later owner decisions are
+stored in `.forge/active/pack-trust-decisions/<decision-id>.json` and ordered by
+`pack-trust-changed` events. Each decision binds the active initiative, exact locked pack ID and
+version, lock digest, owner actor, rationale, and immediately preceding trust-decision ID.
+
+Effective pack trust is derived from the initial record plus the validated event-ordered decision
+chain; no mutable current-trust file is introduced. Cross-record validation rejects missing,
+additional, reordered, same-state, non-owner, wrong-pack, or digest-mismatched decisions. Terminal
+archives preserve the full chain. An untrusted archive remains inspectable because untrust is a
+valid historical governance decision rather than an integrity failure.

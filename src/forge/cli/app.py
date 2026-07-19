@@ -11,6 +11,7 @@ import typer
 
 from forge import __version__
 from forge.contracts.capabilities import CapabilityTrustState, SideEffectClass
+from forge.contracts.packs import PackTrustDecision, PackTrustState
 from forge.contracts.recovery import JournalRecoveryRecord
 from forge.contracts.state import ExplanationProfile
 from forge.contracts.verification import CheckOutcome
@@ -40,9 +41,15 @@ from forge.core.decisions import record_decision
 from forge.core.diagnostics import inspect_repository_health
 from forge.core.history import inspect_history_report
 from forge.core.imports import apply_result_import, preview_result_import
-from forge.core.lifecycle import begin_manual_run, create_initiative
+from forge.core.lifecycle import (
+    ActiveInitiative,
+    begin_manual_run,
+    create_initiative,
+    load_active_initiative,
+)
 from forge.core.lock_remediation import remediate_stale_lock
 from forge.core.migrations import inspect_active_migration, migrate_active_repository
+from forge.core.pack_trust import change_pack_trust, pack_trust_history
 from forge.core.recovery import recover_active_snapshot
 from forge.core.runs import cancel_run, list_runs, show_run
 from forge.core.status import inspect_status
@@ -57,12 +64,14 @@ from forge.core.verification import (
     show_evidence,
     verify_step,
 )
-from forge.errors import ConfigurationError, ForgeError
+from forge.errors import ConfigurationError, ConflictError, ForgeError
 from forge.packs.loader import available_packs, find_pack
 from forge.schemas import export_schema_bundle
 from forge.storage.configuration import load_configuration, render_configuration
 from forge.storage.idempotency import idempotent_mutation, normalize_idempotency_key
+from forge.storage.journal import read_journal
 from forge.storage.locking import repository_mutation_lock
+from forge.storage.records import load_record
 from forge.storage.repository import discover_repository, initialize_repository
 
 app = typer.Typer(
@@ -114,6 +123,8 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
                 "capability_approve",
                 "import_result",
                 "migrate",
+                "trust_pack",
+                "untrust_pack",
             } and not parameters.get("apply_changes"):
                 function(*args, **kwargs)
                 return
@@ -640,6 +651,164 @@ def validate_pack_command(
     )
 
 
+def _echo_locked_pack_trust(active: ActiveInitiative) -> None:
+    manifest = active.pack_manifest
+    typer.echo(f"Locked pack: {manifest.id}@{manifest.version}")
+    typer.echo(f"Integrity digest: {manifest.integrity_digest}")
+    typer.echo(f"Current data trust: {active.pack_trust.trust_state.value}")
+    typer.echo("Declared executable capabilities:")
+    if not manifest.declared_capability_ids:
+        typer.echo("- none")
+    for capability_id in manifest.declared_capability_ids:
+        typer.echo(f"- {capability_id} (remains separately disabled unless owner-approved)")
+    typer.echo("Trust boundary: validated declarative data only; never executable authority")
+
+
+@pack_app.command("inspect")
+def inspect_pack_command(
+    pack_id: Annotated[str, typer.Argument(help="Pack ID to inspect.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory to inspect."),
+    ] = Path("."),
+) -> None:
+    """Inspect validated pack data and immutable active-initiative trust history."""
+    try:
+        layout = discover_repository(directory)
+        if not layout.initiative_file.exists():
+            configuration = load_configuration(layout.configuration_file)
+            available = find_pack(layout, configuration, pack_id)
+            typer.echo(
+                f"Available pack: {available.manifest.id}@{available.manifest.version} "
+                f"({available.manifest.integrity_digest})"
+            )
+            typer.echo("Active trust history: none; no active initiative")
+            return
+        active = load_active_initiative(
+            layout,
+            allow_paused=True,
+            allow_untrusted_pack=True,
+        )
+        if active.pack_manifest.id != pack_id.strip():
+            configuration = load_configuration(layout.configuration_file)
+            available = find_pack(layout, configuration, pack_id)
+            typer.echo(
+                f"Available pack: {available.manifest.id}@{available.manifest.version} "
+                f"({available.manifest.integrity_digest})"
+            )
+            typer.echo(
+                f"Active initiative locks different pack: {active.pack_manifest.id}@"
+                f"{active.pack_manifest.version}"
+            )
+            return
+        events = read_journal(layout.event_journal_file)
+        initial = load_record(layout.pack_trust_file, PackTrustDecision)
+        history = pack_trust_history(layout, initial, events)
+    except ForgeError as error:
+        _fail(error)
+        return
+    _echo_locked_pack_trust(active)
+    typer.echo("Trust history:")
+    for decision in history:
+        typer.echo(
+            f"- {decision.id}: {decision.trust_state.value}, "
+            f"recorded {decision.recorded_at.isoformat()}, rationale={decision.rationale}"
+        )
+
+
+def _change_pack_trust_command(
+    *,
+    pack_id: str,
+    rationale: str,
+    trust_state: PackTrustState,
+    apply_changes: bool,
+    directory: Path,
+) -> None:
+    layout = discover_repository(directory)
+    if not rationale.strip():
+        raise ConfigurationError("Pack trust rationale must not be empty")
+    active = load_active_initiative(
+        layout,
+        allow_paused=True,
+        allow_untrusted_pack=True,
+    )
+    if active.pack_manifest.id != pack_id.strip():
+        raise ConflictError(
+            f"Active initiative locks {active.pack_manifest.id!r}, not {pack_id.strip()!r}"
+        )
+    _echo_locked_pack_trust(active)
+    typer.echo(f"Proposed data trust: {trust_state.value}")
+    typer.echo(f"Rationale: {rationale.strip()}")
+    if not apply_changes:
+        typer.echo("Preview only; rerun with --apply to persist this owner trust decision")
+        return
+    configuration = load_configuration(layout.configuration_file)
+    result = change_pack_trust(
+        layout,
+        pack_id=pack_id,
+        trust_state=trust_state,
+        rationale=rationale,
+        actor=owner_actor(configuration.owner),
+    )
+    typer.echo(f"Pack trust decision recorded: {result.decision.id}")
+
+
+@pack_app.command("trust")
+@_locked_mutation
+def trust_pack(
+    pack_id: Annotated[str, typer.Argument(help="Locked active pack ID.")],
+    rationale: Annotated[
+        str,
+        typer.Option("--rationale", help="Why this exact pack is trusted as data."),
+    ],
+    apply_changes: Annotated[
+        bool,
+        typer.Option("--apply", help="Persist the displayed owner trust decision."),
+    ] = False,
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Preview or restore owner data trust for the exact locked pack."""
+    _change_pack_trust_command(
+        pack_id=pack_id,
+        rationale=rationale,
+        trust_state=PackTrustState.TRUSTED_DATA,
+        apply_changes=apply_changes,
+        directory=directory,
+    )
+
+
+@pack_app.command("untrust")
+@_locked_mutation
+def untrust_pack(
+    pack_id: Annotated[str, typer.Argument(help="Locked active pack ID.")],
+    rationale: Annotated[
+        str,
+        typer.Option("--rationale", help="Why trust in this exact pack is withdrawn."),
+    ],
+    apply_changes: Annotated[
+        bool,
+        typer.Option("--apply", help="Persist the displayed owner untrust decision."),
+    ] = False,
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Preview or withdraw owner data trust without granting executable authority."""
+    _change_pack_trust_command(
+        pack_id=pack_id,
+        rationale=rationale,
+        trust_state=PackTrustState.UNTRUSTED,
+        apply_changes=apply_changes,
+        directory=directory,
+    )
+
+
 @app.command("create")
 @_locked_mutation
 def create(
@@ -768,6 +937,8 @@ def status(
             f"({guarantee}, {summary.event_count} events)"
         )
     if report.state is not None:
+        if report.pack_trust_state is not None:
+            typer.echo(f"Pack data trust: {report.pack_trust_state.value}")
         typer.echo(f"Lifecycle: {report.state.lifecycle_state}")
         for step_id, step_state in report.state.step_states.items():
             typer.echo(f"Step {step_id}: {step_state.value}")

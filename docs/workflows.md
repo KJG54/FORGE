@@ -197,3 +197,15 @@ M3 Increment 7 places a fail-closed executable capability gate before adapter ru
 before owner authorization is persisted. Every adapter run binds the selected approval; one-time
 approval is consumed by run creation, and later revocation prevents future invocation without
 rewriting history. Pack-data trust remains unable to grant executable authority.
+
+M3 Increment 8 makes pack data trust reversible without rewriting the creation decision.
+`forge pack inspect <pack-id>` displays the exact locked ID, version, digest, declared executable
+capabilities, effective trust, and immutable history. `forge pack untrust` and `forge pack trust`
+preview the proposed state and require `--apply` before the configured owner's decision is
+persisted.
+
+An untrusted pack blocks new workflow-dependent mutations, including manual and adapter run starts,
+transitions, verification, imports, pause/resume, and successful closure. Read-only status,
+history, pack inspection, capability governance, run inspection/cancellation, schema recovery, and
+owner abandonment remain available. Restoring `trusted-data` trust re-enables the locked workflow;
+it does not approve any declared executable capability.

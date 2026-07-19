@@ -146,6 +146,12 @@ Codex or Claude executable profile, preview and persist scoped approval, revoke 
 and audit the approval bound to each adapter run. Pack-data trust remains separate and cannot
 authorize a process.
 
+M3 Increment 8 adds the owner-controlled lifecycle for the exact pack locked by an active
+initiative. `forge pack untrust` and `forge pack trust` are preview-first, append immutable
+decisions to journal-backed history, and never grant executable authority. Withdrawing data trust
+blocks workflow-dependent mutation while preserving inspection, retrust, run cancellation, and
+explicit abandonment.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -154,6 +160,9 @@ forge config validate
 forge pack validate software-basic
 forge create "Objective" --scope "Bounded scope" --trust-pack-data \
   --idempotency-key create-objective
+forge pack inspect software-basic
+forge pack untrust software-basic --rationale "Re-evaluate this locked data" --apply
+forge pack trust software-basic --rationale "Exact locked digest reviewed" --apply
 forge status
 forge migrate
 forge pause --reason "Waiting for owner review"
@@ -243,6 +252,7 @@ forge --help
 - [M3 Increment 5 Claude-adapter boundary](docs/milestones/m3-increment-5.md)
 - [M3 Increment 6 governed adapter-execution boundary](docs/milestones/m3-increment-6.md)
 - [M3 Increment 7 executable-capability boundary](docs/milestones/m3-increment-7.md)
+- [M3 Increment 8 pack-data-trust lifecycle](docs/milestones/m3-increment-8.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

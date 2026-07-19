@@ -338,6 +338,7 @@ def load_active_initiative(
     *,
     allow_terminal: bool = False,
     allow_paused: bool = False,
+    allow_untrusted_pack: bool = False,
 ) -> ActiveInitiative:
     active, events = load_replayed_active_initiative(layout)
     try:
@@ -359,6 +360,11 @@ def load_active_initiative(
         report.replayed_state,
         active.workflow,
     )
+    from forge.core.pack_trust import current_pack_trust, require_pack_trusted
+
+    effective_pack_trust = current_pack_trust(layout, active.pack_trust, events)
+    if not allow_untrusted_pack:
+        require_pack_trusted(effective_pack_trust)
     if (
         report.replayed_state.lifecycle_state
         in {InitiativeLifecycleState.CLOSED, InitiativeLifecycleState.ABANDONED}
@@ -399,7 +405,7 @@ def load_active_initiative(
         active.layout,
         active.initiative,
         active.pack_manifest,
-        active.pack_trust,
+        effective_pack_trust,
         active.workflow,
         report.replayed_state,
     )

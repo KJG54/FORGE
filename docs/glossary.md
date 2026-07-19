@@ -33,6 +33,9 @@ These definitions are canonical for Production v1 planning and implementation.
 - **Owner:** The single Production-v1 repository authority for consequential governance actions.
 - **Pack:** Versioned declarative domain data containing workflows, templates, explanations, and
   checks; pack trust never grants executable trust.
+- **Pack data trust:** The owner's reversible authorization to use one initiative's exact locked
+  declarative pack. Withdrawal blocks workflow-dependent mutation without erasing history or
+  changing executable capability approval.
 - **Preserved object:** Immutable bytes stored by SHA-256 digest for historical reproducibility.
 - **Revision:** An immutable digest-bound version of an artifact or evidence file.
 - **Run:** One bounded manual or tool work attempt. Process success does not imply acceptance.
@@ -43,4 +46,3 @@ These definitions are canonical for Production v1 planning and implementation.
 - **Worker:** A human, agent, script, validator, or external tool that performs project work but
   does not gain owner authority from doing so.
 - **Workflow lock:** The exact pack and workflow versions governing an initiative.
-

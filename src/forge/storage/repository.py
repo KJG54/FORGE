@@ -112,6 +112,10 @@ class RepositoryLayout:
         return self.active_directory / "pack-trust.json"
 
     @property
+    def pack_trust_decision_directory(self) -> Path:
+        return self.active_directory / "pack-trust-decisions"
+
+    @property
     def agent_context_directory(self) -> Path:
         return self.active_directory / "context"
 
