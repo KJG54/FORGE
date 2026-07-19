@@ -10,6 +10,7 @@ from forge.adapters import (
     AdapterInvocationPlan,
     AdapterInvocationRequest,
     AgentAdapter,
+    CodexAgentAdapter,
     ManualAgentAdapter,
 )
 from forge.core.agent_context import build_agent_context
@@ -27,6 +28,7 @@ class AdapterSelection:
     adapter: AgentAdapter
     diagnostic: AdapterDiagnostic
     fallback_reason: str | None
+    requested_diagnostic: AdapterDiagnostic | None = None
 
 
 @dataclass(frozen=True)
@@ -37,16 +39,30 @@ class AdapterHandoffResult:
 
 
 _MANUAL_ADAPTER = ManualAgentAdapter()
-_ADAPTERS: dict[str, AgentAdapter] = {_MANUAL_ADAPTER.adapter_id: _MANUAL_ADAPTER}
+_CODEX_ADAPTER = CodexAgentAdapter()
+_ADAPTERS: dict[str, AgentAdapter] = {
+    _MANUAL_ADAPTER.adapter_id: _MANUAL_ADAPTER,
+    _CODEX_ADAPTER.adapter_id: _CODEX_ADAPTER,
+}
 
 
-def _manual_selection(requested: str, reason: str | None = None) -> AdapterSelection:
+def _manual_selection(
+    requested: str,
+    reason: str | None = None,
+    requested_diagnostic: AdapterDiagnostic | None = None,
+) -> AdapterSelection:
     diagnostic = _MANUAL_ADAPTER.diagnostics()
     if not diagnostic.availability.available:
         raise IntegrityError("Built-in manual adapter unexpectedly reported unavailable")
     if diagnostic.compatibility.state is not AdapterCompatibilityState.COMPATIBLE:
         raise IntegrityError("Built-in manual adapter unexpectedly reported incompatible")
-    return AdapterSelection(requested, _MANUAL_ADAPTER, diagnostic, reason)
+    return AdapterSelection(
+        requested,
+        _MANUAL_ADAPTER,
+        diagnostic,
+        reason,
+        requested_diagnostic,
+    )
 
 
 def select_agent_adapter(
@@ -73,13 +89,21 @@ def select_agent_adapter(
         return _manual_selection(
             requested,
             f"Adapter {requested!r} is unavailable; using manual handoff",
+            diagnostic,
         )
     if diagnostic.compatibility.state is not AdapterCompatibilityState.COMPATIBLE:
         return _manual_selection(
             requested,
             f"Adapter {requested!r} is not compatible; using manual handoff",
+            diagnostic,
         )
-    return AdapterSelection(requested, adapter, diagnostic, None)
+    if diagnostic.authentication_state not in {"authenticated", "not-required"}:
+        return _manual_selection(
+            requested,
+            f"Adapter {requested!r} is not authenticated; using manual handoff",
+            diagnostic,
+        )
+    return AdapterSelection(requested, adapter, diagnostic, None, diagnostic)
 
 
 def inspect_agent_adapter(
@@ -102,6 +126,13 @@ def prepare_agent_handoff(
     """Prepare a digest-bound adapter assignment and materialize the manual fallback bundle."""
 
     selection = select_agent_adapter(layout, requested_adapter_id=requested_adapter_id)
+    if selection.adapter.adapter_id != _MANUAL_ADAPTER.adapter_id:
+        selection = _manual_selection(
+            selection.requested_adapter_id,
+            f"Adapter {selection.requested_adapter_id!r} cannot create a portable handoff; "
+            "using manual handoff",
+            selection.diagnostic,
+        )
     context = build_agent_context(layout)
     if context.active_step.id != step_id:
         raise ConflictError(

@@ -85,3 +85,8 @@ read-only `forge agent doctor` selection diagnostics. `forge handoff` derives th
 context in memory and binds the manual plan to its exact JSON digest; it does not replace the
 tracked current views as a side effect. Installed-tool discovery, external invocation, capability
 approval, and executable pack trust remain deferred.
+
+M3 Increment 4 can validate this exact JSON payload and prepare it as stdin for a compatible,
+persistently authenticated Codex CLI. The prepared command is forced to read-only, ephemeral JSONL
+mode and cannot be started yet. Manual handoff remains the only execution path until isolated
+adapter output and governed run orchestration are implemented.

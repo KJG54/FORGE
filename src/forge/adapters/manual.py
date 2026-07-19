@@ -84,6 +84,7 @@ class ManualAgentAdapter:
             context_digest=request.context_digest,
             required_outputs=outputs,
             constraints=constraints,
+            standard_input=None,
             executable=None,
             arguments=(),
             working_directory=None,

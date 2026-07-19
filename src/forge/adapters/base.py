@@ -44,6 +44,8 @@ class AdapterInvocationRequest:
     context_digest: str
     required_outputs: tuple[str, ...]
     constraints: tuple[str, ...] = ()
+    context_payload: str | None = None
+    working_directory: str | None = None
 
 
 @dataclass(frozen=True)
@@ -55,6 +57,7 @@ class AdapterInvocationPlan:
     context_digest: str
     required_outputs: tuple[str, ...]
     constraints: tuple[str, ...]
+    standard_input: str | None
     executable: str | None
     arguments: tuple[str, ...]
     working_directory: str | None

@@ -167,9 +167,24 @@ def agent_doctor(
         return
     diagnostic = selection.diagnostic
     typer.echo(f"Requested adapter: {selection.requested_adapter_id}")
-    typer.echo(f"Selected adapter: {diagnostic.adapter_id}")
+    requested_diagnostic = selection.requested_diagnostic
+    if (
+        requested_diagnostic is not None
+        and requested_diagnostic.adapter_id != diagnostic.adapter_id
+    ):
+        requested_availability = (
+            "available" if requested_diagnostic.availability.available else "unavailable"
+        )
+        typer.echo(f"Requested availability: {requested_availability}")
+        typer.echo(f"Requested detail: {requested_diagnostic.availability.detail}")
+        typer.echo(f"Requested version: {requested_diagnostic.detected_version or '<unknown>'}")
+        typer.echo(
+            f"Requested compatibility: {requested_diagnostic.compatibility.state.value}"
+        )
+        typer.echo(f"Requested authentication: {requested_diagnostic.authentication_state}")
     if selection.fallback_reason is not None:
         typer.echo(f"Fallback: {selection.fallback_reason}")
+    typer.echo(f"Selected adapter: {diagnostic.adapter_id}")
     availability = "available" if diagnostic.availability.available else "unavailable"
     typer.echo(f"Availability: {availability}")
     typer.echo(f"Availability detail: {diagnostic.availability.detail}")

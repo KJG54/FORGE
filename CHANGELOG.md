@@ -78,6 +78,9 @@ semantic-version commitments begin at v1.0.0.
 - M3 provider-neutral agent adapter lifecycle interface, built-in process-free manual baseline,
   explicit configured-selection fallback, read-only adapter diagnostics, and canonical-context
   digest binding for portable handoffs without persistence-format changes.
+- M3 Codex CLI adapter with process-local discovery, bounded version/feature/authentication probes,
+  normalized manual fallback diagnostics, exact canonical-payload validation, and deterministic
+  read-only ephemeral invocation preparation without model execution or schema changes.
 
 ### Limitations
 
@@ -87,6 +90,6 @@ semantic-version commitments begin at v1.0.0.
   or synchronizes a repository on the owner's behalf.
 - Stale-lock remediation evidence contains host runtime metadata and remains local-only under the
   hybrid Git policy; it does not alter or repair governed initiative history.
-- Codex/Claude executable discovery, external process invocation, durable adapter runs, and
-  governed capabilities remain deferred beyond M3 Increment 3.
+- Codex process invocation, Claude discovery, durable adapter runs, output capture, and governed
+  capabilities remain deferred beyond M3 Increment 4.
 - Project and distribution naming remain provisional.

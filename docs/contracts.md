@@ -117,3 +117,7 @@ M3 Increment 3 adds frozen provider-neutral adapter request, plan, operation, ma
 diagnostic values plus the structural `AgentAdapter` protocol. These values are transient service
 boundaries rather than persistence contracts, so they do not change the public schema bundle.
 Existing handoff, result, run, event, snapshot, configuration, and archive models remain stable.
+
+M3 Increment 4 extends only those transient adapter values with canonical context, working
+directory, and standard-input fields needed for deterministic Codex preparation. It introduces no
+new persisted model or exported schema; the public schema bundle remains unchanged.

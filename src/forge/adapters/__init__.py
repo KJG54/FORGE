@@ -16,6 +16,7 @@ from forge.adapters.base import (
     AdapterResultManifest,
     AgentAdapter,
 )
+from forge.adapters.codex import CodexAgentAdapter
 from forge.adapters.manual import ManualAgentAdapter
 
 __all__ = [
@@ -33,5 +34,6 @@ __all__ = [
     "AdapterProcessStart",
     "AdapterResultManifest",
     "AgentAdapter",
+    "CodexAgentAdapter",
     "ManualAgentAdapter",
 ]

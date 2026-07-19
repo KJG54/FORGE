@@ -169,3 +169,8 @@ M3 Increment 3 routes portable handoff preparation through the neutral `AgentAda
 The built-in manual implementation is always available, starts no process, and requires the same
 untrusted `AgentResult` return path. `forge agent doctor` makes selection and fallback visible.
 Adapter preparation is transient and does not create a governed run or change workflow authority.
+
+M3 Increment 4 registers a Codex adapter for bounded executable, stable-feature, and persisted-auth
+diagnostics. A compatible adapter can prepare a digest-bound, read-only, ephemeral `codex exec`
+plan, but FORGE does not start it. `forge handoff` remains manual, and no workflow transition, run,
+worker claim, or result import can be implied by adapter availability.

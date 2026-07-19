@@ -124,6 +124,12 @@ manual implementation. `forge agent doctor` reports selection, compatibility, li
 explicit manual fallback; `forge handoff` now exercises the same digest-bound preparation boundary
 without starting a process or changing governed state. External tool discovery remains deferred.
 
+M3 Increment 4 registers a Codex CLI adapter with bounded executable/version probes, stable-feature
+compatibility, persisted-login diagnostics, and exact-context read-only invocation preparation.
+Missing, incompatible, or unauthenticated installations fall back visibly to manual. FORGE does
+not start Codex or allow it to write project state; manual handoff and staged import remain the
+execution boundary.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -215,6 +221,7 @@ forge --help
 - [M3 Increment 1 canonical-context boundary](docs/milestones/m3-increment-1.md)
 - [M3 Increment 2 managed-vendor-reference boundary](docs/milestones/m3-increment-2.md)
 - [M3 Increment 3 neutral-adapter boundary](docs/milestones/m3-increment-3.md)
+- [M3 Increment 4 Codex-adapter boundary](docs/milestones/m3-increment-4.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

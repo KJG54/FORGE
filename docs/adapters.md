@@ -1,7 +1,8 @@
 # Agent Adapters
 
 M3 Increment 3 introduces the neutral adapter boundary and its always-available manual baseline.
-It does not discover or run Codex, Claude, or another external executable.
+Increment 4 adds bounded discovery, diagnostics, and safe preparation for a separately installed
+Codex CLI. FORGE still does not start Codex or another external worker.
 
 ## Inspect selection
 
@@ -15,13 +16,46 @@ forge agent doctor --adapter codex
 
 Without `--adapter`, FORGE uses `agents.preferred_adapter` from `forge.yaml`, then defaults to
 `manual`. An unregistered, unavailable, or incompatible preference selects the manual adapter and
-prints the fallback reason. In this increment only `manual` is registered, so `codex` and `claude`
-preferences intentionally fall back.
+prints the fallback reason. `manual` and `codex` are registered; Claude remains deferred.
 
-The manual diagnostic reports that it is built in, version-compatible with the running FORGE,
-requires no authentication, and does not support process start, cancellation, or output capture.
-The command does not generate context, write a handoff, change the journal, or inspect external
-executables.
+The manual diagnostic reports that it is built in and requires no authentication. The Codex
+diagnostic uses bounded local commands to report executable availability, parsed version, required
+stable non-interactive flags, and persisted-login state. Neither adapter reports process start,
+cancellation, or output capture as supported. The command does not generate context, write a
+handoff, or change the journal.
+
+## Codex discovery and preparation
+
+FORGE resolves `codex` from the current process `PATH`. For an installation outside `PATH`, set an
+absolute path for only the current process:
+
+```console
+FORGE_CODEX_EXECUTABLE=/absolute/path/to/codex forge agent doctor --adapter codex
+```
+
+On PowerShell:
+
+```powershell
+$env:FORGE_CODEX_EXECUTABLE = "C:\absolute\path\to\codex.exe"
+forge agent doctor --adapter codex
+```
+
+The override is not written to `forge.yaml`. Diagnostics run `codex --version`,
+`codex exec --help`, and `codex login status` with a five-second default timeout, a bounded output
+limit, and an allowlisted environment that excludes API keys and Codex access-token variables.
+FORGE checks for the documented stable `--json`, `--ephemeral`, `--sandbox`, and
+`--ask-for-approval` flags instead of declaring an arbitrary minimum version.
+
+When those checks and persisted authentication succeed, the adapter can prepare a deterministic
+`codex exec` plan. It binds the exact canonical JSON digest, sends the context through stdin, uses
+JSONL and ephemeral mode, and forces `--sandbox read-only --ask-for-approval never`. Increment 4
+does not start that plan. Direct execution remains unsafe until FORGE can provide an isolated
+output workspace, governed run lifecycle, cancellation, and staged result capture. The supported
+execution path therefore remains `forge handoff` plus `forge import-result`.
+
+The Codex flags and behavior above follow the official
+[Codex non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode) and
+[CLI reference](https://developers.openai.com/codex/cli/reference/).
 
 ## Manual handoff through the adapter boundary
 
@@ -53,7 +87,6 @@ It must report unsupported operations explicitly. Core orchestration remains res
 context derivation, governance checks, handoff materialization, future run records, and staged
 imports. Adapter output is never a decision, check, evidence, acceptance, or trusted project state.
 
-The interface objects are transient Python data structures in this increment. They are not new
-persistence formats or exported schemas. Future external adapters must add executable discovery,
-version policy, authentication diagnostics, bounded process supervision, and untrusted-result
-capture without moving governance authority into provider code.
+The interface objects are transient Python data structures. They are not persistence formats or
+exported schemas. Future increments must add isolated execution, bounded process supervision, and
+untrusted-result capture without moving governance authority into provider code.
