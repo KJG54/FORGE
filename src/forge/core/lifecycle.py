@@ -529,6 +529,8 @@ def begin_manual_run(
     step_id: str,
     actor: Actor,
     side_effect_class: SideEffectClass = SideEffectClass.REPOSITORY_WRITE,
+    adapter_reference: str | None = None,
+    input_context_digest: str | None = None,
 ) -> ManualRunResult:
     active = load_active_initiative(layout)
     current = active.state.step_states.get(step_id)
@@ -557,14 +559,19 @@ def begin_manual_run(
         actor_id=actor.id,
         recorded_at=utc_now(),
         event_sequence=next_sequence,
-        authorization_basis="manual participant began an eligible workflow step",
+        authorization_basis=(
+            "adapter worker began an eligible workflow step"
+            if adapter_reference is not None
+            else "manual participant began an eligible workflow step"
+        ),
         affected_record_ids=(run_id,),
         step_id=step_id,
         worker=actor,
+        adapter_reference=adapter_reference,
         side_effect_class=side_effect_class,
         status=RunState.RUNNING,
         started_at=utc_now(),
-        input_context_digest=_input_context_digest(active, step_id),
+        input_context_digest=input_context_digest or _input_context_digest(active, step_id),
         exit_metadata={},
     )
     runs_created = False

@@ -125,3 +125,10 @@ new persisted model or exported schema; the public schema bundle remains unchang
 M3 Increment 5 reuses those same transient values for Claude Code and factors provider-independent
 local-CLI mechanics behind the adapter boundary. No persisted contract changes, and the public
 schema bundle remains unchanged.
+
+M3 Increment 6 extends the transient invocation request and plan with an isolated output directory,
+source run ID, timeout, and captured exit status. The existing `RunRecord`, `AuditEvent`, and
+`AgentResult` contracts represent the durable worker identity, execution event, and untrusted
+return bundle without new fields. `adapter-run-executed` is a new journal event type interpreted by
+the existing reducer and record validator. No public model or JSON Schema changes, so the exported
+schema bundle count remains unchanged.

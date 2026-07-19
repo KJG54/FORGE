@@ -45,6 +45,7 @@ from forge.core.successors import (
 from forge.core.transitions import (
     ACCEPTANCE_RECORDED,
     ACCEPTANCE_REVOKED,
+    ADAPTER_RUN_EXECUTED,
     ARTIFACT_REGISTERED,
     ARTIFACT_REVISED,
     CHECK_RECORDED,
@@ -306,6 +307,7 @@ def validate_governed_records(
     acceptance_steps: dict[UUID, str] = {}
     decisions_by_id: dict[UUID, DecisionRecord] = {}
     runs_by_id: dict[UUID, RunRecord] = {}
+    adapter_execution_run_ids: set[UUID] = set()
     revoked_acceptance_ids: set[UUID] = set()
     stale_ids: set[UUID] = set()
     seen_event_record_ids: set[UUID] = set()
@@ -573,6 +575,40 @@ def validate_governed_records(
             if effects != import_stale or not effects.issubset(event.affected_record_ids):
                 raise IntegrityError(f"Import event {event.id} has invalid stale effects")
             stale_ids.update(effects)
+        elif event.event_type == ADAPTER_RUN_EXECUTED:
+            if event.run_id is None or event.run_id not in runs_by_id:
+                raise IntegrityError(
+                    f"Adapter execution event {event.id} references an unknown run"
+                )
+            run = runs_by_id[event.run_id]
+            execution_state = event.metadata.get("state")
+            exit_code = event.metadata.get("exit_code")
+            staged_result_id = event.metadata.get("staged_result_id")
+            staged_id_valid = staged_result_id is None
+            if isinstance(staged_result_id, str):
+                try:
+                    UUID(staged_result_id)
+                    staged_id_valid = True
+                except ValueError:
+                    staged_id_valid = False
+            if (
+                run.adapter_reference is None
+                or run.worker.actor_type is not ActorType.AGENT_ADAPTER
+                or event.actor != run.worker
+                or event.metadata.get("adapter_id") != run.adapter_reference
+                or event.metadata.get("step_id") != run.step_id
+                or execution_state not in {"succeeded", "failed", "cancelled"}
+                or isinstance(exit_code, bool)
+                or not isinstance(exit_code, (int, type(None)))
+                or (execution_state == "succeeded" and exit_code != 0)
+                or (execution_state == "succeeded") != (staged_result_id is not None)
+                or not staged_id_valid
+                or event.run_id in adapter_execution_run_ids
+                or event.affected_record_ids != (run.id,)
+                or event.affected_digests != (run.input_context_digest,)
+            ):
+                raise IntegrityError(f"Adapter execution event {event.id} violates run policy")
+            adapter_execution_run_ids.add(event.run_id)
         elif event.event_type == RUN_CANCELLED:
             if event.run_id is None or event.run_id not in runs_by_id:
                 raise IntegrityError(f"Cancellation event {event.id} references an unknown run")

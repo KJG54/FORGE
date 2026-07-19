@@ -46,18 +46,17 @@ class ClaudeAgentAdapter(LocalCliAgentAdapter):
         "--output-format",
         "stream-json",
         "--permission-mode",
-        "plan",
+        "acceptEdits",
         "--no-session-persistence",
         "--bare",
         "--tools",
-        "Read,Glob,Grep",
+        "Read,Glob,Grep,Write",
         "--strict-mcp-config",
         "--no-chrome",
     )
     _diagnostic_environment_keys = ("CLAUDE_CONFIG_DIR",)
     _limitations = (
-        "FORGE can inspect and prepare Claude but does not start a Claude worker in this increment",
-        "Claude preparation disables writes, prompts, sessions, extensions, MCP, and browser "
-        "access",
-        "Use manual handoff until isolated output capture and governed runs are implemented",
+        "Claude writes are confined by FORGE to a disposable isolated workspace",
+        "Sessions, extensions, MCP, browser access, Bash, and external tools are disabled",
+        "Returned files and claims remain untrusted until explicit staged import",
     )

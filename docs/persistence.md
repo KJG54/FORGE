@@ -215,3 +215,19 @@ Vendor references are derived, not journaled, replayed, or archived with an init
 under mutation exclusion, binds the previewed vendor and context digests, regenerates canonical
 context, rechecks the vendor bytes, and atomically replaces the one selected root file. A terminal
 archive does not silently edit or remove a root vendor reference.
+
+## M3 Increment 6 adapter-run execution
+
+The normal `step-transitioned` begin event and immutable `RunRecord` remain the durable start of an
+adapter attempt. A later state-neutral `adapter-run-executed` event binds the run, adapter identity,
+step, exit status, normalized execution state, canonical-context digest, and optional local staged
+result ID. Replay requires the referenced run to be active. Expected failures are followed by the
+existing `run-cancelled` event; successful execution remains associated with the active run until a
+claim transition ends it.
+
+Provider workspace, raw stdout/stderr, and import staging remain below `.forge/local/` and are not
+governance authority. The event records identities and outcomes, not provider bytes. After explicit
+import, ordinary artifact revisions and content-addressed objects preserve accepted project bytes
+under the existing transaction rules. The synchronous command uses normal mutation locking and
+idempotency receipts, but an unexpected interruption is diagnosed rather than automatically
+restarting a model process.

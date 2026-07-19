@@ -46,6 +46,9 @@ class AdapterInvocationRequest:
     constraints: tuple[str, ...] = ()
     context_payload: str | None = None
     working_directory: str | None = None
+    output_directory: str | None = None
+    source_run_id: str | None = None
+    timeout_seconds: float = 300.0
 
 
 @dataclass(frozen=True)
@@ -62,6 +65,8 @@ class AdapterInvocationPlan:
     arguments: tuple[str, ...]
     working_directory: str | None
     output_directory: str | None
+    source_run_id: str | None
+    timeout_seconds: float
     result_manifest_contract: str
     limitations: tuple[str, ...]
 
@@ -91,6 +96,7 @@ class AdapterOutputCapture:
     state: AdapterOperationState
     paths: tuple[str, ...]
     detail: str
+    exit_code: int | None = None
 
 
 @dataclass(frozen=True)

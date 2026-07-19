@@ -40,6 +40,7 @@ RESULT_IMPORTED = "result-imported"
 INITIATIVE_CLOSED = "initiative-closed"
 INITIATIVE_ABANDONED = "initiative-abandoned"
 RUN_CANCELLED = "run-cancelled"
+ADAPTER_RUN_EXECUTED = "adapter-run-executed"
 
 
 def _metadata_string(event: AuditEvent, key: str) -> str:
@@ -538,6 +539,10 @@ class WorkflowStateReducer:
             return self._apply_step_transition(state, event)
         if event.event_type == RUN_CANCELLED:
             return self._apply_run_cancelled(state, event)
+        if event.event_type == ADAPTER_RUN_EXECUTED:
+            if event.run_id is None or event.run_id not in state.active_run_ids:
+                raise IntegrityError("Adapter execution must reference an active run")
+            return state
         if event.event_type in {ARTIFACT_REGISTERED, ARTIFACT_REVISED}:
             return self._apply_artifact_event(state, event)
         if event.event_type in {DECISION_RECORDED, DECISION_SUPERSEDED}:

@@ -27,6 +27,9 @@ class CodexAgentAdapter(LocalCliAgentAdapter):
         "--ephemeral",
         "--sandbox",
         "--ask-for-approval",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
     )
     _authentication_arguments = ("login", "status")
     _login_command = "codex login"
@@ -35,14 +38,19 @@ class CodexAgentAdapter(LocalCliAgentAdapter):
         "--json",
         "--ephemeral",
         "--sandbox",
-        "read-only",
+        "workspace-write",
         "--ask-for-approval",
         "never",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
         "-",
     )
     _diagnostic_environment_keys = ("CODEX_HOME",)
     _limitations = (
-        "FORGE can inspect and prepare Codex but does not start a Codex worker in this increment",
-        "Codex preparation is forced to read-only sandboxing with approval prompts disabled",
-        "Use manual handoff until isolated output capture and governed runs are implemented",
+        "Codex writes are confined to a disposable isolated workspace and never applied "
+        "automatically",
+        "Approval prompts, user config, exec rules, session persistence, and network access "
+        "are disabled",
+        "Returned files and claims remain untrusted until explicit staged import",
     )

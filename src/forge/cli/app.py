@@ -22,6 +22,7 @@ from forge.core.acceptance import (
 )
 from forge.core.agent_adapters import inspect_agent_adapter, prepare_agent_handoff
 from forge.core.agent_context import AgentContextTarget, generate_agent_context
+from forge.core.agent_runs import execute_agent_run
 from forge.core.archival import abandon_initiative, close_initiative
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
 from forge.core.authorization import owner_actor
@@ -283,6 +284,50 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
             _fail(error)
 
     return locked
+
+
+@agent_app.command("run")
+@_locked_mutation
+def agent_run(
+    step_id: Annotated[str, typer.Argument(help="Ready workflow step ID.")],
+    adapter: Annotated[
+        str,
+        typer.Option("--adapter", help="Explicit executable adapter: codex or claude."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    constraint: Annotated[
+        list[str] | None,
+        typer.Option("--constraint", help="Repeat for each bounded worker constraint."),
+    ] = None,
+    timeout_seconds: Annotated[
+        float,
+        typer.Option("--timeout", help="Bounded provider execution timeout in seconds."),
+    ] = 300.0,
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Execute one provider in a disposable workspace and stage its untrusted result."""
+    layout = discover_repository(directory)
+    result = execute_agent_run(
+        layout,
+        step_id=step_id,
+        requested_adapter_id=adapter,
+        constraints=tuple(constraint or ()),
+        timeout_seconds=timeout_seconds,
+    )
+    typer.echo(f"Adapter run: {result.run_id}")
+    typer.echo(f"Adapter: {result.selection.adapter.adapter_id}")
+    typer.echo(f"Execution state: {result.state.value}")
+    typer.echo(f"Exit code: {result.exit_code if result.exit_code is not None else '<none>'}")
+    typer.echo(f"Local run directory: {result.run_directory}")
+    if result.staged_result is not None:
+        typer.echo(f"Staged result: {result.staged_result.result.id}")
+        typer.echo(f"Manifest: {result.staged_result.manifest_path}")
+        typer.echo("Review with forge import-result; no returned file was applied")
+    else:
+        typer.echo(f"Result unavailable: {result.detail}")
 
 
 @app.command("init")
@@ -1393,6 +1438,13 @@ def complete(
         Path,
         typer.Option("--directory", "-C", help="Repository or child directory."),
     ] = Path("."),
+    run_id: Annotated[
+        UUID | None,
+        typer.Option(
+            "--run-id",
+            help="Attribute the claim to this governed run's recorded worker.",
+        ),
+    ] = None,
     limitation: Annotated[
         list[str] | None,
         typer.Option("--limitation", help="Repeat for each known claim limitation."),
@@ -1402,18 +1454,28 @@ def complete(
     """Record a worker claim and submit current declared outputs for checking."""
     try:
         layout = discover_repository(directory)
-        configuration = load_configuration(layout.configuration_file)
+        if run_id is None:
+            configuration = load_configuration(layout.configuration_file)
+            actor = owner_actor(configuration.owner)
+        else:
+            run = show_run(layout, run_id)
+            if run.record.step_id != step_id:
+                raise ConfigurationError(
+                    f"Run {run_id} belongs to step {run.record.step_id}, not {step_id}"
+                )
+            actor = run.record.worker
         result = complete_step(
             layout,
             step_id=step_id,
             assertion=assertion,
-            actor=owner_actor(configuration.owner),
+            actor=actor,
             limitations=tuple(limitation or ()),
         )
     except ForgeError as error:
         _fail(error)
         return
     typer.echo(f"Recorded claim {result.claim.id}")
+    typer.echo(f"Claim actor: {result.claim.actor.display_label}")
     typer.echo(f"Step {step_id}: {result.transition.state.step_states[step_id].value}")
     typer.echo("The claim is not a check, evidence packet, or owner acceptance")
 

@@ -180,3 +180,14 @@ compatible adapter can prepare a digest-bound `claude --print` plan with streami
 permissions, disabled session persistence and extensions, no MCP or browser integration, and only
 read-oriented built-in tools. FORGE does not start it, and manual handoff remains the only worker
 transfer path.
+
+M3 Increment 6 advances the bundled `software-basic` pack and workflow to `0.3.0`, adding
+`agent_adapter` to each step's allowed actors. Existing locked initiatives retain their original
+pack bytes and authority rules. `forge agent run <step> --adapter codex|claude` creates a normal
+governed run, moves an eligible step to `in_progress`, and audits the provider execution separately
+from output import and completion. Failure or timeout records `run-cancelled` and follows the
+locked cancellation behavior. Success leaves the run active until the owner explicitly imports
+the staged files and submits the worker claim with `forge complete --run-id <run-id>`.
+
+Adapter execution does not satisfy any transition condition. Claims, declared checks, evidence,
+and owner acceptance retain their existing records and authority requirements.

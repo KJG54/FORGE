@@ -89,6 +89,8 @@ class ManualAgentAdapter:
             arguments=(),
             working_directory=None,
             output_directory=None,
+            source_run_id=None,
+            timeout_seconds=request.timeout_seconds,
             result_manifest_contract="agent-result",
             limitations=_LIMITATIONS,
         )

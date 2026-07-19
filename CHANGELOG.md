@@ -84,6 +84,10 @@ semantic-version commitments begin at v1.0.0.
 - M3 Claude Code adapter with process-local discovery, bounded version/feature/authentication
   probes, normalized manual fallback diagnostics, exact canonical-payload validation, and
   deterministic plan-mode invocation preparation with sessions and extensions disabled.
+- M3 governed Codex and Claude execution with adapter-attributed durable runs, disposable
+  digest-bound workspaces, allowlisted environments, bounded supervision and output capture,
+  source-bound untrusted result staging, explicit run-attributed completion, and no automatic
+  project application or verification.
 
 ### Limitations
 
@@ -93,6 +97,7 @@ semantic-version commitments begin at v1.0.0.
   or synchronizes a repository on the owner's behalf.
 - Stale-lock remediation evidence contains host runtime metadata and remains local-only under the
   hybrid Git policy; it does not alter or repair governed initiative history.
-- Codex and Claude process invocation, durable adapter runs, output capture, and governed
-  capabilities remain deferred beyond M3 Increment 5.
+- Provider APIs, background execution, cross-process live cancellation, automatic crash resume,
+  hostile-code isolation guarantees, automatic verification, and governed capabilities remain
+  deferred beyond M3 Increment 6.
 - Project and distribution naming remain provisional.

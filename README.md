@@ -135,6 +135,12 @@ and persisted-authentication diagnostics. Its prepared non-interactive plan is d
 session-free, extension-free, MCP-free, browser-free, and limited to read-oriented tools in plan
 mode. FORGE still starts no provider process; portable handoff and staged import remain manual.
 
+M3 Increment 6 adds explicit synchronous `forge agent run` execution for compatible Codex and
+Claude installations. Each attempt has an adapter-attributed governed run, a disposable workspace
+with only digest-verified inputs, bounded timeout and output capture, and a source-bound
+`AgentResult` routed into the existing untrusted staging area. Returned files are never applied
+automatically; import, run-attributed claim, checks, evidence, and owner acceptance remain separate.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -158,6 +164,7 @@ forge agent context --target codex --apply
 forge agent doctor
 forge agent doctor --adapter codex
 forge agent doctor --adapter claude
+forge agent run discover --adapter codex --timeout 300
 forge handoff discover --constraint "Do not modify unrelated files"
 forge abandon --reason "Stop this initiative" --unfinished-work "Remaining work" \
   --risk "Intended outcome was not delivered"
@@ -229,6 +236,7 @@ forge --help
 - [M3 Increment 3 neutral-adapter boundary](docs/milestones/m3-increment-3.md)
 - [M3 Increment 4 Codex-adapter boundary](docs/milestones/m3-increment-4.md)
 - [M3 Increment 5 Claude-adapter boundary](docs/milestones/m3-increment-5.md)
+- [M3 Increment 6 governed adapter-execution boundary](docs/milestones/m3-increment-6.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

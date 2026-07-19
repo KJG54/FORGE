@@ -61,7 +61,7 @@ def test_pack_create_status_next_and_begin_commands(tmp_path: Path) -> None:
 
     listed = runner.invoke(app, ["pack", "list", "-C", str(tmp_path)])
     assert listed.exit_code == 0, listed.stdout
-    assert "software-basic 0.2.0" in listed.stdout
+    assert "software-basic 0.3.0" in listed.stdout
     validated = runner.invoke(
         app,
         ["pack", "validate", "software-basic", "-C", str(tmp_path)],

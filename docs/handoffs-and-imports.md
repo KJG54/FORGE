@@ -27,6 +27,13 @@ As of M3 Increment 3, this command prepares the assignment through the built-in 
 in memory: handoff creation still does not write tracked context views or mutate the journal. The
 manual adapter starts no process and preserves the same bundle and staged-import behavior.
 
+M3 Increment 6 adds a second source for the same result contract. `forge agent run` creates a
+governed source run, supervises a compatible Codex or Claude process in
+`.forge/local/runs/<run-id>/workspace/`, and requires its bundle under `workspace/result/`. A valid
+bundle is copied immediately into normal import staging, but no project target is applied. The
+manifest source UUID must equal the exact governed run ID; a mismatched provider claim fails the
+execution and releases the workflow step through governed cancellation.
+
 ## Result bundle contract
 
 The worker returns an `AgentResult` JSON manifest and only the files declared by its
@@ -83,3 +90,8 @@ Imported files remain ordinary untrusted worker output. Workflow completion stil
 participant claim, declared checks, evidence, and separate owner acceptance. Handoff and staging
 files can disappear without affecting restart validation because governed records and preserved
 revision bytes carry the durable import history.
+
+For an adapter run, apply the returned manifest with `forge import-result ... --apply`, then use
+`forge complete <step> --run-id <run-id> --assertion ...`. The explicit run reference attributes the
+claim to the immutable adapter worker. It does not give that worker owner authority and does not
+turn provider stdout, process exit, or returned claims into verification evidence.

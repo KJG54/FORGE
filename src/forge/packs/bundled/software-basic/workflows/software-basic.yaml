@@ -1,6 +1,6 @@
 schema_version: "1.0"
 id: software-basic
-version: 0.2.0
+version: 0.3.0
 pack_id: software-basic
 name: Software Basic
 description: A governed six-step workflow for ordinary software initiatives.
@@ -14,7 +14,7 @@ steps:
     claim_requirements: [outputs-produced]
     check_requirements: [outputs-present]
     acceptance_requirements: [owner-acceptance]
-    allowed_actors: [owner, human_contributor]
+    allowed_actors: [owner, human_contributor, agent_adapter]
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [initiative-objective]
@@ -27,7 +27,7 @@ steps:
     claim_requirements: [outputs-produced]
     check_requirements: [outputs-present]
     acceptance_requirements: [owner-acceptance]
-    allowed_actors: [owner, human_contributor]
+    allowed_actors: [owner, human_contributor, agent_adapter]
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [accepted-discovery]
@@ -40,7 +40,7 @@ steps:
     claim_requirements: [outputs-produced]
     check_requirements: [declared-checks]
     acceptance_requirements: [owner-acceptance]
-    allowed_actors: [owner, human_contributor]
+    allowed_actors: [owner, human_contributor, agent_adapter]
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: block_for_owner_review
     context_selection_rules: [accepted-plan]
@@ -53,7 +53,7 @@ steps:
     claim_requirements: [outputs-produced]
     check_requirements: [declared-checks]
     acceptance_requirements: [owner-acceptance]
-    allowed_actors: [owner, human_contributor]
+    allowed_actors: [owner, human_contributor, agent_adapter]
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [requirements, project-artifacts]
@@ -66,7 +66,7 @@ steps:
     claim_requirements: [outputs-produced]
     check_requirements: [review-complete]
     acceptance_requirements: [owner-acceptance]
-    allowed_actors: [owner, human_contributor]
+    allowed_actors: [owner, human_contributor, agent_adapter]
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [verification-report]
@@ -79,7 +79,7 @@ steps:
     claim_requirements: [outputs-produced]
     check_requirements: [closure-readiness]
     acceptance_requirements: [owner-acceptance]
-    allowed_actors: [owner, human_contributor]
+    allowed_actors: [owner, human_contributor, agent_adapter]
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [accepted-review]

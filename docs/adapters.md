@@ -2,8 +2,9 @@
 
 M3 Increment 3 introduces the neutral adapter boundary and its always-available manual baseline.
 Increment 4 adds bounded discovery, diagnostics, and safe preparation for a separately installed
-Codex CLI. Increment 5 adds the symmetric Claude Code boundary. FORGE still does not start either
-external worker.
+Codex CLI. Increment 5 adds the symmetric Claude Code boundary. Increment 6 adds explicit,
+synchronous execution in disposable per-run workspaces and routes returned bundles through the
+existing untrusted import staging boundary.
 
 ## Inspect selection
 
@@ -22,9 +23,10 @@ manual adapter and prints the fallback reason. `manual`, `codex`, and `claude` a
 
 The manual diagnostic reports that it is built in and requires no authentication. Provider
 diagnostics use bounded local commands to report executable availability, parsed version, required
-stable non-interactive flags, and persisted-login state. No adapter reports process start,
-cancellation, or output capture as supported. The command does not generate context, write a
-handoff, or change the journal.
+stable non-interactive flags, and persisted-login state. The manual adapter reports process start,
+cancellation, and output capture as unsupported; compatible Codex and Claude adapters report all
+three. The diagnostic command itself does not generate context, write a handoff, start a provider,
+or change the journal.
 
 ## Codex discovery and preparation
 
@@ -45,15 +47,16 @@ forge agent doctor --adapter codex
 The override is not written to `forge.yaml`. Diagnostics run `codex --version`,
 `codex exec --help`, and `codex login status` with a five-second default timeout, a bounded output
 limit, and an allowlisted environment that excludes API keys and Codex access-token variables.
-FORGE checks for the documented stable `--json`, `--ephemeral`, `--sandbox`, and
-`--ask-for-approval` flags instead of declaring an arbitrary minimum version.
+FORGE checks for the documented stable `--json`, `--ephemeral`, `--sandbox`,
+`--ask-for-approval`, `--ignore-user-config`, `--ignore-rules`, and
+`--skip-git-repo-check` flags instead of declaring an arbitrary minimum version.
 
 When those checks and persisted authentication succeed, the adapter can prepare a deterministic
 `codex exec` plan. It binds the exact canonical JSON digest, sends the context through stdin, uses
-JSONL and ephemeral mode, and forces `--sandbox read-only --ask-for-approval never`. Increment 4
-does not start that plan. Direct execution remains unsafe until FORGE can provide an isolated
-output workspace, governed run lifecycle, cancellation, and staged result capture. The supported
-execution path therefore remains `forge handoff` plus `forge import-result`.
+JSONL and ephemeral mode, and forces `--sandbox workspace-write --ask-for-approval never` while
+ignoring user configuration and repository rules. The process runs only in a disposable FORGE
+workspace; the default Codex workspace-write sandbox has network access disabled. Returned files
+must be placed in its dedicated `result/` directory and are never applied automatically.
 
 The Codex flags and behavior above follow the official
 [Codex non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode) and
@@ -88,20 +91,70 @@ After persisted authentication succeeds, preparation binds the exact canonical J
 
 ```console
 claude --print --input-format text --output-format stream-json \
-  --permission-mode plan --no-session-persistence --bare \
-  --tools Read,Glob,Grep --strict-mcp-config --no-chrome
+  --permission-mode acceptEdits --no-session-persistence --bare \
+  --tools Read,Glob,Grep,Write --strict-mcp-config --no-chrome
 ```
 
-The canonical assignment is supplied through stdin. Plan mode and the explicit tool list prevent
-project edits; bare mode disables project and user hooks, skills, plugins, memory, and instruction
-discovery; strict MCP mode without an MCP configuration prevents MCP loading; browser integration
-and session persistence are disabled. These controls narrow the future process surface but do not
-make same-user execution a security sandbox, so Increment 5 still does not start the plan.
+The canonical assignment is supplied through stdin. `acceptEdits` and the explicit tool list allow
+files only for the disposable return workspace while excluding Bash and other tools. Bare mode
+disables project and user hooks, skills, plugins, memory, and instruction discovery; strict MCP
+mode without an MCP configuration prevents MCP loading; browser integration and session
+persistence are disabled. These controls narrow the process surface but do not make same-user
+execution a hostile-code sandbox.
 
 The flags and authentication probe follow Anthropic's official
 [Claude Code CLI reference](https://code.claude.com/docs/en/cli-usage),
 [non-interactive mode](https://code.claude.com/docs/en/headless), and
 [permission modes](https://code.claude.com/docs/en/permission-modes).
+
+## Governed local execution
+
+Execution is always explicit and never silently falls back to a different provider:
+
+```console
+forge agent run discover --adapter codex \
+  --constraint "Return only the declared discovery files" \
+  --timeout 300
+
+forge agent run discover --adapter claude --timeout 300
+```
+
+The command requires a compatible, persistently authenticated local CLI. It creates an immutable
+governed run attributed to an `agent_adapter` actor, moves the step to `in_progress`, and creates
+`.forge/local/runs/<run-id>/`. The provider can read the exact canonical context, copied
+digest-verified required inputs, and the result schema below `workspace/`; it must write all return
+files plus `result.json` below `workspace/result/`.
+
+FORGE captures stdout and stderr outside the provider workspace, enforces the requested timeout
+(maximum one hour) and a 10 MiB combined capture limit, and terminates then kills an overrun. A
+valid result is immediately copied into `.forge/local/import-staging/<result-id>/` after the normal
+inventory, path, symlink, size, digest, secret, and source-run checks. This is staging only. Review
+and apply it with the existing command:
+
+```console
+forge import-result .forge/local/runs/<run-id>/workspace/result/result.json \
+  --role objective.md=objective-and-constraints \
+  --role requirements.md=requirements
+
+forge import-result .forge/local/runs/<run-id>/workspace/result/result.json \
+  --role objective.md=objective-and-constraints \
+  --role requirements.md=requirements \
+  --apply
+```
+
+After import, submit the worker claim against the same immutable run identity:
+
+```console
+forge complete discover --run-id <run-id> \
+  --assertion "<exact worker_claims entry from the imported result>"
+```
+
+The successful process, imported bytes, worker claim, checks, evidence, and owner acceptance remain
+separate facts. An adapter-attributed assertion must exactly match a provider-authored claim in an
+imported result from that run. A failed or timed-out execution records its outcome and a governed
+cancellation, returning the bundled workflow step to `ready`. The synchronous command holds the
+repository mutation lock; an unexpected host crash is reported as an interrupted command and is
+never silently resumed.
 
 ## Manual handoff through the adapter boundary
 
@@ -130,9 +183,9 @@ context views or mutate governed initiative history. The worker still returns an
 
 An adapter receives frozen request and plan values, not FORGE repository or mutation services.
 It must report unsupported operations explicitly. Core orchestration remains responsible for
-context derivation, governance checks, handoff materialization, future run records, and staged
-imports. Adapter output is never a decision, check, evidence, acceptance, or trusted project state.
+context derivation, governance checks, workspace materialization, run records, and staged imports.
+Adapter output is never a decision, check, evidence, acceptance, or trusted project state.
 
 The interface objects are transient Python data structures. They are not persistence formats or
-exported schemas. Future increments must add isolated execution, bounded process supervision, and
-untrusted-result capture without moving governance authority into provider code.
+exported schemas. Capability execution, executable pack trust, background services, provider APIs,
+stronger operating-system isolation, and automatic verification remain later boundaries.

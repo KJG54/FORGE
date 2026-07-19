@@ -1,6 +1,6 @@
 schema_version: "1.0"
 id: software-basic
-version: 0.2.0
+version: 0.3.0
 schema_compatibility:
   - forge-contracts-1
 provided_workflow_ids:
@@ -9,4 +9,4 @@ template_paths: []
 explanation_paths: []
 data_resource_paths: []
 declared_capability_ids: []
-integrity_digest: sha256:4121c9c5039c6ce10f656766baad9c277241a55f5ae7e6c4bd482d8de12a18cb
+integrity_digest: sha256:17e757327c92ae38f904cfdef4389ab16ef0a883d6b4493aaac375717bca0708

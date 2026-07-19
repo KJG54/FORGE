@@ -123,7 +123,13 @@ def test_manual_begin_enforces_readiness_actor_rules_and_restart(tmp_path: Path)
     with pytest.raises(TransitionError, match="cannot begin from state pending"):
         begin_manual_run(initialized.layout, step_id="plan", actor=actor)
     with pytest.raises(AuthorizationError, match="not allowed"):
-        begin_manual_run(initialized.layout, step_id="discover", actor=_agent_actor())
+        begin_manual_run(
+            initialized.layout,
+            step_id="discover",
+            actor=_agent_actor().model_copy(
+                update={"actor_type": ActorType.EXTERNAL_TOOL}
+            ),
+        )
     assert not initialized.layout.governed_run_directory.exists()
 
     result = begin_manual_run(initialized.layout, step_id="discover", actor=actor)

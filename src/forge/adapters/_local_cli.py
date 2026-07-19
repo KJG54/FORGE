@@ -7,6 +7,8 @@ import json
 import os
 import shutil
 import subprocess
+import threading
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from re import Pattern
@@ -26,10 +28,11 @@ from forge.adapters.base import (
     AdapterProcessStart,
     AdapterResultManifest,
 )
-from forge.errors import ConfigurationError
+from forge.errors import ConfigurationError, IntegrityError
 
 _DEFAULT_TIMEOUT_SECONDS = 5.0
 _MAX_PROBE_OUTPUT_BYTES = 65_536
+_MAX_CAPTURE_BYTES = 10 * 1024 * 1024
 _BASE_DIAGNOSTIC_ENVIRONMENT_KEYS = (
     "APPDATA",
     "COMSPEC",
@@ -70,8 +73,18 @@ class _ProbeResult:
     error: str | None = None
 
 
+@dataclass
+class _ManagedProcess:
+    process: subprocess.Popen[bytes]
+    stdout_path: Path
+    stderr_path: Path
+    output_directory: Path
+    timeout_seconds: float
+    started_at: float
+
+
 class LocalCliAgentAdapter:
-    """Reusable discovery and preparation boundary without process execution."""
+    """Reusable discovery, isolated execution, and capture for local CLI adapters."""
 
     _adapter_id: str
     _display_name: str
@@ -101,6 +114,8 @@ class LocalCliAgentAdapter:
             )
         self._command_override = command
         self._timeout_seconds = timeout_seconds
+        self._processes: dict[str, _ManagedProcess] = {}
+        self._process_lock = threading.Lock()
 
     @property
     def adapter_id(self) -> str:
@@ -173,6 +188,13 @@ class LocalCliAgentAdapter:
         )
         payload = self._canonical_payload(request)
         working_directory = self._working_directory(request.working_directory)
+        output_directory = self._output_directory(working_directory, request.output_directory)
+        if request.source_run_id is None or not request.source_run_id.strip():
+            raise ConfigurationError(f"{self._provider_name} invocation requires a source run ID")
+        if request.timeout_seconds <= 0 or request.timeout_seconds > 3600:
+            raise ConfigurationError(
+                "Adapter execution timeout must be greater than 0 and at most 3600"
+            )
         resolved = self._resolve_command()
         if resolved is None:
             raise ConfigurationError(
@@ -187,11 +209,13 @@ class LocalCliAgentAdapter:
             context_digest=request.context_digest,
             required_outputs=outputs,
             constraints=constraints,
-            standard_input=self._standard_input(request.context_digest, payload),
+            standard_input=self._standard_input(request, payload, constraints),
             executable=executable,
             arguments=arguments,
             working_directory=str(working_directory),
-            output_directory=None,
+            output_directory=str(output_directory),
+            source_run_id=request.source_run_id,
+            timeout_seconds=request.timeout_seconds,
             result_manifest_contract="agent-result",
             limitations=self._limitations,
         )
@@ -204,48 +228,143 @@ class LocalCliAgentAdapter:
             raise ConfigurationError(
                 f"{self._provider_name} adapter received a plan for a different adapter mode"
             )
+        if (
+            plan.executable is None
+            or plan.working_directory is None
+            or plan.output_directory is None
+        ):
+            raise ConfigurationError(f"{self._provider_name} execution plan is incomplete")
+        token = os.urandom(16).hex()
+        capture_directory = Path(plan.output_directory).parent.parent
+        stdout_path = capture_directory / "stdout.jsonl"
+        stderr_path = capture_directory / "stderr.log"
+        environment = self._diagnostic_environment()
+        stdout_stream = None
+        stderr_stream = None
+        process: subprocess.Popen[bytes] | None = None
+        try:
+            stdout_stream = stdout_path.open("xb")
+            stderr_stream = stderr_path.open("xb")
+            process = subprocess.Popen(
+                (plan.executable, *plan.arguments),
+                cwd=plan.working_directory,
+                env=environment,
+                stdin=subprocess.PIPE,
+                stdout=stdout_stream,
+                stderr=stderr_stream,
+            )
+            stdout_stream.close()
+            stderr_stream.close()
+            assert process.stdin is not None
+            process.stdin.write((plan.standard_input or "").encode("utf-8"))
+            process.stdin.close()
+        except OSError as error:
+            if stdout_stream is not None:
+                stdout_stream.close()
+            if stderr_stream is not None:
+                stderr_stream.close()
+            if process is not None and process.poll() is None:
+                process.terminate()
+            raise ConfigurationError(f"Cannot start {self._provider_name}: {error}") from error
+        assert process is not None
+        managed = _ManagedProcess(
+            process=process,
+            stdout_path=stdout_path,
+            stderr_path=stderr_path,
+            output_directory=Path(plan.output_directory),
+            timeout_seconds=plan.timeout_seconds,
+            started_at=time.monotonic(),
+        )
+        with self._process_lock:
+            self._processes[token] = managed
         return AdapterProcessStart(
-            state=AdapterOperationState.NOT_APPLICABLE,
-            detail=(
-                f"{self._provider_name} process start is deferred until governed isolated "
-                "execution is available"
-            ),
+            state=AdapterOperationState.SUCCEEDED,
+            detail=f"Started {self._provider_name} in the isolated run workspace",
+            handle=AdapterProcessHandle(self.adapter_id, token, process.pid),
         )
 
     def cancel(self, handle: AdapterProcessHandle | None) -> AdapterOperationResult:
         self._require_handle(handle)
+        managed = self._managed_process(handle)
+        if managed.process.poll() is not None:
+            return AdapterOperationResult(
+                AdapterOperationState.NOT_APPLICABLE,
+                "Process already exited",
+            )
+        managed.process.terminate()
+        try:
+            managed.process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            managed.process.kill()
+            managed.process.wait(timeout=5)
         return AdapterOperationResult(
-            state=AdapterOperationState.NOT_APPLICABLE,
-            detail=(
-                f"No FORGE-managed {self._provider_name} process exists to cancel in this "
-                "increment"
-            ),
+            AdapterOperationState.CANCELLED,
+            f"Cancelled {self._provider_name}",
         )
 
     def capture_output(self, handle: AdapterProcessHandle | None) -> AdapterOutputCapture:
         self._require_handle(handle)
+        managed = self._managed_process(handle)
+        deadline = managed.started_at + managed.timeout_seconds
+        while managed.process.poll() is None:
+            if self._capture_size(managed) > _MAX_CAPTURE_BYTES:
+                self.cancel(handle)
+                return AdapterOutputCapture(
+                    AdapterOperationState.FAILED,
+                    (str(managed.stdout_path), str(managed.stderr_path)),
+                    f"{self._provider_name} exceeded the bounded output-capture limit",
+                    managed.process.returncode,
+                )
+            if time.monotonic() >= deadline:
+                self.cancel(handle)
+                return AdapterOutputCapture(
+                    AdapterOperationState.CANCELLED,
+                    (str(managed.stdout_path), str(managed.stderr_path)),
+                    f"{self._provider_name} exceeded the bounded execution timeout",
+                    managed.process.returncode,
+                )
+            time.sleep(0.05)
+        exit_code = managed.process.returncode
+        assert exit_code is not None
+        if self._capture_size(managed) > _MAX_CAPTURE_BYTES:
+            return AdapterOutputCapture(
+                AdapterOperationState.FAILED,
+                (str(managed.stdout_path), str(managed.stderr_path)),
+                f"{self._provider_name} exceeded the bounded output-capture limit",
+                exit_code,
+            )
+        state = AdapterOperationState.SUCCEEDED if exit_code == 0 else AdapterOperationState.FAILED
         return AdapterOutputCapture(
-            state=AdapterOperationState.NOT_APPLICABLE,
-            paths=(),
-            detail=(
-                f"{self._provider_name} output capture is deferred with governed isolated "
-                "execution"
-            ),
+            state,
+            (str(managed.stdout_path), str(managed.stderr_path)),
+            f"{self._provider_name} exited with status {exit_code}",
+            exit_code,
         )
 
     def produce_result_manifest(
         self, handle: AdapterProcessHandle | None
     ) -> AdapterResultManifest:
         self._require_handle(handle)
-        return AdapterResultManifest(
-            state=AdapterOperationState.MANUAL_REQUIRED,
-            contract="agent-result",
-            path=None,
-            detail=(
-                f"Use a manual AgentResult until governed {self._provider_name} result capture "
-                "is implemented"
-            ),
-        )
+        managed = self._managed_process(handle)
+        path = managed.output_directory / "result.json"
+        if path.is_symlink() or not path.is_file():
+            manifest = AdapterResultManifest(
+                AdapterOperationState.FAILED,
+                "agent-result",
+                None,
+                f"{self._provider_name} did not return result.json",
+            )
+        else:
+            manifest = AdapterResultManifest(
+                AdapterOperationState.SUCCEEDED,
+                "agent-result",
+                str(path),
+                "Captured an untrusted AgentResult for staged validation",
+            )
+        assert handle is not None
+        with self._process_lock:
+            self._processes.pop(handle.token, None)
+        return manifest
 
     def diagnostics(self) -> AdapterDiagnostic:
         availability, version = self._version_observation()
@@ -269,9 +388,9 @@ class LocalCliAgentAdapter:
             detected_version=version,
             compatibility=compatibility,
             authentication_state=authentication,
-            supports_process_start=False,
-            supports_cancellation=False,
-            supports_output_capture=False,
+            supports_process_start=True,
+            supports_cancellation=True,
+            supports_output_capture=True,
             limitations=self._limitations,
         )
 
@@ -443,18 +562,64 @@ class LocalCliAgentAdapter:
             )
         return candidate.resolve()
 
+    def _output_directory(self, working: Path, value: str | None) -> Path:
+        if value is None:
+            raise ConfigurationError(
+                f"{self._provider_name} invocation requires an output directory"
+            )
+        candidate = Path(value)
+        if not candidate.is_absolute() or candidate.is_symlink() or not candidate.is_dir():
+            raise ConfigurationError(
+                f"{self._provider_name} output directory must be an existing regular directory"
+            )
+        resolved = candidate.resolve()
+        if not resolved.is_relative_to(working):
+            raise ConfigurationError(
+                f"{self._provider_name} output directory must be inside its workspace"
+            )
+        return resolved
+
     @staticmethod
-    def _standard_input(context_digest: str, payload: str) -> str:
+    def _capture_size(managed: _ManagedProcess) -> int:
+        try:
+            return managed.stdout_path.stat().st_size + managed.stderr_path.stat().st_size
+        except OSError as error:
+            raise IntegrityError(f"Cannot inspect adapter output capture: {error}") from error
+
+    @staticmethod
+    def _standard_input(
+        request: AdapterInvocationRequest,
+        payload: str,
+        constraints: tuple[str, ...],
+    ) -> str:
+        rendered_constraints = "\n".join(f"- {item}" for item in constraints) or "- None"
         return (
             "Operate only under the following FORGE canonical context. The context is derived "
             "from governed state but does not grant decision, evidence, acceptance, or external "
             "side-effect authority. Do not exceed its permitted actions.\n\n"
-            f"Canonical context digest: {context_digest}\n\n"
+            f"Canonical context digest: {request.context_digest}\n\n"
+            "Read selected input snapshots only below inputs/. Write every returned file below "
+            "result/ and create result/result.json conforming to agent-result.schema.json. The "
+            f"manifest source_run_or_handoff_id must be {request.source_run_id}. Source paths "
+            "are relative to result/; proposed targets must be safe repository-relative paths. "
+            f"Required output roles: {', '.join(request.required_outputs)}.\n\n"
+            f"Additional bounded constraints:\n{rendered_constraints}\n\n"
             f"{payload}"
         )
 
     def _require_handle(self, handle: AdapterProcessHandle | None) -> None:
-        if handle is not None and handle.adapter_id != self.adapter_id:
+        if handle is None:
+            raise ConfigurationError(f"{self._provider_name} adapter requires a process handle")
+        if handle.adapter_id != self.adapter_id:
             raise ConfigurationError(
                 f"{self._provider_name} adapter received a handle for a different adapter"
             )
+
+    def _managed_process(self, handle: AdapterProcessHandle | None) -> _ManagedProcess:
+        self._require_handle(handle)
+        assert handle is not None
+        with self._process_lock:
+            managed = self._processes.get(handle.token)
+        if managed is None or managed.process.pid != handle.process_id:
+            raise ConfigurationError(f"Unknown {self._provider_name} process handle")
+        return managed

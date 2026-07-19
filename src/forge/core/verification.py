@@ -9,7 +9,8 @@ from pathlib import Path
 from uuid import UUID, uuid4
 
 from forge import __version__
-from forge.contracts.actors import Actor
+from forge.contracts.actors import Actor, ActorType
+from forge.contracts.agents import AgentResult
 from forge.contracts.base import utc_now
 from forge.contracts.events import AuditEvent
 from forge.contracts.state import StepState
@@ -155,6 +156,25 @@ def _active_run_for_step(active: ActiveInitiative, step_id: str, actor: Actor) -
     return matching[0]
 
 
+def _require_imported_agent_claim(
+    active: ActiveInitiative,
+    *,
+    run_id: UUID,
+    assertion: str,
+) -> None:
+    directory = active.layout.imported_result_directory
+    matching = (
+        result
+        for path in directory.glob("*.json")
+        if (result := load_record(path, AgentResult)).source_run_or_handoff_id == run_id
+    )
+    if not any(assertion in result.worker_claims for result in matching):
+        raise ConflictError(
+            "An agent-adapter claim must exactly match a worker claim in an imported result "
+            f"from run {run_id}"
+        )
+
+
 def list_claims(layout: RepositoryLayout) -> tuple[Claim, ...]:
     load_active_initiative(layout, allow_paused=True)
     if not layout.claim_directory.exists():
@@ -239,6 +259,8 @@ def complete_step(
     assertion = _require_text("Claim assertion", assertion)
     limitations = _validate_limitations(limitations)
     run_id = _active_run_for_step(active, step_id, actor)
+    if actor.actor_type is ActorType.AGENT_ADAPTER:
+        _require_imported_agent_claim(active, run_id=run_id, assertion=assertion)
     revisions = current_revisions_for_roles(active, step.required_outputs)
     now = utc_now()
     sequence = active.state.journal_head_sequence + 1

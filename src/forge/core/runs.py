@@ -14,7 +14,7 @@ from forge.contracts.runs import RunRecord
 from forge.contracts.state import MaterializedState, RunState, StepState
 from forge.contracts.workflows import CancellationBehavior
 from forge.core.lifecycle import ActiveInitiative, load_active_initiative
-from forge.core.transitions import RUN_CANCELLED, STEP_TRANSITIONED
+from forge.core.transitions import ADAPTER_RUN_EXECUTED, RUN_CANCELLED, STEP_TRANSITIONED
 from forge.errors import AuthorizationError, ConflictError, IntegrityError
 from forge.storage.journal import read_journal
 from forge.storage.records import load_record
@@ -52,11 +52,15 @@ def _load_runs(active: ActiveInitiative) -> tuple[RunRecord, ...]:
 
 
 def _view(active: ActiveInitiative, run: RunRecord) -> RunView:
-    terminal = [
+    events = [
         event
         for event in read_journal(active.layout.event_journal_file)
         if event.run_id == run.id
-        and (
+    ]
+    terminal = [
+        event
+        for event in events
+        if (
             event.event_type == RUN_CANCELLED
             or (
                 event.event_type == STEP_TRANSITIONED
@@ -69,6 +73,20 @@ def _view(active: ActiveInitiative, run: RunRecord) -> RunView:
     if not terminal:
         if run.id not in active.state.active_run_ids:
             raise IntegrityError(f"Run {run.id} is neither active nor terminal")
+        executions = [event for event in events if event.event_type == ADAPTER_RUN_EXECUTED]
+        if len(executions) > 1:
+            raise IntegrityError(f"Run {run.id} has multiple adapter execution events")
+        if executions:
+            execution = executions[0]
+            try:
+                status = RunState(execution.metadata.get("state"))
+            except (TypeError, ValueError) as error:
+                raise IntegrityError(
+                    f"Run {run.id} has an invalid adapter execution state"
+                ) from error
+            if status not in {RunState.SUCCEEDED, RunState.FAILED, RunState.CANCELLED}:
+                raise IntegrityError(f"Run {run.id} has a non-terminal execution state")
+            return RunView(run, status, execution.timestamp)
         return RunView(run, RunState.RUNNING)
     event = terminal[0]
     if event.event_type == RUN_CANCELLED:

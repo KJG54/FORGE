@@ -6,7 +6,7 @@ import json
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from pydantic import ValidationError
 
@@ -214,7 +214,12 @@ def _load_existing_stage(
     )
 
 
-def stage_result(layout: RepositoryLayout, manifest_path: Path) -> StagedResult:
+def stage_result(
+    layout: RepositoryLayout,
+    manifest_path: Path,
+    *,
+    expected_source_id: UUID | None = None,
+) -> StagedResult:
     """Validate and copy one untrusted result bundle into local staging without execution."""
 
     configuration = load_configuration(layout.configuration_file)
@@ -229,6 +234,14 @@ def stage_result(layout: RepositoryLayout, manifest_path: Path) -> StagedResult:
     except (ConfigurationError, SecurityError):
         _failed_staging(layout, raw)
         raise
+    if (
+        expected_source_id is not None
+        and result.source_run_or_handoff_id != expected_source_id
+    ):
+        _failed_staging(layout, raw)
+        raise SecurityError(
+            "Result manifest source does not match the governed run that produced it"
+        )
     existing = _load_existing_stage(layout, result, raw)
     if existing is not None:
         return existing

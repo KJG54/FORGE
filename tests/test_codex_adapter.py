@@ -2,6 +2,7 @@ import hashlib
 import sys
 from pathlib import Path
 from typing import cast
+from uuid import uuid4
 
 import pytest
 from typer.testing import CliRunner
@@ -11,7 +12,6 @@ from forge.adapters import (
     AdapterCompatibilityState,
     AdapterInvocationMode,
     AdapterInvocationRequest,
-    AdapterOperationState,
     AgentAdapter,
     CodexAgentAdapter,
 )
@@ -31,7 +31,10 @@ def _fake_codex_command(
     tmp_path: Path,
     *,
     version_output: str = "codex-cli 1.2.3",
-    help_output: str = "--json --ephemeral --sandbox --ask-for-approval",
+    help_output: str = (
+        "--json --ephemeral --sandbox --ask-for-approval --ignore-user-config "
+        "--ignore-rules --skip-git-repo-check"
+    ),
     authenticated: bool = True,
 ) -> tuple[str, ...]:
     script = tmp_path / f"fake-codex-{len(tuple(tmp_path.glob('fake-codex-*.py')))}.py"
@@ -84,18 +87,21 @@ def test_codex_adapter_detects_stable_features_and_persisted_auth(tmp_path: Path
     assert diagnostic.detected_version == "1.2.3"
     assert diagnostic.compatibility.state is AdapterCompatibilityState.COMPATIBLE
     assert diagnostic.authentication_state == "authenticated"
-    assert not diagnostic.supports_process_start
-    assert not diagnostic.supports_cancellation
-    assert not diagnostic.supports_output_capture
+    assert diagnostic.supports_process_start
+    assert diagnostic.supports_cancellation
+    assert diagnostic.supports_output_capture
 
 
-def test_codex_preparation_is_context_bound_read_only_and_non_executing(
+def test_codex_preparation_is_context_bound_and_isolated(
     tmp_path: Path,
 ) -> None:
     command = _fake_codex_command(tmp_path)
     adapter = CodexAgentAdapter(command=command)
     payload = '{"active_step":{"id":"discover"}}\n'
     digest = f"sha256:{hashlib.sha256(payload.encode('utf-8')).hexdigest()}"
+    result_directory = tmp_path / "result"
+    result_directory.mkdir()
+    source_id = uuid4()
 
     plan = adapter.prepare_invocation(
         AdapterInvocationRequest(
@@ -105,6 +111,8 @@ def test_codex_preparation_is_context_bound_read_only_and_non_executing(
             constraints=("Do not modify governed state",),
             context_payload=payload,
             working_directory=str(tmp_path.resolve()),
+            output_directory=str(result_directory.resolve()),
+            source_run_id=str(source_id),
         )
     )
 
@@ -118,19 +126,19 @@ def test_codex_preparation_is_context_bound_read_only_and_non_executing(
         "--json",
         "--ephemeral",
         "--sandbox",
-        "read-only",
+        "workspace-write",
         "--ask-for-approval",
         "never",
+        "--ignore-user-config",
+        "--ignore-rules",
+        "--skip-git-repo-check",
         "-",
     )
     assert plan.standard_input is not None
     assert digest in plan.standard_input
+    assert str(source_id) in plan.standard_input
     assert plan.standard_input.endswith(payload)
-    assert plan.output_directory is None
-    assert adapter.start_process(plan).state is AdapterOperationState.NOT_APPLICABLE
-    assert adapter.cancel(None).state is AdapterOperationState.NOT_APPLICABLE
-    assert adapter.capture_output(None).state is AdapterOperationState.NOT_APPLICABLE
-    assert adapter.produce_result_manifest(None).state is AdapterOperationState.MANUAL_REQUIRED
+    assert plan.output_directory == str(result_directory.resolve())
 
 
 def test_codex_diagnostics_fail_closed_for_missing_features_auth_and_binary(

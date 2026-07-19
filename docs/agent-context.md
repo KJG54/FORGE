@@ -95,3 +95,11 @@ M3 Increment 5 applies the same exact-payload and digest boundary to a compatibl
 authenticated Claude Code CLI. Its prepared stdin plan uses non-interactive streaming output,
 plan mode, no session persistence, bare startup, no MCP or browser integration, and only the
 `Read`, `Glob`, and `Grep` built-in tools. It also cannot be started yet.
+
+M3 Increment 6 starts an explicitly selected compatible Codex or Claude adapter only after creating
+a governed run and a disposable local workspace. It writes the exact canonical JSON used for that
+run to `workspace/context.json` and copies only digest-verified `required_inputs` beneath
+`workspace/inputs/`. The provider receives write access only for its disposable workspace and must
+return an `AgentResult` bundle below `workspace/result/`; no tracked context view or project target
+is changed by execution. Returned bytes remain untrusted and require explicit import application,
+claim, checks, evidence, and owner acceptance.
