@@ -10,7 +10,7 @@ from uuid import UUID
 import typer
 
 from forge import __version__
-from forge.contracts.capabilities import SideEffectClass
+from forge.contracts.capabilities import CapabilityTrustState, SideEffectClass
 from forge.contracts.recovery import JournalRecoveryRecord
 from forge.contracts.state import ExplanationProfile
 from forge.contracts.verification import CheckOutcome
@@ -26,6 +26,14 @@ from forge.core.agent_runs import execute_agent_run
 from forge.core.archival import abandon_initiative, close_initiative
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
 from forge.core.authorization import owner_actor
+from forge.core.capabilities import (
+    CapabilityInspection,
+    approve_capability,
+    inspect_capability,
+    list_capabilities,
+    list_capability_approvals,
+    revoke_capability_approval,
+)
 from forge.core.command_recovery import recover_command_receipt
 from forge.core.continuity import pause_initiative, resume_initiative
 from forge.core.decisions import record_decision
@@ -71,6 +79,7 @@ evidence_app = typer.Typer(help="Register and inspect durable evidence packets."
 acceptance_app = typer.Typer(help="Record, inspect, or revoke owner acceptance.")
 run_app = typer.Typer(help="Inspect or cancel durable work attempts.")
 agent_app = typer.Typer(help="Generate neutral worker context and inspect agent integrations.")
+capability_app = typer.Typer(help="Inspect, approve, or revoke executable capabilities.")
 IdempotencyOption = Annotated[
     str | None,
     typer.Option(
@@ -87,6 +96,229 @@ app.add_typer(evidence_app, name="evidence")
 app.add_typer(acceptance_app, name="acceptance")
 app.add_typer(run_app, name="run")
 app.add_typer(agent_app, name="agent")
+app.add_typer(capability_app, name="capability")
+
+
+def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
+    @wraps(function)
+    def locked(*args: P.args, **kwargs: P.kwargs) -> None:
+        try:
+            bound = signature(function).bind(*args, **kwargs)
+            bound.apply_defaults()
+            directory = bound.arguments.get("directory", Path("."))
+            if not isinstance(directory, Path):
+                raise ConfigurationError("Mutation command directory must be a filesystem path")
+            layout = discover_repository(directory)
+            parameters = dict(bound.arguments)
+            if function.__name__ in {
+                "capability_approve",
+                "import_result",
+                "migrate",
+            } and not parameters.get("apply_changes"):
+                function(*args, **kwargs)
+                return
+            with repository_mutation_lock(layout, command=function.__name__):
+                provided_key = parameters.pop("idempotency_key", None)
+                parameters.pop("directory", None)
+                if provided_key is not None and not isinstance(provided_key, str):
+                    raise ConfigurationError("Idempotency key must be text")
+                with idempotent_mutation(
+                    layout,
+                    command=function.__name__,
+                    provided_key=provided_key,
+                    parameters=parameters,
+                    resume_incomplete=function.__name__
+                    in {"abandon", "close", "migrate", "recover", "recover_command"},
+                    allow_recoverable_active_journal=function.__name__ == "recover",
+                    additional_allowed_incomplete_keys=(
+                        (str(parameters["interrupted_key"]),)
+                        if function.__name__ == "recover_command"
+                        else ()
+                    ),
+                ) as invocation:
+                    typer.echo(f"Idempotency key: {invocation.key}")
+                    if invocation.is_replay:
+                        assert invocation.receipt is not None
+                        event_ids = ", ".join(
+                            str(item.event_id) for item in invocation.receipt.events
+                        )
+                        typer.echo(f"Idempotent replay; committed event(s): {event_ids}")
+                        return
+                    function(*args, **kwargs)
+        except ForgeError as error:
+            _fail(error)
+
+    return locked
+
+
+def _echo_capability_inspection(inspection: CapabilityInspection) -> None:
+    definition = inspection.definition
+    typer.echo(f"Capability: {definition.id}@{definition.version}")
+    typer.echo(f"Definition digest: {inspection.definition_digest}")
+    typer.echo(f"Provider: {definition.provider}")
+    typer.echo(f"Provider version: {inspection.provider_version or '<unknown>'}")
+    typer.echo(f"Exact executable: {definition.executable or '<unavailable>'}")
+    typer.echo("Arguments:")
+    for argument in definition.arguments:
+        typer.echo(f"- {argument}")
+    typer.echo(
+        "Argument construction: fixed FORGE adapter vector; Windows command shims include "
+        "the inspected cmd.exe /c vector"
+    )
+    typer.echo("Working-directory rules:")
+    for rule in definition.working_directory_rules:
+        typer.echo(f"- {rule}/<run-id>/workspace")
+    typer.echo("Environment access:")
+    for key in inspection.environment_access:
+        typer.echo(f"- {key}")
+    typer.echo(f"Side-effect class: {definition.side_effect_class.value}")
+    typer.echo("Output locations:")
+    for location in inspection.output_locations:
+        typer.echo(f"- {location}")
+    typer.echo("Approval duration choices:")
+    for duration in inspection.approval_durations:
+        typer.echo(f"- {duration}")
+    typer.echo(f"Execution readiness: {'ready' if inspection.compatible else 'disabled'}")
+    typer.echo(f"Availability: {inspection.availability_detail}")
+
+
+@capability_app.command("list")
+def capability_list(
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """List registered executable capabilities and current trust state."""
+    try:
+        layout = discover_repository(directory)
+        inspections = list_capabilities(layout)
+        approvals = list_capability_approvals(layout)
+    except ForgeError as error:
+        _fail(error)
+        return
+    for inspection in inspections:
+        active = [
+            item.approval.approval_scope.value
+            for item in approvals
+            if item.approval.capability_id == inspection.definition.id and item.active
+        ]
+        state = ", ".join(active) if active else CapabilityTrustState.DISABLED.value
+        executable = inspection.definition.executable or "<unavailable>"
+        typer.echo(
+            f"{inspection.definition.id}@{inspection.definition.version}  "
+            f"trust={state}  executable={executable}"
+        )
+
+
+@capability_app.command("inspect")
+def capability_inspect(
+    capability_id: Annotated[str, typer.Argument(help="Registered capability ID.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Inspect the exact executable profile and durable approval history."""
+    try:
+        layout = discover_repository(directory)
+        inspection = inspect_capability(layout, capability_id)
+        approvals = list_capability_approvals(
+            layout, capability_id=inspection.definition.id
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    _echo_capability_inspection(inspection)
+    typer.echo("Approval history:")
+    if not approvals:
+        typer.echo("- none; capability is disabled")
+    for view in approvals:
+        if view.revocation is not None:
+            state = f"revoked by {view.revocation.id}"
+        elif view.consumed:
+            state = "consumed"
+        elif not view.applicable:
+            state = "inactive-profile-changed"
+        else:
+            state = "active"
+        typer.echo(
+            f"- {view.approval.id}: {view.approval.approval_scope.value}, {state}, "
+            f"recorded {view.approval.recorded_at.isoformat()}"
+        )
+
+
+@capability_app.command("approve")
+@_locked_mutation
+def capability_approve(
+    capability_id: Annotated[str, typer.Argument(help="Registered capability ID.")],
+    rationale: Annotated[
+        str,
+        typer.Option("--rationale", help="Why this executable authority is acceptable."),
+    ],
+    scope: Annotated[
+        CapabilityTrustState,
+        typer.Option("--scope", help="Approval duration/scope."),
+    ] = CapabilityTrustState.APPROVED_ONCE,
+    apply_changes: Annotated[
+        bool,
+        typer.Option("--apply", help="Persist the displayed owner approval."),
+    ] = False,
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Preview or persist owner approval for one exact capability profile."""
+    layout = discover_repository(directory)
+    if scope is CapabilityTrustState.DISABLED:
+        raise ConfigurationError("Use an approval scope that grants execution")
+    if not rationale.strip():
+        raise ConfigurationError("Capability approval rationale must not be empty")
+    inspection = inspect_capability(layout, capability_id)
+    _echo_capability_inspection(inspection)
+    typer.echo(f"Selected approval duration: {scope.value}")
+    typer.echo(f"Rationale: {rationale}")
+    if not apply_changes:
+        typer.echo("Preview only; rerun with --apply to persist this owner approval")
+        return
+    configuration = load_configuration(layout.configuration_file)
+    result = approve_capability(
+        layout,
+        capability_id=capability_id,
+        scope=scope,
+        rationale=rationale,
+        actor=owner_actor(configuration.owner),
+    )
+    typer.echo(f"Capability approval recorded: {result.approval.id}")
+
+
+@capability_app.command("revoke")
+@_locked_mutation
+def capability_revoke(
+    approval_id: Annotated[UUID, typer.Argument(help="Capability approval UUID.")],
+    reason: Annotated[
+        str,
+        typer.Option("--reason", help="Why future execution is no longer authorized."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Revoke future execution while retaining immutable approval history."""
+    layout = discover_repository(directory)
+    configuration = load_configuration(layout.configuration_file)
+    result = revoke_capability_approval(
+        layout,
+        approval_id=approval_id,
+        reason=reason,
+        actor=owner_actor(configuration.owner),
+    )
+    typer.echo(f"Capability approval revoked: {approval_id}")
+    typer.echo(f"Revocation record: {result.revocation.id}")
 
 
 @agent_app.command("context")
@@ -234,56 +466,6 @@ def _assignment_map(values: list[str] | None, label: str) -> dict[str, str]:
             raise ConfigurationError(f"Duplicate {label} assignment for {path!r}")
         assignments[path] = value
     return assignments
-
-
-def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
-    @wraps(function)
-    def locked(*args: P.args, **kwargs: P.kwargs) -> None:
-        try:
-            bound = signature(function).bind(*args, **kwargs)
-            bound.apply_defaults()
-            directory = bound.arguments.get("directory", Path("."))
-            if not isinstance(directory, Path):
-                raise ConfigurationError("Mutation command directory must be a filesystem path")
-            layout = discover_repository(directory)
-            with repository_mutation_lock(layout, command=function.__name__):
-                parameters = dict(bound.arguments)
-                provided_key = parameters.pop("idempotency_key", None)
-                parameters.pop("directory", None)
-                if function.__name__ in {"import_result", "migrate"} and not parameters.get(
-                    "apply_changes"
-                ):
-                    function(*args, **kwargs)
-                    return
-                if provided_key is not None and not isinstance(provided_key, str):
-                    raise ConfigurationError("Idempotency key must be text")
-                with idempotent_mutation(
-                    layout,
-                    command=function.__name__,
-                    provided_key=provided_key,
-                    parameters=parameters,
-                    resume_incomplete=function.__name__
-                    in {"abandon", "close", "migrate", "recover", "recover_command"},
-                    allow_recoverable_active_journal=function.__name__ == "recover",
-                    additional_allowed_incomplete_keys=(
-                        (str(parameters["interrupted_key"]),)
-                        if function.__name__ == "recover_command"
-                        else ()
-                    ),
-                ) as invocation:
-                    typer.echo(f"Idempotency key: {invocation.key}")
-                    if invocation.is_replay:
-                        assert invocation.receipt is not None
-                        event_ids = ", ".join(
-                            str(item.event_id) for item in invocation.receipt.events
-                        )
-                        typer.echo(f"Idempotent replay; committed event(s): {event_ids}")
-                        return
-                    function(*args, **kwargs)
-        except ForgeError as error:
-            _fail(error)
-
-    return locked
 
 
 @agent_app.command("run")

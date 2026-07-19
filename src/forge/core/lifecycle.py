@@ -531,6 +531,8 @@ def begin_manual_run(
     side_effect_class: SideEffectClass = SideEffectClass.REPOSITORY_WRITE,
     adapter_reference: str | None = None,
     input_context_digest: str | None = None,
+    capability_ids: tuple[str, ...] = (),
+    capability_approval_ids: tuple[UUID, ...] = (),
 ) -> ManualRunResult:
     active = load_active_initiative(layout)
     current = active.state.step_states.get(step_id)
@@ -553,6 +555,13 @@ def begin_manual_run(
         raise TransitionError(f"Step {step_id} cannot begin from state {current.value}")
     run_id = uuid4()
     next_sequence = active.state.journal_head_sequence + 1
+    if len(capability_ids) != len(capability_approval_ids):
+        raise IntegrityError("Run capabilities must each bind one approval record")
+    if adapter_reference is not None and len(capability_ids) != 1:
+        raise IntegrityError("New adapter runs require exactly one capability approval")
+    if adapter_reference is None and capability_ids:
+        raise IntegrityError("Manual runs cannot claim executable capability approval")
+    affected_ids = (run_id, *capability_approval_ids)
     run = RunRecord(
         id=run_id,
         initiative_id=active.initiative.id,
@@ -564,10 +573,12 @@ def begin_manual_run(
             if adapter_reference is not None
             else "manual participant began an eligible workflow step"
         ),
-        affected_record_ids=(run_id,),
+        affected_record_ids=affected_ids,
         step_id=step_id,
         worker=actor,
         adapter_reference=adapter_reference,
+        capability_ids=capability_ids,
+        capability_approval_ids=capability_approval_ids,
         side_effect_class=side_effect_class,
         status=RunState.RUNNING,
         started_at=utc_now(),
@@ -590,7 +601,7 @@ def begin_manual_run(
             transition_id=begin_transition.id,
             actor=actor,
             run_id=run_id,
-            affected_record_ids=(run_id,),
+            affected_record_ids=affected_ids,
             condition_record_ids={},
         )
     except Exception:

@@ -119,6 +119,10 @@ class AdapterDiagnostic:
     supports_cancellation: bool
     supports_output_capture: bool
     limitations: tuple[str, ...]
+    executable: str | None = None
+    argument_prefix: tuple[str, ...] = ()
+    invocation_arguments: tuple[str, ...] = ()
+    environment_keys: tuple[str, ...] = ()
 
 
 @runtime_checkable

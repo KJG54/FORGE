@@ -141,6 +141,11 @@ with only digest-verified inputs, bounded timeout and output capture, and a sour
 `AgentResult` routed into the existing untrusted staging area. Returned files are never applied
 automatically; import, run-attributed claim, checks, evidence, and owner acceptance remain separate.
 
+M3 Increment 7 adds a default-disabled executable capability registry. Owners can inspect the exact
+Codex or Claude executable profile, preview and persist scoped approval, revoke future execution,
+and audit the approval bound to each adapter run. Pack-data trust remains separate and cannot
+authorize a process.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -237,6 +242,7 @@ forge --help
 - [M3 Increment 4 Codex-adapter boundary](docs/milestones/m3-increment-4.md)
 - [M3 Increment 5 Claude-adapter boundary](docs/milestones/m3-increment-5.md)
 - [M3 Increment 6 governed adapter-execution boundary](docs/milestones/m3-increment-6.md)
+- [M3 Increment 7 executable-capability boundary](docs/milestones/m3-increment-7.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

@@ -14,6 +14,7 @@ from forge.contracts import (
     MaterializedState,
     OwnerIdentity,
     RepositoryState,
+    RunRecord,
 )
 from forge.contracts.base import SCHEMA_VERSION, utc_now
 from forge.errors import ConflictError
@@ -39,6 +40,10 @@ def test_contracts_reject_unknown_fields_and_future_schema_versions() -> None:
         OwnerIdentity.model_validate({**values, "unexpected": True})
     with pytest.raises(ValidationError, match=r"Input should be '1\.0'"):
         OwnerIdentity.model_validate({**values, "schema_version": "2.0"})
+
+
+def test_increment6_run_records_default_to_no_capability_approval_binding() -> None:
+    assert RunRecord.model_fields["capability_approval_ids"].default == ()
 
 
 def test_contracts_require_aware_timestamps() -> None:

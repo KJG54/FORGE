@@ -25,7 +25,9 @@ from forge.contracts.archives import (
 from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision, ProvenanceRecord
 from forge.contracts.base import SCHEMA_VERSION
 from forge.contracts.capabilities import (
+    CapabilityApproval,
     CapabilityDefinition,
+    CapabilityRevocation,
     CapabilityTrustState,
     SideEffectClass,
 )
@@ -98,7 +100,9 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "archived-object-reference": ArchivedObjectReference,
     "audit-event": AuditEvent,
     "authority-grant": AuthorityGrant,
+    "capability-approval": CapabilityApproval,
     "capability-definition": CapabilityDefinition,
+    "capability-revocation": CapabilityRevocation,
     "check-result": CheckResult,
     "claim": Claim,
     "command-recovery-record": CommandRecoveryRecord,
@@ -154,7 +158,9 @@ __all__ = [
     "AuthorityGrant",
     "CancellationBehavior",
     "CanonicalAgentContext",
+    "CapabilityApproval",
     "CapabilityDefinition",
+    "CapabilityRevocation",
     "CapabilityTrustState",
     "CheckOutcome",
     "CheckResult",

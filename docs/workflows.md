@@ -191,3 +191,9 @@ the staged files and submits the worker claim with `forge complete --run-id <run
 
 Adapter execution does not satisfy any transition condition. Claims, declared checks, evidence,
 and owner acceptance retain their existing records and authority requirements.
+
+M3 Increment 7 places a fail-closed executable capability gate before adapter run creation.
+`forge capability approve` previews the exact current invocation profile and requires `--apply`
+before owner authorization is persisted. Every adapter run binds the selected approval; one-time
+approval is consumed by run creation, and later revocation prevents future invocation without
+rewriting history. Pack-data trust remains unable to grant executable authority.

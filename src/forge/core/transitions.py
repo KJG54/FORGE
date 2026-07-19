@@ -41,6 +41,8 @@ INITIATIVE_CLOSED = "initiative-closed"
 INITIATIVE_ABANDONED = "initiative-abandoned"
 RUN_CANCELLED = "run-cancelled"
 ADAPTER_RUN_EXECUTED = "adapter-run-executed"
+CAPABILITY_APPROVED = "capability-approved"
+CAPABILITY_REVOKED = "capability-revoked"
 
 
 def _metadata_string(event: AuditEvent, key: str) -> str:
@@ -542,6 +544,10 @@ class WorkflowStateReducer:
         if event.event_type == ADAPTER_RUN_EXECUTED:
             if event.run_id is None or event.run_id not in state.active_run_ids:
                 raise IntegrityError("Adapter execution must reference an active run")
+            return state
+        if event.event_type in {CAPABILITY_APPROVED, CAPABILITY_REVOKED}:
+            require_owner(event.actor, self.owner_identity_id, "change capability authorization")
+            _metadata_string(event, "capability_id")
             return state
         if event.event_type in {ARTIFACT_REGISTERED, ARTIFACT_REVISED}:
             return self._apply_artifact_event(state, event)

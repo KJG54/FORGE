@@ -21,6 +21,7 @@ class RunRecord(GovernanceRecord):
     worker: Actor
     adapter_reference: NonEmptyString | None = None
     capability_ids: tuple[SymbolicId, ...] = ()
+    capability_approval_ids: tuple[UUID, ...] = ()
     side_effect_class: SideEffectClass
     status: RunState
     started_at: UtcDateTime | None = None

@@ -128,6 +128,14 @@ class RepositoryLayout:
         return self.active_directory / "runs"
 
     @property
+    def capability_approval_directory(self) -> Path:
+        return self.active_directory / "capability-approvals"
+
+    @property
+    def capability_revocation_directory(self) -> Path:
+        return self.active_directory / "capability-revocations"
+
+    @property
     def artifact_directory(self) -> Path:
         return self.active_directory / "artifacts"
 

@@ -4,7 +4,8 @@ M3 Increment 3 introduces the neutral adapter boundary and its always-available 
 Increment 4 adds bounded discovery, diagnostics, and safe preparation for a separately installed
 Codex CLI. Increment 5 adds the symmetric Claude Code boundary. Increment 6 adds explicit,
 synchronous execution in disposable per-run workspaces and routes returned bundles through the
-existing untrusted import staging boundary.
+existing untrusted import staging boundary. Increment 7 adds the separate owner-controlled
+executable capability gate.
 
 ## Inspect selection
 
@@ -112,6 +113,15 @@ The flags and authentication probe follow Anthropic's official
 Execution is always explicit and never silently falls back to a different provider:
 
 ```console
+forge capability inspect agent.codex.execute
+forge capability approve agent.codex.execute \
+  --scope approved-for-version \
+  --rationale "Use this exact local Codex profile for bounded work"
+forge capability approve agent.codex.execute \
+  --scope approved-for-version \
+  --rationale "Use this exact local Codex profile for bounded work" \
+  --apply
+
 forge agent run discover --adapter codex \
   --constraint "Return only the declared discovery files" \
   --timeout 300
@@ -119,8 +129,15 @@ forge agent run discover --adapter codex \
 forge agent run discover --adapter claude --timeout 300
 ```
 
-The command requires a compatible, persistently authenticated local CLI. It creates an immutable
-governed run attributed to an `agent_adapter` actor, moves the step to `in_progress`, and creates
+The command requires a compatible, persistently authenticated local CLI and an active matching
+owner capability approval. Capability approval is preview-first and displays the exact provider,
+version, executable, fixed arguments, working-directory rule, environment allowlist, side effects,
+outputs, and duration before `--apply` persists it. `approved-once` is consumed when the governed
+run is created, even when provider launch later fails. `forge capability revoke <approval-id>
+--reason "..."` prevents future runs while preserving the approval and revocation history.
+
+After authorization, the command creates an immutable governed run attributed to an
+`agent_adapter` actor, binds the capability and approval IDs, moves the step to `in_progress`, and creates
 `.forge/local/runs/<run-id>/`. The provider can read the exact canonical context, copied
 digest-verified required inputs, and the result schema below `workspace/`; it must write all return
 files plus `result.json` below `workspace/result/`.
@@ -187,5 +204,6 @@ context derivation, governance checks, workspace materialization, run records, a
 Adapter output is never a decision, check, evidence, acceptance, or trusted project state.
 
 The interface objects are transient Python data structures. They are not persistence formats or
-exported schemas. Capability execution, executable pack trust, background services, provider APIs,
-stronger operating-system isolation, and automatic verification remain later boundaries.
+exported schemas. Capability approvals are separate durable governance records; pack-data trust
+cannot create them. Executable pack trust, background services, provider APIs, stronger
+operating-system isolation, and automatic verification remain later boundaries.

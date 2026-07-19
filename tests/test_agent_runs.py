@@ -9,9 +9,11 @@ import forge.core.agent_adapters as adapter_core
 from forge.adapters import AdapterOperationState, AgentAdapter, CodexAgentAdapter
 from forge.cli.app import app
 from forge.contracts.actors import ActorType
+from forge.contracts.capabilities import CapabilityTrustState
 from forge.contracts.state import RunState, StepState
 from forge.core.agent_runs import execute_agent_run
 from forge.core.authorization import owner_actor
+from forge.core.capabilities import approve_capability, revoke_capability_approval
 from forge.core.imports import apply_result_import
 from forge.core.lifecycle import create_initiative, load_active_initiative
 from forge.core.runs import show_run
@@ -112,6 +114,20 @@ def _register_codex(
     monkeypatch.setitem(registry, "codex", adapter)
 
 
+def _approve_codex(
+    initialized: InitializationResult,
+    *,
+    scope: CapabilityTrustState = CapabilityTrustState.APPROVED_ONCE,
+):
+    return approve_capability(
+        initialized.layout,
+        capability_id="agent.codex.execute",
+        scope=scope,
+        rationale="Allow bounded isolated test execution",
+        actor=owner_actor(initialized.configuration.owner),
+    ).approval
+
+
 def test_agent_run_stages_untrusted_output_then_completes_as_recorded_worker(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -121,6 +137,7 @@ def test_agent_run_stages_untrusted_output_then_completes_as_recorded_worker(
         monkeypatch,
         CodexAgentAdapter(command=_fake_codex_command(tmp_path)),
     )
+    _approve_codex(initialized)
     monkeypatch.setenv("OPENAI_API_KEY", "must-not-reach-provider")
 
     result = execute_agent_run(
@@ -191,6 +208,7 @@ def test_agent_run_cli_reports_staging_without_applying_files(
         monkeypatch,
         CodexAgentAdapter(command=_fake_codex_command(tmp_path)),
     )
+    _approve_codex(initialized)
 
     invoked = runner.invoke(
         app,
@@ -227,6 +245,7 @@ def test_agent_run_failure_is_audited_and_releases_step(
         monkeypatch,
         CodexAgentAdapter(command=_fake_codex_command(tmp_path, behavior=behavior)),
     )
+    _approve_codex(initialized)
 
     result = execute_agent_run(
         initialized.layout,
@@ -251,3 +270,141 @@ def test_agent_run_failure_is_audited_and_releases_step(
         for event in read_journal(initialized.layout.event_journal_file)
     ]
     assert event_types[-2:] == ["adapter-run-executed", "run-cancelled"]
+
+
+def test_agent_run_is_disabled_without_approval_and_once_is_consumed(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initialized = _initiative(tmp_path)
+    _register_codex(
+        monkeypatch,
+        CodexAgentAdapter(command=_fake_codex_command(tmp_path, behavior="wrong-source")),
+    )
+
+    with pytest.raises(ConflictError, match="is disabled"):
+        execute_agent_run(
+            initialized.layout,
+            step_id="discover",
+            requested_adapter_id="codex",
+            timeout_seconds=5,
+        )
+
+    _approve_codex(initialized)
+    failed = execute_agent_run(
+        initialized.layout,
+        step_id="discover",
+        requested_adapter_id="codex",
+        timeout_seconds=5,
+    )
+    assert failed.state is AdapterOperationState.FAILED
+    with pytest.raises(ConflictError, match="is disabled"):
+        execute_agent_run(
+            initialized.layout,
+            step_id="discover",
+            requested_adapter_id="codex",
+            timeout_seconds=5,
+        )
+
+
+def test_revoked_capability_approval_prevents_future_invocation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initialized = _initiative(tmp_path)
+    _register_codex(
+        monkeypatch,
+        CodexAgentAdapter(command=_fake_codex_command(tmp_path)),
+    )
+    approval = _approve_codex(
+        initialized,
+        scope=CapabilityTrustState.APPROVED_FOR_VERSION,
+    )
+    revoke_capability_approval(
+        initialized.layout,
+        approval_id=approval.id,
+        reason="Provider authority no longer required",
+        actor=owner_actor(initialized.configuration.owner),
+    )
+
+    with pytest.raises(ConflictError, match="is disabled"):
+        execute_agent_run(
+            initialized.layout,
+            step_id="discover",
+            requested_adapter_id="codex",
+            timeout_seconds=5,
+        )
+
+
+def test_capability_profile_drift_requires_new_owner_approval(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initialized = _initiative(tmp_path)
+    _register_codex(
+        monkeypatch,
+        CodexAgentAdapter(command=_fake_codex_command(tmp_path)),
+    )
+    _approve_codex(
+        initialized,
+        scope=CapabilityTrustState.APPROVED_FOR_PROJECT,
+    )
+    _register_codex(
+        monkeypatch,
+        CodexAgentAdapter(command=_fake_codex_command(tmp_path, behavior="wrong-source")),
+    )
+
+    with pytest.raises(ConflictError, match="is disabled"):
+        execute_agent_run(
+            initialized.layout,
+            step_id="discover",
+            requested_adapter_id="codex",
+            timeout_seconds=5,
+        )
+
+
+def test_capability_cli_previews_and_applies_exact_profile(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initialized = _initiative(tmp_path)
+    command = _fake_codex_command(tmp_path)
+    _register_codex(monkeypatch, CodexAgentAdapter(command=command))
+
+    preview = runner.invoke(
+        app,
+        [
+            "capability",
+            "approve",
+            "agent.codex.execute",
+            "--rationale",
+            "Bounded disposable execution",
+            "-C",
+            str(initialized.layout.root),
+        ],
+    )
+    assert preview.exit_code == 0, preview.stdout
+    assert f"Exact executable: {command[0]}" in preview.stdout
+    assert "Environment access:" in preview.stdout
+    assert "Side-effect class: repository_write" in preview.stdout
+    assert "Preview only" in preview.stdout
+
+    applied = runner.invoke(
+        app,
+        [
+            "capability",
+            "approve",
+            "agent.codex.execute",
+            "--rationale",
+            "Bounded disposable execution",
+            "--scope",
+            "approved-for-version",
+            "--apply",
+            "--idempotency-key",
+            "approve-fake-codex",
+            "-C",
+            str(initialized.layout.root),
+        ],
+    )
+    assert applied.exit_code == 0, applied.stdout
+    assert "Capability approval recorded:" in applied.stdout

@@ -381,6 +381,13 @@ class LocalCliAgentAdapter:
         authentication = "not-checked"
         if availability.available and compatibility.state is AdapterCompatibilityState.COMPATIBLE:
             authentication = self._authentication_state()
+        resolved = self._resolve_command()
+        executable = resolved.executable if resolved is not None else None
+        invocation_arguments: tuple[str, ...] = ()
+        if resolved is not None:
+            _, invocation_arguments = self._launch_command(
+                resolved, self._invocation_arguments
+            )
         return AdapterDiagnostic(
             adapter_id=self.adapter_id,
             display_name=self.display_name,
@@ -392,6 +399,13 @@ class LocalCliAgentAdapter:
             supports_cancellation=True,
             supports_output_capture=True,
             limitations=self._limitations,
+            executable=executable,
+            invocation_arguments=invocation_arguments,
+            environment_keys=tuple(
+                dict.fromkeys(
+                    (*_BASE_DIAGNOSTIC_ENVIRONMENT_KEYS, *self._diagnostic_environment_keys)
+                )
+            ),
         )
 
     def _version_observation(self) -> tuple[AdapterAvailability, str | None]:

@@ -10,7 +10,12 @@ from forge.contracts.actors import ActorType
 from forge.contracts.agents import AgentResult
 from forge.contracts.archives import AbandonmentRecord, ClosureRecord
 from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
-from forge.contracts.capabilities import SideEffectClass
+from forge.contracts.capabilities import (
+    CapabilityApproval,
+    CapabilityRevocation,
+    CapabilityTrustState,
+    SideEffectClass,
+)
 from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, DecisionSupersession
 from forge.contracts.events import AuditEvent
 from forge.contracts.idempotency import (
@@ -48,6 +53,8 @@ from forge.core.transitions import (
     ADAPTER_RUN_EXECUTED,
     ARTIFACT_REGISTERED,
     ARTIFACT_REVISED,
+    CAPABILITY_APPROVED,
+    CAPABILITY_REVOKED,
     CHECK_RECORDED,
     CLAIM_RECORDED,
     COMMAND_RECOVERED,
@@ -141,6 +148,14 @@ def _acceptance_path(layout: RepositoryLayout, acceptance_id: UUID) -> Path:
 
 def _revocation_path(layout: RepositoryLayout, revocation_id: UUID) -> Path:
     return layout.revocation_directory / f"{revocation_id}.json"
+
+
+def _capability_approval_path(layout: RepositoryLayout, approval_id: UUID) -> Path:
+    return layout.capability_approval_directory / f"{approval_id}.json"
+
+
+def _capability_revocation_path(layout: RepositoryLayout, revocation_id: UUID) -> Path:
+    return layout.capability_revocation_directory / f"{revocation_id}.json"
 
 
 def _decision_path(layout: RepositoryLayout, decision_id: UUID) -> Path:
@@ -285,6 +300,8 @@ def validate_governed_records(
     expected_evidence: set[Path] = set()
     expected_acceptances: set[Path] = set()
     expected_revocations: set[Path] = set()
+    expected_capability_approvals: set[Path] = set()
+    expected_capability_revocations: set[Path] = set()
     expected_decisions: set[Path] = set()
     expected_supersessions: set[Path] = set()
     expected_imported_results: set[Path] = set()
@@ -307,6 +324,9 @@ def validate_governed_records(
     acceptance_steps: dict[UUID, str] = {}
     decisions_by_id: dict[UUID, DecisionRecord] = {}
     runs_by_id: dict[UUID, RunRecord] = {}
+    capability_approvals_by_id: dict[UUID, CapabilityApproval] = {}
+    revoked_capability_approval_ids: set[UUID] = set()
+    used_capability_approval_ids: set[UUID] = set()
     adapter_execution_run_ids: set[UUID] = set()
     revoked_acceptance_ids: set[UUID] = set()
     stale_ids: set[UUID] = set()
@@ -315,7 +335,59 @@ def validate_governed_records(
     initiative = load_record(layout.initiative_file, Initiative)
 
     for event in events:
-        if event.event_type in {ARTIFACT_REGISTERED, ARTIFACT_REVISED}:
+        if event.event_type == CAPABILITY_APPROVED:
+            approval_id = _uuid_metadata(event, "approval_id")
+            path = _capability_approval_path(layout, approval_id)
+            expected_capability_approvals.add(path)
+            approval = load_record(path, CapabilityApproval)
+            _validate_common(approval, event, approval_id)
+            record_digest = canonical_json_digest(approval.model_dump(mode="json"))
+            if (
+                approval.id != approval_id
+                or approval.owner_actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or approval.approval_event_id != event.id
+                or approval.capability_id != event.metadata.get("capability_id")
+                or approval.capability_version != event.metadata.get("capability_version")
+                or approval.provider_version != event.metadata.get("provider_version")
+                or approval.approval_scope.value != event.metadata.get("approval_scope")
+                or approval.capability_digest not in event.affected_digests
+                or record_digest not in event.affected_digests
+                or approval_id in capability_approvals_by_id
+                or approval.affected_record_ids != (approval_id,)
+                or approval.affected_digests != (approval.capability_digest,)
+            ):
+                raise IntegrityError(f"Capability approval does not match event {event.id}")
+            capability_approvals_by_id[approval_id] = approval
+        elif event.event_type == CAPABILITY_REVOKED:
+            approval_id = _uuid_metadata(event, "approval_id")
+            revocation_id = _uuid_metadata(event, "revocation_id")
+            path = _capability_revocation_path(layout, revocation_id)
+            expected_capability_revocations.add(path)
+            revocation = load_record(path, CapabilityRevocation)
+            _validate_common(revocation, event, revocation_id)
+            approval = capability_approvals_by_id.get(approval_id)
+            record_digest = canonical_json_digest(revocation.model_dump(mode="json"))
+            if (
+                approval is None
+                or approval_id in revoked_capability_approval_ids
+                or revocation.id != revocation_id
+                or revocation.approval_id != approval_id
+                or revocation.owner_actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or revocation.revocation_event_id != event.id
+                or event.metadata.get("capability_id") != approval.capability_id
+                or approval_id not in event.affected_record_ids
+                or approval.capability_digest not in event.affected_digests
+                or record_digest not in event.affected_digests
+                or revocation.affected_record_ids != (approval_id,)
+                or revocation.affected_digests != (approval.capability_digest,)
+            ):
+                raise IntegrityError(f"Capability revocation does not match event {event.id}")
+            revoked_capability_approval_ids.add(approval_id)
+        elif event.event_type in {ARTIFACT_REGISTERED, ARTIFACT_REVISED}:
             artifact_id = _uuid_metadata(event, "artifact_id")
             revision_id = _uuid_metadata(event, "revision_id")
             revision_number = event.metadata.get("revision_number")
@@ -596,6 +668,14 @@ def validate_governed_records(
                 or run.worker.actor_type is not ActorType.AGENT_ADAPTER
                 or event.actor != run.worker
                 or event.metadata.get("adapter_id") != run.adapter_reference
+                or event.metadata.get("capability_id")
+                != (run.capability_ids[0] if len(run.capability_ids) == 1 else None)
+                or event.metadata.get("capability_approval_id")
+                != (
+                    str(run.capability_approval_ids[0])
+                    if len(run.capability_approval_ids) == 1
+                    else None
+                )
                 or event.metadata.get("step_id") != run.step_id
                 or execution_state not in {"succeeded", "failed", "cancelled"}
                 or isinstance(exit_code, bool)
@@ -604,7 +684,7 @@ def validate_governed_records(
                 or (execution_state == "succeeded") != (staged_result_id is not None)
                 or not staged_id_valid
                 or event.run_id in adapter_execution_run_ids
-                or event.affected_record_ids != (run.id,)
+                or event.affected_record_ids != (run.id, *run.capability_approval_ids)
                 or event.affected_digests != (run.input_context_digest,)
             ):
                 raise IntegrityError(f"Adapter execution event {event.id} violates run policy")
@@ -1314,14 +1394,44 @@ def validate_governed_records(
                 expected_runs.add(run_path)
                 run = load_record(run_path, RunRecord)
                 _validate_common(run, event, run.id)
+                bound_approvals = tuple(
+                    capability_approvals_by_id.get(item)
+                    for item in run.capability_approval_ids
+                )
                 if (
                     run.id != event.run_id
                     or run.worker != event.actor
                     or run.step_id != step.id
                     or run.status is not RunState.RUNNING
                     or run.started_at is None
+                    or len(run.capability_ids) != len(run.capability_approval_ids)
+                    or any(item is None for item in bound_approvals)
+                    or set(run.capability_approval_ids) & revoked_capability_approval_ids
+                    or any(
+                        approval is not None
+                        and approval.capability_id != capability_id
+                        for capability_id, approval in zip(
+                            run.capability_ids, bound_approvals, strict=True
+                        )
+                    )
+                    or any(
+                        approval is not None
+                        and approval.side_effect_class is not run.side_effect_class
+                        for approval in bound_approvals
+                    )
+                    or any(
+                        approval is not None
+                        and approval.approval_scope is CapabilityTrustState.APPROVED_ONCE
+                        and approval.id in used_capability_approval_ids
+                        for approval in bound_approvals
+                    )
+                    or not set(run.capability_approval_ids).issubset(
+                        event.affected_record_ids
+                    )
+                    or (run.adapter_reference is None and bool(run.capability_ids))
                 ):
                     raise IntegrityError(f"Run record does not match begin event {event.id}")
+                used_capability_approval_ids.update(run.capability_approval_ids)
                 runs_by_id[run.id] = run
             current_outputs = {
                 revision_id
@@ -1401,6 +1511,14 @@ def validate_governed_records(
     _validate_directory(layout.evidence_directory, expected_evidence)
     _validate_directory(layout.acceptance_directory, expected_acceptances)
     _validate_directory(layout.revocation_directory, expected_revocations)
+    _validate_directory(
+        layout.capability_approval_directory,
+        expected_capability_approvals,
+    )
+    _validate_directory(
+        layout.capability_revocation_directory,
+        expected_capability_revocations,
+    )
     _validate_directory(layout.decision_directory, expected_decisions)
     _validate_directory(layout.decision_supersession_directory, expected_supersessions)
     _validate_directory(layout.imported_result_directory, expected_imported_results)

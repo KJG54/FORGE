@@ -231,3 +231,16 @@ import, ordinary artifact revisions and content-addressed objects preserve accep
 under the existing transaction rules. The synchronous command uses normal mutation locking and
 idempotency receipts, but an unexpected interruption is diagnosed rather than automatically
 restarting a model process.
+
+## M3 Increment 7 capability authorization
+
+`.forge/active/capability-approvals/<approval-id>.json` stores the configured owner's immutable
+authorization of one exact inspected capability profile. `.forge/active/capability-revocations/`
+retains later immutable revocations. Their `capability-approved` and `capability-revoked` events are
+state-neutral governance history and are included in terminal archives.
+
+An executable adapter `RunRecord` now binds matching `capability_ids` and
+`capability_approval_ids`. One-time use is derived from the existence of that immutable run record,
+so no mutable counter can be rolled back or reused after a failed launch. Replay and cross-record
+validation require approval events to precede the run, reject prior revocation, and reject a second
+use of `approved-once`. Local provider output remains below `.forge/local/` and outside authority.

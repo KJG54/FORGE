@@ -58,6 +58,8 @@ _ACTIVE_TOP_LEVEL = {
     "acceptance",
     "abandonment",
     "artifacts",
+    "capability-approvals",
+    "capability-revocations",
     "checks",
     "claims",
     "command-recovery-records",

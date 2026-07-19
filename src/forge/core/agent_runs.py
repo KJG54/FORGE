@@ -16,6 +16,7 @@ from forge.contracts.capabilities import SideEffectClass
 from forge.contracts.events import AuditEvent
 from forge.core.agent_adapters import AdapterSelection, select_agent_adapter
 from forge.core.agent_context import build_agent_context
+from forge.core.capabilities import require_capability_approval
 from forge.core.lifecycle import begin_manual_run, load_active_initiative
 from forge.core.runs import cancel_run
 from forge.core.transitions import ADAPTER_RUN_EXECUTED
@@ -147,6 +148,7 @@ def execute_agent_run(
     if selection.adapter.adapter_id == "manual":
         reason = selection.fallback_reason or "manual adapter does not start a process"
         raise ConflictError(f"{reason}; use 'forge handoff' instead")
+    approval = require_capability_approval(layout, selection)
     context = build_agent_context(layout)
     if context.active_step.id != step_id:
         raise ConflictError(
@@ -162,6 +164,8 @@ def execute_agent_run(
         side_effect_class=SideEffectClass.REPOSITORY_WRITE,
         adapter_reference=selection.adapter.adapter_id,
         input_context_digest=context_digest,
+        capability_ids=(approval.capability_id,),
+        capability_approval_ids=(approval.id,),
     )
     run_id = begun.run.id
     run_directory = layout.run_directory / str(run_id)
@@ -233,10 +237,12 @@ def execute_agent_run(
         actor=actor,
         run_id=run_id,
         authorization_basis="approved adapter executed in a disposable isolated workspace",
-        affected_record_ids=(run_id,),
+        affected_record_ids=(run_id, approval.id),
         affected_digests=(context_digest,),
         metadata={
             "adapter_id": selection.adapter.adapter_id,
+            "capability_approval_id": str(approval.id),
+            "capability_id": approval.capability_id,
             "exit_code": exit_code,
             "state": state.value,
             "step_id": step_id,

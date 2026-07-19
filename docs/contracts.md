@@ -132,3 +132,9 @@ source run ID, timeout, and captured exit status. The existing `RunRecord`, `Aud
 return bundle without new fields. `adapter-run-executed` is a new journal event type interpreted by
 the existing reducer and record validator. No public model or JSON Schema changes, so the exported
 schema bundle count remains unchanged.
+
+M3 Increment 7 adds `CapabilityApproval` and `CapabilityRevocation` public contracts. Approval binds
+the capability definition digest, provider and detected version, resolved executable, exact fixed
+arguments, working-directory rules, environment access, side-effect class, owner rationale, scope,
+and approval event. Revocation binds a later owner event and reason to the retained approval.
+`RunRecord.capability_approval_ids` makes executable authorization auditable at the attempt boundary.
