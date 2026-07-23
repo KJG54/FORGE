@@ -5,7 +5,28 @@ Increment 4 adds bounded discovery, diagnostics, and safe preparation for a sepa
 Codex CLI. Increment 5 adds the symmetric Claude Code boundary. Increment 6 adds explicit,
 synchronous execution in disposable per-run workspaces and routes returned bundles through the
 existing untrusted import staging boundary. Increment 7 adds the separate owner-controlled
-executable capability gate.
+executable capability gate. Increment 9 closes M3 with a cross-adapter acceptance scenario and the
+explicit compatibility matrix below.
+
+## Built-in compatibility matrix
+
+| Behavior | Manual | Codex CLI | Claude Code |
+|---|---|---|---|
+| Availability | Always built in | Resolved from `PATH` or `FORGE_CODEX_EXECUTABLE` | Resolved from `PATH` or `FORGE_CLAUDE_EXECUTABLE` |
+| Compatibility proof | No external features required | Stable `codex exec` flags must be visible | Stable non-interactive flags must be visible |
+| Authentication | Not required | Persisted `codex login status` | Persisted `claude auth status` |
+| Missing/incompatible selection | Remains manual | Visible fallback to manual handoff | Visible fallback to manual handoff |
+| Context | Exact canonical JSON digest | Same exact canonical JSON through stdin | Same exact canonical JSON through stdin |
+| Process execution | Unsupported | Explicit synchronous disposable-workspace run | Explicit synchronous disposable-workspace run |
+| Provider write surface | Portable return bundle | Dedicated disposable `result/` directory | Dedicated disposable `result/` directory |
+| Executable approval | Not applicable | Exact `agent.codex.execute` profile required | Exact `agent.claude.execute` profile required |
+| Result handling | `AgentResult` preview and explicit import | Same untrusted staging and explicit import | Same untrusted staging and explicit import |
+| Lifecycle authority | None | Claim only; no owner authority | Claim only; no owner authority |
+
+Fallback applies to adapter selection and handoff preparation. An explicit `forge agent run
+--adapter <provider>` never silently executes a different provider: incompatibility,
+authentication failure, absent approval, revocation, consumption, or profile drift refuses the
+attempt before provider start.
 
 ## Inspect selection
 

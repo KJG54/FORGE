@@ -94,6 +94,9 @@ semantic-version commitments begin at v1.0.0.
 - M3 owner-controlled pack data-trust lifecycle with exact locked-pack preview, immutable
   journal-backed trust and untrust decisions, effective-state replay, workflow mutation blocking,
   tamper detection, safe retrust and abandonment, and no executable-authority implication.
+- M3 replaceable-worker acceptance proving identical manual, Codex, and Claude context, untrusted
+  import, artifact, claim, and lifecycle boundaries; explicit worker acceptance refusal; a built-in
+  compatibility matrix; and milestone exit-criteria evidence.
 
 ### Limitations
 
@@ -105,5 +108,5 @@ semantic-version commitments begin at v1.0.0.
   hybrid Git policy; it does not alter or repair governed initiative history.
 - Provider APIs, executable pack providers, validator execution, background execution,
   cross-process live cancellation, automatic crash resume, hostile-code isolation guarantees, and
-  automatic verification remain deferred beyond M3 Increment 8.
+  automatic verification remain deferred to later milestones.
 - Project and distribution naming remain provisional.

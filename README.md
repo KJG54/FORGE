@@ -10,8 +10,7 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Pre-alpha foundation:** The name, distribution name, public marks, contracts, and CLI remain
-> provisional. Milestones 1 and 2 are accepted and Milestone 3 implementation is in progress; this
-> is not a public production release.
+> provisional. Milestones 1, 2, and 3 are accepted. This is not a public production release.
 
 ## Current capabilities
 
@@ -152,6 +151,13 @@ decisions to journal-backed history, and never grant executable authority. Withd
 blocks workflow-dependent mutation while preserving inspection, retrust, run cancellation, and
 explicit abandonment.
 
+M3 Increment 9 closes the implementation milestone with an end-to-end acceptance path proving that
+manual handoff, Codex, and Claude share the same context, untrusted import, artifact, claim, and
+lifecycle rules. It also records the built-in compatibility matrix, audits every M3 exit criterion,
+and preserves the boundary that workers cannot approve gates or mutate governed lifecycle state
+directly. The complete evidence and limitations are recorded in the
+[M3 evidence report](docs/milestones/m3-report.md).
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -253,6 +259,8 @@ forge --help
 - [M3 Increment 6 governed adapter-execution boundary](docs/milestones/m3-increment-6.md)
 - [M3 Increment 7 executable-capability boundary](docs/milestones/m3-increment-7.md)
 - [M3 Increment 8 pack-data-trust lifecycle](docs/milestones/m3-increment-8.md)
+- [M3 Increment 9 replaceable-worker acceptance](docs/milestones/m3-increment-9.md)
+- [M3 evidence report](docs/milestones/m3-report.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

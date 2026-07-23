@@ -142,3 +142,7 @@ and approval event. Revocation binds a later owner event and reason to the retai
 M3 Increment 8 reuses the existing `PackTrustDecision` and `PackTrustState` public contracts. Later
 trust and untrust records use the same immutable model as initiative creation and are linked through
 state-neutral `pack-trust-changed` events. No public model or JSON Schema changes are required.
+
+M3 Increment 9 adds no persisted contract or exported schema. Its acceptance scenario composes the
+existing context, handoff, run, capability, result, artifact, claim, audit event, and materialized
+state contracts to prove that all built-in workers share one governance boundary.
