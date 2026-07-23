@@ -7,6 +7,7 @@ from pydantic import Field, model_validator
 
 from forge.contracts.actors import OwnerIdentity
 from forge.contracts.base import ForgeModel, NonEmptyString, RepositoryRelativePath, VersionedModel
+from forge.contracts.capabilities import LocalValidatorDefinition
 from forge.contracts.state import ExplanationProfile
 
 
@@ -41,6 +42,17 @@ class AgentConfiguration(ForgeModel):
     preferred_adapter: NonEmptyString | None = None
 
 
+class CapabilityConfiguration(ForgeModel):
+    local_validators: tuple[LocalValidatorDefinition, ...] = ()
+
+    @model_validator(mode="after")
+    def validate_unique_validator_ids(self) -> "CapabilityConfiguration":
+        identifiers = [item.id for item in self.local_validators]
+        if len(identifiers) != len(set(identifiers)):
+            raise ValueError("local validator IDs must be unique")
+        return self
+
+
 class SecurityConfiguration(ForgeModel):
     secret_path_patterns: tuple[NonEmptyString, ...] = (
         ".env",
@@ -56,6 +68,7 @@ class ProjectConfiguration(VersionedModel):
     artifacts: ArtifactConfiguration = ArtifactConfiguration()
     packs: PackConfiguration = PackConfiguration()
     agents: AgentConfiguration = AgentConfiguration()
+    capabilities: CapabilityConfiguration = CapabilityConfiguration()
     security: SecurityConfiguration = SecurityConfiguration()
 
     @model_validator(mode="after")

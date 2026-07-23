@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import shutil
 from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 from uuid import UUID, uuid4
 
 from forge import __version__
@@ -16,6 +18,7 @@ from forge.contracts.capabilities import (
     CapabilityDefinition,
     CapabilityRevocation,
     CapabilityTrustState,
+    LocalValidatorDefinition,
     SideEffectClass,
 )
 from forge.contracts.events import AuditEvent
@@ -25,6 +28,8 @@ from forge.core.authorization import require_owner
 from forge.core.lifecycle import ActiveInitiative, load_active_initiative
 from forge.core.transitions import CAPABILITY_APPROVED, CAPABILITY_REVOKED
 from forge.errors import ConfigurationError, ConflictError, IntegrityError, SecurityError
+from forge.security.paths import resolve_repository_path
+from forge.storage.configuration import load_configuration
 from forge.storage.journal import read_journal
 from forge.storage.objects import canonical_json_digest
 from forge.storage.records import load_record, write_record
@@ -46,6 +51,7 @@ _OUTPUT_LOCATIONS = (
 
 @dataclass(frozen=True)
 class CapabilityInspection:
+    capability_type: Literal["agent", "validator"]
     definition: CapabilityDefinition
     definition_digest: str
     provider_version: str | None
@@ -131,6 +137,7 @@ def _inspection_from_diagnostic(
         verification_hooks=("staged-result-validation",),
     )
     return CapabilityInspection(
+        capability_type="agent",
         definition=definition,
         definition_digest=canonical_json_digest(definition.model_dump(mode="json")),
         provider_version=diagnostic.detected_version,
@@ -145,16 +152,132 @@ def _inspection_from_diagnostic(
     )
 
 
-def list_capabilities(layout: RepositoryLayout) -> tuple[CapabilityInspection, ...]:
+def _resolve_local_executable(
+    layout: RepositoryLayout,
+    declared_executable: str,
+) -> tuple[str | None, str]:
+    candidate = Path(declared_executable)
+    try:
+        if candidate.is_absolute():
+            resolved = candidate.resolve(strict=True)
+        elif "/" in declared_executable or "\\" in declared_executable:
+            resolved = resolve_repository_path(
+                layout.root,
+                declared_executable,
+                must_exist=True,
+            )
+        else:
+            discovered = shutil.which(declared_executable)
+            if discovered is None:
+                return None, f"Executable {declared_executable!r} was not found on PATH"
+            resolved = Path(discovered).resolve(strict=True)
+    except (OSError, RuntimeError, SecurityError) as error:
+        return None, f"Executable {declared_executable!r} cannot be resolved safely: {error}"
+    if not resolved.is_file():
+        return None, f"Resolved executable is not a regular file: {resolved}"
+    if resolved.suffix.lower() in {".bat", ".cmd"}:
+        return None, (
+            "Windows batch command shims are not accepted for validators; declare a native "
+            "executable and argument vector"
+        )
+    return str(resolved), f"Resolved declared local executable to {resolved}"
+
+
+def _inspection_from_local_validator(
+    layout: RepositoryLayout,
+    validator: LocalValidatorDefinition,
+) -> CapabilityInspection:
+    executable, availability_detail = _resolve_local_executable(
+        layout,
+        validator.executable,
+    )
+    working_directory_available = True
+    if validator.working_directory is not None:
+        try:
+            working_directory = resolve_repository_path(
+                layout.root,
+                validator.working_directory,
+                must_exist=True,
+            )
+        except SecurityError as error:
+            working_directory_available = False
+            availability_detail = (
+                f"{availability_detail}; working directory cannot be resolved safely: {error}"
+            )
+        else:
+            if not working_directory.is_dir():
+                working_directory_available = False
+                availability_detail = (
+                    f"{availability_detail}; working directory is not a directory: "
+                    f"{working_directory}"
+                )
+    working_directory_rules = (
+        (validator.working_directory,) if validator.working_directory is not None else ()
+    )
+    definition = CapabilityDefinition(
+        id=validator.id,
+        version=validator.version,
+        provider=validator.provider,
+        purpose=validator.purpose,
+        input_schema_reference="artifact-revision-set",
+        output_schema_reference="check-result",
+        executable=executable,
+        arguments=validator.arguments,
+        working_directory_rules=working_directory_rules,
+        timeout_seconds=validator.timeout_seconds,
+        side_effect_class=validator.side_effect_class,
+        authorization_class="owner-capability-approval",
+        trust_requirement=CapabilityTrustState.DISABLED,
+        verification_hooks=validator.expected_outputs,
+    )
+    return CapabilityInspection(
+        capability_type="validator",
+        definition=definition,
+        definition_digest=canonical_json_digest(definition.model_dump(mode="json")),
+        provider_version=validator.provider_version,
+        environment_access=validator.environment_access,
+        output_locations=validator.expected_outputs,
+        availability_detail=availability_detail,
+        compatible=executable is not None and working_directory_available,
+    )
+
+
+def _local_validator_inspections(
+    layout: RepositoryLayout,
+) -> tuple[CapabilityInspection, ...]:
+    configuration = load_configuration(layout.configuration_file)
     return tuple(
+        _inspection_from_local_validator(layout, validator)
+        for validator in configuration.capabilities.local_validators
+    )
+
+
+def list_capabilities(layout: RepositoryLayout) -> tuple[CapabilityInspection, ...]:
+    agent_inspections = tuple(
         _inspection_from_diagnostic(adapter_id, _diagnostic(layout, adapter_id))
         for adapter_id in sorted(_ADAPTER_CAPABILITIES)
+    )
+    return tuple(
+        sorted(
+            (*agent_inspections, *_local_validator_inspections(layout)),
+            key=lambda item: item.definition.id,
+        )
     )
 
 
 def inspect_capability(layout: RepositoryLayout, capability_id: str) -> CapabilityInspection:
-    adapter_id = _adapter_id_for_capability(capability_id.strip())
-    return _inspection_from_diagnostic(adapter_id, _diagnostic(layout, adapter_id))
+    normalized = capability_id.strip()
+    if normalized in _ADAPTER_CAPABILITIES.values():
+        adapter_id = _adapter_id_for_capability(normalized)
+        return _inspection_from_diagnostic(adapter_id, _diagnostic(layout, adapter_id))
+    matches = [
+        item
+        for item in _local_validator_inspections(layout)
+        if item.definition.id == normalized
+    ]
+    if not matches:
+        raise ConflictError(f"Unknown capability {normalized!r}")
+    return matches[0]
 
 
 def inspect_selected_capability(
@@ -271,6 +394,11 @@ def _profile_matches(
     )
     if not exact_profile or approval.capability_id != definition.id:
         return False
+    if inspection.capability_type == "validator":
+        return (
+            approval.capability_version == definition.version
+            and approval.capability_digest == inspection.definition_digest
+        )
     if approval.approval_scope is CapabilityTrustState.APPROVED_FOR_PROJECT:
         return True
     return (

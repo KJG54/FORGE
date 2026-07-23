@@ -10,7 +10,8 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Pre-alpha foundation:** The name, distribution name, public marks, contracts, and CLI remain
-> provisional. Milestones 1, 2, and 3 are accepted. This is not a public production release.
+> provisional. Milestones 1, 2, and 3 are accepted; Milestone 4 implementation is in progress.
+> This is not a public production release.
 
 ## Current capabilities
 
@@ -158,6 +159,12 @@ and preserves the boundary that workers cannot approve gates or mutate governed 
 directly. The complete evidence and limitations are recorded in the
 [M3 evidence report](docs/milestones/m3-report.md).
 
+M4 Increment 1 adds strict tracked declarations for disabled-by-default local validators. Owners
+can inspect and approve the exact resolved executable, ordered argument vector, working directory,
+timeout, expected outputs, environment access, and side-effect risk. Validator declarations never
+use shell strings, trusted-data packs cannot register or authorize them, and this increment stops
+before any validator process, check result, evidence, or lifecycle transition is created.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -233,6 +240,7 @@ forge --help
 - [Hybrid Git collaboration policy](docs/git-policy.md)
 - [Canonical neutral agent context](docs/agent-context.md)
 - [Neutral agent adapters and manual fallback](docs/adapters.md)
+- [Trusted local validator declarations](docs/validators.md)
 - [Repository initialization](docs/user-guide/initialization.md)
 - [M1 internal execution increments](docs/milestones/m1-execution-increments.md)
 - [M1 evidence report](docs/milestones/m1-report.md)
@@ -261,6 +269,7 @@ forge --help
 - [M3 Increment 8 pack-data-trust lifecycle](docs/milestones/m3-increment-8.md)
 - [M3 Increment 9 replaceable-worker acceptance](docs/milestones/m3-increment-9.md)
 - [M3 evidence report](docs/milestones/m3-report.md)
+- [M4 Increment 1 declarative-validator boundary](docs/milestones/m4-increment-1.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

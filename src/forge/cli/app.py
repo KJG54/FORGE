@@ -165,6 +165,7 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
 def _echo_capability_inspection(inspection: CapabilityInspection) -> None:
     definition = inspection.definition
     typer.echo(f"Capability: {definition.id}@{definition.version}")
+    typer.echo(f"Capability type: {inspection.capability_type}")
     typer.echo(f"Definition digest: {inspection.definition_digest}")
     typer.echo(f"Provider: {definition.provider}")
     typer.echo(f"Provider version: {inspection.provider_version or '<unknown>'}")
@@ -172,24 +173,35 @@ def _echo_capability_inspection(inspection: CapabilityInspection) -> None:
     typer.echo("Arguments:")
     for argument in definition.arguments:
         typer.echo(f"- {argument}")
-    typer.echo(
-        "Argument construction: fixed FORGE adapter vector; Windows command shims include "
-        "the inspected cmd.exe /c vector"
-    )
+    if inspection.capability_type == "agent":
+        typer.echo(
+            "Argument construction: fixed FORGE adapter vector; Windows command shims include "
+            "the inspected cmd.exe /c vector"
+        )
+    else:
+        typer.echo("Argument construction: declared argument vector; no shell string")
     typer.echo("Working-directory rules:")
-    for rule in definition.working_directory_rules:
-        typer.echo(f"- {rule}/<run-id>/workspace")
+    if inspection.capability_type == "validator":
+        if definition.working_directory_rules:
+            for rule in definition.working_directory_rules:
+                typer.echo(f"- repository-relative {rule}")
+        else:
+            typer.echo("- repository root")
+    else:
+        for rule in definition.working_directory_rules:
+            typer.echo(f"- {rule}/<run-id>/workspace")
+    typer.echo(f"Timeout: {definition.timeout_seconds} seconds")
     typer.echo("Environment access:")
     for key in inspection.environment_access:
         typer.echo(f"- {key}")
     typer.echo(f"Side-effect class: {definition.side_effect_class.value}")
-    typer.echo("Output locations:")
+    typer.echo("Expected outputs:")
     for location in inspection.output_locations:
         typer.echo(f"- {location}")
     typer.echo("Approval duration choices:")
     for duration in inspection.approval_durations:
         typer.echo(f"- {duration}")
-    typer.echo(f"Execution readiness: {'ready' if inspection.compatible else 'disabled'}")
+    typer.echo(f"Approval readiness: {'ready' if inspection.compatible else 'disabled'}")
     typer.echo(f"Availability: {inspection.availability_detail}")
 
 

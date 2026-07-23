@@ -29,6 +29,7 @@ from forge.contracts.capabilities import (
     CapabilityDefinition,
     CapabilityRevocation,
     CapabilityTrustState,
+    LocalValidatorDefinition,
     SideEffectClass,
 )
 from forge.contracts.configuration import ProjectConfiguration
@@ -119,6 +120,7 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "migration-record": MigrationRecord,
     "journal-recovery-record": JournalRecoveryRecord,
     "lock-remediation-record": LockRemediationRecord,
+    "local-validator-definition": LocalValidatorDefinition,
     "owner-identity": OwnerIdentity,
     "pack-manifest": PackManifest,
     "pack-trust-decision": PackTrustDecision,
@@ -184,6 +186,7 @@ __all__ = [
     "JournalDamageCondition",
     "JournalRecoveryRecord",
     "JournalRecoverySnapshotCondition",
+    "LocalValidatorDefinition",
     "LockRemediationRecord",
     "MaterializedState",
     "MigrationRecord",

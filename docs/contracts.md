@@ -146,3 +146,9 @@ state-neutral `pack-trust-changed` events. No public model or JSON Schema change
 M3 Increment 9 adds no persisted contract or exported schema. Its acceptance scenario composes the
 existing context, handoff, run, capability, result, artifact, claim, audit event, and materialized
 state contracts to prove that all built-in workers share one governance boundary.
+
+M4 Increment 1 adds the public `LocalValidatorDefinition` contract and nests those declarations
+under `ProjectConfiguration.capabilities.local_validators`. The definition contains only an
+executable plus ordered arguments—never a shell string—and binds working-directory, timeout,
+expected-output, environment-name, and side-effect-risk metadata. Existing capability approval and
+revocation contracts remain unchanged.

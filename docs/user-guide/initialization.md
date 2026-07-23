@@ -39,5 +39,9 @@ forge config validate
 forge config show
 ```
 
+M4 local validator declarations also live in tracked `forge.yaml`. They contain executable
+profiles and environment-variable names but never credentials or shell command strings; see
+[Trusted Local Validator Declarations](../validators.md).
+
 Initialization creates an empty `.forge/active/` directory. It does not create `events.jsonl`,
 `state.json`, an initiative, or any lifecycle record; those belong to later M1 increments.

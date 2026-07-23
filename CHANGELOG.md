@@ -97,6 +97,10 @@ semantic-version commitments begin at v1.0.0.
 - M3 replaceable-worker acceptance proving identical manual, Codex, and Claude context, untrusted
   import, artifact, claim, and lifecycle boundaries; explicit worker acceptance refusal; a built-in
   compatibility matrix; and milestone exit-criteria evidence.
+- M4 declarative local validator capabilities with strict tracked profiles, separate executable and
+  argument vectors, bounded working directory/timeout/outputs/environment/risk metadata,
+  non-executing inspection, exact owner approval, profile-drift invalidation, and continued
+  separation from trusted-data packs and check execution.
 
 ### Limitations
 
