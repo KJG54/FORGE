@@ -34,7 +34,7 @@ _COMMAND_PATTERN = re.compile(r"^[a-z][a-z0-9]*(?:[-_.][a-z0-9]+)*$")
 _REQUEST_CONTEXT: ContextVar[IdempotencyEventMetadata | None] = ContextVar(
     "forge_idempotency_request", default=None
 )
-type JsonValue = None | bool | int | float | str | list[JsonValue] | dict[str, JsonValue]
+type JsonValue = bool | int | float | str | list[JsonValue] | dict[str, JsonValue] | None
 
 
 @dataclass(frozen=True)
