@@ -36,6 +36,7 @@ class StatusReport:
     abandonment: AbandonmentRecord | None = None
     archive_summaries: tuple[ArchiveSummary, ...] = ()
     pack_trust_state: PackTrustState | None = None
+    effective_scope_summary: str | None = None
 
 
 def inspect_status(
@@ -50,6 +51,8 @@ def inspect_status(
         archived_ids = tuple(summary.initiative_id for summary in archive_summaries)
         if archive_id is not None:
             archived = load_archive(layout, archive_id)
+            from forge.core.scope_amendments import effective_scope_summary
+
             return StatusReport(
                 repository_state=RepositoryState.INITIALIZED,
                 integrity_state=IntegrityState.HEALTHY,
@@ -63,6 +66,7 @@ def inspect_status(
                 abandonment=archived.abandonment,
                 archive_summaries=archive_summaries,
                 pack_trust_state=archived.active.pack_trust.trust_state,
+                effective_scope_summary=effective_scope_summary(archived.active),
             )
     except IntegrityError as error:
         return StatusReport(
@@ -149,6 +153,8 @@ def inspect_status(
             if active.state.lifecycle_state is InitiativeLifecycleState.CLOSED
             else "abandon"
         )
+        from forge.core.scope_amendments import effective_scope_summary
+
         return StatusReport(
             repository_state=RepositoryState.INITIALIZED,
             integrity_state=IntegrityState.INTEGRITY_ERROR,
@@ -163,8 +169,11 @@ def inspect_status(
             archived_initiative_ids=archived_ids,
             archive_summaries=archive_summaries,
             pack_trust_state=active.pack_trust.trust_state,
+            effective_scope_summary=effective_scope_summary(active),
         )
     if active.pack_trust.trust_state is PackTrustState.UNTRUSTED:
+        from forge.core.scope_amendments import effective_scope_summary
+
         run_actions = tuple(
             f"run-cancel:{run_id}" for run_id in active.state.active_run_ids
         )
@@ -186,6 +195,7 @@ def inspect_status(
             archived_initiative_ids=archived_ids,
             archive_summaries=archive_summaries,
             pack_trust_state=active.pack_trust.trust_state,
+            effective_scope_summary=effective_scope_summary(active),
         )
     from forge.core.artifacts import list_artifacts
 
@@ -214,6 +224,8 @@ def inspect_status(
             *blockers,
         )
         next_actions = ("migrate",)
+    from forge.core.scope_amendments import effective_scope_summary
+
     return StatusReport(
         repository_state=RepositoryState.INITIALIZED,
         integrity_state=active.state.integrity_state,
@@ -224,4 +236,5 @@ def inspect_status(
         archived_initiative_ids=archived_ids,
         archive_summaries=archive_summaries,
         pack_trust_state=active.pack_trust.trust_state,
+        effective_scope_summary=effective_scope_summary(active),
     )

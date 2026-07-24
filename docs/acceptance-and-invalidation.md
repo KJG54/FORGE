@@ -37,6 +37,32 @@ An invalidated step can be restarted explicitly with `forge begin <step>`. New c
 evidence, and owner acceptance must then bind the current revisions. Historical stale records remain
 available for audit and cannot satisfy current transitions.
 
+## Scope amendments
+
+`forge scope amend` records the configured owner's complete new effective scope without editing the
+initiative creation record. Every `--requirement` must exist in the locked workflow, every optional
+`--artifact` must identify a current logical artifact, and `--return-to` selects the step that must
+be redone.
+
+```console
+forge scope amend \
+  --scope "Discovery now includes compatibility constraints" \
+  --rationale "The supported platform boundary changed" \
+  --return-to discover \
+  --requirement requirements \
+  --artifact <requirements-artifact-id>
+forge scope show
+```
+
+FORGE derives affected checks, acceptances, gates, records, and descendants. It refuses the
+amendment if an affected run remains active; cancel that run explicitly first. A ready or worked
+return step becomes `invalidated`; a return step whose prerequisites are unresolved remains
+`pending`. The latest validated amendment is used as approved scope in newly generated agent
+context.
+
+A scope amendment is not an override or acceptance. It cannot satisfy a claim, check, evidence,
+verification, gate, or acceptance requirement. Rework must establish every current fact again.
+
 ## Decisions and supersession
 
 `forge decide` records an append-only owner decision with considered options, outcome, rationale,

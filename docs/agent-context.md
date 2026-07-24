@@ -24,6 +24,10 @@ The context contains only the objective, active step, approved scope, relevant w
 constraints, active decisions, worker permissions and prohibitions, required outputs, expected
 claims/checks/evidence/acceptance boundary, return contract, and known blockers.
 
+The approved scope is the immutable initiative creation scope until an owner records a validated
+M4 scope amendment. Thereafter newly generated context uses the complete scope from the latest
+amendment; it does not merge prose heuristically or include a stale prior scope as worker authority.
+
 The active step lists only governed artifacts whose roles are declared in that step's
 `required_inputs`. Each selected input exposes its role, repository-relative path, current digest,
 and media type. File content is not copied into the context. A worker may use those paths, but the

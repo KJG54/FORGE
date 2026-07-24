@@ -80,6 +80,7 @@ _ACTIVE_TOP_LEVEL = {
     "recovery-records",
     "recovery-snapshots",
     "runs",
+    "scope-amendments",
     "state.json",
     "validator-runs",
     "workflow.lock.json",

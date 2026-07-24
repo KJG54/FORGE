@@ -106,6 +106,10 @@ semantic-version commitments begin at v1.0.0.
   timeout, bounded local stdout/stderr capture, exact artifact-revision targeting, typed immutable
   pass/fail/timeout/overflow/error check results, and no automatic evidence, verification, or
   acceptance.
+- M4 owner-governed scope amendments with complete effective-scope replacement, locked-workflow
+  requirement validation, derived downstream support and gate invalidation, affected-run
+  cancellation prerequisites, current worker-context propagation, immutable history, and no
+  waiver of renewed claim, check, evidence, verification, or acceptance.
 
 ### Limitations
 

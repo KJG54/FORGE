@@ -37,6 +37,7 @@ ACCEPTANCE_RECORDED = "acceptance-recorded"
 ACCEPTANCE_REVOKED = "acceptance-revoked"
 DECISION_RECORDED = "decision-recorded"
 DECISION_SUPERSEDED = "decision-superseded"
+SCOPE_AMENDED = "scope-amended"
 RESULT_IMPORTED = "result-imported"
 INITIATIVE_CLOSED = "initiative-closed"
 INITIATIVE_ABANDONED = "initiative-abandoned"
@@ -578,6 +579,11 @@ class WorkflowStateReducer:
             return self._apply_artifact_event(state, event)
         if event.event_type in {DECISION_RECORDED, DECISION_SUPERSEDED}:
             return self._apply_decision_event(state, event)
+        if event.event_type == SCOPE_AMENDED:
+            require_owner(event.actor, self.owner_identity_id, "amend initiative scope")
+            _metadata_string(event, "scope_amendment_id")
+            _metadata_string(event, "workflow_return_step_id")
+            return self._apply_invalidation(state, event)
         if event.event_type == ACCEPTANCE_REVOKED:
             return self._apply_invalidation(state, event)
         if event.event_type == RESULT_IMPORTED:

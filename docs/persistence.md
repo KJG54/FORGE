@@ -276,3 +276,15 @@ The idempotent `check_run` command normally commits exactly
 `validator-run-started, check-recorded`. Conservative receipt recovery accepts only that complete
 pair. A start-only interruption remains blocked and is never automatically re-executed or inferred
 successful.
+
+## M4 Increment 3 scope amendments
+
+`.forge/active/scope-amendments/<amendment-id>.json` stores each immutable `ScopeAmendment`.
+The matching `scope-amended` event is the lifecycle authority for derived staleness, step
+invalidation, and descendant reset. The original initiative scope and earlier amendments are never
+rewritten; the last validated amendment supplies the current effective scope.
+
+The `scope_amend` idempotency pattern contains exactly one `scope-amended` event. Conservative
+receipt recovery may reconstruct only that complete event. Restart validation replays the state
+before the amendment and recalculates affected records, steps, gates, artifacts, and live-run
+preconditions rather than trusting the stored snapshot or caller-selected invalidation IDs.

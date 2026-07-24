@@ -16,7 +16,12 @@ from forge.contracts.capabilities import (
     CapabilityTrustState,
     SideEffectClass,
 )
-from forge.contracts.decisions import ApprovalRevocation, DecisionRecord, DecisionSupersession
+from forge.contracts.decisions import (
+    ApprovalRevocation,
+    DecisionRecord,
+    DecisionSupersession,
+    ScopeAmendment,
+)
 from forge.contracts.events import AuditEvent
 from forge.contracts.idempotency import (
     CommandRecoveryRecord,
@@ -34,7 +39,13 @@ from forge.contracts.recovery import (
     SnapshotCondition,
 )
 from forge.contracts.runs import RunRecord
-from forge.contracts.state import InitiativeLifecycleState, MaterializedState, RunState, StepState
+from forge.contracts.state import (
+    InitiativeLifecycleState,
+    IntegrityState,
+    MaterializedState,
+    RunState,
+    StepState,
+)
 from forge.contracts.verification import (
     AcceptanceRecord,
     CheckExecutionStatus,
@@ -71,6 +82,7 @@ from forge.core.transitions import (
     RESULT_IMPORTED,
     RUN_CANCELLED,
     SCHEMA_MIGRATED,
+    SCOPE_AMENDED,
     STEP_TRANSITIONED,
     VALIDATOR_RUN_STARTED,
     WorkflowStateReducer,
@@ -172,6 +184,10 @@ def _decision_path(layout: RepositoryLayout, decision_id: UUID) -> Path:
 
 def _supersession_path(layout: RepositoryLayout, supersession_id: UUID) -> Path:
     return layout.decision_supersession_directory / f"{supersession_id}.json"
+
+
+def _scope_amendment_path(layout: RepositoryLayout, amendment_id: UUID) -> Path:
+    return layout.scope_amendment_directory / f"{amendment_id}.json"
 
 
 def _imported_result_path(layout: RepositoryLayout, result_id: UUID) -> Path:
@@ -332,6 +348,7 @@ def validate_governed_records(
     expected_pack_trust_decisions: set[Path] = set()
     expected_decisions: set[Path] = set()
     expected_supersessions: set[Path] = set()
+    expected_scope_amendments: set[Path] = set()
     expected_imported_results: set[Path] = set()
     expected_closures: set[Path] = set()
     expected_abandonments: set[Path] = set()
@@ -351,6 +368,7 @@ def validate_governed_records(
     evidence_by_id: dict[UUID, EvidencePacket] = {}
     acceptances_by_id: dict[UUID, AcceptanceRecord] = {}
     acceptance_steps: dict[UUID, str] = {}
+    record_steps: dict[UUID, str] = {}
     decisions_by_id: dict[UUID, DecisionRecord] = {}
     runs_by_id: dict[UUID, RunRecord] = {}
     validator_runs_by_id: dict[UUID, RunRecord] = {}
@@ -365,6 +383,19 @@ def validate_governed_records(
     seen_event_record_ids: set[UUID] = set()
     owner_id = load_configuration(layout.configuration_file).owner.id
     initiative = load_record(layout.initiative_file, Initiative)
+    states_before: dict[UUID, MaterializedState | None] = {}
+    replayed_state: MaterializedState | None = None
+    replay_reducer = WorkflowStateReducer(workflow, owner_id)
+    for replay_event in events:
+        states_before[replay_event.id] = replayed_state
+        replayed_state = replay_reducer(replayed_state, replay_event)
+        replayed_state = replayed_state.model_copy(
+            update={
+                "integrity_state": IntegrityState.HEALTHY,
+                "journal_head_sequence": replay_event.sequence,
+                "journal_head_hash": replay_event.event_hash,
+            }
+        )
 
     for event in events:
         if event.event_type == PACK_TRUST_CHANGED:
@@ -872,6 +903,7 @@ def validate_governed_records(
             ):
                 raise IntegrityError(f"Claim record does not match event {event.id}")
             claims_by_id[claim_id] = claim
+            record_steps[claim_id] = claim.step_id
         elif event.event_type == CHECK_RECORDED:
             result_id = _uuid_metadata(event, "check_result_id")
             path = _check_path(layout, result_id)
@@ -957,6 +989,10 @@ def validate_governed_records(
             ):
                 raise IntegrityError(f"Check result does not match event {event.id}")
             checks_by_id[result_id] = check
+            step_id = event.metadata.get("step_id")
+            if not isinstance(step_id, str):
+                raise IntegrityError(f"Check event {event.id} has no workflow step")
+            record_steps[result_id] = step_id
         elif event.event_type == EVIDENCE_REGISTERED:
             evidence_id = _uuid_metadata(event, "evidence_id")
             path = _evidence_path(layout, evidence_id)
@@ -980,6 +1016,10 @@ def validate_governed_records(
             ):
                 raise IntegrityError(f"Evidence packet does not match event {event.id}")
             evidence_by_id[evidence_id] = evidence
+            step_id = event.metadata.get("step_id")
+            if not isinstance(step_id, str):
+                raise IntegrityError(f"Evidence event {event.id} has no workflow step")
+            record_steps[evidence_id] = step_id
         elif event.event_type == ACCEPTANCE_RECORDED:
             acceptance_id = _uuid_metadata(event, "acceptance_id")
             path = _acceptance_path(layout, acceptance_id)
@@ -1014,6 +1054,7 @@ def validate_governed_records(
                 raise IntegrityError(f"Acceptance record does not match event {event.id}")
             acceptances_by_id[acceptance_id] = acceptance
             acceptance_steps[acceptance_id] = step_id
+            record_steps[acceptance_id] = step_id
         elif event.event_type in {DECISION_RECORDED, DECISION_SUPERSEDED}:
             decision_id = _uuid_metadata(event, "decision_id")
             path = _decision_path(layout, decision_id)
@@ -1051,6 +1092,185 @@ def validate_governed_records(
                     )
                 stale_ids.add(prior_id)
             decisions_by_id[decision_id] = decision
+        elif event.event_type == SCOPE_AMENDED:
+            amendment_id = _uuid_metadata(event, "scope_amendment_id")
+            path = _scope_amendment_path(layout, amendment_id)
+            expected_scope_amendments.add(path)
+            amendment = load_record(path, ScopeAmendment)
+            _validate_common(amendment, event, amendment_id)
+            prior_state = states_before[event.id]
+            if prior_state is None:
+                raise IntegrityError("Scope amendment cannot be the first initiative event")
+            return_step_id = event.metadata.get("workflow_return_step_id")
+            if not isinstance(return_step_id, str):
+                raise IntegrityError(f"Scope amendment event {event.id} has no return step")
+            affected_steps = {return_step_id}
+            changed = True
+            while changed:
+                changed = False
+                for step in workflow.steps:
+                    if step.id not in affected_steps and set(step.prerequisites) & affected_steps:
+                        affected_steps.add(step.id)
+                        changed = True
+            if return_step_id not in {step.id for step in workflow.steps}:
+                raise IntegrityError(f"Scope amendment event {event.id} has an unknown return step")
+            affected_artifact_ids = _uuid_list_metadata(event, "affected_artifact_ids")
+            expected_stale_ids = {
+                record_id
+                for record_id, step_id in record_steps.items()
+                if step_id in affected_steps
+            }
+            decision_dependencies = {*expected_stale_ids, *affected_artifact_ids}
+            expected_stale_ids.update(
+                item.id
+                for item in decisions_by_id.values()
+                if set(item.affected_record_ids) & decision_dependencies
+            )
+            ordered_stale_ids = tuple(sorted(expected_stale_ids, key=str))
+            invalidated_step_ids = tuple(
+                step.id
+                for step in workflow.steps
+                if step.id in affected_steps
+                and (
+                    (
+                        step.id == return_step_id
+                        and prior_state.step_states[step.id] is not StepState.PENDING
+                    )
+                    or prior_state.step_states[step.id]
+                    not in {StepState.PENDING, StepState.READY}
+                )
+            )
+            reset_step_ids = tuple(
+                step.id
+                for step in workflow.steps
+                if step.id in affected_steps
+                and (
+                    (
+                        step.id == return_step_id
+                        and prior_state.step_states[step.id] is StepState.PENDING
+                    )
+                    or (
+                        step.id != return_step_id
+                        and prior_state.step_states[step.id]
+                        in {StepState.PENDING, StepState.READY}
+                    )
+                )
+            )
+            affected_active_runs = tuple(
+                run_id
+                for run_id in prior_state.active_run_ids
+                if run_id in runs_by_id and runs_by_id[run_id].step_id in affected_steps
+            )
+            affected_requirements = amendment.affected_requirements
+            affected_step_records = [
+                step for step in workflow.steps if step.id in affected_steps
+            ]
+            check_requirements = {
+                item
+                for step in affected_step_records
+                for item in step.check_requirements
+            }
+            artifact_classes = {
+                item
+                for step in affected_step_records
+                for item in (*step.required_inputs, *step.required_outputs)
+            }
+            evidence_classes = set(workflow.required_evidence_classes)
+            requirement_set = set(affected_requirements)
+            known_requirements = {
+                *workflow.required_artifact_classes,
+                *workflow.required_evidence_classes,
+            }
+            for step in workflow.steps:
+                known_requirements.update(step.required_inputs)
+                known_requirements.update(step.required_outputs)
+                known_requirements.update(step.claim_requirements)
+                known_requirements.update(step.check_requirements)
+                known_requirements.update(step.acceptance_requirements)
+            for gate in workflow.required_gates:
+                known_requirements.add(gate.id)
+                known_requirements.add(gate.authority_requirement)
+                known_requirements.update(gate.required_artifact_classes)
+                known_requirements.update(gate.required_evidence_classes)
+                known_requirements.update(gate.required_check_ids)
+            for transition in workflow.transitions:
+                known_requirements.add(transition.authority_requirement)
+                known_requirements.update(transition.conditions)
+            expected_gate_ids = tuple(
+                gate.id
+                for gate in workflow.required_gates
+                if (
+                    gate.id in requirement_set
+                    or gate.authority_requirement in requirement_set
+                    or set(gate.required_check_ids) & check_requirements
+                    or set(gate.required_artifact_classes) & artifact_classes
+                    or set(gate.required_evidence_classes) & evidence_classes
+                )
+            )
+            expected_check_ids = tuple(
+                sorted((set(checks_by_id) & expected_stale_ids), key=str)
+            )
+            expected_acceptance_ids = tuple(
+                sorted((set(acceptances_by_id) & expected_stale_ids), key=str)
+            )
+            current_artifact_digests = tuple(
+                revisions_by_id[current_revision_ids[item]].content_digest
+                for item in affected_artifact_ids
+                if item in current_revision_ids
+            )
+            governed_dependencies = tuple(
+                dict.fromkeys((*affected_artifact_ids, *ordered_stale_ids))
+            )
+            record_digest = canonical_json_digest(amendment.model_dump(mode="json"))
+            if (
+                amendment.id != amendment_id
+                or amendment.actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or amendment.workflow_return_step_id != return_step_id
+                or not amendment.affected_requirements
+                or len(amendment.affected_requirements)
+                != len(set(amendment.affected_requirements))
+                or requirement_set - known_requirements
+                or len(affected_artifact_ids) != len(set(affected_artifact_ids))
+                or set(affected_artifact_ids) - set(current_revision_ids)
+                or amendment.affected_artifact_ids != affected_artifact_ids
+                or amendment.invalidated_check_ids != expected_check_ids
+                or amendment.invalidated_acceptance_ids != expected_acceptance_ids
+                or amendment.invalidated_gate_ids != expected_gate_ids
+                or amendment.affected_record_ids != governed_dependencies
+                or amendment.affected_digests != current_artifact_digests
+                or not _string_list_matches(
+                    event.metadata.get("affected_requirement_ids"),
+                    affected_requirements,
+                )
+                or _uuid_list_metadata(event, "invalidated_check_ids")
+                != expected_check_ids
+                or _uuid_list_metadata(event, "invalidated_acceptance_ids")
+                != expected_acceptance_ids
+                or not _string_list_matches(
+                    event.metadata.get("invalidated_gate_ids"),
+                    expected_gate_ids,
+                )
+                or _uuid_list_metadata(event, "stale_record_ids")
+                != ordered_stale_ids
+                or not _string_list_matches(
+                    event.metadata.get("invalidated_step_ids"),
+                    invalidated_step_ids,
+                )
+                or not _string_list_matches(
+                    event.metadata.get("reset_step_ids"),
+                    reset_step_ids,
+                )
+                or _uuid_list_metadata(event, "invalidated_run_ids")
+                or affected_active_runs
+                or event.affected_record_ids
+                != (amendment_id, *governed_dependencies)
+                or event.affected_digests
+                != (*current_artifact_digests, record_digest)
+            ):
+                raise IntegrityError(f"Scope amendment does not match event {event.id}")
+            stale_ids.update(ordered_stale_ids)
         elif event.event_type == ACCEPTANCE_REVOKED:
             acceptance_id = _uuid_metadata(event, "acceptance_id")
             revocation_id = _uuid_metadata(event, "revocation_id")
@@ -1726,6 +1946,7 @@ def validate_governed_records(
     )
     _validate_directory(layout.decision_directory, expected_decisions)
     _validate_directory(layout.decision_supersession_directory, expected_supersessions)
+    _validate_directory(layout.scope_amendment_directory, expected_scope_amendments)
     _validate_directory(layout.imported_result_directory, expected_imported_results)
     _validate_directory(layout.closure_directory, expected_closures)
     _validate_directory(layout.abandonment_directory, expected_abandonments)

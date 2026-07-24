@@ -55,6 +55,7 @@ EXPECTED_EVENT_PATTERNS: dict[str, tuple[tuple[str, ...], ...]] = {
     "pause": (("initiative-paused",),),
     "resume": (("initiative-resumed",),),
     "run_cancel": (("run-cancelled",),),
+    "scope_amend": (("scope-amended",),),
     "trust_pack": (("pack-trust-changed",),),
     "untrust_pack": (("pack-trust-changed",),),
     "verify": (("step-transitioned",),),

@@ -52,6 +52,11 @@ from forge.core.migrations import inspect_active_migration, migrate_active_repos
 from forge.core.pack_trust import change_pack_trust, pack_trust_history
 from forge.core.recovery import recover_active_snapshot
 from forge.core.runs import cancel_run, list_runs, show_run
+from forge.core.scope_amendments import (
+    amend_scope,
+    list_scope_amendments,
+    show_scope_amendment,
+)
 from forge.core.status import inspect_status
 from forge.core.validators import execute_validator_check
 from forge.core.vendor_context import apply_vendor_context, preview_vendor_context
@@ -91,6 +96,7 @@ acceptance_app = typer.Typer(help="Record, inspect, or revoke owner acceptance."
 run_app = typer.Typer(help="Inspect or cancel durable work attempts.")
 agent_app = typer.Typer(help="Generate neutral worker context and inspect agent integrations.")
 capability_app = typer.Typer(help="Inspect, approve, or revoke executable capabilities.")
+scope_app = typer.Typer(help="Amend and inspect effective initiative scope.")
 IdempotencyOption = Annotated[
     str | None,
     typer.Option(
@@ -108,6 +114,7 @@ app.add_typer(acceptance_app, name="acceptance")
 app.add_typer(run_app, name="run")
 app.add_typer(agent_app, name="agent")
 app.add_typer(capability_app, name="capability")
+app.add_typer(scope_app, name="scope")
 
 
 def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
@@ -943,6 +950,13 @@ def status(
     else:
         typer.echo(f"Initiative: {report.initiative.id} — {report.initiative.objective}")
         typer.echo(f"Explanation profile: {report.initiative.explanation_profile.value}")
+        typer.echo(f"Declared scope: {report.initiative.declared_scope_summary}")
+        if (
+            report.effective_scope_summary is not None
+            and report.effective_scope_summary
+            != report.initiative.declared_scope_summary
+        ):
+            typer.echo(f"Effective scope: {report.effective_scope_summary}")
     for summary in report.archive_summaries:
         guarantee = "preliminary" if summary.preliminary else "hardened"
         typer.echo(
@@ -993,7 +1007,6 @@ def status(
             typer.echo(f"Journal events: {report.state.journal_head_sequence}")
             typer.echo(f"Journal head hash: {report.state.journal_head_hash or 'legacy-unhashed'}")
         assert report.initiative is not None
-        typer.echo(f"Declared scope: {report.initiative.declared_scope_summary}")
         if report.initiative.predecessor_references:
             for predecessor in report.initiative.predecessor_references:
                 typer.echo(
@@ -2218,6 +2231,111 @@ def acceptance_show(
         )
         if view.revocation is not None:
             typer.echo(f"  Revocation: {view.revocation.id} {view.revocation.reason}")
+
+
+@scope_app.command("amend")
+@_locked_mutation
+def scope_amend(
+    changed_scope: Annotated[
+        str,
+        typer.Option("--scope", help="Complete effective scope after this amendment."),
+    ],
+    rationale: Annotated[
+        str,
+        typer.Option("--rationale", help="Owner rationale for changing scope."),
+    ],
+    workflow_return_step: Annotated[
+        str,
+        typer.Option(
+            "--return-to",
+            help="Workflow step that must be redone under the amended scope.",
+        ),
+    ],
+    affected_requirement: Annotated[
+        list[str],
+        typer.Option(
+            "--requirement",
+            help="Repeat for each affected requirement declared by the locked workflow.",
+        ),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    affected_artifact: Annotated[
+        list[UUID] | None,
+        typer.Option(
+            "--artifact",
+            help="Repeat for each affected logical artifact UUID.",
+        ),
+    ] = None,
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Replace effective scope and invalidate derived work at a declared return point."""
+
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = amend_scope(
+            layout,
+            changed_scope=changed_scope,
+            rationale=rationale,
+            affected_requirements=tuple(affected_requirement),
+            affected_artifact_ids=tuple(affected_artifact or ()),
+            workflow_return_step_id=workflow_return_step,
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Recorded scope amendment {result.amendment.id}")
+    typer.echo(f"Effective scope: {result.amendment.changed_scope}")
+    typer.echo(f"Workflow return step: {result.amendment.workflow_return_step_id}")
+    typer.echo(
+        "Invalidated checks: "
+        f"{len(result.amendment.invalidated_check_ids)}; "
+        "acceptances: "
+        f"{len(result.amendment.invalidated_acceptance_ids)}"
+    )
+
+
+@scope_app.command("show")
+def scope_show(
+    amendment_id: Annotated[
+        UUID | None,
+        typer.Argument(help="Amendment UUID; omit to show complete history."),
+    ] = None,
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Show one scope amendment or the complete append-only history."""
+
+    try:
+        layout = discover_repository(directory)
+        amendments = (
+            (show_scope_amendment(layout, amendment_id),)
+            if amendment_id is not None
+            else list_scope_amendments(layout)
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    if not amendments:
+        typer.echo("No scope amendments")
+    for amendment in amendments:
+        typer.echo(
+            f"{amendment.id} return={amendment.workflow_return_step_id} "
+            f"scope={amendment.changed_scope}"
+        )
+        typer.echo(f"  Rationale: {amendment.rationale}")
+        typer.echo(
+            "  Invalidated checks="
+            f"{len(amendment.invalidated_check_ids)} "
+            f"acceptances={len(amendment.invalidated_acceptance_ids)} "
+            f"gates={len(amendment.invalidated_gate_ids)}"
+        )
 
 
 @app.command("decide")

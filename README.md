@@ -172,6 +172,12 @@ and bounded local output capture. Every pass, nonzero failure, timeout, overflow
 becomes an immutable artifact-revision-bound `CheckResult`. Execution never creates evidence,
 verifies the step, or records owner acceptance.
 
+M4 Increment 3 adds owner-only `forge scope amend`. It records a complete new effective scope,
+validates affected requirements and artifacts against the locked initiative, derives downstream
+staleness and gate effects, and returns work to an explicit workflow step. Affected active runs
+must be cancelled first, and amended work must produce new claims, checks, evidence, verification,
+and acceptance; the amendment waives none of them.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -201,6 +207,9 @@ forge agent doctor --adapter claude
 forge agent run discover --adapter codex --timeout 300
 forge check run discover outputs-present --validator validator.project.tests
 forge check list
+forge scope amend --scope "Revised bounded scope" --rationale "Requirement changed" \
+  --return-to discover --requirement requirements
+forge scope show
 forge handoff discover --constraint "Do not modify unrelated files"
 forge abandon --reason "Stop this initiative" --unfinished-work "Remaining work" \
   --risk "Intended outcome was not delivered"

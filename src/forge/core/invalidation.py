@@ -225,3 +225,42 @@ def calculate_acceptance_revocation_invalidation(
     if acceptance_id not in inventory.acceptances:
         raise IntegrityError(f"Acceptance {acceptance_id} is not journal-backed")
     return _plan(active, inventory, {acceptance_id}, {step_id})
+
+
+def calculate_scope_amendment_invalidation(
+    active: ActiveInitiative,
+    *,
+    workflow_return_step_id: str,
+    affected_artifact_ids: tuple[UUID, ...],
+) -> DependencyInvalidation:
+    """Invalidate current support at and below an owner-selected workflow return point."""
+
+    if workflow_return_step_id not in {step.id for step in active.workflow.steps}:
+        raise IntegrityError(
+            f"Scope amendment return step {workflow_return_step_id!r} is unknown"
+        )
+    inventory = _inventory(active)
+    affected_steps = _descendants(active, {workflow_return_step_id})
+    stale = {
+        record_id
+        for record_id, step_id in inventory.record_steps.items()
+        if step_id in affected_steps
+    }
+    decision_dependencies = {*stale, *affected_artifact_ids}
+    stale.update(
+        decision.id
+        for decision in inventory.decisions.values()
+        if set(decision.affected_record_ids) & decision_dependencies
+    )
+    planned = _plan(active, inventory, stale, {workflow_return_step_id})
+    invalidated = set(planned.invalidated_step_ids)
+    reset = set(planned.reset_step_ids)
+    if active.state.step_states[workflow_return_step_id] is not StepState.PENDING:
+        invalidated.add(workflow_return_step_id)
+        reset.discard(workflow_return_step_id)
+    return DependencyInvalidation(
+        planned.stale_record_ids,
+        tuple(step.id for step in active.workflow.steps if step.id in invalidated),
+        tuple(step.id for step in active.workflow.steps if step.id in reset),
+        planned.invalidated_run_ids,
+    )

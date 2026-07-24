@@ -159,3 +159,9 @@ bindings for approval, invocation digest, normalized execution state, and bounde
 stderr capture paths, sizes, and digests. Existing manual check records keep those fields empty and
 retain their prior result-digest payload. The schema version and exported schema count remain
 unchanged.
+
+M4 Increment 3 activates the existing public `ScopeAmendment` contract without changing its schema.
+`changed_scope` is the complete new effective scope. The record binds owner rationale, validated
+workflow requirement IDs, current logical artifact IDs, derived invalidated check, gate, and
+acceptance IDs, and the explicit workflow return step. Its inherited affected-record and digest
+fields bind the complete derived stale set and current affected artifact content.

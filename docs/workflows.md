@@ -215,3 +215,11 @@ with `forge check run <step> <check> --validator <id>`. The validator attempt is
 it does not move the step to `in_progress`, join workflow `active_run_ids`, or apply cancellation
 transitions. Its exact approval-bound run and terminal check result are durable, while evidence,
 `forge verify`, and owner acceptance remain later explicit commands.
+
+M4 Increment 3 adds `forge scope amend` for a material owner change to initiative scope. The owner
+declares the complete new effective scope, affected locked-workflow requirements and current
+logical artifacts, plus the workflow step where work must restart. FORGE derives downstream stale
+support and gates. A ready or worked return step becomes `invalidated`; a never-eligible return
+step and untouched descendants remain or reset to `pending`. Any affected active run must be
+cancelled first so the amendment never fabricates a terminal run outcome. Restarted work follows
+the ordinary claim, check, evidence, verification, and acceptance sequence in full.

@@ -20,6 +20,7 @@ from forge.contracts.decisions import DecisionRecord
 from forge.contracts.state import InitiativeLifecycleState, StepState
 from forge.core.artifacts import assert_working_revision_current
 from forge.core.lifecycle import ActiveInitiative, load_active_initiative
+from forge.core.scope_amendments import effective_scope_summary
 from forge.errors import ConfigurationError, ConflictError, IntegrityError, SecurityError
 from forge.storage.atomic import atomic_write_bytes
 from forge.storage.journal import read_journal
@@ -201,7 +202,7 @@ def build_agent_context(layout: RepositoryLayout) -> CanonicalAgentContext:
             required_inputs=selected_inputs,
             context_selection_rules=step.context_selection_rules,
         ),
-        approved_scope=active.initiative.declared_scope_summary,
+        approved_scope=effective_scope_summary(active),
         relevant_constraints=relevant_constraints,
         relevant_decisions=_active_decisions(active),
         permitted_actions=permitted_actions,
