@@ -53,6 +53,13 @@ version, exact current target revisions, invocation description, timestamps, exi
 applicable, normalized outcome, limitations, actor, and a deterministic result digest. It never
 executes a capability.
 
+M4 Increment 2 adds explicit `forge check run` for a configured local validator with an active
+exact-profile owner approval. It records the attempt before process creation, binds the result to
+the same exact current revisions, and preserves pass, nonzero failure, timeout, output overflow,
+and execution errors as separate immutable `CheckResult` objects. Raw bounded output remains
+local-only; governed history retains its path, size, and digest without rendering the bytes.
+Validator execution still does not register evidence or invoke verification.
+
 `forge evidence add` records a digest-bound packet of artifact-revision, check-result, and claim
 references plus purpose and limitations. Evidence documents support; it does not automatically
 establish truth.

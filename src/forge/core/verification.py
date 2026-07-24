@@ -199,6 +199,14 @@ def list_checks(layout: RepositoryLayout) -> tuple[CheckResult, ...]:
     )
 
 
+def show_check(layout: RepositoryLayout, check_result_id: UUID) -> CheckResult:
+    load_active_initiative(layout, allow_paused=True)
+    path = _check_path(layout, check_result_id)
+    if not path.exists():
+        raise ConflictError(f"Unknown check result {check_result_id}")
+    return load_record(path, CheckResult)
+
+
 def list_evidence(layout: RepositoryLayout) -> tuple[EvidencePacket, ...]:
     load_active_initiative(layout, allow_paused=True)
     if not layout.evidence_directory.exists():
@@ -328,7 +336,7 @@ def complete_step(
     return CompletionResult(claim, event, transitioned)
 
 
-def _check_digest_payload(
+def check_digest_payload(
     *,
     check_id: str,
     check_version: str,
@@ -340,8 +348,19 @@ def _check_digest_payload(
     outcome: CheckOutcome,
     limitations: tuple[str, ...],
     actor: Actor,
+    capability_id: str | None = None,
+    capability_approval_id: UUID | None = None,
+    run_id: UUID | None = None,
+    invocation_digest: str | None = None,
+    execution_status: str | None = None,
+    stdout_capture_path: str | None = None,
+    stderr_capture_path: str | None = None,
+    stdout_digest: str | None = None,
+    stderr_digest: str | None = None,
+    stdout_byte_count: int | None = None,
+    stderr_byte_count: int | None = None,
 ) -> dict[str, object]:
-    return {
+    payload: dict[str, object] = {
         "actor": actor.model_dump(mode="json"),
         "check_id": check_id,
         "check_version": check_version,
@@ -353,6 +372,23 @@ def _check_digest_payload(
         "started_at": started_at.isoformat(),
         "target_artifact_revision_ids": [str(item) for item in target_ids],
     }
+    if capability_id is not None:
+        payload.update(
+            {
+                "capability_approval_id": str(capability_approval_id),
+                "capability_id": capability_id,
+                "execution_status": execution_status,
+                "invocation_digest": invocation_digest,
+                "run_id": str(run_id),
+                "stderr_byte_count": stderr_byte_count,
+                "stderr_capture_path": stderr_capture_path,
+                "stderr_digest": stderr_digest,
+                "stdout_byte_count": stdout_byte_count,
+                "stdout_capture_path": stdout_capture_path,
+                "stdout_digest": stdout_digest,
+            }
+        )
+    return payload
 
 
 def record_check(
@@ -400,7 +436,7 @@ def record_check(
     if end < start:
         raise ConflictError("Check end time cannot precede its start time")
     result_digest = canonical_json_digest(
-        _check_digest_payload(
+        check_digest_payload(
             check_id=check_id,
             check_version=check_version,
             target_ids=target_ids,

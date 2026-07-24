@@ -209,3 +209,9 @@ transitions, verification, imports, pause/resume, and successful closure. Read-o
 history, pack inspection, capability governance, run inspection/cancellation, schema recovery, and
 owner abandonment remain available. Restoring `trusted-data` trust re-enables the locked workflow;
 it does not approve any declared executable capability.
+
+M4 Increment 2 allows one required check on a step already `awaiting_verification` to be attempted
+with `forge check run <step> <check> --validator <id>`. The validator attempt is state-neutral:
+it does not move the step to `in_progress`, join workflow `active_run_ids`, or apply cancellation
+transitions. Its exact approval-bound run and terminal check result are durable, while evidence,
+`forge verify`, and owner acceptance remain later explicit commands.

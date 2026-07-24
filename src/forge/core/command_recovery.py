@@ -46,6 +46,7 @@ EXPECTED_EVENT_PATTERNS: dict[str, tuple[tuple[str, ...], ...]] = {
     "artifact_revise": (("artifact-revised",),),
     "begin": (("step-transitioned",),),
     "check_record": (("check-recorded",),),
+    "check_run": (("validator-run-started", "check-recorded"),),
     "complete": (("claim-recorded", "step-transitioned"),),
     "create": (("initiative-created",),),
     "decide": (("decision-recorded",), ("decision-superseded",)),

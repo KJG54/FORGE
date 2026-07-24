@@ -162,8 +162,15 @@ directly. The complete evidence and limitations are recorded in the
 M4 Increment 1 adds strict tracked declarations for disabled-by-default local validators. Owners
 can inspect and approve the exact resolved executable, ordered argument vector, working directory,
 timeout, expected outputs, environment access, and side-effect risk. Validator declarations never
-use shell strings, trusted-data packs cannot register or authorize them, and this increment stops
-before any validator process, check result, evidence, or lifecycle transition is created.
+use shell strings, trusted-data packs cannot register or authorize them, and Increment 1 stopped
+before any validator process, check result, evidence, or lifecycle transition was created.
+
+M4 Increment 2 adds explicit supervised validator execution for a check required by a step awaiting
+verification. Exact approval is bound and one-time authority is consumed before process creation;
+the no-shell invocation receives a credential-denying allowlisted environment, declared timeout,
+and bounded local output capture. Every pass, nonzero failure, timeout, overflow, or execution error
+becomes an immutable artifact-revision-bound `CheckResult`. Execution never creates evidence,
+verifies the step, or records owner acceptance.
 
 Initialize an ordinary project repository with:
 
@@ -192,6 +199,8 @@ forge agent doctor
 forge agent doctor --adapter codex
 forge agent doctor --adapter claude
 forge agent run discover --adapter codex --timeout 300
+forge check run discover outputs-present --validator validator.project.tests
+forge check list
 forge handoff discover --constraint "Do not modify unrelated files"
 forge abandon --reason "Stop this initiative" --unfinished-work "Remaining work" \
   --risk "Intended outcome was not delivered"
@@ -270,6 +279,7 @@ forge --help
 - [M3 Increment 9 replaceable-worker acceptance](docs/milestones/m3-increment-9.md)
 - [M3 evidence report](docs/milestones/m3-report.md)
 - [M4 Increment 1 declarative-validator boundary](docs/milestones/m4-increment-1.md)
+- [M4 Increment 2 supervised-validator boundary](docs/milestones/m4-increment-2.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

@@ -53,6 +53,7 @@ from forge.core.pack_trust import change_pack_trust, pack_trust_history
 from forge.core.recovery import recover_active_snapshot
 from forge.core.runs import cancel_run, list_runs, show_run
 from forge.core.status import inspect_status
+from forge.core.validators import execute_validator_check
 from forge.core.vendor_context import apply_vendor_context, preview_vendor_context
 from forge.core.verification import (
     complete_step,
@@ -61,6 +62,7 @@ from forge.core.verification import (
     list_evidence,
     record_check,
     record_evidence,
+    show_check,
     show_evidence,
     verify_step,
 )
@@ -83,7 +85,7 @@ schema_app = typer.Typer(help="Inspect or export versioned FORGE schemas.")
 config_app = typer.Typer(help="Inspect or validate project-level FORGE configuration.")
 pack_app = typer.Typer(help="Inspect validated declarative data packs.")
 artifact_app = typer.Typer(help="Register and inspect immutable artifact revisions.")
-check_app = typer.Typer(help="Record and inspect structured manual checks.")
+check_app = typer.Typer(help="Record, run, and inspect structured checks.")
 evidence_app = typer.Typer(help="Register and inspect durable evidence packets.")
 acceptance_app = typer.Typer(help="Record, inspect, or revoke owner acceptance.")
 run_app = typer.Typer(help="Inspect or cancel durable work attempts.")
@@ -1896,6 +1898,46 @@ def check_record(
     typer.echo("A passing check is not owner acceptance")
 
 
+@check_app.command("run")
+@_locked_mutation
+def check_run(
+    step_id: Annotated[str, typer.Argument(help="Step awaiting verification.")],
+    check_id: Annotated[str, typer.Argument(help="Declared check identity.")],
+    validator_id: Annotated[
+        str,
+        typer.Option(
+            "--validator",
+            help="Configured validator capability ID to execute.",
+        ),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    check_version: Annotated[
+        str,
+        typer.Option("--check-version", help="Version of the declared check."),
+    ] = "1",
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Run one exact approved validator and record its immutable check result."""
+    layout = discover_repository(directory)
+    result = execute_validator_check(
+        layout,
+        step_id=step_id,
+        check_id=check_id,
+        check_version=check_version,
+        capability_id=validator_id,
+    )
+    assert result.check.execution_status is not None
+    typer.echo(f"Validator run: {result.run.id}")
+    typer.echo(f"Recorded check result {result.check.id}: {result.check.outcome.value}")
+    typer.echo(f"Execution status: {result.check.execution_status.value}")
+    typer.echo(f"Result digest: {result.check.result_digest}")
+    typer.echo("Raw stdout and stderr remain bounded local captures and are not displayed")
+    typer.echo("The result does not create evidence, verify the step, or grant acceptance")
+
+
 @check_app.command("list")
 def check_list(
     directory: Annotated[
@@ -1913,7 +1955,49 @@ def check_list(
     if not checks:
         typer.echo("No check results")
     for result in checks:
-        typer.echo(f"{result.id} {result.check_id} {result.outcome.value}")
+        capability = result.capability_id or "manual"
+        typer.echo(
+            f"{result.id} {result.check_id} {result.outcome.value} source={capability}"
+        )
+
+
+@check_app.command("show")
+def check_show(
+    check_result_id: Annotated[UUID, typer.Argument(help="Check-result UUID.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Inspect one check result without displaying captured process output."""
+    try:
+        layout = discover_repository(directory)
+        result = show_check(layout, check_result_id)
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Check result: {result.id}")
+    typer.echo(f"Check: {result.check_id}@{result.check_version}")
+    typer.echo(f"Outcome: {result.outcome.value}")
+    typer.echo(f"Result digest: {result.result_digest}")
+    typer.echo(f"Capability: {result.capability_id or '<manual>'}")
+    if result.capability_id is not None:
+        assert result.execution_status is not None
+        typer.echo(f"Approval: {result.capability_approval_id}")
+        typer.echo(f"Validator run: {result.run_id}")
+        typer.echo(f"Execution status: {result.execution_status.value}")
+        typer.echo(f"Invocation digest: {result.invocation_digest}")
+        typer.echo(
+            f"Stdout capture: {result.stdout_capture_path} "
+            f"{result.stdout_digest} {result.stdout_byte_count} bytes"
+        )
+        typer.echo(
+            f"Stderr capture: {result.stderr_capture_path} "
+            f"{result.stderr_digest} {result.stderr_byte_count} bytes"
+        )
+    typer.echo("Limitations:")
+    for limitation in result.limitations:
+        typer.echo(f"- {limitation}")
 
 
 @evidence_app.command("add")

@@ -101,6 +101,11 @@ semantic-version commitments begin at v1.0.0.
   argument vectors, bounded working directory/timeout/outputs/environment/risk metadata,
   non-executing inspection, exact owner approval, profile-drift invalidation, and continued
   separation from trusted-data packs and check execution.
+- M4 supervised local-validator execution with pre-launch immutable run and one-time-approval
+  binding, no-shell process creation, credential-denying environment allowlisting, declared
+  timeout, bounded local stdout/stderr capture, exact artifact-revision targeting, typed immutable
+  pass/fail/timeout/overflow/error check results, and no automatic evidence, verification, or
+  acceptance.
 
 ### Limitations
 
@@ -110,7 +115,7 @@ semantic-version commitments begin at v1.0.0.
   or synchronizes a repository on the owner's behalf.
 - Stale-lock remediation evidence contains host runtime metadata and remains local-only under the
   hybrid Git policy; it does not alter or repair governed initiative history.
-- Provider APIs, executable pack providers, validator execution, background execution,
-  cross-process live cancellation, automatic crash resume, hostile-code isolation guarantees, and
-  automatic verification remain deferred to later milestones.
+- Provider APIs, executable pack providers, background execution, cross-process live cancellation,
+  automatic crash resume, hostile-code isolation guarantees, and automatic verification remain
+  deferred to later milestones.
 - Project and distribution naming remain provisional.

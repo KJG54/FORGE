@@ -37,6 +37,7 @@ from forge.contracts.runs import RunRecord
 from forge.contracts.state import InitiativeLifecycleState, MaterializedState, RunState, StepState
 from forge.contracts.verification import (
     AcceptanceRecord,
+    CheckExecutionStatus,
     CheckOutcome,
     CheckResult,
     Claim,
@@ -71,6 +72,7 @@ from forge.core.transitions import (
     RUN_CANCELLED,
     SCHEMA_MIGRATED,
     STEP_TRANSITIONED,
+    VALIDATOR_RUN_STARTED,
     WorkflowStateReducer,
 )
 from forge.errors import IntegrityError, SecurityError
@@ -218,22 +220,41 @@ def _validate_common(record: object, event: AuditEvent, record_id: UUID) -> None
 
 
 def _check_digest(check: CheckResult) -> str:
-    return canonical_json_digest(
-        {
-            "actor": check.actor.model_dump(mode="json"),
-            "check_id": check.check_id,
-            "check_version": check.check_version,
-            "ended_at": check.ended_at.isoformat(),
-            "exit_status": check.exit_status,
-            "invocation_metadata": check.invocation_metadata,
-            "limitations": list(check.limitations),
-            "outcome": check.outcome.value,
-            "started_at": check.started_at.isoformat(),
-            "target_artifact_revision_ids": [
-                str(item) for item in check.target_artifact_revision_ids
-            ],
-        }
-    )
+    payload: dict[str, object] = {
+        "actor": check.actor.model_dump(mode="json"),
+        "check_id": check.check_id,
+        "check_version": check.check_version,
+        "ended_at": check.ended_at.isoformat(),
+        "exit_status": check.exit_status,
+        "invocation_metadata": check.invocation_metadata,
+        "limitations": list(check.limitations),
+        "outcome": check.outcome.value,
+        "started_at": check.started_at.isoformat(),
+        "target_artifact_revision_ids": [
+            str(item) for item in check.target_artifact_revision_ids
+        ],
+    }
+    if check.capability_id is not None:
+        payload.update(
+            {
+                "capability_approval_id": str(check.capability_approval_id),
+                "capability_id": check.capability_id,
+                "execution_status": (
+                    check.execution_status.value
+                    if check.execution_status is not None
+                    else None
+                ),
+                "invocation_digest": check.invocation_digest,
+                "run_id": str(check.run_id),
+                "stderr_byte_count": check.stderr_byte_count,
+                "stderr_capture_path": check.stderr_capture_path,
+                "stderr_digest": check.stderr_digest,
+                "stdout_byte_count": check.stdout_byte_count,
+                "stdout_capture_path": check.stdout_capture_path,
+                "stdout_digest": check.stdout_digest,
+            }
+        )
+    return canonical_json_digest(payload)
 
 
 def _evidence_digest(evidence: EvidencePacket) -> str:
@@ -315,6 +336,7 @@ def validate_governed_records(
     expected_closures: set[Path] = set()
     expected_abandonments: set[Path] = set()
     expected_runs: set[Path] = set()
+    expected_validator_runs: set[Path] = set()
     expected_command_recoveries: set[Path] = set()
     expected_recoveries: set[Path] = set()
     expected_recovery_snapshots: set[Path] = set()
@@ -331,6 +353,7 @@ def validate_governed_records(
     acceptance_steps: dict[UUID, str] = {}
     decisions_by_id: dict[UUID, DecisionRecord] = {}
     runs_by_id: dict[UUID, RunRecord] = {}
+    validator_runs_by_id: dict[UUID, RunRecord] = {}
     capability_approvals_by_id: dict[UUID, CapabilityApproval] = {}
     revoked_capability_approval_ids: set[UUID] = set()
     used_capability_approval_ids: set[UUID] = set()
@@ -685,6 +708,80 @@ def validate_governed_records(
             if effects != import_stale or not effects.issubset(event.affected_record_ids):
                 raise IntegrityError(f"Import event {event.id} has invalid stale effects")
             stale_ids.update(effects)
+        elif event.event_type == VALIDATOR_RUN_STARTED:
+            if event.run_id is None:
+                raise IntegrityError(f"Validator run event {event.id} has no run ID")
+            run_id = event.run_id
+            approval_id = _uuid_metadata(event, "capability_approval_id")
+            result_id = _uuid_metadata(event, "check_result_id")
+            target_ids = _uuid_list_metadata(event, "target_artifact_revision_ids")
+            path = layout.validator_run_directory / f"{run_id}.json"
+            expected_validator_runs.add(path)
+            run = load_record(path, RunRecord)
+            _validate_common(run, event, run_id)
+            approval = capability_approvals_by_id.get(approval_id)
+            step_id = event.metadata.get("step_id")
+            step = next((item for item in workflow.steps if item.id == step_id), None)
+            check_id = event.metadata.get("check_id")
+            check_version = event.metadata.get("check_version")
+            invocation_digest = event.metadata.get("invocation_digest")
+            current_outputs = {
+                revision_id
+                for artifact_id, revision_id in current_revision_ids.items()
+                if step is not None and artifact_roles[artifact_id] in step.required_outputs
+            }
+            target_digests = tuple(
+                revisions_by_id[item].content_digest
+                for item in target_ids
+                if item in revisions_by_id
+            )
+            if (
+                approval is None
+                or approval_id in revoked_capability_approval_ids
+                or approval.capability_id != event.metadata.get("capability_id")
+                or approval.side_effect_class is not run.side_effect_class
+                or (
+                    approval.approval_scope is CapabilityTrustState.APPROVED_ONCE
+                    and approval.id in used_capability_approval_ids
+                )
+                or step is None
+                or not isinstance(check_id, str)
+                or check_id not in step.check_requirements
+                or not isinstance(check_version, str)
+                or not check_version
+                or not isinstance(invocation_digest, str)
+                or invocation_digest != run.input_context_digest
+                or run.id != run_id
+                or run.run_id != run_id
+                or run.worker != event.actor
+                or run.worker.actor_type is not ActorType.EXTERNAL_TOOL
+                or run.step_id != step_id
+                or run.adapter_reference != f"validator:{approval.capability_id}"
+                or run.capability_ids != (approval.capability_id,)
+                or run.capability_approval_ids != (approval_id,)
+                or run.status is not RunState.RUNNING
+                or run.started_at is None
+                or run.exit_metadata
+                != {
+                    "check_id": check_id,
+                    "check_result_id": str(result_id),
+                    "check_version": check_version,
+                    "kind": "validator-check",
+                }
+                or set(target_ids) != current_outputs
+                or len(target_ids) != len(current_outputs)
+                or len(target_digests) != len(target_ids)
+                or run.affected_record_ids
+                != (run_id, approval_id, result_id, *target_ids)
+                or event.affected_record_ids != run.affected_record_ids
+                or run.affected_digests
+                != (invocation_digest, approval.capability_digest, *target_digests)
+                or event.affected_digests != run.affected_digests
+                or run_id in validator_runs_by_id
+            ):
+                raise IntegrityError(f"Validator run record does not match event {event.id}")
+            used_capability_approval_ids.add(approval_id)
+            validator_runs_by_id[run_id] = run
         elif event.event_type == ADAPTER_RUN_EXECUTED:
             if event.run_id is None or event.run_id not in runs_by_id:
                 raise IntegrityError(
@@ -782,6 +879,71 @@ def validate_governed_records(
             check = load_record(path, CheckResult)
             _validate_common(check, event, result_id)
             target_ids = _uuid_list_metadata(event, "target_artifact_revision_ids")
+            capability_valid = True
+            if check.capability_id is not None:
+                run = (
+                    validator_runs_by_id.get(event.run_id)
+                    if event.run_id is not None
+                    else None
+                )
+                approval = (
+                    capability_approvals_by_id.get(check.capability_approval_id)
+                    if check.capability_approval_id is not None
+                    else None
+                )
+                expected_outcome = (
+                    CheckOutcome.PASSED
+                    if (
+                        check.execution_status is CheckExecutionStatus.COMPLETED
+                        and check.exit_status == 0
+                    )
+                    else (
+                        CheckOutcome.FAILED
+                        if check.execution_status is CheckExecutionStatus.COMPLETED
+                        else CheckOutcome.ERROR
+                    )
+                )
+                capture_prefix = f".forge/local/validator-runs/{event.run_id}"
+                capability_valid = (
+                    run is not None
+                    and approval is not None
+                    and check.capability_approval_id
+                    not in revoked_capability_approval_ids
+                    and check.run_id == run.id
+                    and check.actor == run.worker
+                    and check.capability_id == run.capability_ids[0]
+                    and check.capability_approval_id == run.capability_approval_ids[0]
+                    and check.invocation_digest == run.input_context_digest
+                    and str(result_id) == run.exit_metadata.get("check_result_id")
+                    and check.check_id == run.exit_metadata.get("check_id")
+                    and check.check_version == run.exit_metadata.get("check_version")
+                    and run.started_at is not None
+                    and check.started_at >= run.started_at
+                    and check.ended_at >= check.started_at
+                    and check.outcome is expected_outcome
+                    and check.stdout_capture_path == f"{capture_prefix}/stdout.log"
+                    and check.stderr_capture_path == f"{capture_prefix}/stderr.log"
+                    and check.stdout_byte_count is not None
+                    and check.stderr_byte_count is not None
+                    and check.stdout_byte_count + check.stderr_byte_count <= 1_048_576
+                    and check.target_artifact_revision_ids
+                    == tuple(run.affected_record_ids[3:])
+                    and event.metadata.get("validator_run_id") == str(run.id)
+                    and event.metadata.get("capability_id") == check.capability_id
+                    and event.metadata.get("capability_approval_id")
+                    == str(check.capability_approval_id)
+                    and event.metadata.get("execution_status")
+                    == (
+                        check.execution_status.value
+                        if check.execution_status is not None
+                        else None
+                    )
+                    and check.affected_record_ids
+                    == (run.id, approval.id, *target_ids)
+                    and event.affected_record_ids
+                    == (result_id, run.id, approval.id, *target_ids)
+                    and event.affected_digests == check.affected_digests
+                )
             if (
                 check.id != result_id
                 or check.actor != event.actor
@@ -791,6 +953,7 @@ def validate_governed_records(
                 or not set(target_ids).issubset(revisions_by_id)
                 or _check_digest(check) != check.result_digest
                 or check.result_digest not in event.affected_digests
+                or not capability_valid
             ):
                 raise IntegrityError(f"Check result does not match event {event.id}")
             checks_by_id[result_id] = check
@@ -1567,6 +1730,7 @@ def validate_governed_records(
     _validate_directory(layout.closure_directory, expected_closures)
     _validate_directory(layout.abandonment_directory, expected_abandonments)
     _validate_directory(layout.governed_run_directory, expected_runs)
+    _validate_directory(layout.validator_run_directory, expected_validator_runs)
     _validate_directory(
         layout.command_recovery_record_directory,
         expected_command_recoveries,

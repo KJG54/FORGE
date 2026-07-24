@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import shutil
 from contextlib import suppress
 from dataclasses import dataclass
@@ -46,6 +47,11 @@ _OUTPUT_LOCATIONS = (
     ".forge/local/runs/<run-id>/stdout.jsonl",
     ".forge/local/runs/<run-id>/stderr.log",
     ".forge/local/runs/<run-id>/workspace/result",
+)
+_CREDENTIAL_ENVIRONMENT_NAME = re.compile(
+    r"(?:^|_)(?:API_KEY|ACCESS_KEY|SECRET_KEY|PRIVATE_KEY|TOKEN|SECRET|PASSWORD|"
+    r"PASSWD|CREDENTIALS?)(?:$|_)",
+    re.IGNORECASE,
 )
 
 
@@ -192,6 +198,16 @@ def _inspection_from_local_validator(
         validator.executable,
     )
     working_directory_available = True
+    unsafe_environment_names = tuple(
+        name
+        for name in validator.environment_access
+        if _CREDENTIAL_ENVIRONMENT_NAME.search(name) is not None
+    )
+    if unsafe_environment_names:
+        availability_detail = (
+            f"{availability_detail}; credential-bearing environment names are not permitted: "
+            f"{', '.join(unsafe_environment_names)}"
+        )
     if validator.working_directory is not None:
         try:
             working_directory = resolve_repository_path(
@@ -238,7 +254,11 @@ def _inspection_from_local_validator(
         environment_access=validator.environment_access,
         output_locations=validator.expected_outputs,
         availability_detail=availability_detail,
-        compatible=executable is not None and working_directory_available,
+        compatible=(
+            executable is not None
+            and working_directory_available
+            and not unsafe_environment_names
+        ),
     )
 
 
@@ -368,11 +388,13 @@ def _load_revocations(layout: RepositoryLayout) -> tuple[CapabilityRevocation, .
 
 
 def _used_approval_ids(layout: RepositoryLayout) -> set[UUID]:
-    directory = layout.governed_run_directory
-    if not directory.exists():
-        return set()
     return {
         approval_id
+        for directory in (
+            layout.governed_run_directory,
+            layout.validator_run_directory,
+        )
+        if directory.exists()
         for path in directory.glob("*.json")
         for approval_id in load_record(path, RunRecord).capability_approval_ids
     }
@@ -596,6 +618,29 @@ def require_capability_approval(
     selection: AdapterSelection,
 ) -> CapabilityApproval:
     inspection = inspect_selected_capability(selection)
+    return _require_approval_for_inspection(layout, inspection)
+
+
+def require_validator_capability_approval(
+    layout: RepositoryLayout,
+    capability_id: str,
+) -> tuple[CapabilityInspection, CapabilityApproval]:
+    """Select one active exact-profile approval for a declared local validator."""
+    inspection = inspect_capability(layout, capability_id)
+    if inspection.capability_type != "validator":
+        raise ConflictError(f"Capability {capability_id!r} is not a local validator")
+    if not inspection.compatible or inspection.definition.executable is None:
+        raise ConflictError(
+            f"Capability {inspection.definition.id} cannot execute: "
+            f"{inspection.availability_detail}"
+        )
+    return inspection, _require_approval_for_inspection(layout, inspection)
+
+
+def _require_approval_for_inspection(
+    layout: RepositoryLayout,
+    inspection: CapabilityInspection,
+) -> CapabilityApproval:
     matches = [
         item for item in list_capability_approvals(
             layout, capability_id=inspection.definition.id

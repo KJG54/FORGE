@@ -23,3 +23,10 @@ Secret screening is heuristic defense in depth. Known secret paths and recogniza
 patterns may be blocked or warned on, but FORGE cannot guarantee detection of every secret. Owners
 must review content before importing, governing, sharing, or accepting it.
 
+Approved local validators start with a fresh allowlisted environment rather than inheriting the
+caller's environment. Credential-like environment channels are refused, and raw bounded stdout and
+stderr remain Git-ignored below `.forge/local/validator-runs/`; normal CLI output never renders
+those bytes. A validator can still read any file available to its operating-system identity and
+may write sensitive project content to its local captures. Owners should inspect and remove local
+captures according to their repository security policy and use external sandboxing for hostile
+code.

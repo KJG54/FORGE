@@ -81,6 +81,7 @@ _ACTIVE_TOP_LEVEL = {
     "recovery-snapshots",
     "runs",
     "state.json",
+    "validator-runs",
     "workflow.lock.json",
 }
 

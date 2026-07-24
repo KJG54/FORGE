@@ -73,6 +73,7 @@ from forge.contracts.state import (
 )
 from forge.contracts.verification import (
     AcceptanceRecord,
+    CheckExecutionStatus,
     CheckOutcome,
     CheckResult,
     Claim,
@@ -164,6 +165,7 @@ __all__ = [
     "CapabilityDefinition",
     "CapabilityRevocation",
     "CapabilityTrustState",
+    "CheckExecutionStatus",
     "CheckOutcome",
     "CheckResult",
     "Claim",

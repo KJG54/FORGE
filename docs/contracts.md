@@ -152,3 +152,10 @@ under `ProjectConfiguration.capabilities.local_validators`. The definition conta
 executable plus ordered arguments—never a shell string—and binds working-directory, timeout,
 expected-output, environment-name, and side-effect-risk metadata. Existing capability approval and
 revocation contracts remain unchanged.
+
+M4 Increment 2 reuses `RunRecord` for a validator attempt committed before process creation and
+stores it separately from workflow work runs. `CheckResult` gains additive optional execution
+bindings for approval, invocation digest, normalized execution state, and bounded local stdout and
+stderr capture paths, sizes, and digests. Existing manual check records keep those fields empty and
+retain their prior result-digest payload. The schema version and exported schema count remain
+unchanged.

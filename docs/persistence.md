@@ -257,3 +257,22 @@ chain; no mutable current-trust file is introduced. Cross-record validation reje
 additional, reordered, same-state, non-owner, wrong-pack, or digest-mismatched decisions. Terminal
 archives preserve the full chain. An untrusted archive remains inspectable because untrust is a
 valid historical governance decision rather than an integrity failure.
+
+## M4 Increment 2 validator attempts
+
+`.forge/active/validator-runs/<run-id>.json` reuses the immutable `RunRecord` contract without
+adding the run to workflow `active_run_ids`. Its state-neutral `validator-run-started` event commits
+before process creation and binds the exact approval, future check-result ID, invocation digest,
+check identity, and current artifact revisions. That durable run binding consumes one-time
+approval.
+
+The terminal `check-recorded` event binds the corresponding capability-backed `CheckResult`.
+Restart validation requires the run, approval, invocation, actor, target revisions, result digest,
+execution state, and capture metadata to agree. Raw stdout and stderr remain below
+`.forge/local/validator-runs/`; only their local paths, bounded sizes, and digests enter governed
+history. They are not copied into archives and do not become lifecycle authority.
+
+The idempotent `check_run` command normally commits exactly
+`validator-run-started, check-recorded`. Conservative receipt recovery accepts only that complete
+pair. A start-only interruption remains blocked and is never automatically re-executed or inferred
+successful.
