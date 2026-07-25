@@ -17,10 +17,12 @@ from forge.contracts.capabilities import (
     SideEffectClass,
 )
 from forge.contracts.decisions import (
+    WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE,
     ApprovalRevocation,
     DecisionRecord,
     DecisionSupersession,
     ScopeAmendment,
+    WorkflowDeviation,
 )
 from forge.contracts.events import AuditEvent
 from forge.contracts.idempotency import (
@@ -85,6 +87,7 @@ from forge.core.transitions import (
     SCOPE_AMENDED,
     STEP_TRANSITIONED,
     VALIDATOR_RUN_STARTED,
+    WORKFLOW_DEVIATION_RECORDED,
     WorkflowStateReducer,
 )
 from forge.errors import IntegrityError, SecurityError
@@ -188,6 +191,10 @@ def _supersession_path(layout: RepositoryLayout, supersession_id: UUID) -> Path:
 
 def _scope_amendment_path(layout: RepositoryLayout, amendment_id: UUID) -> Path:
     return layout.scope_amendment_directory / f"{amendment_id}.json"
+
+
+def _workflow_deviation_path(layout: RepositoryLayout, deviation_id: UUID) -> Path:
+    return layout.workflow_deviation_directory / f"{deviation_id}.json"
 
 
 def _imported_result_path(layout: RepositoryLayout, result_id: UUID) -> Path:
@@ -349,6 +356,7 @@ def validate_governed_records(
     expected_decisions: set[Path] = set()
     expected_supersessions: set[Path] = set()
     expected_scope_amendments: set[Path] = set()
+    expected_workflow_deviations: set[Path] = set()
     expected_imported_results: set[Path] = set()
     expected_closures: set[Path] = set()
     expected_abandonments: set[Path] = set()
@@ -370,6 +378,7 @@ def validate_governed_records(
     acceptance_steps: dict[UUID, str] = {}
     record_steps: dict[UUID, str] = {}
     decisions_by_id: dict[UUID, DecisionRecord] = {}
+    deviations_by_id: dict[UUID, WorkflowDeviation] = {}
     runs_by_id: dict[UUID, RunRecord] = {}
     validator_runs_by_id: dict[UUID, RunRecord] = {}
     capability_approvals_by_id: dict[UUID, CapabilityApproval] = {}
@@ -1055,6 +1064,29 @@ def validate_governed_records(
             acceptances_by_id[acceptance_id] = acceptance
             acceptance_steps[acceptance_id] = step_id
             record_steps[acceptance_id] = step_id
+        elif event.event_type == WORKFLOW_DEVIATION_RECORDED:
+            deviation_id = _uuid_metadata(event, "workflow_deviation_id")
+            path = _workflow_deviation_path(layout, deviation_id)
+            expected_workflow_deviations.add(path)
+            deviation = load_record(path, WorkflowDeviation)
+            _validate_common(deviation, event, deviation_id)
+            workflow_digest = canonical_json_digest(workflow.model_dump(mode="json"))
+            if (
+                deviation.id != deviation_id
+                or deviation.actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or deviation.workflow_id != workflow.id
+                or deviation.affected_record_ids
+                or deviation.affected_digests != (workflow_digest,)
+                or event.metadata.get("workflow_id") != workflow.id
+                or event.metadata.get("workflow_version") != workflow.version
+                or event.metadata.get("workflow_digest") != workflow_digest
+                or canonical_json_digest(deviation.model_dump(mode="json"))
+                not in event.affected_digests
+            ):
+                raise IntegrityError(f"Workflow deviation does not match event {event.id}")
+            deviations_by_id[deviation_id] = deviation
         elif event.event_type in {DECISION_RECORDED, DECISION_SUPERSEDED}:
             decision_id = _uuid_metadata(event, "decision_id")
             path = _decision_path(layout, decision_id)
@@ -1066,11 +1098,47 @@ def validate_governed_records(
                 or decision.actor != event.actor
                 or event.actor.actor_type is not ActorType.OWNER
                 or event.actor.id != owner_id
+                or not set(decision.affected_record_ids).issubset(
+                    event.affected_record_ids
+                )
                 or not set(decision.bound_digests).issubset(event.affected_digests)
                 or canonical_json_digest(decision.model_dump(mode="json"))
                 not in event.affected_digests
             ):
                 raise IntegrityError(f"Decision record does not match event {event.id}")
+            if decision.decision_type == WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE:
+                if (
+                    len(decision.affected_record_ids) != 1
+                    or decision.affected_record_ids[0] not in deviations_by_id
+                ):
+                    raise IntegrityError(
+                        f"Workflow deviation review does not match event {event.id}"
+                    )
+                deviation_id = decision.affected_record_ids[0]
+                prior_state = states_before[event.id]
+                if prior_state is None:
+                    raise IntegrityError(
+                        "Workflow deviation review cannot be the first initiative event"
+                    )
+                existing_reviews = {
+                    open_id
+                    for open_id in prior_state.open_decision_ids
+                    if (
+                        (prior_decision := decisions_by_id.get(open_id)) is not None
+                        and prior_decision.decision_type
+                        == WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE
+                        and prior_decision.affected_record_ids == (deviation_id,)
+                    )
+                }
+                superseded_review_id = (
+                    _uuid_metadata(event, "prior_decision_id")
+                    if event.event_type == DECISION_SUPERSEDED
+                    else None
+                )
+                if existing_reviews and superseded_review_id not in existing_reviews:
+                    raise IntegrityError(
+                        f"Workflow deviation {deviation_id} has multiple current reviews"
+                    )
             if event.event_type == DECISION_SUPERSEDED:
                 prior_id = _uuid_metadata(event, "prior_decision_id")
                 supersession_id = _uuid_metadata(event, "supersession_id")
@@ -1714,6 +1782,20 @@ def validate_governed_records(
             current_digests = {
                 revisions_by_id[item].content_digest for item in expected_current_ids
             }
+            reviewed_deviation_ids = {
+                decision.affected_record_ids[0]
+                for decision_id, decision in decisions_by_id.items()
+                if (
+                    decision_id in state.open_decision_ids
+                    and decision_id not in stale_ids
+                    and decision.decision_type
+                    == WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE
+                    and len(decision.affected_record_ids) == 1
+                )
+            }
+            unresolved_deviation_ids = (
+                set(deviations_by_id) - reviewed_deviation_ids
+            )
             if (
                 event is not events[-1]
                 or closure.id != closure_id
@@ -1743,6 +1825,7 @@ def validate_governed_records(
                 != set((*final_acceptance_ids, *current_artifact_ids, *accepted_artifact_ids))
                 or canonical_json_digest(closure.model_dump(mode="json"))
                 not in event.affected_digests
+                or unresolved_deviation_ids
                 or state.lifecycle_state is not InitiativeLifecycleState.CLOSED
             ):
                 raise IntegrityError(f"Closure record does not match event {event.id}")
@@ -1947,6 +2030,10 @@ def validate_governed_records(
     _validate_directory(layout.decision_directory, expected_decisions)
     _validate_directory(layout.decision_supersession_directory, expected_supersessions)
     _validate_directory(layout.scope_amendment_directory, expected_scope_amendments)
+    _validate_directory(
+        layout.workflow_deviation_directory,
+        expected_workflow_deviations,
+    )
     _validate_directory(layout.imported_result_directory, expected_imported_results)
     _validate_directory(layout.closure_directory, expected_closures)
     _validate_directory(layout.abandonment_directory, expected_abandonments)

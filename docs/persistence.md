@@ -288,3 +288,19 @@ The `scope_amend` idempotency pattern contains exactly one `scope-amended` event
 receipt recovery may reconstruct only that complete event. Restart validation replays the state
 before the amendment and recalculates affected records, steps, gates, artifacts, and live-run
 preconditions rather than trusting the stored snapshot or caller-selected invalidation IDs.
+
+## M4 Increment 4 workflow deviations
+
+`.forge/active/workflow-deviations/<deviation-id>.json` stores each immutable
+`WorkflowDeviation`. Its state-neutral `workflow-deviation-recorded` event binds the exact locked
+workflow identity and canonical digest. No current-status file is written.
+
+Effective review is derived from a current, non-stale `DecisionRecord` of type
+`workflow-deviation-review` whose sole affected record is the deviation. Supersession or ordinary
+dependency invalidation can therefore reopen review without editing either record.
+
+The `deviation_record` idempotency pattern contains exactly one
+`workflow-deviation-recorded` event. `deviation_review` reuses the existing complete
+`decision-recorded` or `decision-superseded` patterns. Terminal archives preserve the record and
+review history; successful closure validation independently proves that no deviation was open at
+the terminal event.

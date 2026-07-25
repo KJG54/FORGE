@@ -223,3 +223,10 @@ support and gates. A ready or worked return step becomes `invalidated`; a never-
 step and untouched descendants remain or reset to `pending`. Any affected active run must be
 cancelled first so the amendment never fabricates a terminal run outcome. Restarted work follows
 the ordinary claim, check, evidence, verification, and acceptance sequence in full.
+
+M4 Increment 4 adds `forge deviation record` for a configured-owner observation that actual
+behavior differed from the exact locked workflow. Recording is state-neutral and grants no waiver.
+`forge deviation review` records an ordinary immutable owner decision of type
+`workflow-deviation-review`; only one current, non-stale review resolves a deviation. Open
+deviations remain visible in status and block successful closure, while explicit abandonment
+retains them as unresolved terminal history.

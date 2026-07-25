@@ -6,6 +6,8 @@ from uuid import UUID
 from forge.contracts.actors import Actor
 from forge.contracts.base import GovernanceRecord, NonEmptyString, Sha256Digest, SymbolicId
 
+WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE = "workflow-deviation-review"
+
 
 class DecisionStatus(StrEnum):
     ACTIVE = "active"

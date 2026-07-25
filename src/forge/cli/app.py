@@ -11,6 +11,7 @@ import typer
 
 from forge import __version__
 from forge.contracts.capabilities import CapabilityTrustState, SideEffectClass
+from forge.contracts.decisions import WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE
 from forge.contracts.packs import PackTrustDecision, PackTrustState
 from forge.contracts.recovery import JournalRecoveryRecord
 from forge.contracts.state import ExplanationProfile
@@ -38,6 +39,11 @@ from forge.core.capabilities import (
 from forge.core.command_recovery import recover_command_receipt
 from forge.core.continuity import pause_initiative, resume_initiative
 from forge.core.decisions import record_decision
+from forge.core.deviations import (
+    list_workflow_deviations,
+    record_workflow_deviation,
+    show_workflow_deviation,
+)
 from forge.core.diagnostics import inspect_repository_health
 from forge.core.history import inspect_history_report
 from forge.core.imports import apply_result_import, preview_result_import
@@ -97,6 +103,7 @@ run_app = typer.Typer(help="Inspect or cancel durable work attempts.")
 agent_app = typer.Typer(help="Generate neutral worker context and inspect agent integrations.")
 capability_app = typer.Typer(help="Inspect, approve, or revoke executable capabilities.")
 scope_app = typer.Typer(help="Amend and inspect effective initiative scope.")
+deviation_app = typer.Typer(help="Record, review, and inspect workflow deviations.")
 IdempotencyOption = Annotated[
     str | None,
     typer.Option(
@@ -115,6 +122,7 @@ app.add_typer(run_app, name="run")
 app.add_typer(agent_app, name="agent")
 app.add_typer(capability_app, name="capability")
 app.add_typer(scope_app, name="scope")
+app.add_typer(deviation_app, name="deviation")
 
 
 def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
@@ -2336,6 +2344,150 @@ def scope_show(
             f"acceptances={len(amendment.invalidated_acceptance_ids)} "
             f"gates={len(amendment.invalidated_gate_ids)}"
         )
+
+
+@deviation_app.command("record")
+@_locked_mutation
+def deviation_record(
+    declared_behavior: Annotated[
+        str,
+        typer.Option("--declared", help="Behavior required by the locked workflow."),
+    ],
+    actual_behavior: Annotated[
+        str,
+        typer.Option("--actual", help="Behavior that actually occurred."),
+    ],
+    rationale: Annotated[
+        str,
+        typer.Option("--rationale", help="Owner explanation of the deviation."),
+    ],
+    review_requirement: Annotated[
+        str,
+        typer.Option(
+            "--review-requirement",
+            help="Explicit condition the owner review must address.",
+        ),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Record an observed deviation without granting a waiver or transition."""
+
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = record_workflow_deviation(
+            layout,
+            declared_behavior=declared_behavior,
+            actual_behavior=actual_behavior,
+            rationale=rationale,
+            review_requirement=review_requirement,
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Recorded workflow deviation {result.deviation.id}")
+    typer.echo("Review status: open")
+    typer.echo(
+        "Review with 'forge deviation review "
+        f"{result.deviation.id} --option ... --outcome ... --rationale ...'"
+    )
+
+
+@deviation_app.command("review")
+@_locked_mutation
+def deviation_review(
+    deviation_id: Annotated[UUID, typer.Argument(help="Workflow deviation UUID.")],
+    option: Annotated[
+        list[str],
+        typer.Option("--option", help="Repeat for each considered review outcome."),
+    ],
+    outcome: Annotated[
+        str,
+        typer.Option("--outcome", help="Chosen review outcome."),
+    ],
+    rationale: Annotated[
+        str,
+        typer.Option("--rationale", help="Owner review rationale."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    supersedes: Annotated[
+        UUID | None,
+        typer.Option("--supersedes", help="Prior current review decision UUID."),
+    ] = None,
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Resolve an open deviation through the ordinary immutable decision mechanism."""
+
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        deviation = show_workflow_deviation(layout, deviation_id)
+        result = record_decision(
+            layout,
+            decision_type=WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE,
+            question=f"How is workflow deviation {deviation_id} resolved?",
+            considered_options=tuple(option),
+            chosen_outcome=outcome,
+            rationale=rationale,
+            actor=owner_actor(configuration.owner),
+            affected_record_ids=(deviation_id,),
+            bound_digests=deviation.deviation.affected_digests,
+            supersedes=supersedes,
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Reviewed workflow deviation {deviation_id}")
+    typer.echo(f"Review decision: {result.decision.id}")
+    if result.supersession is not None:
+        typer.echo(f"Supersession: {result.supersession.id}")
+
+
+@deviation_app.command("show")
+def deviation_show(
+    deviation_id: Annotated[
+        UUID | None,
+        typer.Argument(help="Deviation UUID; omit to show complete history."),
+    ] = None,
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Show one deviation or the complete append-only deviation history."""
+
+    try:
+        layout = discover_repository(directory)
+        deviations = (
+            (show_workflow_deviation(layout, deviation_id),)
+            if deviation_id is not None
+            else list_workflow_deviations(layout)
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    if not deviations:
+        typer.echo("No workflow deviations")
+    for view in deviations:
+        deviation = view.deviation
+        status = (
+            f"reviewed by {view.review_decision.id}"
+            if view.review_decision is not None
+            else "open"
+        )
+        typer.echo(f"{deviation.id} workflow={deviation.workflow_id} status={status}")
+        typer.echo(f"  Declared: {deviation.declared_behavior}")
+        typer.echo(f"  Actual: {deviation.actual_behavior}")
+        typer.echo(f"  Rationale: {deviation.rationale}")
+        typer.echo(f"  Review requirement: {deviation.review_requirement}")
 
 
 @app.command("decide")

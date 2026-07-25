@@ -11,7 +11,12 @@ from uuid import UUID, uuid4
 from forge import __version__
 from forge.contracts.actors import Actor
 from forge.contracts.base import utc_now
-from forge.contracts.decisions import DecisionRecord, DecisionSupersession
+from forge.contracts.decisions import (
+    WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE,
+    DecisionRecord,
+    DecisionSupersession,
+    WorkflowDeviation,
+)
 from forge.contracts.events import AuditEvent
 from forge.core.authorization import require_owner
 from forge.core.lifecycle import load_active_initiative
@@ -113,6 +118,37 @@ def record_decision(
     rationale = _require_text("Decision rationale", rationale)
     if any(not _SHA256_DIGEST.fullmatch(item) for item in bound_digests):
         raise ConfigurationError("Every bound digest must be a lowercase sha256 digest")
+    if decision_type == WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE:
+        if len(affected_record_ids) != 1:
+            raise ConfigurationError(
+                "A workflow-deviation review decision must reference exactly one deviation"
+            )
+        deviation_id = affected_record_ids[0]
+        deviation = load_record(
+            layout.workflow_deviation_directory / f"{deviation_id}.json",
+            WorkflowDeviation,
+        )
+        if (
+            deviation.initiative_id != active.initiative.id
+            or deviation.workflow_id != active.workflow.id
+        ):
+            raise ConflictError(
+                f"Workflow deviation {deviation_id} does not govern this initiative"
+            )
+        existing_review_ids = {
+            decision_id
+            for decision_id in active.state.open_decision_ids
+            if (
+                (candidate := load_record(_decision_path(layout, decision_id), DecisionRecord))
+                .decision_type
+                == WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE
+                and candidate.affected_record_ids == (deviation_id,)
+            )
+        }
+        if existing_review_ids and supersedes not in existing_review_ids:
+            raise ConflictError(
+                f"Workflow deviation {deviation_id} already has a current review decision"
+            )
     prior = None
     if supersedes is not None:
         if supersedes not in active.state.open_decision_ids:

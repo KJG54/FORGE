@@ -36,3 +36,8 @@ IDs. FORGE derives invalidation and refuses an amendment while an affected gover
 This protects supported-command integrity; it does not prevent a same-user process from modifying
 repository files outside FORGE or make amended scope safe by itself. Owner review and renewed
 claims, checks, evidence, verification, and acceptance remain required.
+
+Workflow deviations bind the exact locked workflow and remain observations rather than execution
+or bypass authority. A current owner review decision is required before successful closure, but
+review does not waive checks, evidence, acceptance, or gates. Emergency override and risk
+acceptance are separate governance facts and are not implied by a deviation or its review.

@@ -178,6 +178,12 @@ staleness and gate effects, and returns work to an explicit workflow step. Affec
 must be cancelled first, and amended work must produce new claims, checks, evidence, verification,
 and acceptance; the amendment waives none of them.
 
+M4 Increment 4 adds owner-only `forge deviation record` and immutable decision-backed review.
+Deviation recording is state-neutral and grants no waiver, override, risk acceptance, or
+transition. A current `workflow-deviation-review` decision resolves the review requirement;
+supersession or staleness reopens it. Open deviations remain visible in status and block successful
+closure while explicit abandonment preserves unresolved history.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -289,6 +295,8 @@ forge --help
 - [M3 evidence report](docs/milestones/m3-report.md)
 - [M4 Increment 1 declarative-validator boundary](docs/milestones/m4-increment-1.md)
 - [M4 Increment 2 supervised-validator boundary](docs/milestones/m4-increment-2.md)
+- [M4 Increment 3 scope-amendment boundary](docs/milestones/m4-increment-3.md)
+- [M4 Increment 4 workflow-deviation boundary](docs/milestones/m4-increment-4.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

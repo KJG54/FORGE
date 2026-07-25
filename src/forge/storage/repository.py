@@ -192,6 +192,10 @@ class RepositoryLayout:
         return self.active_directory / "scope-amendments"
 
     @property
+    def workflow_deviation_directory(self) -> Path:
+        return self.active_directory / "workflow-deviations"
+
+    @property
     def imported_result_directory(self) -> Path:
         return self.active_directory / "imported-results"
 

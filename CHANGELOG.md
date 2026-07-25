@@ -110,6 +110,9 @@ semantic-version commitments begin at v1.0.0.
   requirement validation, derived downstream support and gate invalidation, affected-run
   cancellation prerequisites, current worker-context propagation, immutable history, and no
   waiver of renewed claim, check, evidence, verification, or acceptance.
+- M4 owner-reviewed workflow deviations with exact locked-workflow binding, state-neutral
+  observation, immutable decision-backed review, supersession-aware reopening, status and closure
+  enforcement, restart validation, archive preservation, and no waiver or override authority.
 
 ### Limitations
 

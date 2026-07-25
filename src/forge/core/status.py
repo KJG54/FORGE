@@ -37,6 +37,7 @@ class StatusReport:
     archive_summaries: tuple[ArchiveSummary, ...] = ()
     pack_trust_state: PackTrustState | None = None
     effective_scope_summary: str | None = None
+    open_workflow_deviation_ids: tuple[UUID, ...] = ()
 
 
 def inspect_status(
@@ -198,13 +199,29 @@ def inspect_status(
             effective_scope_summary=effective_scope_summary(active),
         )
     from forge.core.artifacts import list_artifacts
+    from forge.core.deviations import open_workflow_deviations
 
     drifted = tuple(view for view in list_artifacts(layout) if not view.working_copy_matches)
-    blockers = tuple(
+    open_deviations = open_workflow_deviations(layout)
+    blockers = (
+        *(
+            "Workflow deviation "
+            f"{view.deviation.id} requires review: {view.deviation.review_requirement}"
+            for view in open_deviations
+        ),
+        *(
         f"Working copy changed for artifact {view.artifact.id}; register an explicit revision"
         for view in drifted
+        ),
     )
-    next_actions = active.state.permitted_next_actions
+    next_actions = (
+        *active.state.permitted_next_actions,
+        *(
+            "deviation-review:"
+            f"{view.deviation.id}"
+            for view in open_deviations
+        ),
+    )
     if active.state.lifecycle_state is InitiativeLifecycleState.PAUSED:
         pause_id = active.state.active_pause_event_id
         pause_event = next(
@@ -237,4 +254,7 @@ def inspect_status(
         archive_summaries=archive_summaries,
         pack_trust_state=active.pack_trust.trust_state,
         effective_scope_summary=effective_scope_summary(active),
+        open_workflow_deviation_ids=tuple(
+            item.deviation.id for item in open_deviations
+        ),
     )

@@ -82,3 +82,32 @@ forge decide \
 `forge status` displays invalidated steps, stale record IDs, and open decision IDs. Full restart
 validation cross-checks each governance record against its journal event and reconstructs the same
 effective state.
+
+## Workflow deviations
+
+`forge deviation record` preserves an observed difference between the locked workflow and actual
+behavior. It is owner-only, append-only, and state-neutral.
+
+```console
+forge deviation record \
+  --declared "Run every required verification action" \
+  --actual "One required action was omitted" \
+  --rationale "Preserve the discrepancy for explicit review" \
+  --review-requirement "Choose rework or abandonment"
+forge deviation show
+```
+
+The record is not a waiver, override, risk acceptance, or lifecycle transition. Review uses the
+ordinary decision system:
+
+```console
+forge deviation review <deviation-id> \
+  --option rework --option abandon \
+  --outcome rework \
+  --rationale "The locked workflow remains governing"
+```
+
+Only a current, non-stale `workflow-deviation-review` decision resolves the deviation. Superseding
+that decision without a replacement review for the same deviation reopens it. Open deviations
+appear in `forge status` and block successful closure. Explicit abandonment remains available and
+preserves the deviation as part of unfinished terminal history.

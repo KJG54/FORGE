@@ -83,6 +83,7 @@ _ACTIVE_TOP_LEVEL = {
     "scope-amendments",
     "state.json",
     "validator-runs",
+    "workflow-deviations",
     "workflow.lock.json",
 }
 
@@ -214,6 +215,15 @@ def _preflight_closure(
 ) -> tuple[tuple[AcceptanceView, ...], tuple[ArtifactRevision, ...]]:
     if active.state.lifecycle_state is not InitiativeLifecycleState.ACTIVE:
         raise ConflictError("Only an active initiative may close")
+    from forge.core.deviations import open_workflow_deviations
+
+    unresolved_deviations = open_workflow_deviations(active.layout)
+    if unresolved_deviations:
+        identifiers = ", ".join(str(item.deviation.id) for item in unresolved_deviations)
+        raise ConflictError(
+            "Successful closure requires a current owner review decision for every workflow "
+            f"deviation; unresolved: {identifiers}"
+        )
     incomplete = [
         step_id
         for step_id, state in active.state.step_states.items()

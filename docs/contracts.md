@@ -165,3 +165,9 @@ M4 Increment 3 activates the existing public `ScopeAmendment` contract without c
 workflow requirement IDs, current logical artifact IDs, derived invalidated check, gate, and
 acceptance IDs, and the explicit workflow return step. Its inherited affected-record and digest
 fields bind the complete derived stale set and current affected artifact content.
+
+M4 Increment 4 activates the existing public `WorkflowDeviation` contract without changing its
+schema. The record binds declared and actual behavior, owner rationale, an explicit review
+requirement, and the exact locked-workflow digest. Review reuses `DecisionRecord` with the fixed
+type `workflow-deviation-review` and exactly one affected deviation ID; no mutable reviewed flag or
+second approval contract is introduced.

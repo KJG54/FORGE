@@ -38,6 +38,7 @@ ACCEPTANCE_REVOKED = "acceptance-revoked"
 DECISION_RECORDED = "decision-recorded"
 DECISION_SUPERSEDED = "decision-superseded"
 SCOPE_AMENDED = "scope-amended"
+WORKFLOW_DEVIATION_RECORDED = "workflow-deviation-recorded"
 RESULT_IMPORTED = "result-imported"
 INITIATIVE_CLOSED = "initiative-closed"
 INITIATIVE_ABANDONED = "initiative-abandoned"
@@ -584,6 +585,12 @@ class WorkflowStateReducer:
             _metadata_string(event, "scope_amendment_id")
             _metadata_string(event, "workflow_return_step_id")
             return self._apply_invalidation(state, event)
+        if event.event_type == WORKFLOW_DEVIATION_RECORDED:
+            require_owner(event.actor, self.owner_identity_id, "record a workflow deviation")
+            if _metadata_string(event, "workflow_id") != self.workflow.id:
+                raise IntegrityError("Workflow deviation does not match the locked workflow")
+            _metadata_string(event, "workflow_deviation_id")
+            return state
         if event.event_type == ACCEPTANCE_REVOKED:
             return self._apply_invalidation(state, event)
         if event.event_type == RESULT_IMPORTED:
