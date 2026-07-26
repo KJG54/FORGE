@@ -51,6 +51,7 @@ EXPECTED_EVENT_PATTERNS: dict[str, tuple[tuple[str, ...], ...]] = {
     "create": (("initiative-created",),),
     "decide": (("decision-recorded",), ("decision-superseded",)),
     "deviation_review": (("decision-recorded",), ("decision-superseded",)),
+    "override_record": (("emergency-override-recorded",),),
     "evidence_add": (("evidence-registered",),),
     "import_result": (("result-imported",),),
     "pause": (("initiative-paused",),),

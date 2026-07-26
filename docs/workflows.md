@@ -230,3 +230,10 @@ behavior differed from the exact locked workflow. Recording is state-neutral and
 `workflow-deviation-review`; only one current, non-stale review resolves a deviation. Open
 deviations remain visible in status and block successful closure, while explicit abandonment
 retains them as unresolved terminal history.
+
+M4 Increment 5 adds `forge override record` for a configured-owner emergency exception targeting
+exactly one locked-workflow requirement or gate. The immutable record carries rationale, residual
+risk, temporary/permanent status, and a review requirement, but it is state-neutral and satisfies
+no transition condition. Status reports unresolved override risk and successful closure refuses it
+until a later distinct risk-acceptance record resolves the exact override. Abandonment preserves
+the unresolved exception without presenting the initiative as completed.

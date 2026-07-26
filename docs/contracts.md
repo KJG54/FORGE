@@ -171,3 +171,8 @@ schema. The record binds declared and actual behavior, owner rationale, an expli
 requirement, and the exact locked-workflow digest. Review reuses `DecisionRecord` with the fixed
 type `workflow-deviation-review` and exactly one affected deviation ID; no mutable reviewed flag or
 second approval contract is introduced.
+
+M4 Increment 5 activates the existing public `EmergencyOverride` contract without changing its
+schema. The record binds one qualified locked-workflow requirement or gate, owner rationale,
+residual risk, temporary/permanent status, review requirement, and the exact workflow digest. It
+remains state-neutral and is not a substitute for the separate `RiskAcceptance` contract.

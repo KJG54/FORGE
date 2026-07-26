@@ -21,6 +21,7 @@ from forge.contracts.decisions import (
     ApprovalRevocation,
     DecisionRecord,
     DecisionSupersession,
+    EmergencyOverride,
     ScopeAmendment,
     WorkflowDeviation,
 )
@@ -58,6 +59,7 @@ from forge.contracts.verification import (
 )
 from forge.contracts.workflows import CancellationBehavior, WorkflowDefinition
 from forge.core.authorization import migration_actor
+from forge.core.scope_amendments import known_workflow_requirement_ids
 from forge.core.successors import (
     load_predecessor_artifact_revision,
     predecessor_artifact_source_reference,
@@ -75,6 +77,7 @@ from forge.core.transitions import (
     COMMAND_RECOVERED,
     DECISION_RECORDED,
     DECISION_SUPERSEDED,
+    EMERGENCY_OVERRIDE_RECORDED,
     EVIDENCE_REGISTERED,
     INITIATIVE_ABANDONED,
     INITIATIVE_CLOSED,
@@ -195,6 +198,10 @@ def _scope_amendment_path(layout: RepositoryLayout, amendment_id: UUID) -> Path:
 
 def _workflow_deviation_path(layout: RepositoryLayout, deviation_id: UUID) -> Path:
     return layout.workflow_deviation_directory / f"{deviation_id}.json"
+
+
+def _emergency_override_path(layout: RepositoryLayout, override_id: UUID) -> Path:
+    return layout.emergency_override_directory / f"{override_id}.json"
 
 
 def _imported_result_path(layout: RepositoryLayout, result_id: UUID) -> Path:
@@ -357,6 +364,7 @@ def validate_governed_records(
     expected_supersessions: set[Path] = set()
     expected_scope_amendments: set[Path] = set()
     expected_workflow_deviations: set[Path] = set()
+    expected_emergency_overrides: set[Path] = set()
     expected_imported_results: set[Path] = set()
     expected_closures: set[Path] = set()
     expected_abandonments: set[Path] = set()
@@ -379,6 +387,7 @@ def validate_governed_records(
     record_steps: dict[UUID, str] = {}
     decisions_by_id: dict[UUID, DecisionRecord] = {}
     deviations_by_id: dict[UUID, WorkflowDeviation] = {}
+    emergency_overrides_by_id: dict[UUID, EmergencyOverride] = {}
     runs_by_id: dict[UUID, RunRecord] = {}
     validator_runs_by_id: dict[UUID, RunRecord] = {}
     capability_approvals_by_id: dict[UUID, CapabilityApproval] = {}
@@ -1087,6 +1096,48 @@ def validate_governed_records(
             ):
                 raise IntegrityError(f"Workflow deviation does not match event {event.id}")
             deviations_by_id[deviation_id] = deviation
+        elif event.event_type == EMERGENCY_OVERRIDE_RECORDED:
+            override_id = _uuid_metadata(event, "emergency_override_id")
+            path = _emergency_override_path(layout, override_id)
+            expected_emergency_overrides.add(path)
+            override = load_record(path, EmergencyOverride)
+            _validate_common(override, event, override_id)
+            workflow_digest = canonical_json_digest(workflow.model_dump(mode="json"))
+            target = override.affected_requirement_or_gate
+            target_kind, separator, target_id = target.partition(":")
+            target_valid = (
+                separator == ":"
+                and bool(target_id)
+                and (
+                    (
+                        target_kind == "gate"
+                        and target_id in {gate.id for gate in workflow.required_gates}
+                    )
+                    or (
+                        target_kind == "requirement"
+                        and target_id in known_workflow_requirement_ids(workflow)
+                    )
+                )
+            )
+            if (
+                override.id != override_id
+                or override.actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or not target_valid
+                or override.permanence not in {"temporary", "permanent"}
+                or override.affected_record_ids
+                or override.affected_digests != (workflow_digest,)
+                or event.metadata.get("affected_requirement_or_gate") != target
+                or event.metadata.get("permanence") != override.permanence
+                or event.metadata.get("workflow_id") != workflow.id
+                or event.metadata.get("workflow_version") != workflow.version
+                or event.metadata.get("workflow_digest") != workflow_digest
+                or canonical_json_digest(override.model_dump(mode="json"))
+                not in event.affected_digests
+            ):
+                raise IntegrityError(f"Emergency override does not match event {event.id}")
+            emergency_overrides_by_id[override_id] = override
         elif event.event_type in {DECISION_RECORDED, DECISION_SUPERSEDED}:
             decision_id = _uuid_metadata(event, "decision_id")
             path = _decision_path(layout, decision_id)
@@ -1826,6 +1877,7 @@ def validate_governed_records(
                 or canonical_json_digest(closure.model_dump(mode="json"))
                 not in event.affected_digests
                 or unresolved_deviation_ids
+                or emergency_overrides_by_id
                 or state.lifecycle_state is not InitiativeLifecycleState.CLOSED
             ):
                 raise IntegrityError(f"Closure record does not match event {event.id}")
@@ -2033,6 +2085,10 @@ def validate_governed_records(
     _validate_directory(
         layout.workflow_deviation_directory,
         expected_workflow_deviations,
+    )
+    _validate_directory(
+        layout.emergency_override_directory,
+        expected_emergency_overrides,
     )
     _validate_directory(layout.imported_result_directory, expected_imported_results)
     _validate_directory(layout.closure_directory, expected_closures)

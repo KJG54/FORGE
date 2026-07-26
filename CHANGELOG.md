@@ -113,6 +113,9 @@ semantic-version commitments begin at v1.0.0.
 - M4 owner-reviewed workflow deviations with exact locked-workflow binding, state-neutral
   observation, immutable decision-backed review, supersession-aware reopening, status and closure
   enforcement, restart validation, archive preservation, and no waiver or override authority.
+- M4 non-bypassing emergency overrides with exact locked-workflow requirement/gate targeting,
+  explicit residual risk and permanence, state-neutral audit history, fail-closed closure
+  enforcement, restart validation, archive preservation, and no fabricated progression support.
 
 ### Limitations
 

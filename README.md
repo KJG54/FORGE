@@ -184,6 +184,12 @@ transition. A current `workflow-deviation-review` decision resolves the review r
 supersession or staleness reopens it. Open deviations remain visible in status and block successful
 closure while explicit abandonment preserves unresolved history.
 
+M4 Increment 5 adds owner-only `forge override record` for one exact locked-workflow requirement
+or gate. The immutable record carries rationale, residual risk, temporary/permanent status, and a
+review requirement while granting no progression authority. Overrides become explicit
+successful-closure blockers until a later separate risk-acceptance record resolves them;
+abandonment preserves unresolved emergency history.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -297,6 +303,7 @@ forge --help
 - [M4 Increment 2 supervised-validator boundary](docs/milestones/m4-increment-2.md)
 - [M4 Increment 3 scope-amendment boundary](docs/milestones/m4-increment-3.md)
 - [M4 Increment 4 workflow-deviation boundary](docs/milestones/m4-increment-4.md)
+- [M4 Increment 5 emergency-override boundary](docs/milestones/m4-increment-5.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

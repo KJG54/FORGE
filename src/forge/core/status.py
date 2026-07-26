@@ -38,6 +38,7 @@ class StatusReport:
     pack_trust_state: PackTrustState | None = None
     effective_scope_summary: str | None = None
     open_workflow_deviation_ids: tuple[UUID, ...] = ()
+    emergency_override_ids: tuple[UUID, ...] = ()
 
 
 def inspect_status(
@@ -200,14 +201,21 @@ def inspect_status(
         )
     from forge.core.artifacts import list_artifacts
     from forge.core.deviations import open_workflow_deviations
+    from forge.core.overrides import list_emergency_overrides
 
     drifted = tuple(view for view in list_artifacts(layout) if not view.working_copy_matches)
     open_deviations = open_workflow_deviations(layout)
+    emergency_overrides = list_emergency_overrides(layout)
     blockers = (
         *(
             "Workflow deviation "
             f"{view.deviation.id} requires review: {view.deviation.review_requirement}"
             for view in open_deviations
+        ),
+        *(
+            "Emergency override "
+            f"{override.id} retains unresolved residual risk: {override.residual_risk}"
+            for override in emergency_overrides
         ),
         *(
         f"Working copy changed for artifact {view.artifact.id}; register an explicit revision"
@@ -220,6 +228,10 @@ def inspect_status(
             "deviation-review:"
             f"{view.deviation.id}"
             for view in open_deviations
+        ),
+        *(
+            f"risk-acceptance-required:{override.id}"
+            for override in emergency_overrides
         ),
     )
     if active.state.lifecycle_state is InitiativeLifecycleState.PAUSED:
@@ -257,4 +269,5 @@ def inspect_status(
         open_workflow_deviation_ids=tuple(
             item.deviation.id for item in open_deviations
         ),
+        emergency_override_ids=tuple(item.id for item in emergency_overrides),
     )

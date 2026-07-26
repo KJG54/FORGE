@@ -55,6 +55,11 @@ from forge.core.lifecycle import (
 )
 from forge.core.lock_remediation import remediate_stale_lock
 from forge.core.migrations import inspect_active_migration, migrate_active_repository
+from forge.core.overrides import (
+    list_emergency_overrides,
+    record_emergency_override,
+    show_emergency_override,
+)
 from forge.core.pack_trust import change_pack_trust, pack_trust_history
 from forge.core.recovery import recover_active_snapshot
 from forge.core.runs import cancel_run, list_runs, show_run
@@ -104,6 +109,7 @@ agent_app = typer.Typer(help="Generate neutral worker context and inspect agent 
 capability_app = typer.Typer(help="Inspect, approve, or revoke executable capabilities.")
 scope_app = typer.Typer(help="Amend and inspect effective initiative scope.")
 deviation_app = typer.Typer(help="Record, review, and inspect workflow deviations.")
+override_app = typer.Typer(help="Record and inspect emergency override declarations.")
 IdempotencyOption = Annotated[
     str | None,
     typer.Option(
@@ -123,6 +129,7 @@ app.add_typer(agent_app, name="agent")
 app.add_typer(capability_app, name="capability")
 app.add_typer(scope_app, name="scope")
 app.add_typer(deviation_app, name="deviation")
+app.add_typer(override_app, name="override")
 
 
 def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
@@ -2488,6 +2495,109 @@ def deviation_show(
         typer.echo(f"  Actual: {deviation.actual_behavior}")
         typer.echo(f"  Rationale: {deviation.rationale}")
         typer.echo(f"  Review requirement: {deviation.review_requirement}")
+
+
+@override_app.command("record")
+@_locked_mutation
+def override_record(
+    rationale: Annotated[
+        str,
+        typer.Option("--rationale", help="Owner justification for the emergency exception."),
+    ],
+    residual_risk: Annotated[
+        str,
+        typer.Option("--residual-risk", help="Risk that remains after the exception."),
+    ],
+    permanence: Annotated[
+        str,
+        typer.Option(
+            "--permanence",
+            help="Override status: temporary or permanent.",
+        ),
+    ],
+    review_requirement: Annotated[
+        str,
+        typer.Option(
+            "--review-requirement",
+            help="Condition that must be addressed by later owner review.",
+        ),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    requirement_id: Annotated[
+        str | None,
+        typer.Option(
+            "--requirement",
+            help="One symbolic requirement from the locked workflow.",
+        ),
+    ] = None,
+    gate_id: Annotated[
+        str | None,
+        typer.Option("--gate", help="One gate from the locked workflow."),
+    ] = None,
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Record an emergency exception without bypassing governed progression."""
+
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = record_emergency_override(
+            layout,
+            requirement_id=requirement_id,
+            gate_id=gate_id,
+            rationale=rationale,
+            residual_risk=residual_risk,
+            permanence=permanence,
+            review_requirement=review_requirement,
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Recorded emergency override {result.override.id}")
+    typer.echo(f"Target: {result.override.affected_requirement_or_gate}")
+    typer.echo(f"Permanence: {result.override.permanence}")
+    typer.echo("Progression authority: none")
+    typer.echo("Successful closure requires a later explicit risk acceptance")
+
+
+@override_app.command("show")
+def override_show(
+    override_id: Annotated[
+        UUID | None,
+        typer.Argument(help="Override UUID; omit to show complete history."),
+    ] = None,
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Show one emergency override or the complete append-only history."""
+
+    try:
+        layout = discover_repository(directory)
+        overrides = (
+            (show_emergency_override(layout, override_id),)
+            if override_id is not None
+            else list_emergency_overrides(layout)
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    if not overrides:
+        typer.echo("No emergency overrides")
+    for item in overrides:
+        typer.echo(
+            f"{item.id} target={item.affected_requirement_or_gate} "
+            f"permanence={item.permanence}"
+        )
+        typer.echo(f"  Rationale: {item.rationale}")
+        typer.echo(f"  Residual risk: {item.residual_risk}")
+        typer.echo(f"  Review requirement: {item.review_requirement}")
+        typer.echo("  Progression authority: none")
 
 
 @app.command("decide")

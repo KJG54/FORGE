@@ -41,3 +41,9 @@ Workflow deviations bind the exact locked workflow and remain observations rathe
 or bypass authority. A current owner review decision is required before successful closure, but
 review does not waive checks, evidence, acceptance, or gates. Emergency override and risk
 acceptance are separate governance facts and are not implied by a deviation or its review.
+
+Emergency overrides are exact locked-workflow, owner-attributed exception records. They do not
+weaken transition checks or fabricate claims, checks, evidence, gates, verification, or
+acceptance. Until an explicit risk-acceptance boundary is implemented, any override blocks
+successful closure. This fail-closed behavior is governance enforcement, not isolation from a
+same-user process that can directly modify repository files.

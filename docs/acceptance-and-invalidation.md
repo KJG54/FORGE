@@ -111,3 +111,26 @@ Only a current, non-stale `workflow-deviation-review` decision resolves the devi
 that decision without a replacement review for the same deviation reopens it. Open deviations
 appear in `forge status` and block successful closure. Explicit abandonment remains available and
 preserves the deviation as part of unfinished terminal history.
+
+## Emergency overrides
+
+`forge override record` preserves a configured-owner emergency exception to exactly one
+locked-workflow requirement or gate.
+
+```console
+forge override record \
+  --requirement declared-checks \
+  --rationale "An external emergency requires a documented exception" \
+  --residual-risk "The affected check still has no passing result" \
+  --permanence temporary \
+  --review-requirement "Reassess after the emergency ends"
+forge override show
+```
+
+The record is deliberately state-neutral. It cannot create or replace a claim, passing check,
+evidence packet, gate approval, verification transition, or owner acceptance. Recording an
+override therefore adds an auditable residual-risk blocker; it does not remove a workflow blocker.
+
+Successful closure refuses unresolved overrides. Explicit abandonment remains available and
+preserves them as unfinished terminal history. Risk acceptance is a separate later action and is
+not implied by either the override record or its owner actor.

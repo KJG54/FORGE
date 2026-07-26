@@ -12,6 +12,7 @@ from forge.contracts.actors import Actor
 from forge.contracts.base import utc_now
 from forge.contracts.decisions import ScopeAmendment
 from forge.contracts.events import AuditEvent
+from forge.contracts.workflows import WorkflowDefinition
 from forge.core.acceptance import list_acceptances
 from forge.core.artifacts import list_artifacts
 from forge.core.authorization import require_owner
@@ -77,22 +78,24 @@ def _descendant_step_ids(active: ActiveInitiative, root_step_id: str) -> tuple[s
     return tuple(step.id for step in active.workflow.steps if step.id in affected)
 
 
-def _known_requirement_ids(active: ActiveInitiative) -> set[str]:
-    identifiers: set[str] = set(active.workflow.required_artifact_classes)
-    identifiers.update(active.workflow.required_evidence_classes)
-    for step in active.workflow.steps:
+def known_workflow_requirement_ids(workflow: WorkflowDefinition) -> set[str]:
+    """Return every symbolic requirement governed by the locked workflow."""
+
+    identifiers: set[str] = set(workflow.required_artifact_classes)
+    identifiers.update(workflow.required_evidence_classes)
+    for step in workflow.steps:
         identifiers.update(step.required_inputs)
         identifiers.update(step.required_outputs)
         identifiers.update(step.claim_requirements)
         identifiers.update(step.check_requirements)
         identifiers.update(step.acceptance_requirements)
-    for gate in active.workflow.required_gates:
+    for gate in workflow.required_gates:
         identifiers.add(gate.id)
         identifiers.add(gate.authority_requirement)
         identifiers.update(gate.required_artifact_classes)
         identifiers.update(gate.required_evidence_classes)
         identifiers.update(gate.required_check_ids)
-    for transition in active.workflow.transitions:
+    for transition in workflow.transitions:
         identifiers.add(transition.authority_requirement)
         identifiers.update(transition.conditions)
     return identifiers
@@ -199,7 +202,7 @@ def amend_scope(
         raise ConfigurationError("At least one affected requirement is required")
     if len(affected_requirements) != len(set(affected_requirements)):
         raise ConfigurationError("Affected requirements must not contain duplicates")
-    known_requirements = _known_requirement_ids(active)
+    known_requirements = known_workflow_requirement_ids(active.workflow)
     unknown_requirements = set(affected_requirements) - known_requirements
     if unknown_requirements:
         raise ConfigurationError(

@@ -304,3 +304,19 @@ The `deviation_record` idempotency pattern contains exactly one
 `decision-recorded` or `decision-superseded` patterns. Terminal archives preserve the record and
 review history; successful closure validation independently proves that no deviation was open at
 the terminal event.
+
+## M4 Increment 5 emergency overrides
+
+`.forge/active/emergency-overrides/<override-id>.json` stores each immutable
+`EmergencyOverride`. Its state-neutral `emergency-override-recorded` event binds one qualified
+locked-workflow requirement or gate, permanence, and the exact workflow identity and digest.
+
+No mutable effective-override file is written, and the materialized workflow state is unchanged
+apart from the ordinary journal head. Status derives unresolved residual risk from the complete
+validated override history. Until risk acceptance is implemented, every override remains a
+successful-closure blocker.
+
+The `override_record` idempotency pattern contains exactly one
+`emergency-override-recorded` event. Conservative receipt recovery may reconstruct only that
+complete event. Terminal archives preserve override history, and restart validation rejects
+unexpected files or a terminal closure that contains unresolved override risk.

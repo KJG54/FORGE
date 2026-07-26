@@ -196,6 +196,10 @@ class RepositoryLayout:
         return self.active_directory / "workflow-deviations"
 
     @property
+    def emergency_override_directory(self) -> Path:
+        return self.active_directory / "emergency-overrides"
+
+    @property
     def imported_result_directory(self) -> Path:
         return self.active_directory / "imported-results"
 

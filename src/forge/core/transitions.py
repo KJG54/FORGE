@@ -39,6 +39,7 @@ DECISION_RECORDED = "decision-recorded"
 DECISION_SUPERSEDED = "decision-superseded"
 SCOPE_AMENDED = "scope-amended"
 WORKFLOW_DEVIATION_RECORDED = "workflow-deviation-recorded"
+EMERGENCY_OVERRIDE_RECORDED = "emergency-override-recorded"
 RESULT_IMPORTED = "result-imported"
 INITIATIVE_CLOSED = "initiative-closed"
 INITIATIVE_ABANDONED = "initiative-abandoned"
@@ -590,6 +591,13 @@ class WorkflowStateReducer:
             if _metadata_string(event, "workflow_id") != self.workflow.id:
                 raise IntegrityError("Workflow deviation does not match the locked workflow")
             _metadata_string(event, "workflow_deviation_id")
+            return state
+        if event.event_type == EMERGENCY_OVERRIDE_RECORDED:
+            require_owner(event.actor, self.owner_identity_id, "record an emergency override")
+            if _metadata_string(event, "workflow_id") != self.workflow.id:
+                raise IntegrityError("Emergency override does not match the locked workflow")
+            _metadata_string(event, "emergency_override_id")
+            _metadata_string(event, "affected_requirement_or_gate")
             return state
         if event.event_type == ACCEPTANCE_REVOKED:
             return self._apply_invalidation(state, event)

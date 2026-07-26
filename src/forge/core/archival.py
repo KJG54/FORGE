@@ -67,6 +67,7 @@ _ACTIVE_TOP_LEVEL = {
     "closure",
     "decision-supersessions",
     "decisions",
+    "emergency-overrides",
     "events.jsonl",
     "evidence",
     "imported-results",
@@ -223,6 +224,15 @@ def _preflight_closure(
         raise ConflictError(
             "Successful closure requires a current owner review decision for every workflow "
             f"deviation; unresolved: {identifiers}"
+        )
+    from forge.core.overrides import list_emergency_overrides
+
+    unresolved_overrides = list_emergency_overrides(active.layout)
+    if unresolved_overrides:
+        identifiers = ", ".join(str(item.id) for item in unresolved_overrides)
+        raise ConflictError(
+            "Successful closure requires explicit risk acceptance for every emergency override; "
+            f"unresolved: {identifiers}"
         )
     incomplete = [
         step_id
