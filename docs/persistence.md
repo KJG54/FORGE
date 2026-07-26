@@ -313,10 +313,22 @@ locked-workflow requirement or gate, permanence, and the exact workflow identity
 
 No mutable effective-override file is written, and the materialized workflow state is unchanged
 apart from the ordinary journal head. Status derives unresolved residual risk from the complete
-validated override history. Until risk acceptance is implemented, every override remains a
-successful-closure blocker.
+validated override history. Every current override without a current exact risk acceptance remains
+a successful-closure blocker.
 
 The `override_record` idempotency pattern contains exactly one
 `emergency-override-recorded` event. Conservative receipt recovery may reconstruct only that
 complete event. Terminal archives preserve override history, and restart validation rejects
 unexpected files or a terminal closure that contains unresolved override risk.
+
+## M4 Increment 6 risk acceptances
+
+`.forge/active/risk-acceptances/<acceptance-id>.json` stores each immutable `RiskAcceptance`.
+Its state-neutral `risk-accepted` event binds the acceptance ID, one exact emergency-override ID
+and digest, and the override's locked-workflow digest. No mutable resolution file is written.
+
+Only one current acceptance may exist per override. The `risk_accept` idempotency pattern contains
+exactly one `risk-accepted` event. A scope amendment affecting the override's requirement or gate
+adds both record IDs to governed staleness. Restart and closure validation independently derive
+the same relationship, reject duplicate or tampered current acceptances, and preserve the complete
+history in terminal archives.

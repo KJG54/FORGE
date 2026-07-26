@@ -10,13 +10,13 @@ from uuid import UUID, uuid4
 from forge import __version__
 from forge.contracts.actors import Actor
 from forge.contracts.base import utc_now
-from forge.contracts.decisions import ScopeAmendment
+from forge.contracts.decisions import EmergencyOverride, RiskAcceptance, ScopeAmendment
 from forge.contracts.events import AuditEvent
 from forge.contracts.workflows import WorkflowDefinition
 from forge.core.acceptance import list_acceptances
 from forge.core.artifacts import list_artifacts
 from forge.core.authorization import require_owner
-from forge.core.invalidation import calculate_scope_amendment_invalidation
+from forge.core.invalidation import DependencyInvalidation, calculate_scope_amendment_invalidation
 from forge.core.lifecycle import ActiveInitiative, load_active_initiative
 from forge.core.transitions import SCOPE_AMENDED
 from forge.core.verification import list_checks
@@ -128,6 +128,54 @@ def _invalidated_gate_ids(
     )
 
 
+def _governance_stale_ids(
+    active: ActiveInitiative,
+    affected_requirements: tuple[str, ...],
+    invalidated_gate_ids: tuple[str, ...],
+) -> tuple[UUID, ...]:
+    """Stale current override authority and its exact risk acceptance."""
+
+    targets = {
+        *(f"requirement:{item}" for item in affected_requirements),
+        *(f"gate:{item}" for item in invalidated_gate_ids),
+    }
+    override_ids: set[UUID] = set()
+    directory = active.layout.emergency_override_directory
+    if directory.exists():
+        if directory.is_symlink() or not directory.is_dir():
+            raise IntegrityError(
+                f"Emergency override directory is missing or unsafe: {directory}"
+            )
+        override_ids.update(
+            override.id
+            for path in directory.glob("*.json")
+            if (
+                (override := load_record(path, EmergencyOverride)).id
+                not in active.state.stale_record_ids
+                and override.affected_requirement_or_gate in targets
+            )
+        )
+
+    acceptance_ids: set[UUID] = set()
+    directory = active.layout.risk_acceptance_directory
+    if directory.exists():
+        if directory.is_symlink() or not directory.is_dir():
+            raise IntegrityError(
+                f"Risk acceptance directory is missing or unsafe: {directory}"
+            )
+        acceptance_ids.update(
+            acceptance.id
+            for path in directory.glob("*.json")
+            if (
+                (acceptance := load_record(path, RiskAcceptance)).id
+                not in active.state.stale_record_ids
+                and len(acceptance.affected_record_ids) == 1
+                and acceptance.affected_record_ids[0] in override_ids
+            )
+        )
+    return tuple(sorted((*override_ids, *acceptance_ids), key=str))
+
+
 def list_scope_amendments(layout: RepositoryLayout) -> tuple[ScopeAmendment, ...]:
     load_active_initiative(layout, allow_paused=True, allow_untrusted_pack=True)
     directory = layout.scope_amendment_directory
@@ -227,6 +275,23 @@ def amend_scope(
         raise ConflictError(
             f"Scope amendment affects active runs; cancel them first: {values}"
         )
+    affected_step_ids = _descendant_step_ids(active, workflow_return_step_id)
+    invalidated_gate_ids = _invalidated_gate_ids(
+        active,
+        affected_step_ids,
+        affected_requirements,
+    )
+    governance_stale_ids = _governance_stale_ids(
+        active,
+        affected_requirements,
+        invalidated_gate_ids,
+    )
+    invalidation = DependencyInvalidation(
+        tuple(sorted((*invalidation.stale_record_ids, *governance_stale_ids), key=str)),
+        invalidation.invalidated_step_ids,
+        invalidation.reset_step_ids,
+        invalidation.invalidated_run_ids,
+    )
     stale_ids = set(invalidation.stale_record_ids)
     invalidated_check_ids = tuple(
         sorted((item.id for item in list_checks(layout) if item.id in stale_ids), key=str)
@@ -240,12 +305,6 @@ def amend_scope(
             ),
             key=str,
         )
-    )
-    affected_step_ids = _descendant_step_ids(active, workflow_return_step_id)
-    invalidated_gate_ids = _invalidated_gate_ids(
-        active,
-        affected_step_ids,
-        affected_requirements,
     )
     artifact_digests = tuple(
         artifacts[item].current_revision.content_digest for item in affected_artifact_ids

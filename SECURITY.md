@@ -44,6 +44,7 @@ acceptance are separate governance facts and are not implied by a deviation or i
 
 Emergency overrides are exact locked-workflow, owner-attributed exception records. They do not
 weaken transition checks or fabricate claims, checks, evidence, gates, verification, or
-acceptance. Until an explicit risk-acceptance boundary is implemented, any override blocks
-successful closure. This fail-closed behavior is governance enforcement, not isolation from a
-same-user process that can directly modify repository files.
+acceptance. A separate owner risk acceptance must bind the exact override record and clears only
+its residual-risk closure blocker. Scope amendments affecting the governed target stale both
+records. This fail-closed behavior is governance enforcement, not isolation from a same-user
+process that can directly modify repository files.

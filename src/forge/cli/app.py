@@ -62,6 +62,11 @@ from forge.core.overrides import (
 )
 from forge.core.pack_trust import change_pack_trust, pack_trust_history
 from forge.core.recovery import recover_active_snapshot
+from forge.core.risk_acceptances import (
+    list_risk_acceptances,
+    record_risk_acceptance,
+    show_risk_acceptance,
+)
 from forge.core.runs import cancel_run, list_runs, show_run
 from forge.core.scope_amendments import (
     amend_scope,
@@ -110,6 +115,7 @@ capability_app = typer.Typer(help="Inspect, approve, or revoke executable capabi
 scope_app = typer.Typer(help="Amend and inspect effective initiative scope.")
 deviation_app = typer.Typer(help="Record, review, and inspect workflow deviations.")
 override_app = typer.Typer(help="Record and inspect emergency override declarations.")
+risk_app = typer.Typer(help="Accept and inspect exact emergency-override residual risk.")
 IdempotencyOption = Annotated[
     str | None,
     typer.Option(
@@ -130,6 +136,7 @@ app.add_typer(capability_app, name="capability")
 app.add_typer(scope_app, name="scope")
 app.add_typer(deviation_app, name="deviation")
 app.add_typer(override_app, name="override")
+app.add_typer(risk_app, name="risk")
 
 
 def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
@@ -2597,6 +2604,96 @@ def override_show(
         typer.echo(f"  Rationale: {item.rationale}")
         typer.echo(f"  Residual risk: {item.residual_risk}")
         typer.echo(f"  Review requirement: {item.review_requirement}")
+        typer.echo("  Progression authority: none")
+
+
+@risk_app.command("accept")
+@_locked_mutation
+def risk_accept(
+    override_id: Annotated[
+        UUID,
+        typer.Argument(help="Exact emergency override UUID whose risk is accepted."),
+    ],
+    rationale: Annotated[
+        str,
+        typer.Option("--rationale", help="Owner rationale for accepting the residual risk."),
+    ],
+    residual_impact: Annotated[
+        str,
+        typer.Option("--residual-impact", help="Expected impact if the risk materializes."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    review_condition: Annotated[
+        str | None,
+        typer.Option(
+            "--review-condition",
+            help="Optional explicit condition for later manual review.",
+        ),
+    ] = None,
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Accept one exact override's residual risk without waiving workflow requirements."""
+
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = record_risk_acceptance(
+            layout,
+            override_id=override_id,
+            rationale=rationale,
+            residual_impact=residual_impact,
+            review_condition=review_condition,
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Recorded risk acceptance {result.acceptance.id}")
+    typer.echo(f"Emergency override: {result.override.id}")
+    typer.echo(f"Accepted risk: {result.acceptance.risk}")
+    typer.echo("Progression authority: none")
+    typer.echo("Closure blocker resolved only for this exact current override")
+
+
+@risk_app.command("show")
+def risk_show(
+    acceptance_id: Annotated[
+        UUID | None,
+        typer.Argument(help="Risk-acceptance UUID; omit to show complete history."),
+    ] = None,
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Show one risk acceptance or the complete append-only history."""
+
+    try:
+        layout = discover_repository(directory)
+        acceptances = (
+            (show_risk_acceptance(layout, acceptance_id),)
+            if acceptance_id is not None
+            else list_risk_acceptances(layout)
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    if not acceptances:
+        typer.echo("No risk acceptances")
+    for view in acceptances:
+        acceptance = view.acceptance
+        typer.echo(
+            f"{acceptance.id} override={view.override.id} "
+            f"status={'stale' if view.stale else 'current'}"
+        )
+        typer.echo(f"  Risk: {acceptance.risk}")
+        typer.echo(f"  Rationale: {acceptance.rationale}")
+        typer.echo(f"  Residual impact: {acceptance.residual_impact}")
+        if acceptance.review_condition is not None:
+            typer.echo(f"  Review condition: {acceptance.review_condition}")
         typer.echo("  Progression authority: none")
 
 

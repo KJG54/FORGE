@@ -80,6 +80,7 @@ _ACTIVE_TOP_LEVEL = {
     "revocations",
     "recovery-records",
     "recovery-snapshots",
+    "risk-acceptances",
     "runs",
     "scope-amendments",
     "state.json",
@@ -226,8 +227,21 @@ def _preflight_closure(
             f"deviation; unresolved: {identifiers}"
         )
     from forge.core.overrides import list_emergency_overrides
+    from forge.core.risk_acceptances import list_risk_acceptances
 
-    unresolved_overrides = list_emergency_overrides(active.layout)
+    accepted_override_ids = {
+        item.override.id
+        for item in list_risk_acceptances(active.layout)
+        if not item.stale and item.override.id not in active.state.stale_record_ids
+    }
+    unresolved_overrides = tuple(
+        item
+        for item in list_emergency_overrides(active.layout)
+        if (
+            item.id not in active.state.stale_record_ids
+            and item.id not in accepted_override_ids
+        )
+    )
     if unresolved_overrides:
         identifiers = ", ".join(str(item.id) for item in unresolved_overrides)
         raise ConflictError(

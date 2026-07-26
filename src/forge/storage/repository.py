@@ -200,6 +200,10 @@ class RepositoryLayout:
         return self.active_directory / "emergency-overrides"
 
     @property
+    def risk_acceptance_directory(self) -> Path:
+        return self.active_directory / "risk-acceptances"
+
+    @property
     def imported_result_directory(self) -> Path:
         return self.active_directory / "imported-results"
 

@@ -22,6 +22,7 @@ from forge.contracts.decisions import (
     DecisionRecord,
     DecisionSupersession,
     EmergencyOverride,
+    RiskAcceptance,
     ScopeAmendment,
     WorkflowDeviation,
 )
@@ -85,6 +86,7 @@ from forge.core.transitions import (
     JOURNAL_RECOVERED,
     PACK_TRUST_CHANGED,
     RESULT_IMPORTED,
+    RISK_ACCEPTED,
     RUN_CANCELLED,
     SCHEMA_MIGRATED,
     SCOPE_AMENDED,
@@ -202,6 +204,10 @@ def _workflow_deviation_path(layout: RepositoryLayout, deviation_id: UUID) -> Pa
 
 def _emergency_override_path(layout: RepositoryLayout, override_id: UUID) -> Path:
     return layout.emergency_override_directory / f"{override_id}.json"
+
+
+def _risk_acceptance_path(layout: RepositoryLayout, acceptance_id: UUID) -> Path:
+    return layout.risk_acceptance_directory / f"{acceptance_id}.json"
 
 
 def _imported_result_path(layout: RepositoryLayout, result_id: UUID) -> Path:
@@ -365,6 +371,7 @@ def validate_governed_records(
     expected_scope_amendments: set[Path] = set()
     expected_workflow_deviations: set[Path] = set()
     expected_emergency_overrides: set[Path] = set()
+    expected_risk_acceptances: set[Path] = set()
     expected_imported_results: set[Path] = set()
     expected_closures: set[Path] = set()
     expected_abandonments: set[Path] = set()
@@ -388,6 +395,7 @@ def validate_governed_records(
     decisions_by_id: dict[UUID, DecisionRecord] = {}
     deviations_by_id: dict[UUID, WorkflowDeviation] = {}
     emergency_overrides_by_id: dict[UUID, EmergencyOverride] = {}
+    risk_acceptances_by_id: dict[UUID, RiskAcceptance] = {}
     runs_by_id: dict[UUID, RunRecord] = {}
     validator_runs_by_id: dict[UUID, RunRecord] = {}
     capability_approvals_by_id: dict[UUID, CapabilityApproval] = {}
@@ -1138,6 +1146,48 @@ def validate_governed_records(
             ):
                 raise IntegrityError(f"Emergency override does not match event {event.id}")
             emergency_overrides_by_id[override_id] = override
+        elif event.event_type == RISK_ACCEPTED:
+            acceptance_id = _uuid_metadata(event, "risk_acceptance_id")
+            override_id = _uuid_metadata(event, "emergency_override_id")
+            path = _risk_acceptance_path(layout, acceptance_id)
+            expected_risk_acceptances.add(path)
+            acceptance = load_record(path, RiskAcceptance)
+            _validate_common(acceptance, event, acceptance_id)
+            override = emergency_overrides_by_id.get(override_id)
+            if override is None:
+                raise IntegrityError(
+                    f"Risk acceptance event {event.id} references an unknown override"
+                )
+            override_digest = canonical_json_digest(
+                override.model_dump(mode="json")
+            )
+            record_digest = canonical_json_digest(
+                acceptance.model_dump(mode="json")
+            )
+            duplicate_current = any(
+                item.affected_record_ids == (override_id,)
+                and item.id not in stale_ids
+                for item in risk_acceptances_by_id.values()
+            )
+            if (
+                acceptance.id != acceptance_id
+                or acceptance.actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or override_id in stale_ids
+                or duplicate_current
+                or acceptance.affected_record_ids != (override_id,)
+                or acceptance.affected_digests
+                != (override_digest, *override.affected_digests)
+                or acceptance.risk != override.residual_risk
+                or event.metadata.get("emergency_override_digest")
+                != override_digest
+                or event.affected_record_ids != (acceptance_id, override_id)
+                or event.affected_digests
+                != (*acceptance.affected_digests, record_digest)
+            ):
+                raise IntegrityError(f"Risk acceptance does not match event {event.id}")
+            risk_acceptances_by_id[acceptance_id] = acceptance
         elif event.event_type in {DECISION_RECORDED, DECISION_SUPERSEDED}:
             decision_id = _uuid_metadata(event, "decision_id")
             path = _decision_path(layout, decision_id)
@@ -1245,7 +1295,6 @@ def validate_governed_records(
                 for item in decisions_by_id.values()
                 if set(item.affected_record_ids) & decision_dependencies
             )
-            ordered_stale_ids = tuple(sorted(expected_stale_ids, key=str))
             invalidated_step_ids = tuple(
                 step.id
                 for step in workflow.steps
@@ -1326,6 +1375,30 @@ def validate_governed_records(
                     or set(gate.required_evidence_classes) & evidence_classes
                 )
             )
+            affected_governance_targets = {
+                *(f"requirement:{item}" for item in affected_requirements),
+                *(f"gate:{item}" for item in expected_gate_ids),
+            }
+            affected_override_ids = {
+                override.id
+                for override in emergency_overrides_by_id.values()
+                if (
+                    override.id not in prior_state.stale_record_ids
+                    and override.affected_requirement_or_gate
+                    in affected_governance_targets
+                )
+            }
+            expected_stale_ids.update(affected_override_ids)
+            expected_stale_ids.update(
+                acceptance.id
+                for acceptance in risk_acceptances_by_id.values()
+                if (
+                    acceptance.id not in prior_state.stale_record_ids
+                    and len(acceptance.affected_record_ids) == 1
+                    and acceptance.affected_record_ids[0] in affected_override_ids
+                )
+            )
+            ordered_stale_ids = tuple(sorted(expected_stale_ids, key=str))
             expected_check_ids = tuple(
                 sorted((set(checks_by_id) & expected_stale_ids), key=str)
             )
@@ -1847,6 +1920,19 @@ def validate_governed_records(
             unresolved_deviation_ids = (
                 set(deviations_by_id) - reviewed_deviation_ids
             )
+            effective_override_ids = set(emergency_overrides_by_id) - stale_ids
+            risk_accepted_override_ids = {
+                acceptance.affected_record_ids[0]
+                for acceptance_id, acceptance in risk_acceptances_by_id.items()
+                if (
+                    acceptance_id not in stale_ids
+                    and len(acceptance.affected_record_ids) == 1
+                    and acceptance.affected_record_ids[0] in effective_override_ids
+                )
+            }
+            unresolved_override_ids = (
+                effective_override_ids - risk_accepted_override_ids
+            )
             if (
                 event is not events[-1]
                 or closure.id != closure_id
@@ -1877,7 +1963,7 @@ def validate_governed_records(
                 or canonical_json_digest(closure.model_dump(mode="json"))
                 not in event.affected_digests
                 or unresolved_deviation_ids
-                or emergency_overrides_by_id
+                or unresolved_override_ids
                 or state.lifecycle_state is not InitiativeLifecycleState.CLOSED
             ):
                 raise IntegrityError(f"Closure record does not match event {event.id}")
@@ -2089,6 +2175,10 @@ def validate_governed_records(
     _validate_directory(
         layout.emergency_override_directory,
         expected_emergency_overrides,
+    )
+    _validate_directory(
+        layout.risk_acceptance_directory,
+        expected_risk_acceptances,
     )
     _validate_directory(layout.imported_result_directory, expected_imported_results)
     _validate_directory(layout.closure_directory, expected_closures)

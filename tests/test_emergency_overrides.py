@@ -140,7 +140,7 @@ def test_override_is_visible_and_blocks_successful_closure_without_fabricating_s
     report = inspect_status(initialized.layout)
     assert report.emergency_override_ids == (result.override.id,)
     assert any(str(result.override.id) in blocker for blocker in report.blockers)
-    assert f"risk-acceptance-required:{result.override.id}" in report.next_actions
+    assert f"risk-accept:{result.override.id}" in report.next_actions
     active = load_active_initiative(initialized.layout)
     assert not active.state.stale_record_ids
     assert not active.state.active_run_ids

@@ -176,3 +176,9 @@ M4 Increment 5 activates the existing public `EmergencyOverride` contract withou
 schema. The record binds one qualified locked-workflow requirement or gate, owner rationale,
 residual risk, temporary/permanent status, review requirement, and the exact workflow digest. It
 remains state-neutral and is not a substitute for the separate `RiskAcceptance` contract.
+
+M4 Increment 6 activates the existing public `RiskAcceptance` contract without changing its
+schema. The record binds exactly one current `EmergencyOverride`, copies that record's residual
+risk, and preserves the exact override and workflow digests through inherited governance fields.
+Rationale, residual impact, and an optional manual review condition remain explicit owner facts.
+The record is state-neutral and grants no workflow progression authority.

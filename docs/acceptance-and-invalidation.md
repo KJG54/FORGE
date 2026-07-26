@@ -132,5 +132,27 @@ evidence packet, gate approval, verification transition, or owner acceptance. Re
 override therefore adds an auditable residual-risk blocker; it does not remove a workflow blocker.
 
 Successful closure refuses unresolved overrides. Explicit abandonment remains available and
-preserves them as unfinished terminal history. Risk acceptance is a separate later action and is
-not implied by either the override record or its owner actor.
+preserves them as unfinished terminal history. Risk acceptance is separate and is not implied by
+either the override record or its owner actor.
+
+## Exact override risk acceptance
+
+The configured owner may accept the residual risk of one exact current emergency override:
+
+```console
+forge risk accept <override-id> \
+  --rationale "Accept this bounded residual risk" \
+  --residual-impact "Describe the impact if it materializes" \
+  --review-condition "Optional manual review condition"
+forge risk show
+```
+
+The acceptance copies the override's residual risk and binds the exact override and workflow
+digests. It clears only that override's successful-closure blocker. Claims, checks, evidence,
+gates, verification, step completion, and ordinary owner acceptance remain fully required.
+
+Only one current risk acceptance may bind an override. The optional review condition is durable
+text for manual governance; FORGE does not claim to monitor external conditions or automatically
+expire it. If a scope amendment affects the target requirement or gate, the override and its risk
+acceptance become stale together. A stale override cannot receive another acceptance; the changed
+scope requires a new exception and a new explicit owner decision.

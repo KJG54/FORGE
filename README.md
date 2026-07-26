@@ -187,8 +187,13 @@ closure while explicit abandonment preserves unresolved history.
 M4 Increment 5 adds owner-only `forge override record` for one exact locked-workflow requirement
 or gate. The immutable record carries rationale, residual risk, temporary/permanent status, and a
 review requirement while granting no progression authority. Overrides become explicit
-successful-closure blockers until a later separate risk-acceptance record resolves them;
+successful-closure blockers;
 abandonment preserves unresolved emergency history.
+
+M4 Increment 6 adds owner-only `forge risk accept <override-id>`. The immutable acceptance binds
+the exact override digest and its locked-workflow digest, resolving only that override's
+residual-risk closure blocker. It never satisfies workflow progression. A scope amendment
+affecting the target requirement or gate stales both records and requires fresh review.
 
 Initialize an ordinary project repository with:
 
@@ -304,6 +309,7 @@ forge --help
 - [M4 Increment 3 scope-amendment boundary](docs/milestones/m4-increment-3.md)
 - [M4 Increment 4 workflow-deviation boundary](docs/milestones/m4-increment-4.md)
 - [M4 Increment 5 emergency-override boundary](docs/milestones/m4-increment-5.md)
+- [M4 Increment 6 exact risk-acceptance boundary](docs/milestones/m4-increment-6.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

@@ -116,6 +116,9 @@ semantic-version commitments begin at v1.0.0.
 - M4 non-bypassing emergency overrides with exact locked-workflow requirement/gate targeting,
   explicit residual risk and permanence, state-neutral audit history, fail-closed closure
   enforcement, restart validation, archive preservation, and no fabricated progression support.
+- M4 exact override-bound risk acceptance with owner-only authority, digest-bound residual-risk
+  acknowledgement, one-current-record enforcement, state-neutral closure resolution,
+  scope-amendment staleness, restart validation, and terminal archive preservation.
 
 ### Limitations
 

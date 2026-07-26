@@ -40,6 +40,7 @@ DECISION_SUPERSEDED = "decision-superseded"
 SCOPE_AMENDED = "scope-amended"
 WORKFLOW_DEVIATION_RECORDED = "workflow-deviation-recorded"
 EMERGENCY_OVERRIDE_RECORDED = "emergency-override-recorded"
+RISK_ACCEPTED = "risk-accepted"
 RESULT_IMPORTED = "result-imported"
 INITIATIVE_CLOSED = "initiative-closed"
 INITIATIVE_ABANDONED = "initiative-abandoned"
@@ -598,6 +599,11 @@ class WorkflowStateReducer:
                 raise IntegrityError("Emergency override does not match the locked workflow")
             _metadata_string(event, "emergency_override_id")
             _metadata_string(event, "affected_requirement_or_gate")
+            return state
+        if event.event_type == RISK_ACCEPTED:
+            require_owner(event.actor, self.owner_identity_id, "accept residual risk")
+            _metadata_string(event, "risk_acceptance_id")
+            _metadata_string(event, "emergency_override_id")
             return state
         if event.event_type == ACCEPTANCE_REVOKED:
             return self._apply_invalidation(state, event)

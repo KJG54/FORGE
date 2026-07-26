@@ -39,6 +39,7 @@ class StatusReport:
     effective_scope_summary: str | None = None
     open_workflow_deviation_ids: tuple[UUID, ...] = ()
     emergency_override_ids: tuple[UUID, ...] = ()
+    risk_acceptance_ids: tuple[UUID, ...] = ()
 
 
 def inspect_status(
@@ -202,10 +203,31 @@ def inspect_status(
     from forge.core.artifacts import list_artifacts
     from forge.core.deviations import open_workflow_deviations
     from forge.core.overrides import list_emergency_overrides
+    from forge.core.risk_acceptances import list_risk_acceptances
 
     drifted = tuple(view for view in list_artifacts(layout) if not view.working_copy_matches)
     open_deviations = open_workflow_deviations(layout)
     emergency_overrides = list_emergency_overrides(layout)
+    risk_acceptances = list_risk_acceptances(layout)
+    effective_overrides = tuple(
+        override
+        for override in emergency_overrides
+        if override.id not in active.state.stale_record_ids
+    )
+    accepted_override_ids: set[UUID] = set()
+    for view in risk_acceptances:
+        if view.stale or view.override.id in active.state.stale_record_ids:
+            continue
+        if view.override.id in accepted_override_ids:
+            raise IntegrityError(
+                f"Emergency override {view.override.id} has multiple current risk acceptances"
+            )
+        accepted_override_ids.add(view.override.id)
+    unresolved_overrides = tuple(
+        override
+        for override in effective_overrides
+        if override.id not in accepted_override_ids
+    )
     blockers = (
         *(
             "Workflow deviation "
@@ -215,7 +237,7 @@ def inspect_status(
         *(
             "Emergency override "
             f"{override.id} retains unresolved residual risk: {override.residual_risk}"
-            for override in emergency_overrides
+            for override in unresolved_overrides
         ),
         *(
         f"Working copy changed for artifact {view.artifact.id}; register an explicit revision"
@@ -230,8 +252,8 @@ def inspect_status(
             for view in open_deviations
         ),
         *(
-            f"risk-acceptance-required:{override.id}"
-            for override in emergency_overrides
+            f"risk-accept:{override.id}"
+            for override in unresolved_overrides
         ),
     )
     if active.state.lifecycle_state is InitiativeLifecycleState.PAUSED:
@@ -270,4 +292,7 @@ def inspect_status(
             item.deviation.id for item in open_deviations
         ),
         emergency_override_ids=tuple(item.id for item in emergency_overrides),
+        risk_acceptance_ids=tuple(
+            item.acceptance.id for item in risk_acceptances
+        ),
     )
