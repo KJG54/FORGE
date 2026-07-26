@@ -195,6 +195,10 @@ the exact override digest and its locked-workflow digest, resolving only that ov
 residual-risk closure blocker. It never satisfies workflow progression. A scope amendment
 affecting the target requirement or gate stales both records and requires fresh review.
 
+M4 Increment 7 adds owner-only `forge risk revoke <acceptance-id>`. Revocation preserves the
+original acceptance, reopens only its exact override's residual-risk closure blocker, and permits
+a later fresh acceptance. It remains state-neutral and refuses already stale authority.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -310,6 +314,7 @@ forge --help
 - [M4 Increment 4 workflow-deviation boundary](docs/milestones/m4-increment-4.md)
 - [M4 Increment 5 emergency-override boundary](docs/milestones/m4-increment-5.md)
 - [M4 Increment 6 exact risk-acceptance boundary](docs/milestones/m4-increment-6.md)
+- [M4 Increment 7 risk-acceptance-revocation boundary](docs/milestones/m4-increment-7.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

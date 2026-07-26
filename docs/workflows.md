@@ -240,3 +240,8 @@ one exact current override and resolves only its residual-risk closure blocker. 
 step, gate, run, claim, check, evidence, verification, or acceptance state. A scope amendment
 affecting the target requirement or derived gate stales the override and risk acceptance together.
 Abandonment preserves the complete history without presenting the initiative as completed.
+
+M4 Increment 7 adds `forge risk revoke <acceptance-id>` for configured-owner withdrawal of one
+current risk acceptance. The immutable revocation reopens only the linked override's residual-risk
+closure blocker and permits a later new acceptance. It creates no workflow transition or
+invalidation. A scope-stale acceptance already authorizes nothing and cannot be revoked.

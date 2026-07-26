@@ -182,3 +182,9 @@ schema. The record binds exactly one current `EmergencyOverride`, copies that re
 risk, and preserves the exact override and workflow digests through inherited governance fields.
 Rationale, residual impact, and an optional manual review condition remain explicit owner facts.
 The record is state-neutral and grants no workflow progression authority.
+
+M4 Increment 7 reuses the existing public `ApprovalRevocation` contract for risk-acceptance
+withdrawal without changing its schema. `approval_id` identifies the exact `RiskAcceptance`;
+inherited affected-record and digest fields bind that acceptance, its emergency override, and
+their canonical digests. The immutable revocation is state-neutral and cannot alter the original
+acceptance record.

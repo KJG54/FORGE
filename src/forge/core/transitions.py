@@ -41,6 +41,7 @@ SCOPE_AMENDED = "scope-amended"
 WORKFLOW_DEVIATION_RECORDED = "workflow-deviation-recorded"
 EMERGENCY_OVERRIDE_RECORDED = "emergency-override-recorded"
 RISK_ACCEPTED = "risk-accepted"
+RISK_ACCEPTANCE_REVOKED = "risk-acceptance-revoked"
 RESULT_IMPORTED = "result-imported"
 INITIATIVE_CLOSED = "initiative-closed"
 INITIATIVE_ABANDONED = "initiative-abandoned"
@@ -603,6 +604,12 @@ class WorkflowStateReducer:
         if event.event_type == RISK_ACCEPTED:
             require_owner(event.actor, self.owner_identity_id, "accept residual risk")
             _metadata_string(event, "risk_acceptance_id")
+            _metadata_string(event, "emergency_override_id")
+            return state
+        if event.event_type == RISK_ACCEPTANCE_REVOKED:
+            require_owner(event.actor, self.owner_identity_id, "revoke risk acceptance")
+            _metadata_string(event, "risk_acceptance_id")
+            _metadata_string(event, "revocation_id")
             _metadata_string(event, "emergency_override_id")
             return state
         if event.event_type == ACCEPTANCE_REVOKED:

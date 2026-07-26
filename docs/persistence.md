@@ -332,3 +332,15 @@ exactly one `risk-accepted` event. A scope amendment affecting the override's re
 adds both record IDs to governed staleness. Restart and closure validation independently derive
 the same relationship, reject duplicate or tampered current acceptances, and preserve the complete
 history in terminal archives.
+
+## M4 Increment 7 risk-acceptance revocation
+
+Risk-acceptance revocations reuse `.forge/active/revocations/<revocation-id>.json` and the public
+`ApprovalRevocation` contract. The state-neutral `risk-acceptance-revoked` event binds the exact
+risk-acceptance ID and digest plus its emergency-override ID and inherited digests.
+
+The original acceptance is never rewritten or marked through a mutable flag. Current authority is
+derived from the validated event history: a non-stale acceptance with no revocation resolves its
+override blocker; a revoked acceptance does not. The `risk_revoke` idempotency pattern contains
+exactly one revocation event. Restart validation rejects unknown, stale, duplicated, altered, or
+misbound revocations, and terminal archives preserve the complete relationship.

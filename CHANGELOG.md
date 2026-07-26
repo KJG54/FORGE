@@ -119,6 +119,9 @@ semantic-version commitments begin at v1.0.0.
 - M4 exact override-bound risk acceptance with owner-only authority, digest-bound residual-risk
   acknowledgement, one-current-record enforcement, state-neutral closure resolution,
   scope-amendment staleness, restart validation, and terminal archive preservation.
+- M4 append-only risk-acceptance revocation with exact acceptance and override binding,
+  owner-only authority, state-neutral blocker reopening, fresh reacceptance, stale-target refusal,
+  retry recovery, restart validation, and archive preservation.
 
 ### Limitations
 

@@ -86,6 +86,7 @@ from forge.core.transitions import (
     JOURNAL_RECOVERED,
     PACK_TRUST_CHANGED,
     RESULT_IMPORTED,
+    RISK_ACCEPTANCE_REVOKED,
     RISK_ACCEPTED,
     RUN_CANCELLED,
     SCHEMA_MIGRATED,
@@ -405,6 +406,7 @@ def validate_governed_records(
     locked_pack = load_record(layout.pack_lock_file, PackManifest)
     adapter_execution_run_ids: set[UUID] = set()
     revoked_acceptance_ids: set[UUID] = set()
+    revoked_risk_acceptance_ids: set[UUID] = set()
     stale_ids: set[UUID] = set()
     seen_event_record_ids: set[UUID] = set()
     owner_id = load_configuration(layout.configuration_file).owner.id
@@ -1167,6 +1169,7 @@ def validate_governed_records(
             duplicate_current = any(
                 item.affected_record_ids == (override_id,)
                 and item.id not in stale_ids
+                and item.id not in revoked_risk_acceptance_ids
                 for item in risk_acceptances_by_id.values()
             )
             if (
@@ -1188,6 +1191,53 @@ def validate_governed_records(
             ):
                 raise IntegrityError(f"Risk acceptance does not match event {event.id}")
             risk_acceptances_by_id[acceptance_id] = acceptance
+        elif event.event_type == RISK_ACCEPTANCE_REVOKED:
+            acceptance_id = _uuid_metadata(event, "risk_acceptance_id")
+            revocation_id = _uuid_metadata(event, "revocation_id")
+            override_id = _uuid_metadata(event, "emergency_override_id")
+            path = _revocation_path(layout, revocation_id)
+            expected_revocations.add(path)
+            revocation = load_record(path, ApprovalRevocation)
+            _validate_common(revocation, event, revocation_id)
+            acceptance = risk_acceptances_by_id.get(acceptance_id)
+            override = emergency_overrides_by_id.get(override_id)
+            if acceptance is None or override is None:
+                raise IntegrityError(
+                    f"Risk-acceptance revocation {event.id} has an unknown target"
+                )
+            acceptance_digest = canonical_json_digest(
+                acceptance.model_dump(mode="json")
+            )
+            affected_digests = (
+                acceptance_digest,
+                *acceptance.affected_digests,
+            )
+            record_digest = canonical_json_digest(
+                revocation.model_dump(mode="json")
+            )
+            if (
+                acceptance_id in stale_ids
+                or acceptance_id in revoked_risk_acceptance_ids
+                or acceptance.affected_record_ids != (override_id,)
+                or revocation.id != revocation_id
+                or revocation.approval_id != acceptance_id
+                or revocation.actor != event.actor
+                or event.actor.actor_type is not ActorType.OWNER
+                or event.actor.id != owner_id
+                or revocation.affected_record_ids
+                != (acceptance_id, override_id)
+                or revocation.affected_digests != affected_digests
+                or event.metadata.get("risk_acceptance_digest")
+                != acceptance_digest
+                or event.affected_record_ids
+                != (revocation_id, acceptance_id, override_id)
+                or event.affected_digests
+                != (*affected_digests, record_digest)
+            ):
+                raise IntegrityError(
+                    f"Risk-acceptance revocation does not match event {event.id}"
+                )
+            revoked_risk_acceptance_ids.add(acceptance_id)
         elif event.event_type in {DECISION_RECORDED, DECISION_SUPERSEDED}:
             decision_id = _uuid_metadata(event, "decision_id")
             path = _decision_path(layout, decision_id)
@@ -1926,6 +1976,7 @@ def validate_governed_records(
                 for acceptance_id, acceptance in risk_acceptances_by_id.items()
                 if (
                     acceptance_id not in stale_ids
+                    and acceptance_id not in revoked_risk_acceptance_ids
                     and len(acceptance.affected_record_ids) == 1
                     and acceptance.affected_record_ids[0] in effective_override_ids
                 )

@@ -65,6 +65,7 @@ from forge.core.recovery import recover_active_snapshot
 from forge.core.risk_acceptances import (
     list_risk_acceptances,
     record_risk_acceptance,
+    revoke_risk_acceptance,
     show_risk_acceptance,
 )
 from forge.core.runs import cancel_run, list_runs, show_run
@@ -2685,9 +2686,22 @@ def risk_show(
         typer.echo("No risk acceptances")
     for view in acceptances:
         acceptance = view.acceptance
+        status = (
+            f"stale, revoked by {view.revocation.id}"
+            if view.stale and view.revocation is not None
+            else (
+                "stale"
+                if view.stale
+                else (
+                    f"revoked by {view.revocation.id}"
+                    if view.revocation is not None
+                    else "current"
+                )
+            )
+        )
         typer.echo(
             f"{acceptance.id} override={view.override.id} "
-            f"status={'stale' if view.stale else 'current'}"
+            f"status={status}"
         )
         typer.echo(f"  Risk: {acceptance.risk}")
         typer.echo(f"  Rationale: {acceptance.rationale}")
@@ -2695,6 +2709,44 @@ def risk_show(
         if acceptance.review_condition is not None:
             typer.echo(f"  Review condition: {acceptance.review_condition}")
         typer.echo("  Progression authority: none")
+
+
+@risk_app.command("revoke")
+@_locked_mutation
+def risk_revoke(
+    acceptance_id: Annotated[
+        UUID,
+        typer.Argument(help="Current risk-acceptance UUID to revoke."),
+    ],
+    reason: Annotated[
+        str,
+        typer.Option("--reason", help="Owner reason for withdrawing risk acceptance."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Revoke one exact risk acceptance and reopen its override blocker."""
+
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = revoke_risk_acceptance(
+            layout,
+            acceptance_id=acceptance_id,
+            reason=reason,
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Recorded risk-acceptance revocation {result.revocation.id}")
+    typer.echo(f"Risk acceptance: {result.acceptance.id}")
+    typer.echo(f"Emergency override: {result.override.id}")
+    typer.echo("Progression authority: none")
+    typer.echo("The exact override residual-risk closure blocker is open again")
 
 
 @app.command("decide")

@@ -232,7 +232,11 @@ def _preflight_closure(
     accepted_override_ids = {
         item.override.id
         for item in list_risk_acceptances(active.layout)
-        if not item.stale and item.override.id not in active.state.stale_record_ids
+        if (
+            not item.stale
+            and item.revocation is None
+            and item.override.id not in active.state.stale_record_ids
+        )
     }
     unresolved_overrides = tuple(
         item

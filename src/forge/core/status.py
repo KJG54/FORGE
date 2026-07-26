@@ -216,7 +216,11 @@ def inspect_status(
     )
     accepted_override_ids: set[UUID] = set()
     for view in risk_acceptances:
-        if view.stale or view.override.id in active.state.stale_record_ids:
+        if (
+            view.stale
+            or view.revocation is not None
+            or view.override.id in active.state.stale_record_ids
+        ):
             continue
         if view.override.id in accepted_override_ids:
             raise IntegrityError(

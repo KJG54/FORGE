@@ -156,3 +156,22 @@ text for manual governance; FORGE does not claim to monitor external conditions 
 expire it. If a scope amendment affects the target requirement or gate, the override and its risk
 acceptance become stale together. A stale override cannot receive another acceptance; the changed
 scope requires a new exception and a new explicit owner decision.
+
+### Revoking risk acceptance
+
+The configured owner may withdraw one current risk acceptance:
+
+```console
+forge risk revoke <acceptance-id> \
+  --reason "The residual risk is no longer acceptable"
+forge risk show <acceptance-id>
+```
+
+Revocation is append-only. It preserves the acceptance and override, reopens only that override's
+successful-closure blocker, and allows a later fresh acceptance for the same current override.
+It does not invalidate or transition workflow steps and cannot fabricate or remove any claim,
+check, evidence, gate, verification, or ordinary owner acceptance.
+
+Already revoked acceptance cannot be revoked again. Scope-stale acceptance already authorizes
+nothing and is also refused as a revocation target. Explicit abandonment preserves the acceptance,
+revocation, override, and unresolved risk as terminal history.

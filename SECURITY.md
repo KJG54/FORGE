@@ -46,5 +46,7 @@ Emergency overrides are exact locked-workflow, owner-attributed exception record
 weaken transition checks or fabricate claims, checks, evidence, gates, verification, or
 acceptance. A separate owner risk acceptance must bind the exact override record and clears only
 its residual-risk closure blocker. Scope amendments affecting the governed target stale both
-records. This fail-closed behavior is governance enforcement, not isolation from a same-user
-process that can directly modify repository files.
+records. An immutable owner revocation reopens the exact blocker without changing workflow state;
+stale or already revoked acceptance cannot authorize or be revoked again. This fail-closed
+behavior is governance enforcement, not isolation from a same-user process that can directly
+modify repository files.

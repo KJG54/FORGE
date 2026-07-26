@@ -10,12 +10,12 @@ from uuid import UUID, uuid4
 from forge import __version__
 from forge.contracts.actors import Actor
 from forge.contracts.base import utc_now
-from forge.contracts.decisions import EmergencyOverride, RiskAcceptance
+from forge.contracts.decisions import ApprovalRevocation, EmergencyOverride, RiskAcceptance
 from forge.contracts.events import AuditEvent
 from forge.core.authorization import require_owner
 from forge.core.lifecycle import load_active_initiative
 from forge.core.overrides import list_emergency_overrides, show_emergency_override
-from forge.core.transitions import RISK_ACCEPTED
+from forge.core.transitions import RISK_ACCEPTANCE_REVOKED, RISK_ACCEPTED
 from forge.errors import ConfigurationError, ConflictError, IntegrityError, SecurityError
 from forge.storage.journal import read_journal
 from forge.storage.objects import canonical_json_digest
@@ -32,9 +32,18 @@ class RiskAcceptanceResult:
 
 
 @dataclass(frozen=True)
+class RiskAcceptanceRevocationResult:
+    revocation: ApprovalRevocation
+    acceptance: RiskAcceptance
+    override: EmergencyOverride
+    event: AuditEvent
+
+
+@dataclass(frozen=True)
 class RiskAcceptanceView:
     acceptance: RiskAcceptance
     override: EmergencyOverride
+    revocation: ApprovalRevocation | None
     stale: bool
 
 
@@ -47,6 +56,10 @@ def _require_text(label: str, value: str) -> str:
 
 def _acceptance_path(layout: RepositoryLayout, acceptance_id: UUID) -> Path:
     return layout.risk_acceptance_directory / f"{acceptance_id}.json"
+
+
+def _revocation_path(layout: RepositoryLayout, revocation_id: UUID) -> Path:
+    return layout.revocation_directory / f"{revocation_id}.json"
 
 
 def _ensure_directory(path: Path) -> bool:
@@ -80,9 +93,24 @@ def list_risk_acceptances(layout: RepositoryLayout) -> tuple[RiskAcceptanceView,
     if not layout.risk_acceptance_directory.exists():
         return ()
     overrides = {item.id: item for item in list_emergency_overrides(layout)}
+    acceptances = tuple(
+        load_record(path, RiskAcceptance)
+        for path in layout.risk_acceptance_directory.glob("*.json")
+    )
+    acceptance_ids = {item.id for item in acceptances}
+    revocations_by_acceptance: dict[UUID, ApprovalRevocation] = {}
+    if layout.revocation_directory.exists():
+        for path in layout.revocation_directory.glob("*.json"):
+            revocation = load_record(path, ApprovalRevocation)
+            if revocation.approval_id not in acceptance_ids:
+                continue
+            if revocation.approval_id in revocations_by_acceptance:
+                raise IntegrityError(
+                    f"Risk acceptance {revocation.approval_id} has multiple revocations"
+                )
+            revocations_by_acceptance[revocation.approval_id] = revocation
     views: list[RiskAcceptanceView] = []
-    for path in layout.risk_acceptance_directory.glob("*.json"):
-        acceptance = load_record(path, RiskAcceptance)
+    for acceptance in acceptances:
         if (
             len(acceptance.affected_record_ids) != 1
             or acceptance.affected_record_ids[0] not in overrides
@@ -94,6 +122,7 @@ def list_risk_acceptances(layout: RepositoryLayout) -> tuple[RiskAcceptanceView,
             RiskAcceptanceView(
                 acceptance,
                 overrides[acceptance.affected_record_ids[0]],
+                revocations_by_acceptance.get(acceptance.id),
                 acceptance.id in active.state.stale_record_ids,
             )
         )
@@ -129,7 +158,11 @@ def current_risk_acceptance_for_override(
     matches = [
         item
         for item in list_risk_acceptances(layout)
-        if item.override.id == override_id and not item.stale
+        if (
+            item.override.id == override_id
+            and not item.stale
+            and item.revocation is None
+        )
     ]
     if len(matches) > 1:
         raise IntegrityError(
@@ -221,3 +254,87 @@ def record_risk_acceptance(
                     path.parent.rmdir()
         raise
     return RiskAcceptanceResult(acceptance, override, event)
+
+
+def revoke_risk_acceptance(
+    layout: RepositoryLayout,
+    *,
+    acceptance_id: UUID,
+    reason: str,
+    actor: Actor,
+) -> RiskAcceptanceRevocationResult:
+    active = load_active_initiative(layout)
+    require_owner(actor, active.initiative.owner_identity_id, "revoke risk acceptance")
+    view = show_risk_acceptance(layout, acceptance_id)
+    if view.stale:
+        raise ConflictError(f"Risk acceptance {acceptance_id} is stale")
+    if view.revocation is not None:
+        raise ConflictError(f"Risk acceptance {acceptance_id} is already revoked")
+    reason = _require_text("Revocation reason", reason)
+
+    now = utc_now()
+    sequence = active.state.journal_head_sequence + 1
+    revocation_id = uuid4()
+    acceptance_digest = canonical_json_digest(
+        view.acceptance.model_dump(mode="json")
+    )
+    affected_digests = (acceptance_digest, *view.acceptance.affected_digests)
+    basis = (
+        "configured owner revoked one exact risk acceptance without changing "
+        "workflow progression"
+    )
+    revocation = ApprovalRevocation(
+        id=revocation_id,
+        initiative_id=active.initiative.id,
+        actor_id=actor.id,
+        recorded_at=now,
+        event_sequence=sequence,
+        authorization_basis=basis,
+        tool_version=__version__,
+        affected_record_ids=(acceptance_id, view.override.id),
+        affected_digests=affected_digests,
+        approval_id=acceptance_id,
+        reason=reason,
+        actor=actor,
+    )
+    record_digest = canonical_json_digest(revocation.model_dump(mode="json"))
+    event = AuditEvent(
+        id=uuid4(),
+        initiative_id=active.initiative.id,
+        sequence=sequence,
+        timestamp=now,
+        event_type=RISK_ACCEPTANCE_REVOKED,
+        actor=actor,
+        authorization_basis=basis,
+        affected_record_ids=(revocation_id, acceptance_id, view.override.id),
+        affected_digests=(*affected_digests, record_digest),
+        metadata={
+            "risk_acceptance_id": str(acceptance_id),
+            "revocation_id": str(revocation_id),
+            "emergency_override_id": str(view.override.id),
+            "risk_acceptance_digest": acceptance_digest,
+        },
+    )
+    path = _revocation_path(layout, revocation_id)
+    created_directory = _ensure_directory(path.parent)
+    try:
+        write_record(path, revocation)
+        append_event_and_update_snapshot(
+            layout.event_journal_file,
+            layout.state_file,
+            event,
+            active.reducer,
+        )
+    except Exception:
+        if not _event_committed(layout, event.id):
+            path.unlink(missing_ok=True)
+            if created_directory:
+                with suppress(OSError):
+                    path.parent.rmdir()
+        raise
+    return RiskAcceptanceRevocationResult(
+        revocation,
+        view.acceptance,
+        view.override,
+        event,
+    )
