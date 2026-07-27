@@ -19,7 +19,9 @@ FORGE journal, locked rules, records, preserved objects, or materialized-state c
 The negations keep `forge.yaml`, active governance, archives, idempotency receipts, migration and
 recovery provenance, and preserved objects visible to Git even when earlier rules ignore YAML or
 `.forge/`. The final rule excludes locks, import staging, handoffs, caches, verbose runs, and local
-secrets. Existing legacy repositories receive the complete block on their next `forge init`.
+secrets. M4 structured audit events also remain below this local-only boundary because they are
+diagnostic observations rather than governance authority and contain machine-local security
+history. Existing legacy repositories receive the complete block on their next `forge init`.
 
 FORGE does not stage or commit anything. After review, an owner may use ordinary Git commands such
 as:

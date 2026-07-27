@@ -51,6 +51,11 @@ from forge.contracts.idempotency import (
     IdempotencyReceipt,
 )
 from forge.contracts.initiatives import Initiative, InitiativeReference
+from forge.contracts.local_audit import (
+    LocalAuditCategory,
+    LocalAuditEvent,
+    LocalAuditSeverity,
+)
 from forge.contracts.locking import LockRemediationRecord
 from forge.contracts.migrations import MigrationRecord
 from forge.contracts.packs import PackManifest, PackTrustDecision, PackTrustState
@@ -121,6 +126,7 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "migration-record": MigrationRecord,
     "journal-recovery-record": JournalRecoveryRecord,
     "lock-remediation-record": LockRemediationRecord,
+    "local-audit-event": LocalAuditEvent,
     "local-validator-definition": LocalValidatorDefinition,
     "owner-identity": OwnerIdentity,
     "pack-manifest": PackManifest,
@@ -189,6 +195,9 @@ __all__ = [
     "JournalDamageCondition",
     "JournalRecoveryRecord",
     "JournalRecoverySnapshotCondition",
+    "LocalAuditCategory",
+    "LocalAuditEvent",
+    "LocalAuditSeverity",
     "LocalValidatorDefinition",
     "LockRemediationRecord",
     "MaterializedState",

@@ -130,6 +130,9 @@ semantic-version commitments begin at v1.0.0.
   policy/risk binding, worker-or-owner authority, terminal adapter-execution proof, fail-closed
   live-process refusal, deterministic workflow destination, retry recovery, restart validation,
   inspection, and archive preservation.
+- M4 structured local security and failure auditing with a strict public event contract, stable
+  classification, privacy-preserving detail digests, atomic local-only storage, best-effort CLI
+  capture, filtered inspection, doctor validation, and no workflow-authority implication.
 
 ### Limitations
 

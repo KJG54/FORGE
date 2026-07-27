@@ -263,3 +263,8 @@ M4 Increment 9 makes every successful `forge run cancel <run-id>` produce a publ
 `RunCancellationRecord`. Cancellation remains a terminal outcome, not completion or verification.
 Manual runs have no managed process to stop. Adapter runs require a prior terminal execution event;
 live cross-process cancellation remains outside FORGE's current synchronous execution boundary.
+
+M4 Increment 10 observes handled CLI refusals and failures through sanitized local-only
+`LocalAuditEvent` records. These records make security, authorization, transition, integrity,
+configuration, conflict, and external-tool outcomes inspectable, but they never enter replay or
+satisfy a transition, gate, check, evidence, verification, or acceptance condition.

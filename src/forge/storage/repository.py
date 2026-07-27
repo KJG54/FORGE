@@ -144,6 +144,10 @@ class RepositoryLayout:
         return self.local_directory / "validator-runs"
 
     @property
+    def local_audit_event_directory(self) -> Path:
+        return self.local_directory / "audit-events"
+
+    @property
     def capability_approval_directory(self) -> Path:
         return self.active_directory / "capability-approvals"
 

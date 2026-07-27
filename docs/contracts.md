@@ -201,3 +201,8 @@ through the inherited `run_id`, its canonical digest, the locked step cancellati
 side-effect class, actor, reason, and source/destination states. Adapter-attributed cancellations
 also bind the preceding terminal execution event ID and hash. The public schema bundle now contains
 49 models.
+
+M4 Increment 10 adds the public `LocalAuditEvent` plus its category and severity enums. The record
+contains project, optional initiative, configured-owner, operation, refusal, stable error, detail-
+digest, and tool metadata. It deliberately has no raw-detail, argument, environment, content, or
+governance fields. The public schema bundle now contains 50 models.

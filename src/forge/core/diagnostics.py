@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from forge.contracts.state import IntegrityState
 from forge.core.git_policy import inspect_git_policy
+from forge.core.local_audit import list_local_audit_events
 from forge.core.lock_remediation import validate_lock_remediation_store
 from forge.core.status import inspect_status
 from forge.errors import IntegrityError
@@ -68,6 +69,7 @@ def inspect_repository_health(layout: RepositoryLayout) -> DiagnosticReport:
         project_id=configuration.project_id,
         owner_identity_id=configuration.owner.id,
     )
+    local_audit_count = len(list_local_audit_events(layout))
     git_check = (
         f"Git worktree policy ({git_report.tracked_governed_count} tracked governed files)"
         if git_report.inside_worktree
@@ -81,6 +83,7 @@ def inspect_repository_health(layout: RepositoryLayout) -> DiagnosticReport:
         f"archives ({len(status.archived_initiative_ids)})",
         f"idempotency receipts ({receipt_count})",
         f"local stale-lock remediations ({remediation_count})",
+        f"local audit events ({local_audit_count})",
         git_check,
         "capabilities and adapters (none configured)",
     )

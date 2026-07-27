@@ -8,10 +8,13 @@ from typing import Annotated
 from uuid import UUID
 
 import typer
+from typer._click.core import Context
+from typer._click.globals import get_current_context
 
 from forge import __version__
 from forge.contracts.capabilities import CapabilityTrustState, SideEffectClass
 from forge.contracts.decisions import WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE
+from forge.contracts.local_audit import LocalAuditCategory
 from forge.contracts.packs import PackTrustDecision, PackTrustState
 from forge.contracts.recovery import JournalRecoveryRecord
 from forge.contracts.state import ExplanationProfile
@@ -57,6 +60,11 @@ from forge.core.lifecycle import (
     begin_manual_run,
     create_initiative,
     load_active_initiative,
+)
+from forge.core.local_audit import (
+    list_local_audit_events,
+    record_local_audit_event,
+    show_local_audit_event,
 )
 from forge.core.lock_remediation import remediate_stale_lock
 from forge.core.migrations import inspect_active_migration, migrate_active_repository
@@ -123,6 +131,7 @@ deviation_app = typer.Typer(help="Record, review, and inspect workflow deviation
 override_app = typer.Typer(help="Record and inspect emergency override declarations.")
 risk_app = typer.Typer(help="Accept and inspect exact emergency-override residual risk.")
 decision_app = typer.Typer(help="Inspect or withdraw immutable owner decisions.")
+audit_app = typer.Typer(help="Inspect local-only structured security and failure events.")
 IdempotencyOption = Annotated[
     str | None,
     typer.Option(
@@ -145,6 +154,7 @@ app.add_typer(deviation_app, name="deviation")
 app.add_typer(override_app, name="override")
 app.add_typer(risk_app, name="risk")
 app.add_typer(decision_app, name="decision")
+app.add_typer(audit_app, name="audit")
 
 
 def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
@@ -513,9 +523,105 @@ def root(
     """Govern work without treating worker output as trusted project state."""
 
 
+def _context_operation(context: Context) -> str:
+    parts: list[str] = []
+    current = context
+    while current.parent is not None:
+        if current.info_name:
+            parts.append(current.info_name)
+        current = current.parent
+    return " ".join(reversed(parts)) or "forge"
+
+
+def _record_cli_failure(error: ForgeError) -> None:
+    """Record a sanitized local observation without changing the original failure."""
+    context = get_current_context(silent=True)
+    if context is None:
+        return
+    directory_value = context.params.get("directory", Path("."))
+    if not isinstance(directory_value, (Path, str)):
+        return
+    directory = Path(directory_value)
+    try:
+        layout = discover_repository(directory)
+        record_local_audit_event(
+            layout,
+            operation=_context_operation(context),
+            error=error,
+        )
+    except Exception:
+        # Local audit is defense in depth and must never replace the original CLI result.
+        return
+
+
 def _fail(error: ForgeError) -> None:
+    _record_cli_failure(error)
     typer.echo(f"Error: {error}", err=True)
     raise typer.Exit(code=int(error.exit_code))
+
+
+@audit_app.command("list")
+def audit_list(
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    category: Annotated[
+        LocalAuditCategory | None,
+        typer.Option("--category", help="Filter by stable local audit category."),
+    ] = None,
+    limit: Annotated[
+        int,
+        typer.Option("--limit", min=1, max=1000, help="Maximum newest events to display."),
+    ] = 100,
+) -> None:
+    """List sanitized local observations; these records are not workflow authority."""
+    try:
+        layout = discover_repository(directory)
+        events = list_local_audit_events(layout, category=category)
+    except ForgeError as error:
+        _fail(error)
+        return
+    selected = events[-limit:]
+    if not selected:
+        typer.echo("No local audit events")
+        return
+    for event in selected:
+        typer.echo(
+            f"{event.id} {event.timestamp.isoformat()} "
+            f"severity={event.severity.value} category={event.category.value} "
+            f"operation={event.operation} exit={event.exit_code}"
+        )
+
+
+@audit_app.command("show")
+def audit_show(
+    event_id: Annotated[UUID, typer.Argument(help="Local audit event UUID.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Show one sanitized local event without exposing the original error text."""
+    try:
+        layout = discover_repository(directory)
+        event = show_local_audit_event(layout, event_id)
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Local audit event: {event.id}")
+    typer.echo(f"Timestamp: {event.timestamp.isoformat()}")
+    typer.echo(f"Project: {event.project_id}")
+    typer.echo(f"Initiative: {event.initiative_id or '<none>'}")
+    typer.echo(f"Configured owner: {event.configured_owner_id}")
+    typer.echo(f"Operation: {event.operation}")
+    typer.echo(f"Category: {event.category.value}")
+    typer.echo(f"Severity: {event.severity.value}")
+    typer.echo(f"Outcome: {event.outcome}")
+    typer.echo(f"Exit code: {event.exit_code}")
+    typer.echo(f"Error type: {event.error_type}")
+    typer.echo(f"Detail digest: {event.detail_digest}")
+    typer.echo(f"Tool version: {event.tool_version}")
 
 
 def _assignment_map(values: list[str] | None, label: str) -> dict[str, str]:

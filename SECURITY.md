@@ -63,3 +63,10 @@ cannot be declared cancelled until a preceding hash-sealed execution event prove
 execution is already terminal. FORGE does not signal, terminate, or prove the absence of a live
 cross-process worker; external process supervision and operating-system isolation remain separate
 security controls.
+
+Handled CLI failures are observed through local `LocalAuditEvent` files when the repository can be
+safely identified. They classify the operation and stable exit code but persist only a SHA-256
+digest of the displayed detail, not raw error text, arguments, environment, credentials, content,
+or provider output. Recording is best effort and cannot replace the original refusal. These
+Git-ignored files are diagnostic rather than governed evidence: they are not hash chained,
+archived, or accepted as workflow support, and same-user processes can alter or remove them.

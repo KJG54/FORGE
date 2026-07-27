@@ -210,6 +210,11 @@ destination. Manual runs remain cancellable because FORGE started no process. Ad
 a prior hash-sealed terminal execution event, so cancellation cannot falsely claim that a live
 cross-process worker stopped.
 
+M4 Increment 10 adds structured local security and failure auditing. Handled CLI failures produce
+sanitized immutable `LocalAuditEvent` files below `.forge/local/audit-events/` once the repository
+can be safely identified. `forge audit list|show` and `forge doctor` inspect them. The files contain
+a detail digest instead of raw error text and never become workflow or acceptance authority.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -328,6 +333,7 @@ forge --help
 - [M4 Increment 7 risk-acceptance-revocation boundary](docs/milestones/m4-increment-7.md)
 - [M4 Increment 8 decision-withdrawal boundary](docs/milestones/m4-increment-8.md)
 - [M4 Increment 9 formal-cancellation boundary](docs/milestones/m4-increment-9.md)
+- [M4 Increment 10 structured-local-audit boundary](docs/milestones/m4-increment-10.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

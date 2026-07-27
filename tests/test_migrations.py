@@ -7,10 +7,12 @@ from typer.testing import CliRunner
 import forge.core.migrations as migrations
 from forge.cli.app import app
 from forge.contracts.actors import Actor, ActorType
+from forge.contracts.local_audit import LocalAuditCategory
 from forge.contracts.migrations import MigrationRecord
 from forge.core.archival import abandon_initiative, load_archive
 from forge.core.authorization import owner_actor
 from forge.core.lifecycle import begin_manual_run, create_initiative, load_active_initiative
+from forge.core.local_audit import list_local_audit_events
 from forge.core.migrations import inspect_active_migration, migrate_active_repository
 from forge.core.status import inspect_status
 from forge.errors import AuthorizationError, IntegrityError
@@ -166,7 +168,17 @@ def test_migration_requires_owner_and_rejects_corrupt_legacy_source(tmp_path: Pa
     )
     assert result.exit_code != 0
     assert "incomplete record" in result.stderr
-    assert _forge_bytes(initialized) == before
+    after = _forge_bytes(initialized)
+    local_audit_prefix = Path(".forge/local/audit-events")
+    assert {
+        path: content
+        for path, content in after.items()
+        if local_audit_prefix not in path.parents
+    } == before
+    events = list_local_audit_events(initialized.layout)
+    assert len(events) == 1
+    assert events[0].operation == "migrate"
+    assert events[0].category is LocalAuditCategory.INTEGRITY
 
 
 def test_migration_resumes_after_journal_commit_without_duplicate_event(

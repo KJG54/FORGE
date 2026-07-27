@@ -380,3 +380,19 @@ only the new record is removed; after event commitment, conservative receipt rec
 the missing idempotency receipt without repeating cancellation. Restart validation recomputes all
 relationships and rejects missing, unexpected, reordered, or altered cancellation records.
 Terminal archives preserve the directory unchanged.
+
+## M4 Increment 10 structured local audit events
+
+`.forge/local/audit-events/<event-id>.json` stores one immutable `LocalAuditEvent` per handled CLI
+failure that can be associated with a safely discovered repository. UUID-named files are written
+atomically, so concurrent observations do not share an append cursor. Absence of the directory
+means that no local event has yet been recorded.
+
+The record stores stable classification and a SHA-256 fingerprint of the displayed detail rather
+than the detail itself. Recording failure is ignored so the original CLI exit code and message
+remain authoritative for that invocation. Read-only list/show and doctor validation reject invalid
+schemas, unexpected entries, unsafe file types, oversized bytes, and symbolic links.
+
+Local audit events are intentionally outside `.forge/active/`, the journal, idempotency receipts,
+materialized state, and terminal archives. They provide non-authoritative operational diagnostics
+and may be deleted or altered by any process with the owner's filesystem permissions.
