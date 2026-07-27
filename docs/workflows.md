@@ -41,9 +41,27 @@ a successful worker process does not establish source quality, methodological va
 accuracy, or factual truth. Explicit FORGE verification and configured-owner acceptance remain
 separate requirements.
 
-This first M5 increment contains no pack resource templates, executable validators, or new schema.
-Trusting `research-basic` as data cannot authorize a process. Existing pack inventory, digest,
-locking, restart, invalidation, recovery, and archive behavior applies unchanged.
+The first M5 increment contained no pack resource templates, executable validators, or new schema.
+Trusting `research-basic` as data cannot authorize a process.
+
+M5 Increment 2 adds two exact text templates:
+
+```console
+forge pack template list research-basic
+forge pack template show research-basic templates/research-evidence-register.md
+forge pack template show research-basic templates/research-citation-record.md
+```
+
+Before initiative creation these commands inspect the currently available validated pack. After a
+`research-basic` initiative is created, they read the exact locked copies under
+`.forge/active/pack-resources/`. They never create or overwrite project files, register artifacts
+or evidence, append journal events, or execute a capability.
+
+Template paths and bytes participate in the complete `research-basic@0.2.0` digest. Creation copies
+them before the initiative event commits; restart and archives validate those copies independently
+of the source pack. Explanation and general data resources remain unsupported. A template supplies
+structure and attribution prompts only, not proof of citation correctness, source quality,
+methodological validity, or factual truth.
 
 ## Owner-authorized initiative creation
 

@@ -42,8 +42,13 @@ from forge.errors import (
     IntegrityError,
     TransitionError,
 )
-from forge.packs.loader import find_pack
-from forge.packs.validation import ValidatedPack, validate_pack
+from forge.packs.loader import (
+    discard_locked_pack_resources,
+    find_pack,
+    load_locked_pack_resources,
+    persist_locked_pack_resources,
+)
+from forge.packs.validation import PackResource, ValidatedPack, validate_pack
 from forge.storage.configuration import load_configuration
 from forge.storage.journal import read_journal
 from forge.storage.records import load_record, write_record
@@ -63,6 +68,7 @@ class ActiveInitiative:
     pack_trust: PackTrustDecision
     workflow: WorkflowDefinition
     state: MaterializedState
+    pack_resources: tuple[PackResource, ...] = ()
 
     @property
     def reducer(self) -> WorkflowStateReducer:
@@ -225,7 +231,12 @@ def create_initiative(
         },
     )
     created: list[Path] = []
+    resources_created = False
     try:
+        resources_created = persist_locked_pack_resources(
+            layout.pack_resource_directory,
+            pack,
+        )
         records = (
             (layout.initiative_file, initiative),
             (layout.pack_lock_file, pack.manifest),
@@ -252,8 +263,18 @@ def create_initiative(
         if not committed:
             for path in reversed(created):
                 path.unlink(missing_ok=True)
+            if resources_created:
+                discard_locked_pack_resources(layout.pack_resource_directory)
         raise
-    active = ActiveInitiative(layout, initiative, pack.manifest, trust, workflow, state)
+    active = ActiveInitiative(
+        layout,
+        initiative,
+        pack.manifest,
+        trust,
+        workflow,
+        state,
+        pack.resources,
+    )
     return InitiativeCreationResult(active, read_journal(layout.event_journal_file)[-1])
 
 
@@ -274,7 +295,13 @@ def load_replayed_active_initiative(
     manifest = load_record(layout.pack_lock_file, PackManifest)
     trust = load_record(layout.pack_trust_file, PackTrustDecision)
     workflow = load_record(layout.workflow_lock_file, WorkflowDefinition)
-    locked_pack = ValidatedPack(layout.active_directory, manifest, (workflow,))
+    resources = load_locked_pack_resources(layout.pack_resource_directory, manifest)
+    locked_pack = ValidatedPack(
+        layout.active_directory,
+        manifest,
+        (workflow,),
+        resources,
+    )
     try:
         validate_pack(locked_pack)
     except ConfigurationError as error:
@@ -328,7 +355,15 @@ def load_replayed_active_initiative(
     if replayed_state.initiative_id != initiative.id:
         raise IntegrityError("Materialized state belongs to a different initiative")
     return (
-        ActiveInitiative(layout, initiative, manifest, trust, workflow, replayed_state),
+        ActiveInitiative(
+            layout,
+            initiative,
+            manifest,
+            trust,
+            workflow,
+            replayed_state,
+            resources,
+        ),
         events,
     )
 
@@ -408,6 +443,7 @@ def load_active_initiative(
         effective_pack_trust,
         active.workflow,
         report.replayed_state,
+        active.pack_resources,
     )
 
 

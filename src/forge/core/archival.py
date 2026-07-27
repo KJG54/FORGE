@@ -77,6 +77,7 @@ _ACTIVE_TOP_LEVEL = {
     "pack-trust.json",
     "pack-trust-decisions",
     "pack.lock.json",
+    "pack-resources",
     "revocations",
     "recovery-records",
     "recovery-snapshots",

@@ -212,3 +212,9 @@ M4 Increment 10 adds the public `LocalAuditEvent` plus its category and severity
 contains project, optional initiative, configured-owner, operation, refusal, stable error, detail-
 digest, and tool metadata. It deliberately has no raw-detail, argument, environment, content, or
 governance fields. The public schema bundle now contains 50 models.
+
+M5 Increment 2 uses the existing `PackManifest.template_paths` field without changing its schema.
+Template bytes and their derived digests are internal validated pack values rather than independent
+persisted contracts. The complete pack digest binds them, while exact copies under governed active
+state and archive file inventories preserve the bytes. Explanation and general data-resource paths
+remain unsupported. The exported schema bundle remains at 50 models.

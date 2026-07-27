@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
+from enum import StrEnum
 from pathlib import Path
 
 from forge.contracts.packs import PackManifest
@@ -15,11 +16,24 @@ SUPPORTED_SCHEMA_COMPATIBILITY = "forge-contracts-1"
 SUPPORTED_AUTHORITIES = {"owner", "participant", "forge-cli"}
 
 
+class PackResourceKind(StrEnum):
+    TEMPLATE = "template"
+
+
+@dataclass(frozen=True)
+class PackResource:
+    path: str
+    kind: PackResourceKind
+    content: bytes
+    content_digest: str
+
+
 @dataclass(frozen=True)
 class ValidatedPack:
     source_path: Path
     manifest: PackManifest
     workflows: tuple[WorkflowDefinition, ...]
+    resources: tuple[PackResource, ...] = ()
     bundled: bool = False
 
     def workflow(self, workflow_id: str | None = None) -> WorkflowDefinition:
@@ -35,8 +49,9 @@ class ValidatedPack:
 def calculate_pack_digest(
     manifest: PackManifest,
     workflows: tuple[WorkflowDefinition, ...],
+    resources: tuple[PackResource, ...] = (),
 ) -> str:
-    """Bind a pack manifest and its workflow definitions without self-hashing."""
+    """Bind a pack manifest, workflows, and declared resource bytes without self-hashing."""
     payload = {
         "manifest": manifest.model_dump(mode="json", exclude={"integrity_digest"}),
         "workflows": [
@@ -44,6 +59,15 @@ def calculate_pack_digest(
             for workflow in sorted(workflows, key=lambda item: (item.id, item.version))
         ],
     }
+    if resources:
+        payload["resources"] = [
+            {
+                "path": resource.path,
+                "kind": resource.kind.value,
+                "content_digest": resource.content_digest,
+            }
+            for resource in sorted(resources, key=lambda item: (item.path, item.kind.value))
+        ]
     canonical = json.dumps(
         payload,
         ensure_ascii=False,
@@ -77,15 +101,39 @@ def _validate_workflow_reachability(workflow: WorkflowDefinition) -> None:
 def validate_pack(pack: ValidatedPack) -> None:
     manifest = pack.manifest
     workflows = pack.workflows
-    if (
-        manifest.template_paths
-        or manifest.explanation_paths
-        or manifest.data_resource_paths
-    ):
+    resources = pack.resources
+    if manifest.explanation_paths or manifest.data_resource_paths:
         raise ConfigurationError(
-            "M1 Increment 3 locks manifest and workflow data only; additional pack resources "
-            "remain unavailable until their bytes are included in the lock digest"
+            "M5 Increment 2 supports digest-bound template paths only; explanation and general "
+            "data resources remain unavailable"
         )
+    declared_paths = (
+        *manifest.template_paths,
+        *manifest.explanation_paths,
+        *manifest.data_resource_paths,
+    )
+    if len(declared_paths) != len(set(declared_paths)):
+        raise ConfigurationError("Pack resource paths must be unique across all resource classes")
+    resource_paths = tuple(resource.path for resource in resources)
+    if len(resource_paths) != len(set(resource_paths)):
+        raise ConfigurationError("Validated pack resources must have unique paths")
+    if set(resource_paths) != set(manifest.template_paths):
+        raise ConfigurationError(
+            f"Pack {manifest.id} template bytes do not match declared template_paths"
+        )
+    for resource in resources:
+        if resource.kind is not PackResourceKind.TEMPLATE:
+            raise ConfigurationError(
+                f"Pack {manifest.id} contains unsupported resource kind {resource.kind.value!r}"
+            )
+        calculated_resource_digest = (
+            f"sha256:{hashlib.sha256(resource.content).hexdigest()}"
+        )
+        if calculated_resource_digest != resource.content_digest:
+            raise IntegrityError(
+                f"Pack resource digest mismatch for {resource.path}: expected "
+                f"{resource.content_digest}, calculated {calculated_resource_digest}"
+            )
     if SUPPORTED_SCHEMA_COMPATIBILITY not in manifest.schema_compatibility:
         raise ConfigurationError(
             f"Pack {manifest.id} does not declare {SUPPORTED_SCHEMA_COMPATIBILITY!r} compatibility"
@@ -124,7 +172,7 @@ def validate_pack(pack: ValidatedPack) -> None:
             if not step.allowed_transitions:
                 raise ConfigurationError(f"Workflow step {step.id} has no transitions")
 
-    calculated = calculate_pack_digest(manifest, workflows)
+    calculated = calculate_pack_digest(manifest, workflows, resources)
     if calculated != manifest.integrity_digest:
         raise IntegrityError(
             f"Pack {manifest.id} integrity digest mismatch: expected "

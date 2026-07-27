@@ -103,6 +103,7 @@ from forge.core.verification import (
 )
 from forge.errors import ConfigurationError, ConflictError, ForgeError
 from forge.packs.loader import available_packs, find_pack
+from forge.packs.validation import PackResource
 from forge.schemas import export_schema_bundle
 from forge.storage.configuration import load_configuration, render_configuration
 from forge.storage.idempotency import idempotent_mutation, normalize_idempotency_key
@@ -119,6 +120,7 @@ app = typer.Typer(
 schema_app = typer.Typer(help="Inspect or export versioned FORGE schemas.")
 config_app = typer.Typer(help="Inspect or validate project-level FORGE configuration.")
 pack_app = typer.Typer(help="Inspect validated declarative data packs.")
+pack_template_app = typer.Typer(help="Inspect exact UTF-8 data-pack templates.")
 artifact_app = typer.Typer(help="Register and inspect immutable artifact revisions.")
 check_app = typer.Typer(help="Record, run, and inspect structured checks.")
 evidence_app = typer.Typer(help="Register and inspect durable evidence packets.")
@@ -142,6 +144,7 @@ IdempotencyOption = Annotated[
 app.add_typer(schema_app, name="schema")
 app.add_typer(config_app, name="config")
 app.add_typer(pack_app, name="pack")
+pack_app.add_typer(pack_template_app, name="template")
 app.add_typer(artifact_app, name="artifact")
 app.add_typer(check_app, name="check")
 app.add_typer(evidence_app, name="evidence")
@@ -806,6 +809,76 @@ def validate_pack_command(
         f"Valid data pack {pack.manifest.id} {pack.manifest.version} "
         f"({pack.manifest.integrity_digest})"
     )
+
+
+def _select_pack_templates(
+    directory: Path,
+    pack_id: str,
+) -> tuple[tuple[PackResource, ...], str]:
+    layout = discover_repository(directory)
+    if layout.initiative_file.exists():
+        active = load_active_initiative(
+            layout,
+            allow_paused=True,
+            allow_untrusted_pack=True,
+        )
+        if active.pack_manifest.id == pack_id:
+            return active.pack_resources, (
+                f"locked {active.pack_manifest.id}@{active.pack_manifest.version}"
+            )
+    configuration = load_configuration(layout.configuration_file)
+    available = find_pack(layout, configuration, pack_id)
+    return available.resources, (
+        f"available {available.manifest.id}@{available.manifest.version}"
+    )
+
+
+@pack_template_app.command("list")
+def list_pack_templates(
+    pack_id: Annotated[str, typer.Argument(help="Pack ID whose templates should be listed.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory to inspect."),
+    ] = Path("."),
+) -> None:
+    """List exact declared template paths and content digests without executing them."""
+    try:
+        resources, source = _select_pack_templates(directory, pack_id)
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Templates from {source}:")
+    if not resources:
+        typer.echo("- none")
+    for resource in resources:
+        typer.echo(f"- {resource.path} ({resource.content_digest})")
+
+
+@pack_template_app.command("show")
+def show_pack_template(
+    pack_id: Annotated[str, typer.Argument(help="Pack ID containing the template.")],
+    template_path: Annotated[
+        str,
+        typer.Argument(help="Exact declared repository-relative template path."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory to inspect."),
+    ] = Path("."),
+) -> None:
+    """Render one exact validated text template without creating a project artifact."""
+    try:
+        resources, _source = _select_pack_templates(directory, pack_id)
+        matches = [resource for resource in resources if resource.path == template_path]
+        if len(matches) != 1:
+            raise ConfigurationError(
+                f"Pack {pack_id!r} has no declared template {template_path!r}"
+            )
+        content = matches[0].content.decode("utf-8-sig")
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(content, nl=False)
 
 
 def _echo_locked_pack_trust(active: ActiveInitiative) -> None:
