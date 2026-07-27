@@ -38,7 +38,12 @@ from forge.core.capabilities import (
 )
 from forge.core.command_recovery import recover_command_receipt
 from forge.core.continuity import pause_initiative, resume_initiative
-from forge.core.decisions import record_decision
+from forge.core.decisions import (
+    list_decision_views,
+    record_decision,
+    show_decision,
+    withdraw_decision,
+)
 from forge.core.deviations import (
     list_workflow_deviations,
     record_workflow_deviation,
@@ -117,6 +122,7 @@ scope_app = typer.Typer(help="Amend and inspect effective initiative scope.")
 deviation_app = typer.Typer(help="Record, review, and inspect workflow deviations.")
 override_app = typer.Typer(help="Record and inspect emergency override declarations.")
 risk_app = typer.Typer(help="Accept and inspect exact emergency-override residual risk.")
+decision_app = typer.Typer(help="Inspect or withdraw immutable owner decisions.")
 IdempotencyOption = Annotated[
     str | None,
     typer.Option(
@@ -138,6 +144,7 @@ app.add_typer(scope_app, name="scope")
 app.add_typer(deviation_app, name="deviation")
 app.add_typer(override_app, name="override")
 app.add_typer(risk_app, name="risk")
+app.add_typer(decision_app, name="decision")
 
 
 def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
@@ -2800,6 +2807,75 @@ def decide(
     typer.echo(f"Recorded decision {result.decision.id}")
     if result.supersession is not None:
         typer.echo(f"Supersession: {result.supersession.id}")
+
+
+@decision_app.command("withdraw")
+@_locked_mutation
+def decision_withdraw(
+    decision_id: Annotated[UUID, typer.Argument(help="Current decision UUID to withdraw.")],
+    reason: Annotated[
+        str,
+        typer.Option("--reason", help="Owner reason for withdrawing the decision."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Withdraw a current decision without deleting or rewriting its history."""
+
+    try:
+        layout = discover_repository(directory)
+        configuration = load_configuration(layout.configuration_file)
+        result = withdraw_decision(
+            layout,
+            decision_id=decision_id,
+            reason=reason,
+            actor=owner_actor(configuration.owner),
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    assert result.supersession is not None
+    typer.echo(f"Withdrew decision {decision_id}")
+    typer.echo(f"Withdrawal decision: {result.decision.id}")
+    typer.echo(f"Supersession: {result.supersession.id}")
+    typer.echo("Progression authority: none")
+
+
+@decision_app.command("show")
+def decision_show(
+    decision_id: Annotated[
+        UUID | None,
+        typer.Argument(help="Decision UUID; omit to show complete history."),
+    ] = None,
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+) -> None:
+    """Show one decision or the complete append-only decision history."""
+
+    try:
+        layout = discover_repository(directory)
+        views = (
+            (show_decision(layout, decision_id),)
+            if decision_id is not None
+            else list_decision_views(layout)
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    if not views:
+        typer.echo("No decision records")
+    for view in views:
+        typer.echo(
+            f"{view.decision.id} type={view.decision.decision_type} "
+            f"status={view.status} outcome={view.decision.chosen_outcome}"
+        )
+        if view.replacement_decision is not None and view.supersession is not None:
+            typer.echo(f"  Replaced by: {view.replacement_decision.id} via {view.supersession.id}")
 
 
 def main() -> None:

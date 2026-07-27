@@ -17,6 +17,9 @@ from forge.contracts.capabilities import (
     SideEffectClass,
 )
 from forge.contracts.decisions import (
+    DECISION_WITHDRAWAL_DECISION_TYPE,
+    DECISION_WITHDRAWAL_OPTIONS,
+    DECISION_WITHDRAWAL_OUTCOME,
     WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE,
     ApprovalRevocation,
     DecisionRecord,
@@ -1247,6 +1250,7 @@ def validate_governed_records(
             if (
                 decision.id != decision_id
                 or decision.actor != event.actor
+                or decision.status.value != "active"
                 or event.actor.actor_type is not ActorType.OWNER
                 or event.actor.id != owner_id
                 or not set(decision.affected_record_ids).issubset(
@@ -1309,7 +1313,35 @@ def validate_governed_records(
                     raise IntegrityError(
                         f"Decision supersession does not match event {event.id}"
                     )
+                prior_decision = decisions_by_id[prior_id]
+                if decision.decision_type == DECISION_WITHDRAWAL_DECISION_TYPE:
+                    expected_affected_record_ids = tuple(
+                        dict.fromkeys((prior_decision.id, *prior_decision.affected_record_ids))
+                    )
+                    expected_bound_digests = tuple(
+                        dict.fromkeys(
+                            (
+                                canonical_json_digest(prior_decision.model_dump(mode="json")),
+                                *prior_decision.bound_digests,
+                            )
+                        )
+                    )
+                    if (
+                        prior_decision.decision_type == DECISION_WITHDRAWAL_DECISION_TYPE
+                        or decision.question
+                        != f"Should decision {prior_decision.id} continue to govern?"
+                        or decision.considered_options != DECISION_WITHDRAWAL_OPTIONS
+                        or decision.chosen_outcome != DECISION_WITHDRAWAL_OUTCOME
+                        or decision.affected_record_ids != expected_affected_record_ids
+                        or decision.bound_digests != expected_bound_digests
+                        or supersession.affected_digests != expected_bound_digests
+                    ):
+                        raise IntegrityError(f"Decision withdrawal does not match event {event.id}")
                 stale_ids.add(prior_id)
+            elif decision.decision_type == DECISION_WITHDRAWAL_DECISION_TYPE:
+                raise IntegrityError(
+                    f"Decision withdrawal {decision.id} does not supersede a decision"
+                )
             decisions_by_id[decision_id] = decision
         elif event.event_type == SCOPE_AMENDED:
             amendment_id = _uuid_metadata(event, "scope_amendment_id")

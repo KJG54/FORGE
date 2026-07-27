@@ -12,6 +12,9 @@ from forge import __version__
 from forge.contracts.actors import Actor
 from forge.contracts.base import utc_now
 from forge.contracts.decisions import (
+    DECISION_WITHDRAWAL_DECISION_TYPE,
+    DECISION_WITHDRAWAL_OPTIONS,
+    DECISION_WITHDRAWAL_OUTCOME,
     WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE,
     DecisionRecord,
     DecisionSupersession,
@@ -37,6 +40,27 @@ class DecisionResult:
     decision: DecisionRecord
     event: AuditEvent
     supersession: DecisionSupersession | None = None
+
+
+@dataclass(frozen=True)
+class DecisionView:
+    decision: DecisionRecord
+    supersession: DecisionSupersession | None
+    replacement_decision: DecisionRecord | None
+    stale: bool
+
+    @property
+    def status(self) -> str:
+        if (
+            self.replacement_decision is not None
+            and self.replacement_decision.decision_type == DECISION_WITHDRAWAL_DECISION_TYPE
+        ):
+            return "withdrawn"
+        if self.replacement_decision is not None:
+            return "superseded"
+        if self.stale:
+            return "stale"
+        return "current"
 
 
 def _require_text(label: str, value: str) -> str:
@@ -76,7 +100,12 @@ def _event_committed(layout: RepositoryLayout, event_id: UUID) -> bool:
 
 
 def list_decisions(layout: RepositoryLayout) -> tuple[DecisionRecord, ...]:
-    load_active_initiative(layout, allow_paused=True)
+    load_active_initiative(
+        layout,
+        allow_terminal=True,
+        allow_paused=True,
+        allow_untrusted_pack=True,
+    )
     if not layout.decision_directory.exists():
         return ()
     return tuple(
@@ -87,6 +116,77 @@ def list_decisions(layout: RepositoryLayout) -> tuple[DecisionRecord, ...]:
             ),
             key=lambda item: (item.event_sequence, str(item.id)),
         )
+    )
+
+
+def list_decision_views(layout: RepositoryLayout) -> tuple[DecisionView, ...]:
+    active = load_active_initiative(
+        layout,
+        allow_terminal=True,
+        allow_paused=True,
+        allow_untrusted_pack=True,
+    )
+    decisions = list_decisions(layout)
+    decisions_by_id = {decision.id: decision for decision in decisions}
+    supersessions = (
+        tuple(
+            sorted(
+                (
+                    load_record(path, DecisionSupersession)
+                    for path in layout.decision_supersession_directory.glob("*.json")
+                ),
+                key=lambda item: (item.event_sequence, str(item.id)),
+            )
+        )
+        if layout.decision_supersession_directory.exists()
+        else ()
+    )
+    supersessions_by_prior = {
+        supersession.prior_decision_id: supersession for supersession in supersessions
+    }
+    return tuple(
+        DecisionView(
+            decision=decision,
+            supersession=supersessions_by_prior.get(decision.id),
+            replacement_decision=(
+                decisions_by_id.get(supersession.replacement_decision_id)
+                if (supersession := supersessions_by_prior.get(decision.id)) is not None
+                else None
+            ),
+            stale=decision.id in active.state.stale_record_ids,
+        )
+        for decision in decisions
+    )
+
+
+def show_decision(layout: RepositoryLayout, decision_id: UUID) -> DecisionView:
+    match = next(
+        (item for item in list_decision_views(layout) if item.decision.id == decision_id),
+        None,
+    )
+    if match is None:
+        raise ConflictError(f"Unknown decision {decision_id}")
+    return match
+
+
+def _withdrawal_facts(
+    prior: DecisionRecord,
+) -> tuple[str, tuple[str, ...], str, tuple[UUID, ...], tuple[str, ...]]:
+    affected_record_ids = tuple(dict.fromkeys((prior.id, *prior.affected_record_ids)))
+    bound_digests = tuple(
+        dict.fromkeys(
+            (
+                canonical_json_digest(prior.model_dump(mode="json")),
+                *prior.bound_digests,
+            )
+        )
+    )
+    return (
+        f"Should decision {prior.id} continue to govern?",
+        DECISION_WITHDRAWAL_OPTIONS,
+        DECISION_WITHDRAWAL_OUTCOME,
+        affected_record_ids,
+        bound_digests,
     )
 
 
@@ -154,6 +254,23 @@ def record_decision(
         if supersedes not in active.state.open_decision_ids:
             raise ConflictError(f"Decision {supersedes} is not active for supersession")
         prior = load_record(_decision_path(layout, supersedes), DecisionRecord)
+    if decision_type == DECISION_WITHDRAWAL_DECISION_TYPE:
+        if prior is None:
+            raise ConfigurationError("A decision withdrawal must supersede one current decision")
+        if prior.decision_type == DECISION_WITHDRAWAL_DECISION_TYPE:
+            raise ConflictError("A decision-withdrawal record cannot itself be withdrawn")
+        expected = _withdrawal_facts(prior)
+        actual = (
+            question,
+            considered_options,
+            chosen_outcome,
+            affected_record_ids,
+            bound_digests,
+        )
+        if actual != expected:
+            raise ConfigurationError(
+                "Decision-withdrawal facts must exactly bind the prior decision"
+            )
     now = utc_now()
     sequence = active.state.journal_head_sequence + 1
     decision_id = uuid4()
@@ -256,3 +373,33 @@ def record_decision(
                     path.rmdir()
         raise
     return DecisionResult(decision, event, supersession)
+
+
+def withdraw_decision(
+    layout: RepositoryLayout,
+    *,
+    decision_id: UUID,
+    reason: str,
+    actor: Actor,
+) -> DecisionResult:
+    active = load_active_initiative(layout)
+    require_owner(actor, active.initiative.owner_identity_id, "withdraw a governance decision")
+    reason = _require_text("Decision withdrawal reason", reason)
+    if decision_id not in active.state.open_decision_ids:
+        raise ConflictError(f"Decision {decision_id} is not current for withdrawal")
+    prior = load_record(_decision_path(layout, decision_id), DecisionRecord)
+    if prior.decision_type == DECISION_WITHDRAWAL_DECISION_TYPE:
+        raise ConflictError("A decision-withdrawal record cannot itself be withdrawn")
+    question, options, outcome, affected_record_ids, bound_digests = _withdrawal_facts(prior)
+    return record_decision(
+        layout,
+        decision_type=DECISION_WITHDRAWAL_DECISION_TYPE,
+        question=question,
+        considered_options=options,
+        chosen_outcome=outcome,
+        rationale=reason,
+        actor=actor,
+        affected_record_ids=affected_record_ids,
+        bound_digests=bound_digests,
+        supersedes=prior.id,
+    )

@@ -188,3 +188,10 @@ withdrawal without changing its schema. `approval_id` identifies the exact `Risk
 inherited affected-record and digest fields bind that acceptance, its emergency override, and
 their canonical digests. The immutable revocation is state-neutral and cannot alter the original
 acceptance record.
+
+M4 Increment 8 reuses the existing public `DecisionRecord` and `DecisionSupersession` contracts
+without changing their schemas. A reserved `decision-withdrawal` replacement carries fixed
+semantics, identifies the prior decision through supersession, and binds its canonical digest plus
+inherited affected records and digests. Current, withdrawn, superseded, and stale status remains
+derived from validated history rather than persisted by rewriting `DecisionRecord.status`. The
+exported schema count remains unchanged.

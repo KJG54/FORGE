@@ -122,6 +122,10 @@ semantic-version commitments begin at v1.0.0.
 - M4 append-only risk-acceptance revocation with exact acceptance and override binding,
   owner-only authority, state-neutral blocker reopening, fresh reacceptance, stale-target refusal,
   retry recovery, restart validation, and archive preservation.
+- M4 append-only general decision withdrawal with a reserved exact-binding replacement decision,
+  configured-owner authority, immutable supersession history, state-neutral authority removal,
+  deviation-review reopening, historical inspection, retry recovery, restart validation, and
+  archive preservation.
 
 ### Limitations
 

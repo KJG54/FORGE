@@ -79,6 +79,24 @@ forge decide \
   --rationale "Minimize risk"
 ```
 
+The configured owner can explicitly withdraw one current decision:
+
+```console
+forge decision withdraw <decision-id> \
+  --reason "The governing assumption no longer applies"
+forge decision show <decision-id>
+```
+
+Withdrawal reuses immutable supersession. FORGE writes a reserved `decision-withdrawal`
+replacement that binds the exact prior decision digest and its affected records and digests. The
+original file is unchanged and becomes historical rather than current. A stale, superseded, or
+already-withdrawal record cannot be withdrawn.
+
+The withdrawal record grants no claim, check, evidence, verification, gate, acceptance, or other
+workflow progression authority. It also never resurrects an older decision. If the target was a
+current workflow-deviation review, removing that current authority reopens the deviation
+automatically.
+
 `forge status` displays invalidated steps, stale record IDs, and open decision IDs. Full restart
 validation cross-checks each governance record against its journal event and reconstructs the same
 effective state.

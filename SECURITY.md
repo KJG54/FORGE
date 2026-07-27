@@ -50,3 +50,9 @@ records. An immutable owner revocation reopens the exact blocker without changin
 stale or already revoked acceptance cannot authorize or be revoked again. This fail-closed
 behavior is governance enforcement, not isolation from a same-user process that can directly
 modify repository files.
+
+General decision withdrawal is owner-only and append-only. The reserved withdrawal decision binds
+the exact canonical digest and affected facts of one current prior decision; arbitrary records
+cannot masquerade as withdrawals. Replay removes the prior decision from current authority without
+editing it or granting the withdrawal any progression authority. Withdrawing a current workflow-
+deviation review therefore fails closed by reopening that deviation's closure blocker.

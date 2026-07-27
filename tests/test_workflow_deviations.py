@@ -10,7 +10,7 @@ from forge.contracts.actors import Actor, ActorType
 from forge.contracts.decisions import WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE
 from forge.core.archival import abandon_initiative, close_initiative, load_archive
 from forge.core.authorization import owner_actor
-from forge.core.decisions import record_decision
+from forge.core.decisions import record_decision, withdraw_decision
 from forge.core.deviations import (
     list_workflow_deviations,
     open_workflow_deviations,
@@ -125,15 +125,11 @@ def test_current_review_decision_resolves_and_supersession_can_reopen_deviation(
             affected_record_ids=(deviation.id,),
         )
 
-    replacement = record_decision(
+    replacement = withdraw_decision(
         initialized.layout,
-        decision_type="review-withdrawal",
-        question="Does the prior deviation review remain current?",
-        considered_options=("Retain", "Withdraw"),
-        chosen_outcome="Withdraw",
-        rationale="New facts require another explicit review",
+        decision_id=review.decision.id,
+        reason="New facts require another explicit review",
         actor=actor,
-        supersedes=review.decision.id,
     )
     assert replacement.supersession is not None
     assert open_workflow_deviations(initialized.layout)[0].deviation.id == deviation.id

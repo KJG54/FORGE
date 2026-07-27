@@ -199,6 +199,11 @@ M4 Increment 7 adds owner-only `forge risk revoke <acceptance-id>`. Revocation p
 original acceptance, reopens only its exact override's residual-risk closure blocker, and permits
 a later fresh acceptance. It remains state-neutral and refuses already stale authority.
 
+M4 Increment 8 adds owner-only `forge decision withdraw <decision-id>`. Withdrawal preserves the
+original decision and records an exact digest-bound `decision-withdrawal` replacement through the
+ordinary supersession mechanism. The prior decision stops being current without changing workflow
+state; withdrawing a deviation review reopens that review requirement.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -315,6 +320,7 @@ forge --help
 - [M4 Increment 5 emergency-override boundary](docs/milestones/m4-increment-5.md)
 - [M4 Increment 6 exact risk-acceptance boundary](docs/milestones/m4-increment-6.md)
 - [M4 Increment 7 risk-acceptance-revocation boundary](docs/milestones/m4-increment-7.md)
+- [M4 Increment 8 decision-withdrawal boundary](docs/milestones/m4-increment-8.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

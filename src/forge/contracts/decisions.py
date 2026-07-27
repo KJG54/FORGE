@@ -7,6 +7,12 @@ from forge.contracts.actors import Actor
 from forge.contracts.base import GovernanceRecord, NonEmptyString, Sha256Digest, SymbolicId
 
 WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE = "workflow-deviation-review"
+DECISION_WITHDRAWAL_DECISION_TYPE = "decision-withdrawal"
+DECISION_WITHDRAWAL_OPTIONS = (
+    "retain prior decision",
+    "withdraw prior decision",
+)
+DECISION_WITHDRAWAL_OUTCOME = "withdraw prior decision"
 
 
 class DecisionStatus(StrEnum):

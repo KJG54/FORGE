@@ -50,6 +50,7 @@ EXPECTED_EVENT_PATTERNS: dict[str, tuple[tuple[str, ...], ...]] = {
     "complete": (("claim-recorded", "step-transitioned"),),
     "create": (("initiative-created",),),
     "decide": (("decision-recorded",), ("decision-superseded",)),
+    "decision_withdraw": (("decision-superseded",),),
     "deviation_review": (("decision-recorded",), ("decision-superseded",)),
     "override_record": (("emergency-override-recorded",),),
     "risk_accept": (("risk-accepted",),),

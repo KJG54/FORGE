@@ -344,3 +344,21 @@ derived from the validated event history: a non-stale acceptance with no revocat
 override blocker; a revoked acceptance does not. The `risk_revoke` idempotency pattern contains
 exactly one revocation event. Restart validation rejects unknown, stale, duplicated, altered, or
 misbound revocations, and terminal archives preserve the complete relationship.
+
+## M4 Increment 8 decision withdrawal
+
+General withdrawal reuses `.forge/active/decisions/` and
+`.forge/active/decision-supersessions/`. The original `DecisionRecord` remains byte-for-byte
+unchanged. One new reserved `decision-withdrawal` record replaces it through the ordinary
+`decision-superseded` event and `DecisionSupersession`.
+
+The replacement's first bound digest is the prior decision's canonical digest, followed by that
+decision's existing digest bindings. Its affected records contain the prior decision followed by
+the prior affected records. Restart validation recomputes these exact facts and refuses forged
+reserved types, altered records, withdrawal without supersession, withdrawal of another
+withdrawal, or a target that was not current.
+
+The `decision_withdraw` idempotency pattern contains exactly one `decision-superseded` event.
+Replay removes only the prior decision from `open_decision_ids`, adds the withdrawal audit fact,
+and marks the prior stale. It changes no workflow step, run, gate, claim, check, evidence,
+verification, or acceptance state. Terminal archives retain both records and their supersession.

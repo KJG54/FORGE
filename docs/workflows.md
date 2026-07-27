@@ -245,3 +245,10 @@ M4 Increment 7 adds `forge risk revoke <acceptance-id>` for configured-owner wit
 current risk acceptance. The immutable revocation reopens only the linked override's residual-risk
 closure blocker and permits a later new acceptance. It creates no workflow transition or
 invalidation. A scope-stale acceptance already authorizes nothing and cannot be revoked.
+
+M4 Increment 8 adds `forge decision withdraw <decision-id>` for configured-owner removal of one
+current decision's authority. The operation records a reserved, exact-bound replacement and
+ordinary supersession; it never edits the prior record or grants progression authority. A stale,
+superseded, or withdrawal record is refused. If the prior decision was the current review for a
+workflow deviation, the deviation becomes open again and successful closure remains blocked until
+a fresh current review exists.
