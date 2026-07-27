@@ -1010,12 +1010,26 @@ def validate_governed_records(
             claim = load_record(path, Claim)
             _validate_common(claim, event, claim_id)
             revision_ids = _uuid_list_metadata(event, "artifact_revision_ids")
+            revision_digests = tuple(
+                revisions_by_id[revision_id].content_digest
+                for revision_id in revision_ids
+                if revision_id in revisions_by_id
+            )
+            claim_digest = canonical_json_digest(claim.model_dump(mode="json"))
+            allowed_event_digests = {
+                revision_digests,
+                (claim_digest, *revision_digests),
+            }
             if (
                 claim.id != claim_id
                 or claim.actor != event.actor
                 or claim.step_id != event.metadata.get("step_id")
                 or claim.claimed_artifact_revision_ids != revision_ids
                 or not set(revision_ids).issubset(revisions_by_id)
+                or claim.affected_record_ids != revision_ids
+                or claim.affected_digests != revision_digests
+                or event.affected_record_ids != (claim_id, *revision_ids)
+                or event.affected_digests not in allowed_event_digests
             ):
                 raise IntegrityError(f"Claim record does not match event {event.id}")
             claims_by_id[claim_id] = claim

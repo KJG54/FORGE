@@ -123,3 +123,8 @@ forge acceptance record discover ...
 
 Validator execution performs none of those actions automatically and leaves the step
 `awaiting_verification`.
+
+These controls bound supported FORGE behavior; they do not make an approved validator a hostile-
+code sandbox. A malicious process running with the repository owner's operating-system permissions
+can read or change anything that identity can access. Run hostile validators only with external
+process or operating-system isolation appropriate to the project.

@@ -396,3 +396,15 @@ schemas, unexpected entries, unsafe file types, oversized bytes, and symbolic li
 Local audit events are intentionally outside `.forge/active/`, the journal, idempotency receipts,
 materialized state, and terminal archives. They provide non-authoritative operational diagnostics
 and may be deleted or altered by any process with the owner's filesystem permissions.
+
+## M4 Increment 11 claim integrity and closeout
+
+New `claim-recorded` events prepend the complete canonical `Claim` digest to the exact artifact
+revision digests already carried by the event. Restart validation recomputes the record digest and
+checks the claim's actor, sequence, run, step, affected records, and revision digests against that
+same event. This closes assertion and limitation tampering without adding a public schema.
+
+For pre-closeout history, restart accepts the prior event-digest shape and continues to validate
+the original actor, sequence, step, run, revision, and transition-support relationships. Such a
+claim still grants no independent progression authority: a current passing check, evidence packet,
+verification transition, and configured-owner acceptance remain separately required.

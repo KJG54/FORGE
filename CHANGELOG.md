@@ -133,6 +133,9 @@ semantic-version commitments begin at v1.0.0.
 - M4 structured local security and failure auditing with a strict public event contract, stable
   classification, privacy-preserving detail digests, atomic local-only storage, best-effort CLI
   capture, filtered inspection, doctor validation, and no workflow-authority implication.
+- M4 cumulative adversarial closeout with executable exit-criteria coverage, full canonical claim
+  digest binding for new events, backward-compatible restart validation, packaged-wheel
+  acceptance, and a formally owner-accepted milestone evidence report.
 
 ### Limitations
 

@@ -50,6 +50,12 @@ event during restart. Artifact revision digests bind preserved bytes; check and 
 bind canonical semantic content. Transition conditions cite governed supporting record IDs and are
 re-derived before the CLI service advances a step.
 
+M4 Increment 11 additionally binds the complete canonical `Claim` digest into each new
+`claim-recorded` event. Restart recomputes that digest so assertion, limitation, attribution, or
+dependency tampering fails closed. Earlier claim events remain readable under their original
+actor, sequence, run, step, exact-revision, and affected-digest bindings; they still cannot satisfy
+verification or acceptance without independent current checks and evidence.
+
 M1 Increment 5 persists and validates `AcceptanceRecord`, `ApprovalRevocation`, `DecisionRecord`,
 and `DecisionSupersession`. Their source files remain immutable: effective revocation,
 supersession, and staleness are derived from append-only records and journal events.

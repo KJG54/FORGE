@@ -10,8 +10,8 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Pre-alpha foundation:** The name, distribution name, public marks, contracts, and CLI remain
-> provisional. Milestones 1, 2, and 3 are accepted; Milestone 4 implementation is in progress.
-> This is not a public production release.
+> provisional. Milestones 1, 2, 3, and 4 are complete and owner-accepted. This is not a public
+> production release.
 
 ## Current capabilities
 
@@ -215,6 +215,14 @@ sanitized immutable `LocalAuditEvent` files below `.forge/local/audit-events/` o
 can be safely identified. `forge audit list|show` and `forge doctor` inspect them. The files contain
 a detail digest instead of raw error text and never become workflow or acceptance authority.
 
+M4 Increment 11 closes the implementation milestone with a cumulative adversarial acceptance
+suite covering false completion, executable-trust separation, revoked and superseded authority,
+malicious packs, hostile imports, command injection, path escape, forged claims, and the
+same-user-process threat boundary. The audit also strengthens newly recorded claims by binding
+their complete canonical digest into the hash-sealed journal event. The complete evidence and
+limitations are recorded in the [M4 evidence report](docs/milestones/m4-report.md). The repository
+owner formally accepted M4 on 2026-07-27.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -334,6 +342,8 @@ forge --help
 - [M4 Increment 8 decision-withdrawal boundary](docs/milestones/m4-increment-8.md)
 - [M4 Increment 9 formal-cancellation boundary](docs/milestones/m4-increment-9.md)
 - [M4 Increment 10 structured-local-audit boundary](docs/milestones/m4-increment-10.md)
+- [M4 Increment 11 adversarial closeout](docs/milestones/m4-increment-11.md)
+- [M4 evidence report](docs/milestones/m4-report.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

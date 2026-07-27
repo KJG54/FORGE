@@ -291,6 +291,7 @@ def complete_step(
         limitations=limitations,
         actor=actor,
     )
+    claim_digest = canonical_json_digest(claim.model_dump(mode="json"))
     event = AuditEvent(
         id=uuid4(),
         initiative_id=active.initiative.id,
@@ -301,7 +302,10 @@ def complete_step(
         run_id=run_id,
         authorization_basis=basis,
         affected_record_ids=(claim_id, *(revision.id for revision in revisions)),
-        affected_digests=tuple(revision.content_digest for revision in revisions),
+        affected_digests=(
+            claim_digest,
+            *(revision.content_digest for revision in revisions),
+        ),
         metadata={
             "claim_id": str(claim_id),
             "step_id": step_id,

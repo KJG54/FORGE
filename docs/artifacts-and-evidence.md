@@ -46,7 +46,9 @@ workflow progression.
 
 `forge complete` requires every declared output role for the current step and verifies that each
 working file still matches its registered revision. It records a claim bound to exact revision IDs
-and moves the step only from `in_progress` to `awaiting_verification`.
+and moves the step only from `in_progress` to `awaiting_verification`. New claims also place their
+complete canonical record digest in the hash-sealed event, so restart detects altered assertion,
+limitations, attribution, or dependency fields.
 
 `forge check record` stores a manual structured check. It records the declared check identity and
 version, exact current target revisions, invocation description, timestamps, exit status when
