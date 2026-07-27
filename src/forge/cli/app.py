@@ -1138,7 +1138,7 @@ def create(
         ExplanationProfile | None,
         typer.Option(
             "--explanation",
-            help="M1 presentation profile; governance outcomes remain identical.",
+            help="Presentation profile; governance outcomes remain identical.",
         ),
     ] = None,
     predecessor: Annotated[

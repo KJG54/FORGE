@@ -183,7 +183,7 @@ def test_bundled_research_pack_is_complete_data_only_and_digest_valid() -> None:
     workflow = pack.workflow()
 
     assert pack.manifest.id == "research-basic"
-    assert pack.manifest.version == "0.3.0"
+    assert pack.manifest.version == "0.4.0"
     assert pack.manifest.template_paths == (
         "templates/research-evidence-register.md",
         "templates/research-citation-record.md",
@@ -208,7 +208,12 @@ def test_bundled_research_pack_is_complete_data_only_and_digest_valid() -> None:
         ActorType.AGENT_ADAPTER in step.allowed_actors for step in workflow.steps
     )
     assert all("software" not in role for role in workflow.required_artifact_classes)
-    assert {"standard", "guided"} <= set(workflow.explanation_content)
+    assert set(workflow.explanation_content) == {
+        "minimal",
+        "standard",
+        "guided",
+        "mentored",
+    }
     assert all(
         "structure" in check_id
         or "review" in check_id
@@ -224,8 +229,8 @@ def test_research_pack_completes_through_restarted_unchanged_core(
     repository = tmp_path / "research"
     repository.mkdir()
     _run(repository, "init", str(repository), "--owner-name", "Research Owner")
-    assert "research-basic 0.3.0" in _run(repository, "pack", "list")
-    assert "Valid data pack research-basic 0.3.0" in _run(
+    assert "research-basic 0.4.0" in _run(repository, "pack", "list")
+    assert "Valid data pack research-basic 0.4.0" in _run(
         repository,
         "pack",
         "validate",
