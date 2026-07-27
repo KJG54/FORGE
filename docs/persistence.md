@@ -113,6 +113,12 @@ acceptance projections while changing lifecycle state to `paused` and limiting t
 and re-derives legal workflow actions. Both events use the existing journal commit, snapshot,
 locking, and idempotency protocols.
 
+M5 Increment 5 adds a profile and canonical digest to newly recorded resumption summaries. The
+resume event binds the summary digest plus every referenced current artifact, open decision, and
+non-stale evidence record through existing affected-record and affected-digest fields. Replay
+checks the summary text against that digest. Events created before this profile remain valid under
+the accepted M2 rules; no migration or new persisted record is introduced.
+
 ## M2 Increment 6 atomic closure layer
 
 Successful closure appends an owner-authorized terminal event and writes the final snapshot before

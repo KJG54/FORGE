@@ -93,3 +93,10 @@ they are never evaluated as commands or authorization and cannot alter permissio
 evidence, verification, acceptance, or lifecycle transitions. Pack authors and owners remain
 responsible for reviewing the displayed text. External explanation resource files remain
 unsupported.
+
+Long-gap resumption summaries contain only validated governance text and exact record references:
+repository-relative artifact paths, IDs, revision numbers, and digests. They never embed artifact
+content. FORGE checks only already registered artifact paths for current/changed status and does
+not scan unrelated repository, archive, local, ignored, or secret locations. The summary is
+presentation, not evidence or authority; its digest binding detects inconsistent new resume-event
+metadata but does not make same-user processes cryptographically untrusted.

@@ -1329,6 +1329,8 @@ def status(
         typer.echo(f"Archive guarantee: {guarantee}")
         for limitation in report.archive_manifest.limitations:
             typer.echo(f"Archive limitation: {limitation}")
+    if report.resumption_summary is not None:
+        typer.echo(f"Resumption summary: {report.resumption_summary}")
     for action in report.next_actions:
         typer.echo(f"Next: {action}")
     for blocker in report.blockers:

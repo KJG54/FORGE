@@ -149,6 +149,10 @@ semantic-version commitments begin at v1.0.0.
 - M5 Minimal and Mentored explanation profiles for both bundled packs, with four-profile
   digest-bound workflow text, identical governance behavior, pre-write availability checks,
   legacy Standard/Guided compatibility, and no explanation-resource or authority expansion.
+- M5 canonical long-gap resumption summaries derived from effective scope, workflow state, open
+  decisions, current artifact revision references, non-stale evidence, and legal next actions,
+  with paused-status preview, hash-bound resume events, stale-reference exclusion, and legacy event
+  compatibility.
 
 ### Limitations
 

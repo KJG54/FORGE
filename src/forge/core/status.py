@@ -40,6 +40,7 @@ class StatusReport:
     open_workflow_deviation_ids: tuple[UUID, ...] = ()
     emergency_override_ids: tuple[UUID, ...] = ()
     risk_acceptance_ids: tuple[UUID, ...] = ()
+    resumption_summary: str | None = None
 
 
 def inspect_status(
@@ -260,7 +261,10 @@ def inspect_status(
             for override in unresolved_overrides
         ),
     )
+    resumption_summary = None
     if active.state.lifecycle_state is InitiativeLifecycleState.PAUSED:
+        from forge.core.continuity import build_resumption_summary
+
         pause_id = active.state.active_pause_event_id
         pause_event = next(
             (event for event in read_journal(layout.event_journal_file) if event.id == pause_id),
@@ -271,6 +275,7 @@ def inspect_status(
             raise IntegrityError("Paused initiative lacks a valid governing pause reason")
         blockers = (f"Initiative paused: {reason}", *blockers)
         next_actions = ("resume",)
+        resumption_summary = build_resumption_summary(layout)
     elif drifted:
         next_actions = tuple(f"artifact-revise:{view.artifact.id}" for view in drifted)
     if active.state.journal_head_hash is None:
@@ -299,4 +304,5 @@ def inspect_status(
         risk_acceptance_ids=tuple(
             item.acceptance.id for item in risk_acceptances
         ),
+        resumption_summary=resumption_summary,
     )

@@ -233,3 +233,10 @@ value, while `WorkflowDefinition.explanation_content` stores the exact digest-bo
 No explanation content is copied into materialized state or interpreted by authorization,
 transition, check, evidence, verification, or acceptance services. Existing Standard/Guided locks
 remain valid without migration, and the exported schema bundle remains at 51 models.
+
+M5 Increment 5 adds no public contract. Its long-gap resumption summary is a deterministic
+presentation derived from existing `Initiative`, `MaterializedState`, `DecisionRecord`,
+`ArtifactRecord`, `ArtifactRevision`, and `EvidencePacket` values. New `initiative-resumed` event
+metadata identifies the derivation profile and canonical summary digest; existing generic event
+fields bind referenced records and digests. Earlier resume events remain compatible, no migration
+is required, and the exported schema bundle remains at 51 models.
