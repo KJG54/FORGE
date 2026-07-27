@@ -142,6 +142,10 @@ semantic-version commitments begin at v1.0.0.
 - M5 digest-bound research evidence-register and citation-record templates with strict text and
   inventory validation, exact governed active copies, restart and archive integrity, legacy
   no-resource digest compatibility, and read-only available-or-locked template inspection.
+- M5 strict data-only research structure validators with digest-bound safe-YAML definitions,
+  bounded in-process heading and field checks, exact artifact-revision `CheckResult` capture,
+  template-only lock compatibility, and explicit separation from processes, evidence,
+  verification, acceptance, and factual truth.
 
 ### Limitations
 

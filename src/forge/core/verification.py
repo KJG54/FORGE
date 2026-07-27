@@ -126,6 +126,17 @@ def _append_record_event(
         raise
 
 
+def append_check_result(
+    active: ActiveInitiative,
+    check: CheckResult,
+    event: AuditEvent,
+) -> None:
+    """Persist one already-validated core check observation and its event atomically."""
+    if event.event_type != CHECK_RECORDED or check.id not in event.affected_record_ids:
+        raise IntegrityError("Check result and event are not correctly bound")
+    _append_record_event(active, _check_path(active.layout, check.id), check, event)
+
+
 def _step(active: ActiveInitiative, step_id: str) -> StepDefinition:
     step = next((item for item in active.workflow.steps if item.id == step_id), None)
     if step is None:

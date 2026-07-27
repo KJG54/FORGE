@@ -74,7 +74,9 @@ def test_pack_loader_rejects_yaml_anchors_and_aliases(tmp_path: Path) -> None:
         load_pack(copied)
 
 
-def test_general_pack_resources_remain_refused(tmp_path: Path) -> None:
+def test_general_pack_resources_must_be_structural_validator_definitions(
+    tmp_path: Path,
+) -> None:
     copied = tmp_path / "pack"
     shutil.copytree(PACK_ROOT, copied)
     resource = copied / "notes.txt"
@@ -88,5 +90,5 @@ def test_general_pack_resources_remain_refused(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    with pytest.raises(ConfigurationError, match="general data resources remain unavailable"):
+    with pytest.raises(ConfigurationError, match="Invalid structural validator definition"):
         load_pack(copied)

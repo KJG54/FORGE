@@ -19,30 +19,30 @@ RESEARCH_STEPS = (
     (
         "frame",
         ("research-question", "research-boundaries"),
-        "framing-structure-reviewed",
+        ("framing-structure-reviewed",),
     ),
     (
         "plan",
         ("research-plan", "evidence-criteria"),
-        "plan-structure-reviewed",
+        ("plan-structure-reviewed",),
     ),
     (
         "collect",
         ("source-register", "research-notes"),
-        "evidence-register-structure-reviewed",
+        ("evidence-register-structure", "citation-record-structure"),
     ),
     (
         "synthesize",
         ("synthesis-draft", "claims-evidence-map", "limitations"),
-        "synthesis-traceability-reviewed",
+        ("synthesis-traceability-reviewed",),
     ),
     (
         "verify",
         ("research-verification-report",),
-        "verification-structure-reviewed",
+        ("verification-structure-reviewed",),
     ),
-    ("review", ("research-review",), "review-complete"),
-    ("close", ("lessons", "closure-record"), "closure-readiness"),
+    ("review", ("research-review",), ("review-complete",)),
+    ("close", ("lessons", "closure-record"), ("closure-readiness",)),
 )
 
 
@@ -96,7 +96,7 @@ def _advance_research_step(
     *,
     step_id: str,
     outputs: tuple[str, ...],
-    check_id: str,
+    check_ids: tuple[str, ...],
 ) -> None:
     _run(repository, "begin", step_id)
     for role in outputs:
@@ -127,35 +127,39 @@ def _advance_research_step(
         "The worker claim does not establish factual truth",
     )
     claim_id = _value(claim_output, "Recorded claim ")
-    check_output = _run(
-        repository,
-        "check",
-        "record",
-        step_id,
-        check_id,
-        "--invocation",
-        f"manual structural review of {step_id}",
-        "--outcome",
-        "passed",
-        "--exit-status",
-        "0",
-        "--limitation",
-        "Structure and presence do not establish factual correctness",
-    )
-    check_id_value = _value(check_output, "Recorded check result ").split(":", 1)[0]
+    check_result_ids: list[str] = []
+    for check_id in check_ids:
+        check_output = _run(
+            repository,
+            "check",
+            "record",
+            step_id,
+            check_id,
+            "--invocation",
+            f"manual structural review of {step_id}",
+            "--outcome",
+            "passed",
+            "--exit-status",
+            "0",
+            "--limitation",
+            "Structure and presence do not establish factual correctness",
+        )
+        check_result_ids.append(
+            _value(check_output, "Recorded check result ").split(":", 1)[0]
+        )
     evidence_arguments = [
         "evidence",
         "add",
         step_id,
         "--purpose",
         f"Bind current structural support for {step_id}",
-        "--check-result",
-        check_id_value,
         "--claim",
         claim_id,
         "--limitation",
         "Governed support does not establish source quality or factual truth",
     ]
+    for check_result_id in check_result_ids:
+        evidence_arguments.extend(("--check-result", check_result_id))
     for revision_id in _current_revision_ids(repository, outputs):
         evidence_arguments.extend(("--artifact-revision", revision_id))
     _run(repository, *evidence_arguments)
@@ -179,13 +183,16 @@ def test_bundled_research_pack_is_complete_data_only_and_digest_valid() -> None:
     workflow = pack.workflow()
 
     assert pack.manifest.id == "research-basic"
-    assert pack.manifest.version == "0.2.0"
+    assert pack.manifest.version == "0.3.0"
     assert pack.manifest.template_paths == (
         "templates/research-evidence-register.md",
         "templates/research-citation-record.md",
     )
     assert pack.manifest.explanation_paths == ()
-    assert pack.manifest.data_resource_paths == ()
+    assert pack.manifest.data_resource_paths == (
+        "validators/evidence-register-structure.yaml",
+        "validators/citation-record-structure.yaml",
+    )
     assert pack.manifest.declared_capability_ids == ()
     assert workflow.id == "research-basic"
     assert [step.id for step in workflow.steps] == [
@@ -203,7 +210,9 @@ def test_bundled_research_pack_is_complete_data_only_and_digest_valid() -> None:
     assert all("software" not in role for role in workflow.required_artifact_classes)
     assert {"standard", "guided"} <= set(workflow.explanation_content)
     assert all(
-        "review" in check_id or check_id == "closure-readiness"
+        "structure" in check_id
+        or "review" in check_id
+        or check_id == "closure-readiness"
         for step in workflow.steps
         for check_id in step.check_requirements
     )
@@ -215,8 +224,8 @@ def test_research_pack_completes_through_restarted_unchanged_core(
     repository = tmp_path / "research"
     repository.mkdir()
     _run(repository, "init", str(repository), "--owner-name", "Research Owner")
-    assert "research-basic 0.2.0" in _run(repository, "pack", "list")
-    assert "Valid data pack research-basic 0.2.0" in _run(
+    assert "research-basic 0.3.0" in _run(repository, "pack", "list")
+    assert "Valid data pack research-basic 0.3.0" in _run(
         repository,
         "pack",
         "validate",
@@ -233,12 +242,12 @@ def test_research_pack_completes_through_restarted_unchanged_core(
         "--trust-pack-data",
     )
 
-    for step_id, outputs, check_id in RESEARCH_STEPS:
+    for step_id, outputs, check_ids in RESEARCH_STEPS:
         _advance_research_step(
             repository,
             step_id=step_id,
             outputs=outputs,
-            check_id=check_id,
+            check_ids=check_ids,
         )
 
     active = load_active_initiative(RepositoryLayout.at(repository))

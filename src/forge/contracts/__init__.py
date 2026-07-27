@@ -76,6 +76,10 @@ from forge.contracts.state import (
     RunState,
     StepState,
 )
+from forge.contracts.structural_validators import (
+    StructuralTextRule,
+    StructuralValidatorDefinition,
+)
 from forge.contracts.verification import (
     AcceptanceRecord,
     CheckExecutionStatus,
@@ -140,6 +144,7 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "run-record": RunRecord,
     "scope-amendment": ScopeAmendment,
     "step-definition": StepDefinition,
+    "structural-validator-definition": StructuralValidatorDefinition,
     "transition-definition": TransitionDefinition,
     "workflow-definition": WorkflowDefinition,
     "workflow-deviation": WorkflowDeviation,
@@ -220,6 +225,8 @@ __all__ = [
     "SnapshotCondition",
     "StepDefinition",
     "StepState",
+    "StructuralTextRule",
+    "StructuralValidatorDefinition",
     "TransitionDefinition",
     "WorkflowDefinition",
     "WorkflowDeviation",

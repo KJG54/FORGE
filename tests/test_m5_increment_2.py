@@ -18,7 +18,12 @@ from forge.core.lifecycle import (
 )
 from forge.errors import ConfigurationError, IntegrityError
 from forge.packs.loader import load_pack
-from forge.packs.validation import ValidatedPack, calculate_pack_digest, validate_pack
+from forge.packs.validation import (
+    PackResourceKind,
+    ValidatedPack,
+    calculate_pack_digest,
+    validate_pack,
+)
 from forge.storage.journal import read_journal
 from forge.storage.repository import InitializationResult, initialize_repository
 
@@ -59,15 +64,20 @@ def test_research_templates_are_utf8_data_only_and_digest_bound(
 ) -> None:
     pack = load_pack(RESEARCH_PACK_ROOT, bundled=True)
 
-    assert pack.manifest.version == "0.2.0"
-    assert tuple(resource.path for resource in pack.resources) == (
+    assert pack.manifest.version == "0.3.0"
+    templates = tuple(
+        resource
+        for resource in pack.resources
+        if resource.kind is PackResourceKind.TEMPLATE
+    )
+    assert tuple(resource.path for resource in templates) == (
         EVIDENCE_TEMPLATE,
         CITATION_TEMPLATE,
     )
     assert all(resource.content_digest.startswith("sha256:") for resource in pack.resources)
     assert all(resource.content.decode("utf-8") for resource in pack.resources)
-    assert b"does not establish" in pack.resources[0].content
-    assert b"does not prove" in pack.resources[1].content
+    assert b"does not establish" in templates[0].content
+    assert b"does not prove" in templates[1].content
     assert pack.manifest.declared_capability_ids == ()
 
     copied = tmp_path / "changed-pack"
@@ -100,7 +110,7 @@ def test_pack_loader_refuses_binary_and_unsupported_resource_classes(
         ),
         encoding="utf-8",
     )
-    with pytest.raises(ConfigurationError, match="template paths only"):
+    with pytest.raises(ConfigurationError, match="explanation resources remain unavailable"):
         load_pack(unsupported)
 
 
@@ -117,10 +127,23 @@ def test_empty_resource_pack_digests_and_pre_resource_locks_remain_compatible() 
         update={
             "version": "0.1.0",
             "template_paths": (),
+            "data_resource_paths": (),
             "integrity_digest": LEGACY_RESEARCH_DIGEST,
         }
     )
-    legacy_workflow = research.workflow().model_copy(update={"version": "0.1.0"})
+    legacy_steps = tuple(
+        step.model_copy(
+            update={
+                "check_requirements": ("evidence-register-structure-reviewed",)
+            }
+        )
+        if step.id == "collect"
+        else step
+        for step in research.workflow().steps
+    )
+    legacy_workflow = research.workflow().model_copy(
+        update={"version": "0.1.0", "steps": legacy_steps}
+    )
     legacy_pack = ValidatedPack(
         RESEARCH_PACK_ROOT,
         legacy_manifest,
@@ -226,7 +249,7 @@ def test_template_cli_lists_and_shows_available_then_locked_bytes(
         ["pack", "template", "list", "research-basic", "-C", str(tmp_path)],
     )
     assert available_list.exit_code == 0, available_list.stderr
-    assert "Templates from available research-basic@0.2.0" in available_list.stdout
+    assert "Templates from available research-basic@0.3.0" in available_list.stdout
     assert EVIDENCE_TEMPLATE in available_list.stdout
     assert CITATION_TEMPLATE in available_list.stdout
 
@@ -261,7 +284,7 @@ def test_template_cli_lists_and_shows_available_then_locked_bytes(
         ["pack", "template", "list", "research-basic", "-C", str(tmp_path)],
     )
     assert locked_list.exit_code == 0, locked_list.stderr
-    assert "Templates from locked research-basic@0.2.0" in locked_list.stdout
+    assert "Templates from locked research-basic@0.3.0" in locked_list.stdout
     assert len(read_journal(initialized.layout.event_journal_file)) == event_count
 
     unknown = runner.invoke(

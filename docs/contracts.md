@@ -218,3 +218,11 @@ Template bytes and their derived digests are internal validated pack values rath
 persisted contracts. The complete pack digest binds them, while exact copies under governed active
 state and archive file inventories preserve the bytes. Explanation and general data-resource paths
 remain unsupported. The exported schema bundle remains at 50 models.
+
+M5 Increment 3 adds `StructuralValidatorDefinition`, with nested `StructuralTextRule`, as a strict
+data-only pack-author contract. Definitions bind an ID, version, declared check, purpose, artifact
+roles, allowed text media types, exact headings, non-empty field prefixes, and limitations. They
+cannot express a process, command, hook, environment, network access, or arbitrary evaluation.
+`PackManifest.data_resource_paths` now accepts only definitions satisfying this contract;
+explanation resources remain unsupported. Existing persisted contracts do not change and require
+no migration. The exported schema bundle now contains 51 models.

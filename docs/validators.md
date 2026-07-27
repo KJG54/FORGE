@@ -128,3 +128,22 @@ These controls bound supported FORGE behavior; they do not make an approved vali
 code sandbox. A malicious process running with the repository owner's operating-system permissions
 can read or change anything that identity can access. Run hostile validators only with external
 process or operating-system isolation appropriate to the project.
+
+## Data-only structural validators
+
+M5 Increment 3 adds a separate non-process boundary for pack-provided text-structure rules:
+
+```console
+forge pack validator list research-basic
+forge check structure collect evidence-register-structure \
+  --validator research-evidence-register-structure
+```
+
+These strict definitions cannot declare executable behavior, arguments, environment access, hooks,
+expressions, regular expressions, or network access. The trusted FORGE CLI evaluates exact
+headings and non-empty field prefixes against bounded current UTF-8 artifacts and records only a
+`CheckResult`. No executable capability approval is involved because no process is created.
+
+This convenience does not weaken the sequence: a structural result is not evidence, verification,
+acceptance, or factual truth. Any executable or more expressive validator still uses the tracked
+local-validator profile and exact owner approval described above.

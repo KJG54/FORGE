@@ -14,6 +14,7 @@ from yaml.tokens import AliasToken, AnchorToken
 
 from forge.contracts.configuration import ProjectConfiguration
 from forge.contracts.packs import PackManifest
+from forge.contracts.structural_validators import StructuralValidatorDefinition
 from forge.contracts.workflows import WorkflowDefinition
 from forge.errors import ConfigurationError, ConflictError, IntegrityError, SecurityError
 from forge.packs.validation import (
@@ -41,6 +42,32 @@ _EXECUTABLE_SUFFIXES = {
 }
 
 
+def _parse_yaml_mapping(raw: bytes, label: str) -> dict[object, object]:
+    try:
+        text = raw.decode("utf-8-sig")
+    except UnicodeDecodeError as error:
+        raise ConfigurationError(f"Pack files must be UTF-8: {label}") from error
+    try:
+        scan_yaml = cast(
+            "Callable[[str], Iterable[object]]",
+            yaml.scan,  # pyright: ignore[reportUnknownMemberType]
+        )
+        if any(isinstance(token, (AliasToken, AnchorToken)) for token in scan_yaml(text)):
+            raise ConfigurationError(
+                f"Pack YAML must not contain anchors or aliases: {label}"
+            )
+        value = cast(object, yaml.safe_load(text))
+    except ConfigurationError:
+        raise
+    except yaml.YAMLError as error:
+        raise ConfigurationError(
+            f"Invalid safe YAML in pack file {label}: {error}"
+        ) from error
+    if not isinstance(value, dict):
+        raise ConfigurationError(f"Pack YAML root must be a mapping: {label}")
+    return cast("dict[object, object]", value)
+
+
 def _load_yaml_mapping(path: Path) -> dict[object, object]:
     if path.is_symlink() or not path.is_file():
         raise SecurityError(f"Pack file is missing, irregular, or symbolic: {path}")
@@ -50,25 +77,7 @@ def _load_yaml_mapping(path: Path) -> dict[object, object]:
         raise ConfigurationError(f"Cannot read pack file {path}: {error}") from error
     if len(raw) > MAX_PACK_FILE_BYTES:
         raise ConfigurationError(f"Pack file exceeds {MAX_PACK_FILE_BYTES} bytes: {path}")
-    try:
-        text = raw.decode("utf-8-sig")
-    except UnicodeDecodeError as error:
-        raise ConfigurationError(f"Pack files must be UTF-8: {path}") from error
-    try:
-        scan_yaml = cast(
-            "Callable[[str], Iterable[object]]",
-            yaml.scan,  # pyright: ignore[reportUnknownMemberType]
-        )
-        if any(isinstance(token, (AliasToken, AnchorToken)) for token in scan_yaml(text)):
-            raise ConfigurationError(f"Pack YAML must not contain anchors or aliases: {path}")
-        value = cast(object, yaml.safe_load(text))
-    except ConfigurationError:
-        raise
-    except yaml.YAMLError as error:
-        raise ConfigurationError(f"Invalid safe YAML in pack file {path}: {error}") from error
-    if not isinstance(value, dict):
-        raise ConfigurationError(f"Pack YAML root must be a mapping: {path}")
-    return cast("dict[object, object]", value)
+    return _parse_yaml_mapping(raw, str(path))
 
 
 def _validate_pack_files(root: Path, manifest: PackManifest) -> None:
@@ -102,23 +111,28 @@ def _validate_pack_files(root: Path, manifest: PackManifest) -> None:
         raise ConfigurationError(f"Pack is missing declared files: {sorted(missing)}")
 
 
-def _template_resource(path: Path, relative: str) -> PackResource:
+def _read_pack_resource(path: Path, relative: str) -> bytes:
     if path.is_symlink() or not path.is_file():
-        raise SecurityError(f"Pack template is missing, irregular, or symbolic: {path}")
+        raise SecurityError(f"Pack resource is missing, irregular, or symbolic: {path}")
     if path.suffix.lower() in _EXECUTABLE_SUFFIXES:
-        raise SecurityError(f"Pack template has an executable suffix: {relative}")
+        raise SecurityError(f"Pack resource has an executable suffix: {relative}")
     try:
         content = path.read_bytes()
     except OSError as error:
-        raise ConfigurationError(f"Cannot read pack template {path}: {error}") from error
+        raise ConfigurationError(f"Cannot read pack resource {path}: {error}") from error
     if len(content) > MAX_PACK_RESOURCE_BYTES:
         raise ConfigurationError(
-            f"Pack template exceeds {MAX_PACK_RESOURCE_BYTES} bytes: {path}"
+            f"Pack resource exceeds {MAX_PACK_RESOURCE_BYTES} bytes: {path}"
         )
     try:
         content.decode("utf-8-sig")
     except UnicodeDecodeError as error:
-        raise ConfigurationError(f"Pack templates must be UTF-8 text: {path}") from error
+        raise ConfigurationError(f"Pack resources must be UTF-8 text: {path}") from error
+    return content
+
+
+def _template_resource(path: Path, relative: str) -> PackResource:
+    content = _read_pack_resource(path, relative)
     return PackResource(
         path=relative,
         kind=PackResourceKind.TEMPLATE,
@@ -127,26 +141,56 @@ def _template_resource(path: Path, relative: str) -> PackResource:
     )
 
 
-def _load_template_resources(
+def _structural_validator_resource(path: Path, relative: str) -> PackResource:
+    content = _read_pack_resource(path, relative)
+    try:
+        definition = StructuralValidatorDefinition.model_validate(
+            _parse_yaml_mapping(content, str(path))
+        )
+    except (ConfigurationError, ValidationError) as error:
+        raise ConfigurationError(
+            f"Invalid structural validator definition at {path}: {error}"
+        ) from error
+    return PackResource(
+        path=relative,
+        kind=PackResourceKind.STRUCTURAL_VALIDATOR,
+        content=content,
+        content_digest=f"sha256:{hashlib.sha256(content).hexdigest()}",
+        definition=definition,
+    )
+
+
+def _load_declared_resources(
     root: Path,
-    paths: tuple[str, ...],
+    manifest: PackManifest,
 ) -> tuple[PackResource, ...]:
     resources: list[PackResource] = []
     total_bytes = 0
-    for relative in paths:
-        resource = _template_resource(root / relative, relative)
+    declared = (
+        *((relative, PackResourceKind.TEMPLATE) for relative in manifest.template_paths),
+        *(
+            (relative, PackResourceKind.STRUCTURAL_VALIDATOR)
+            for relative in manifest.data_resource_paths
+        ),
+    )
+    for relative, kind in declared:
+        resource = (
+            _template_resource(root / relative, relative)
+            if kind is PackResourceKind.TEMPLATE
+            else _structural_validator_resource(root / relative, relative)
+        )
         total_bytes += len(resource.content)
         if total_bytes > MAX_PACK_TOTAL_BYTES:
             raise ConfigurationError(
-                f"Pack template resources exceed {MAX_PACK_TOTAL_BYTES} aggregate bytes: {root}"
+                f"Pack resources exceed {MAX_PACK_TOTAL_BYTES} aggregate bytes: {root}"
             )
         resources.append(resource)
     return tuple(resources)
 
 
 def load_pack_resources(root: Path, manifest: PackManifest) -> tuple[PackResource, ...]:
-    """Load declared source-pack templates after the complete inventory is validated."""
-    return _load_template_resources(root, manifest.template_paths)
+    """Load declared source-pack resources after the complete inventory is validated."""
+    return _load_declared_resources(root, manifest)
 
 
 def _expected_resource_directories(paths: tuple[str, ...]) -> set[str]:
@@ -165,18 +209,23 @@ def load_locked_pack_resources(
 ) -> tuple[PackResource, ...]:
     """Load exact governed template copies without consulting the source pack."""
     try:
-        expected_files = set(manifest.template_paths)
+        expected_files = {
+            *manifest.template_paths,
+            *manifest.data_resource_paths,
+        }
         if not expected_files:
             if root.exists():
                 raise ConfigurationError(
-                    "Locked pack has no declared templates but pack-resources exists"
+                    "Locked pack has no declared resources but pack-resources exists"
                 )
             return ()
         if root.is_symlink() or not root.is_dir():
             raise ConfigurationError(
                 "Locked pack-resources directory is missing or unsafe"
             )
-        expected_directories = _expected_resource_directories(manifest.template_paths)
+        expected_directories = _expected_resource_directories(
+            (*manifest.template_paths, *manifest.data_resource_paths)
+        )
         actual_files: set[str] = set()
         actual_directories: set[str] = set()
         for candidate in root.rglob("*"):
@@ -197,7 +246,7 @@ def load_locked_pack_resources(
             raise ConfigurationError(
                 "Locked pack resource inventory does not match the exact declared template paths"
             )
-        return _load_template_resources(root, manifest.template_paths)
+        return _load_declared_resources(root, manifest)
     except (ConfigurationError, SecurityError) as error:
         raise IntegrityError(f"Invalid locked pack resources: {error}") from error
 

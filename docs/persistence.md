@@ -409,12 +409,18 @@ the original actor, sequence, step, run, revision, and transition-support relati
 claim still grants no independent progression authority: a current passing check, evidence packet,
 verification transition, and configured-owner acceptance remain separately required.
 
-## M5 Increment 2 locked pack templates
+## M5 Increments 2–3 locked pack resources
 
 Resource-bearing initiative creation writes exact validated UTF-8 template bytes below
 `.forge/active/pack-resources/` before its `initiative-created` event. The event and owner trust
 decision already bind the complete pack digest, which now includes each sorted template path,
-resource kind, and SHA-256 content digest. No new event or record model is required.
+resource path, resource kind, and SHA-256 content digest. No new event or record model is required.
+
+Increment 3 applies the same boundary to strict safe-YAML structural-validator definitions declared
+through `data_resource_paths`. Locked reload reparses the exact bytes against the public definition
+contract and validates their workflow check and artifact-role references. A structural evaluation
+adds only the existing `CheckResult` plus `check-recorded` event; both bind the definition-resource
+digest and exact current step-output revisions.
 
 If creation fails before journal commitment, FORGE removes only the newly created resource tree
 with the other uncommitted creation files. After commitment, the copies are governed input:

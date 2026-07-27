@@ -100,6 +100,7 @@ from forge.core.transitions import (
     WorkflowStateReducer,
 )
 from forge.errors import IntegrityError, SecurityError
+from forge.packs.validation import PackResource, PackResourceKind
 from forge.storage.canonical import sha256_digest
 from forge.storage.configuration import load_configuration
 from forge.storage.journal import (
@@ -460,6 +461,7 @@ def validate_governed_records(
     events: tuple[AuditEvent, ...],
     state: MaterializedState,
     workflow: WorkflowDefinition,
+    pack_resources: tuple[PackResource, ...] = (),
 ) -> None:
     """Validate all implemented M1 record and event dependencies."""
     expected_artifact_records: set[Path] = set()
@@ -1106,6 +1108,64 @@ def validate_governed_records(
                     == (result_id, run.id, approval.id, *target_ids)
                     and event.affected_digests == check.affected_digests
                 )
+            structural_valid = True
+            if (
+                check.invocation_metadata.get("mode")
+                == "declarative-in-process-structure"
+            ):
+                resource_path = check.invocation_metadata.get(
+                    "validator-resource-path"
+                )
+                resource_digest = check.invocation_metadata.get(
+                    "validator-definition-digest"
+                )
+                validator_id = check.invocation_metadata.get("validator-id")
+                matching_resources = [
+                    resource
+                    for resource in pack_resources
+                    if (
+                        resource.kind is PackResourceKind.STRUCTURAL_VALIDATOR
+                        and resource.path == resource_path
+                        and resource.content_digest == resource_digest
+                        and resource.definition is not None
+                        and resource.definition.id == validator_id
+                    )
+                ]
+                definition = (
+                    matching_resources[0].definition
+                    if len(matching_resources) == 1
+                    else None
+                )
+                target_digests = (
+                    tuple(
+                        revisions_by_id[item].content_digest
+                        for item in target_ids
+                    )
+                    if set(target_ids).issubset(revisions_by_id)
+                    else ()
+                )
+                structural_valid = (
+                    definition is not None
+                    and check.actor.actor_type is ActorType.FORGE_CLI
+                    and check.capability_id is None
+                    and check.run_id is None
+                    and check.check_id == definition.check_id
+                    and check.check_version == definition.version
+                    and check.invocation_metadata.get("validator-version")
+                    == definition.version
+                    and event.metadata.get("structural_validator_id")
+                    == definition.id
+                    and event.metadata.get(
+                        "structural_validator_resource_digest"
+                    )
+                    == resource_digest
+                    and check.affected_record_ids == target_ids
+                    and check.affected_digests
+                    == (resource_digest, *target_digests)
+                    and event.affected_record_ids == (result_id, *target_ids)
+                    and event.affected_digests
+                    == (check.result_digest, resource_digest, *target_digests)
+                )
             if (
                 check.id != result_id
                 or check.actor != event.actor
@@ -1116,6 +1176,7 @@ def validate_governed_records(
                 or _check_digest(check) != check.result_digest
                 or check.result_digest not in event.affected_digests
                 or not capability_valid
+                or not structural_valid
             ):
                 raise IntegrityError(f"Check result does not match event {event.id}")
             checks_by_id[result_id] = check

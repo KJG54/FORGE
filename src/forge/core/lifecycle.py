@@ -394,6 +394,7 @@ def load_active_initiative(
         events,
         report.replayed_state,
         active.workflow,
+        active.pack_resources,
     )
     from forge.core.pack_trust import current_pack_trust, require_pack_trusted
 
