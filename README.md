@@ -233,8 +233,16 @@ are UTF-8, inventory-checked, individually digested, included in the complete pa
 copied into governed active state before initiative creation commits. Restart and archives validate
 the locked copies without consulting a later installed pack. `forge pack template list|show`
 provides read-only access; templates never execute, create artifacts or evidence, or establish
-factual truth. Executable structural validators, shared pack conformance, new explanation profiles,
-long-gap resumption changes, and filesystem discovery remain later M5 boundaries.
+factual truth. Shared pack conformance, new explanation profiles, long-gap resumption changes, and
+filesystem discovery remain later M5 boundaries.
+
+M5 Increment 3 adds strict data-only structural validators for the research evidence register and
+citation record. Their safe-YAML definitions are digest-bound, locked pack resources with no
+executable, argument, environment, hook, expression, or network field. `forge check structure`
+evaluates bounded UTF-8 headings and non-empty field prefixes in-process against exact current
+artifact revisions and records only a `CheckResult`. A pass does not create evidence, verify a
+step, grant acceptance, or establish semantic or factual truth. Shared pack conformance,
+explanation profiles, resumption, and discovery remain later boundaries.
 
 Initialize an ordinary project repository with:
 
@@ -245,6 +253,8 @@ forge pack validate software-basic
 forge pack validate research-basic
 forge pack template list research-basic
 forge pack template show research-basic templates/research-citation-record.md
+forge pack validator list research-basic
+forge pack validator show research-basic research-evidence-register-structure
 forge create "Objective" --scope "Bounded scope" --trust-pack-data \
   --idempotency-key create-objective
 forge pack inspect software-basic

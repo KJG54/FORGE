@@ -57,11 +57,32 @@ Before initiative creation these commands inspect the currently available valida
 `.forge/active/pack-resources/`. They never create or overwrite project files, register artifacts
 or evidence, append journal events, or execute a capability.
 
-Template paths and bytes participate in the complete `research-basic@0.2.0` digest. Creation copies
+Template paths and bytes participate in the complete pack digest. Creation copies
 them before the initiative event commits; restart and archives validate those copies independently
-of the source pack. Explanation and general data resources remain unsupported. A template supplies
+of the source pack. Explanation resources remain unsupported. A template supplies
 structure and attribution prompts only, not proof of citation correctness, source quality,
 methodological validity, or factual truth.
+
+M5 Increment 3 adds two strict safe-YAML structural-validator definitions and updates
+`research-basic` to 0.3.0. The `collect` step now requires both
+`evidence-register-structure` and `citation-record-structure`.
+
+```console
+forge pack validator list research-basic
+forge pack validator show research-basic research-evidence-register-structure
+forge check structure collect evidence-register-structure \
+  --validator research-evidence-register-structure
+forge check structure collect citation-record-structure \
+  --validator research-citation-record-structure
+```
+
+Definitions are data resources covered by the same exact digest, active lock, restart, and archive
+boundary as templates. Evaluation runs inside FORGE without a child process or executable
+capability approval. It checks only declared bounded text media types, exact headings, and
+non-empty field prefixes against the exact current step-output revisions. It records a passed or
+failed `CheckResult` and nothing else. Evidence registration, `forge verify`, and owner acceptance
+remain explicit subsequent acts. A passing result does not resolve citations, assess source or
+method quality, interpret claims, or establish factual truth.
 
 ## Owner-authorized initiative creation
 

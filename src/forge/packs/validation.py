@@ -9,6 +9,7 @@ from enum import StrEnum
 from pathlib import Path
 
 from forge.contracts.packs import PackManifest
+from forge.contracts.structural_validators import StructuralValidatorDefinition
 from forge.contracts.workflows import WorkflowDefinition
 from forge.errors import ConfigurationError, IntegrityError
 
@@ -18,6 +19,7 @@ SUPPORTED_AUTHORITIES = {"owner", "participant", "forge-cli"}
 
 class PackResourceKind(StrEnum):
     TEMPLATE = "template"
+    STRUCTURAL_VALIDATOR = "structural-validator"
 
 
 @dataclass(frozen=True)
@@ -26,6 +28,7 @@ class PackResource:
     kind: PackResourceKind
     content: bytes
     content_digest: str
+    definition: StructuralValidatorDefinition | None = None
 
 
 @dataclass(frozen=True)
@@ -102,10 +105,10 @@ def validate_pack(pack: ValidatedPack) -> None:
     manifest = pack.manifest
     workflows = pack.workflows
     resources = pack.resources
-    if manifest.explanation_paths or manifest.data_resource_paths:
+    if manifest.explanation_paths:
         raise ConfigurationError(
-            "M5 Increment 2 supports digest-bound template paths only; explanation and general "
-            "data resources remain unavailable"
+            "M5 Increment 3 supports templates and structural-validator data resources only; "
+            "explanation resources remain unavailable"
         )
     declared_paths = (
         *manifest.template_paths,
@@ -117,14 +120,52 @@ def validate_pack(pack: ValidatedPack) -> None:
     resource_paths = tuple(resource.path for resource in resources)
     if len(resource_paths) != len(set(resource_paths)):
         raise ConfigurationError("Validated pack resources must have unique paths")
-    if set(resource_paths) != set(manifest.template_paths):
+    expected_resource_paths = {
+        *manifest.template_paths,
+        *manifest.data_resource_paths,
+    }
+    if set(resource_paths) != expected_resource_paths:
         raise ConfigurationError(
-            f"Pack {manifest.id} template bytes do not match declared template_paths"
+            f"Pack {manifest.id} resource bytes do not match its declared resource paths"
+        )
+    template_paths = {
+        resource.path
+        for resource in resources
+        if resource.kind is PackResourceKind.TEMPLATE
+    }
+    validator_resources = tuple(
+        resource
+        for resource in resources
+        if resource.kind is PackResourceKind.STRUCTURAL_VALIDATOR
+    )
+    validator_paths = {resource.path for resource in validator_resources}
+    if template_paths != set(manifest.template_paths):
+        raise ConfigurationError(
+            f"Pack {manifest.id} template resources do not match template_paths"
+        )
+    if validator_paths != set(manifest.data_resource_paths):
+        raise ConfigurationError(
+            f"Pack {manifest.id} structural validators do not match data_resource_paths"
         )
     for resource in resources:
-        if resource.kind is not PackResourceKind.TEMPLATE:
+        if resource.kind not in {
+            PackResourceKind.TEMPLATE,
+            PackResourceKind.STRUCTURAL_VALIDATOR,
+        }:
             raise ConfigurationError(
                 f"Pack {manifest.id} contains unsupported resource kind {resource.kind.value!r}"
+            )
+        if (
+            resource.kind is PackResourceKind.TEMPLATE
+            and resource.definition is not None
+        ):
+            raise ConfigurationError("Pack templates cannot contain validator definitions")
+        if (
+            resource.kind is PackResourceKind.STRUCTURAL_VALIDATOR
+            and resource.definition is None
+        ):
+            raise ConfigurationError(
+                f"Pack structural validator {resource.path} has no valid definition"
             )
         calculated_resource_digest = (
             f"sha256:{hashlib.sha256(resource.content).hexdigest()}"
@@ -134,6 +175,35 @@ def validate_pack(pack: ValidatedPack) -> None:
                 f"Pack resource digest mismatch for {resource.path}: expected "
                 f"{resource.content_digest}, calculated {calculated_resource_digest}"
             )
+    definitions = tuple(
+        resource.definition
+        for resource in validator_resources
+        if resource.definition is not None
+    )
+    definition_ids = [definition.id for definition in definitions]
+    if len(definition_ids) != len(set(definition_ids)):
+        raise ConfigurationError("Pack structural validator IDs must be unique")
+    for definition in definitions:
+        matching_steps = [
+            step
+            for workflow in workflows
+            for step in workflow.steps
+            if definition.check_id in step.check_requirements
+        ]
+        if not matching_steps:
+            raise ConfigurationError(
+                f"Structural validator {definition.id} check {definition.check_id!r} "
+                "is not required by a provided workflow"
+            )
+        for rule in definition.artifact_rules:
+            if any(
+                rule.artifact_role not in step.required_outputs
+                for step in matching_steps
+            ):
+                raise ConfigurationError(
+                    f"Structural validator {definition.id} artifact role "
+                    f"{rule.artifact_role!r} is not a required output of every matching step"
+                )
     if SUPPORTED_SCHEMA_COMPATIBILITY not in manifest.schema_compatibility:
         raise ConfigurationError(
             f"Pack {manifest.id} does not declare {SUPPORTED_SCHEMA_COMPATIBILITY!r} compatibility"

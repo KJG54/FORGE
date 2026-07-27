@@ -78,3 +78,11 @@ copies with the initiative. `forge pack template show` renders owner-requested v
 and creates no project file or governance fact. These controls do not make template content true,
 safe for every audience, free of secrets, legally reusable, or immune to a malicious same-user
 process. Owners must review template content and any research entered into it.
+
+Pack structural validators are strict declarative data, not local validator processes. Their
+contracts forbid executable, argument, environment, hook, expression, and network fields. FORGE
+evaluates only bounded UTF-8 media type, exact heading, and non-empty field-prefix rules against
+current governed artifact revisions. Structural failure records a failed check; a pass proves no
+source authenticity, citation correctness, semantic quality, methodology, evidence sufficiency,
+factual truth, verification, or acceptance. Executable validators remain subject to the separate
+tracked profile and exact owner capability-approval boundary.

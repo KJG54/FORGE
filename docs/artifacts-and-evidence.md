@@ -62,6 +62,13 @@ and execution errors as separate immutable `CheckResult` objects. Raw bounded ou
 local-only; governed history retains its path, size, and digest without rendering the bytes.
 Validator execution still does not register evidence or invoke verification.
 
+M5 Increment 3 adds `forge check structure` for a locked, data-only structural definition. The
+FORGE CLI evaluates bounded UTF-8 headings and non-empty field prefixes in-process, starts no
+validator run, consumes no capability approval, and records one passed or failed `CheckResult`
+against every exact current output revision. Its definition-resource digest remains in the check
+and event bindings. Structural success still does not register evidence, invoke verification,
+grant acceptance, or establish semantic or factual truth.
+
 `forge evidence add` records a digest-bound packet of artifact-revision, check-result, and claim
 references plus purpose and limitations. Evidence documents support; it does not automatically
 establish truth.

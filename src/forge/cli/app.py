@@ -88,6 +88,7 @@ from forge.core.scope_amendments import (
     show_scope_amendment,
 )
 from forge.core.status import inspect_status
+from forge.core.structural_validation import execute_structural_check
 from forge.core.validators import execute_validator_check
 from forge.core.vendor_context import apply_vendor_context, preview_vendor_context
 from forge.core.verification import (
@@ -103,7 +104,7 @@ from forge.core.verification import (
 )
 from forge.errors import ConfigurationError, ConflictError, ForgeError
 from forge.packs.loader import available_packs, find_pack
-from forge.packs.validation import PackResource
+from forge.packs.validation import PackResource, PackResourceKind
 from forge.schemas import export_schema_bundle
 from forge.storage.configuration import load_configuration, render_configuration
 from forge.storage.idempotency import idempotent_mutation, normalize_idempotency_key
@@ -121,6 +122,7 @@ schema_app = typer.Typer(help="Inspect or export versioned FORGE schemas.")
 config_app = typer.Typer(help="Inspect or validate project-level FORGE configuration.")
 pack_app = typer.Typer(help="Inspect validated declarative data packs.")
 pack_template_app = typer.Typer(help="Inspect exact UTF-8 data-pack templates.")
+pack_validator_app = typer.Typer(help="Inspect declarative in-process structure validators.")
 artifact_app = typer.Typer(help="Register and inspect immutable artifact revisions.")
 check_app = typer.Typer(help="Record, run, and inspect structured checks.")
 evidence_app = typer.Typer(help="Register and inspect durable evidence packets.")
@@ -145,6 +147,7 @@ app.add_typer(schema_app, name="schema")
 app.add_typer(config_app, name="config")
 app.add_typer(pack_app, name="pack")
 pack_app.add_typer(pack_template_app, name="template")
+pack_app.add_typer(pack_validator_app, name="validator")
 app.add_typer(artifact_app, name="artifact")
 app.add_typer(check_app, name="check")
 app.add_typer(evidence_app, name="evidence")
@@ -811,7 +814,7 @@ def validate_pack_command(
     )
 
 
-def _select_pack_templates(
+def _select_pack_resources(
     directory: Path,
     pack_id: str,
 ) -> tuple[tuple[PackResource, ...], str]:
@@ -833,6 +836,13 @@ def _select_pack_templates(
     )
 
 
+def _resources_of_kind(
+    resources: tuple[PackResource, ...],
+    kind: PackResourceKind,
+) -> tuple[PackResource, ...]:
+    return tuple(resource for resource in resources if resource.kind is kind)
+
+
 @pack_template_app.command("list")
 def list_pack_templates(
     pack_id: Annotated[str, typer.Argument(help="Pack ID whose templates should be listed.")],
@@ -843,7 +853,8 @@ def list_pack_templates(
 ) -> None:
     """List exact declared template paths and content digests without executing them."""
     try:
-        resources, source = _select_pack_templates(directory, pack_id)
+        resources, source = _select_pack_resources(directory, pack_id)
+        resources = _resources_of_kind(resources, PackResourceKind.TEMPLATE)
     except ForgeError as error:
         _fail(error)
         return
@@ -868,11 +879,78 @@ def show_pack_template(
 ) -> None:
     """Render one exact validated text template without creating a project artifact."""
     try:
-        resources, _source = _select_pack_templates(directory, pack_id)
+        resources, _source = _select_pack_resources(directory, pack_id)
+        resources = _resources_of_kind(resources, PackResourceKind.TEMPLATE)
         matches = [resource for resource in resources if resource.path == template_path]
         if len(matches) != 1:
             raise ConfigurationError(
                 f"Pack {pack_id!r} has no declared template {template_path!r}"
+            )
+        content = matches[0].content.decode("utf-8-sig")
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(content, nl=False)
+
+
+@pack_validator_app.command("list")
+def list_pack_validators(
+    pack_id: Annotated[str, typer.Argument(help="Pack ID whose validators should be listed.")],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory to inspect."),
+    ] = Path("."),
+) -> None:
+    """List exact data-only structural validators without evaluating artifacts."""
+    try:
+        resources, source = _select_pack_resources(directory, pack_id)
+        resources = _resources_of_kind(
+            resources,
+            PackResourceKind.STRUCTURAL_VALIDATOR,
+        )
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Structural validators from {source}:")
+    if not resources:
+        typer.echo("- none")
+    for resource in resources:
+        definition = resource.definition
+        if definition is None:
+            raise RuntimeError("validated structural resource has no definition")
+        typer.echo(
+            f"- {definition.id}@{definition.version} check={definition.check_id} "
+            f"path={resource.path} ({resource.content_digest})"
+        )
+
+
+@pack_validator_app.command("show")
+def show_pack_validator(
+    pack_id: Annotated[str, typer.Argument(help="Pack ID containing the validator.")],
+    validator_id: Annotated[
+        str,
+        typer.Argument(help="Exact declared structural-validator ID."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory to inspect."),
+    ] = Path("."),
+) -> None:
+    """Render one exact validated data-only structural-validator definition."""
+    try:
+        resources, _source = _select_pack_resources(directory, pack_id)
+        matches = [
+            resource
+            for resource in _resources_of_kind(
+                resources,
+                PackResourceKind.STRUCTURAL_VALIDATOR,
+            )
+            if resource.definition is not None
+            and resource.definition.id == validator_id
+        ]
+        if len(matches) != 1:
+            raise ConfigurationError(
+                f"Pack {pack_id!r} has no unique structural validator {validator_id!r}"
             )
         content = matches[0].content.decode("utf-8-sig")
     except ForgeError as error:
@@ -2168,6 +2246,50 @@ def check_run(
     typer.echo(f"Execution status: {result.check.execution_status.value}")
     typer.echo(f"Result digest: {result.check.result_digest}")
     typer.echo("Raw stdout and stderr remain bounded local captures and are not displayed")
+    typer.echo("The result does not create evidence, verify the step, or grant acceptance")
+
+
+@check_app.command("structure")
+@_locked_mutation
+def check_structure(
+    step_id: Annotated[str, typer.Argument(help="Step awaiting verification.")],
+    check_id: Annotated[str, typer.Argument(help="Declared structural check identity.")],
+    validator_id: Annotated[
+        str,
+        typer.Option(
+            "--validator",
+            help="Locked data-only structural-validator ID.",
+        ),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    idempotency_key: IdempotencyOption = None,
+) -> None:
+    """Evaluate one locked data-only text-structure validator in-process."""
+    layout = discover_repository(directory)
+    result = execute_structural_check(
+        layout,
+        step_id=step_id,
+        check_id=check_id,
+        validator_id=validator_id,
+    )
+    typer.echo(
+        f"Structural validator: {result.definition.id}@{result.definition.version}"
+    )
+    typer.echo(
+        f"Recorded check result {result.recording.check.id}: "
+        f"{result.recording.check.outcome.value}"
+    )
+    typer.echo(f"Result digest: {result.recording.check.result_digest}")
+    if result.findings:
+        typer.echo(f"Structural findings: {len(result.findings)}")
+        for finding in result.findings:
+            typer.echo(f"- {finding}")
+    else:
+        typer.echo("Structural findings: none")
+    typer.echo("No process or executable capability was started")
     typer.echo("The result does not create evidence, verify the step, or grant acceptance")
 
 

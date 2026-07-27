@@ -1,0 +1,30 @@
+schema_version: "1.0"
+id: research-citation-record-structure
+version: 1.0.0
+check_id: citation-record-structure
+purpose: Check that the current research notes expose the declared citation structure.
+artifact_rules:
+  - artifact_role: research-notes
+    allowed_media_types:
+      - text/markdown
+      - text/plain
+    required_headings:
+      - "# Research Citation Record"
+      - "## Identity"
+      - "## Exact locator"
+      - "## Research relationship"
+      - "## Review"
+      - "## Boundary"
+    required_field_prefixes:
+      - "- Citation ID:"
+      - "- Source type:"
+      - "- Author or creator:"
+      - "- Title:"
+      - "- Stable URL or repository-relative locator:"
+      - "- Evidence ID:"
+      - "- Claim(s) associated with this citation:"
+      - "- Details that could not be confirmed:"
+      - "- Source-quality limitations:"
+limitations:
+  - Citation structure does not establish authenticity, authority, or correct interpretation.
+  - The validator does not access a network, resolve identifiers, or assess factual truth.

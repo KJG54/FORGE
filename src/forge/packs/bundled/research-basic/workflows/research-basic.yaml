@@ -1,6 +1,6 @@
 schema_version: "1.0"
 id: research-basic
-version: 0.2.0
+version: 0.3.0
 pack_id: research-basic
 name: Research Basic
 description: A governed seven-step workflow for bounded research initiatives.
@@ -38,7 +38,7 @@ steps:
     required_inputs: [research-plan, evidence-criteria]
     required_outputs: [source-register, research-notes]
     claim_requirements: [outputs-produced]
-    check_requirements: [evidence-register-structure-reviewed]
+    check_requirements: [evidence-register-structure, citation-record-structure]
     acceptance_requirements: [owner-acceptance]
     allowed_actors: [owner, human_contributor, agent_adapter]
     allowed_transitions: [begin, rework, submit, verify, accept]

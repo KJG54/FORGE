@@ -1,0 +1,28 @@
+schema_version: "1.0"
+id: research-evidence-register-structure
+version: 1.0.0
+check_id: evidence-register-structure
+purpose: Check that the current source register exposes the declared evidence structure.
+artifact_rules:
+  - artifact_role: source-register
+    allowed_media_types:
+      - text/markdown
+      - text/plain
+    required_headings:
+      - "# Research Evidence Register"
+      - "## Governed context"
+      - "## Evidence entries"
+      - "## Coverage and gaps"
+      - "## Boundary"
+    required_field_prefixes:
+      - "### Evidence ID:"
+      - "- Citation ID:"
+      - "- Source type:"
+      - "- Stable locator, DOI, or URL:"
+      - "- Relevant research question or subquestion:"
+      - "- Claim(s) this evidence may support:"
+      - "- Direct observation, quotation, paraphrase, or inference:"
+      - "- Known limitations:"
+limitations:
+  - Presence and non-empty fields do not establish source quality or factual truth.
+  - The validator does not resolve citations, compare sources, or assess methodology.

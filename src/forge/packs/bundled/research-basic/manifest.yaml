@@ -1,6 +1,6 @@
 schema_version: "1.0"
 id: research-basic
-version: 0.2.0
+version: 0.3.0
 schema_compatibility:
   - forge-contracts-1
 provided_workflow_ids:
@@ -9,6 +9,8 @@ template_paths:
   - templates/research-evidence-register.md
   - templates/research-citation-record.md
 explanation_paths: []
-data_resource_paths: []
+data_resource_paths:
+  - validators/evidence-register-structure.yaml
+  - validators/citation-record-structure.yaml
 declared_capability_ids: []
-integrity_digest: sha256:e382de4b8ebff10c583fdb976750cd69169ee1ed4e31a727c647a118cedb4563
+integrity_digest: sha256:89ef81720fbe13da8c4532b8d4c2ea013fc1d9a94e1495b112c8a2fd7eca277c
