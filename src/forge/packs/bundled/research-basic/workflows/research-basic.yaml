@@ -1,0 +1,155 @@
+schema_version: "1.0"
+id: research-basic
+version: 0.1.0
+pack_id: research-basic
+name: Research Basic
+description: A governed seven-step workflow for bounded research initiatives.
+steps:
+  - id: frame
+    purpose: Define the research question, scope, and boundaries.
+    instructions: State a bounded answerable question and the limits that govern the research.
+    prerequisites: []
+    required_inputs: []
+    required_outputs: [research-question, research-boundaries]
+    claim_requirements: [outputs-produced]
+    check_requirements: [framing-structure-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [initiative-objective]
+  - id: plan
+    purpose: Define the research method and evidence criteria.
+    instructions: Plan how evidence will be gathered, evaluated, bounded, and attributed.
+    prerequisites: [frame]
+    required_inputs: [research-question, research-boundaries]
+    required_outputs: [research-plan, evidence-criteria]
+    claim_requirements: [outputs-produced]
+    check_requirements: [plan-structure-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [accepted-framing]
+  - id: collect
+    purpose: Collect and attribute evidence within the accepted plan.
+    instructions: Record sources and notes without treating collection or citation as proof of truth.
+    prerequisites: [plan]
+    required_inputs: [research-plan, evidence-criteria]
+    required_outputs: [source-register, research-notes]
+    claim_requirements: [outputs-produced]
+    check_requirements: [evidence-register-structure-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: block_for_owner_review
+    context_selection_rules: [accepted-plan]
+  - id: synthesize
+    purpose: Develop a traceable synthesis with explicit limitations.
+    instructions: Distinguish source observations, inferences, conclusions, uncertainty, and limitations.
+    prerequisites: [collect]
+    required_inputs: [source-register, research-notes]
+    required_outputs: [synthesis-draft, claims-evidence-map, limitations]
+    claim_requirements: [outputs-produced]
+    check_requirements: [synthesis-traceability-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [accepted-evidence]
+  - id: verify
+    purpose: Check structural support, traceability, and declared limitations.
+    instructions: Record structural checks and evidence without claiming automated factual validation.
+    prerequisites: [synthesize]
+    required_inputs: [source-register, synthesis-draft, claims-evidence-map, limitations]
+    required_outputs: [research-verification-report]
+    claim_requirements: [outputs-produced]
+    check_requirements: [verification-structure-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [evidence-and-synthesis]
+  - id: review
+    purpose: Review the research outcome, uncertainty, and residual risk.
+    instructions: Review whether the governed result is fit for its declared purpose and audience.
+    prerequisites: [verify]
+    required_inputs: [research-verification-report, synthesis-draft, limitations]
+    required_outputs: [research-review]
+    claim_requirements: [outputs-produced]
+    check_requirements: [review-complete]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [verified-research]
+  - id: close
+    purpose: Prepare accepted research and lessons for governed closure.
+    instructions: Record lessons and closure materials without bypassing final owner acceptance.
+    prerequisites: [review]
+    required_inputs: [research-review]
+    required_outputs: [lessons, closure-record]
+    claim_requirements: [outputs-produced]
+    check_requirements: [closure-readiness]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [accepted-review]
+transitions:
+  - id: begin
+    source_state: ready
+    destination_state: in_progress
+    conditions: []
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: submit
+    source_state: in_progress
+    destination_state: awaiting_verification
+    conditions: [claim-recorded]
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: rework
+    source_state: invalidated
+    destination_state: in_progress
+    conditions: []
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: verify
+    source_state: awaiting_verification
+    destination_state: awaiting_acceptance
+    conditions: [required-checks-passed, required-evidence-registered]
+    authority_requirement: forge-cli
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: accept
+    source_state: awaiting_acceptance
+    destination_state: completed
+    conditions: [owner-acceptance-recorded]
+    authority_requirement: owner
+    invalidation_effects: []
+    event_type: step-transitioned
+required_gates: []
+required_artifact_classes:
+  - research-question
+  - research-boundaries
+  - research-plan
+  - evidence-criteria
+  - source-register
+  - research-notes
+  - synthesis-draft
+  - claims-evidence-map
+  - limitations
+  - research-verification-report
+  - research-review
+  - lessons
+required_evidence_classes:
+  - research-check-evidence
+explanation_content:
+  standard: Follow each research step while keeping sources, claims, structural checks, evidence, and owner acceptance separate.
+  guided: FORGE explains each research boundary, required artifact, structural review, limitation, and owner decision without claiming factual truth automatically.
+compatibility_constraints:
+  - forge-contracts-1

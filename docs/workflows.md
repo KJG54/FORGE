@@ -25,7 +25,25 @@ Inspecting a pack does not trust it:
 ```console
 forge pack list
 forge pack validate software-basic
+forge pack validate research-basic
 ```
+
+## Bundled research workflow
+
+M5 Increment 1 adds the data-only `research-basic` pack. It uses the existing domain-neutral
+workflow and governance services for seven steps: `frame`, `plan`, `collect`, `synthesize`,
+`verify`, `review`, and `close`.
+
+Its source register, research notes, synthesis, claims-to-evidence map, limitations, verification
+report, review, and closure materials are ordinary governed artifact roles. Declared checks review
+structure and traceability only. Source presence, citation, a passing check, an evidence packet, or
+a successful worker process does not establish source quality, methodological validity, semantic
+accuracy, or factual truth. Explicit FORGE verification and configured-owner acceptance remain
+separate requirements.
+
+This first M5 increment contains no pack resource templates, executable validators, or new schema.
+Trusting `research-basic` as data cannot authorize a process. Existing pack inventory, digest,
+locking, restart, invalidation, recovery, and archive behavior applies unchanged.
 
 ## Owner-authorized initiative creation
 

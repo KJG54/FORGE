@@ -136,6 +136,9 @@ semantic-version commitments begin at v1.0.0.
 - M4 cumulative adversarial closeout with executable exit-criteria coverage, full canonical claim
   digest binding for new events, backward-compatible restart validation, packaged-wheel
   acceptance, and a formally owner-accepted milestone evidence report.
+- M5 bundled data-only `research-basic` pack with declarative question framing, planning, evidence
+  collection, synthesis, structural verification, review, and closure; unchanged core lifecycle
+  and authority services; and an explicit non-claim of automated factual truth.
 
 ### Limitations
 

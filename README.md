@@ -10,8 +10,8 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Pre-alpha foundation:** The name, distribution name, public marks, contracts, and CLI remain
-> provisional. Milestones 1, 2, 3, and 4 are complete and owner-accepted. This is not a public
-> production release.
+> provisional. Milestones 1, 2, 3, and 4 are complete and owner-accepted. Milestone 5 implementation
+> is in progress and has not reached its owner gate. This is not a public production release.
 
 ## Current capabilities
 
@@ -223,12 +223,20 @@ their complete canonical digest into the hash-sealed journal event. The complete
 limitations are recorded in the [M4 evidence report](docs/milestones/m4-report.md). The repository
 owner formally accepted M4 on 2026-07-27.
 
+M5 Increment 1 adds the bundled, data-only `research-basic` pack. Its seven declarative steps cover
+question framing, planning, evidence collection, synthesis, structural verification, review, and
+closure through the unchanged core lifecycle. Research sources, citations, claims, checks,
+evidence, and process outcomes remain distinct from factual truth and configured-owner acceptance.
+Templates, executable structural validators, shared pack conformance, new explanation profiles,
+long-gap resumption changes, and filesystem discovery remain later M5 boundaries.
+
 Initialize an ordinary project repository with:
 
 ```console
 forge init --owner-name "Repository Owner"
 forge config validate
 forge pack validate software-basic
+forge pack validate research-basic
 forge create "Objective" --scope "Bounded scope" --trust-pack-data \
   --idempotency-key create-objective
 forge pack inspect software-basic

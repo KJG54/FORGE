@@ -1,0 +1,12 @@
+schema_version: "1.0"
+id: research-basic
+version: 0.1.0
+schema_compatibility:
+  - forge-contracts-1
+provided_workflow_ids:
+  - research-basic
+template_paths: []
+explanation_paths: []
+data_resource_paths: []
+declared_capability_ids: []
+integrity_digest: sha256:e9d71cfd2bb304005b9b572df839de0860241c7f1cd843ba0f7e7a5056455a87
