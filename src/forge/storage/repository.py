@@ -132,6 +132,10 @@ class RepositoryLayout:
         return self.active_directory / "runs"
 
     @property
+    def run_cancellation_directory(self) -> Path:
+        return self.active_directory / "run-cancellations"
+
+    @property
     def validator_run_directory(self) -> Path:
         return self.active_directory / "validator-runs"
 

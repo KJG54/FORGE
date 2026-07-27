@@ -1563,6 +1563,16 @@ def run_show(
     typer.echo(f"Input context: {run.record.input_context_digest}")
     if run.cancellation_details is not None:
         typer.echo(f"Cancellation: {run.cancellation_details}")
+    if run.cancellation is not None:
+        typer.echo(f"Cancellation record: {run.cancellation.id}")
+        typer.echo(
+            f"Cancellation destination: {run.cancellation.destination_state.value}"
+        )
+        if run.cancellation.terminal_execution_event_id is not None:
+            typer.echo(
+                "Terminal execution event: "
+                f"{run.cancellation.terminal_execution_event_id}"
+            )
 
 
 @run_app.command("cancel")
@@ -1591,6 +1601,7 @@ def run_cancel(
         return
     destination = result.state.step_states[result.run.record.step_id]
     typer.echo(f"Cancelled run {run_id}")
+    typer.echo(f"Cancellation record: {result.cancellation.id}")
     typer.echo(f"Step {result.run.record.step_id}: {destination.value}")
     typer.echo("Cancellation is terminal for the run and never implies step success")
 

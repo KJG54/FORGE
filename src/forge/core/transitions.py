@@ -250,6 +250,12 @@ class WorkflowStateReducer:
             raise IntegrityError("Run cancellation requires an active initiative")
         if event.run_id is None or event.run_id not in state.active_run_ids:
             raise IntegrityError("Run cancellation must reference exactly one active run")
+        try:
+            UUID(_metadata_string(event, "run_cancellation_record_id"))
+        except ValueError as error:
+            raise IntegrityError(
+                "Run cancellation has an invalid cancellation record ID"
+            ) from error
         step = self._step(_metadata_string(event, "step_id"))
         if state.step_states.get(step.id) is not StepState.IN_PROGRESS:
             raise IntegrityError("Run cancellation requires an in-progress workflow step")

@@ -2,6 +2,8 @@
 
 from uuid import UUID
 
+from pydantic import Field, field_validator
+
 from forge.contracts.actors import Actor
 from forge.contracts.base import (
     GovernanceRecord,
@@ -12,7 +14,8 @@ from forge.contracts.base import (
     UtcDateTime,
 )
 from forge.contracts.capabilities import SideEffectClass
-from forge.contracts.state import RunState
+from forge.contracts.state import RunState, StepState
+from forge.contracts.workflows import CancellationBehavior
 
 
 class RunRecord(GovernanceRecord):
@@ -30,3 +33,25 @@ class RunRecord(GovernanceRecord):
     output_manifest_path: RepositoryRelativePath | None = None
     exit_metadata: dict[str, str]
     cancellation_details: NonEmptyString | None = None
+
+
+class RunCancellationRecord(GovernanceRecord):
+    id: UUID
+    # Cancellation always targets a run, unlike generic governance records.
+    run_id: UUID | None = Field()  # pyright: ignore[reportGeneralTypeIssues]
+    step_id: SymbolicId
+    reason: NonEmptyString
+    actor: Actor
+    source_state: StepState
+    destination_state: StepState
+    cancellation_behavior: CancellationBehavior
+    side_effect_class: SideEffectClass
+    terminal_execution_event_id: UUID | None = None
+    terminal_execution_event_hash: Sha256Digest | None = None
+
+    @field_validator("run_id")
+    @classmethod
+    def require_run_id(cls, value: UUID | None) -> UUID:
+        if value is None:
+            raise ValueError("run cancellation record requires a run ID")
+        return value

@@ -56,3 +56,10 @@ the exact canonical digest and affected facts of one current prior decision; arb
 cannot masquerade as withdrawals. Replay removes the prior decision from current authority without
 editing it or granting the withdrawal any progression authority. Withdrawing a current workflow-
 deviation review therefore fails closed by reopening that deviation's closure blocker.
+
+Formal run cancellation is append-only and binds the exact immutable run, locked cancellation
+policy, side-effect classification, actor, and derived destination. An adapter-attributed run
+cannot be declared cancelled until a preceding hash-sealed execution event proves FORGE-managed
+execution is already terminal. FORGE does not signal, terminate, or prove the absence of a live
+cross-process worker; external process supervision and operating-system isolation remain separate
+security controls.

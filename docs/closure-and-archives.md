@@ -24,7 +24,9 @@ moves the initiative to terminal `closed`; later events remain invalid.
 `forge abandon --reason <text> --unfinished-work <text> --risk <text>` is owner-only and accepts a
 healthy active or paused initiative. At least one risk statement is required; repeat `--risk` for
 multiple risks or explicitly state `None known`. Every governed run must already be inactive, so
-the owner uses `forge run cancel` before abandonment when necessary.
+the owner uses `forge run cancel` before abandonment when necessary. M4 Increment 9 preserves the
+resulting immutable cancellation record in the terminal archive and refuses to treat an unproven
+adapter process as stopped.
 
 Unlike closure, abandonment does not require completed workflow steps, successful checks, current
 acceptance, exact mutable working bytes, or clean Git. It preserves the valid governed journal,

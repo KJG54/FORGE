@@ -195,3 +195,9 @@ semantics, identifies the prior decision through supersession, and binds its can
 inherited affected records and digests. Current, withdrawn, superseded, and stale status remains
 derived from validated history rather than persisted by rewriting `DecisionRecord.status`. The
 exported schema count remains unchanged.
+
+M4 Increment 9 adds the public immutable `RunCancellationRecord`. It binds one exact `RunRecord`
+through the inherited `run_id`, its canonical digest, the locked step cancellation policy,
+side-effect class, actor, reason, and source/destination states. Adapter-attributed cancellations
+also bind the preceding terminal execution event ID and hash. The public schema bundle now contains
+49 models.

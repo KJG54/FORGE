@@ -204,6 +204,12 @@ original decision and records an exact digest-bound `decision-withdrawal` replac
 ordinary supersession mechanism. The prior decision stops being current without changing workflow
 state; withdrawing a deviation review reopens that review requirement.
 
+M4 Increment 9 hardens `forge run cancel <run-id>` with an immutable cancellation record binding
+the exact run digest, locked cancellation policy, side-effect risk, actor, and workflow
+destination. Manual runs remain cancellable because FORGE started no process. Adapter runs require
+a prior hash-sealed terminal execution event, so cancellation cannot falsely claim that a live
+cross-process worker stopped.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -321,6 +327,7 @@ forge --help
 - [M4 Increment 6 exact risk-acceptance boundary](docs/milestones/m4-increment-6.md)
 - [M4 Increment 7 risk-acceptance-revocation boundary](docs/milestones/m4-increment-7.md)
 - [M4 Increment 8 decision-withdrawal boundary](docs/milestones/m4-increment-8.md)
+- [M4 Increment 9 formal-cancellation boundary](docs/milestones/m4-increment-9.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

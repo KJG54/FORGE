@@ -61,7 +61,7 @@ from forge.contracts.recovery import (
     RecoveryRecord,
     SnapshotCondition,
 )
-from forge.contracts.runs import RunRecord
+from forge.contracts.runs import RunCancellationRecord, RunRecord
 from forge.contracts.state import (
     ExplanationProfile,
     InitiativeLifecycleState,
@@ -130,6 +130,7 @@ CONTRACT_MODELS: Mapping[str, type[BaseModel]] = {
     "provenance-record": ProvenanceRecord,
     "returned-file": ReturnedFile,
     "risk-acceptance": RiskAcceptance,
+    "run-cancellation-record": RunCancellationRecord,
     "run-record": RunRecord,
     "scope-amendment": ScopeAmendment,
     "step-definition": StepDefinition,
@@ -202,6 +203,7 @@ __all__ = [
     "RepositoryState",
     "ReturnedFile",
     "RiskAcceptance",
+    "RunCancellationRecord",
     "RunRecord",
     "RunState",
     "ScopeAmendment",

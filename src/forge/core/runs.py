@@ -2,22 +2,26 @@
 
 from __future__ import annotations
 
+from contextlib import suppress
 from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 from uuid import UUID, uuid4
 
+from forge import __version__
 from forge.contracts.actors import Actor, ActorType
 from forge.contracts.base import utc_now
 from forge.contracts.capabilities import SideEffectClass
 from forge.contracts.events import AuditEvent
-from forge.contracts.runs import RunRecord
+from forge.contracts.runs import RunCancellationRecord, RunRecord
 from forge.contracts.state import MaterializedState, RunState, StepState
 from forge.contracts.workflows import CancellationBehavior
 from forge.core.lifecycle import ActiveInitiative, load_active_initiative
 from forge.core.transitions import ADAPTER_RUN_EXECUTED, RUN_CANCELLED, STEP_TRANSITIONED
-from forge.errors import AuthorizationError, ConflictError, IntegrityError
+from forge.errors import AuthorizationError, ConflictError, IntegrityError, SecurityError
 from forge.storage.journal import read_journal
-from forge.storage.records import load_record
+from forge.storage.objects import canonical_json_digest
+from forge.storage.records import load_record, write_record
 from forge.storage.repository import RepositoryLayout
 from forge.storage.snapshots import append_event_and_update_snapshot
 
@@ -28,6 +32,7 @@ class RunView:
     status: RunState
     ended_at: datetime | None = None
     cancellation_details: str | None = None
+    cancellation: RunCancellationRecord | None = None
 
 
 @dataclass(frozen=True)
@@ -35,6 +40,32 @@ class RunCancellationResult:
     run: RunView
     event: AuditEvent
     state: MaterializedState
+    cancellation: RunCancellationRecord
+
+
+def _cancellation_path(layout: RepositoryLayout, record_id: UUID) -> Path:
+    return layout.run_cancellation_directory / f"{record_id}.json"
+
+
+def _ensure_directory(path: Path) -> bool:
+    if path.is_symlink():
+        raise SecurityError(f"Refusing to manage a symbolic-link directory: {path}")
+    if path.exists():
+        if not path.is_dir():
+            raise ConflictError(f"Expected a governed directory at {path}")
+        return False
+    try:
+        path.mkdir()
+    except OSError as error:
+        raise IntegrityError(f"Cannot create governed directory {path}: {error}") from error
+    return True
+
+
+def _event_committed(layout: RepositoryLayout, event_id: UUID) -> bool:
+    try:
+        return any(event.id == event_id for event in read_journal(layout.event_journal_file))
+    except IntegrityError:
+        return True
 
 
 def _load_runs(active: ActiveInitiative) -> tuple[RunRecord, ...]:
@@ -93,13 +124,33 @@ def _view(active: ActiveInitiative, run: RunRecord) -> RunView:
         reason = event.metadata.get("reason")
         if not isinstance(reason, str) or not reason:
             raise IntegrityError(f"Run cancellation {event.id} has no reason")
-        return RunView(run, RunState.CANCELLED, event.timestamp, reason)
+        record_value = event.metadata.get("run_cancellation_record_id")
+        if not isinstance(record_value, str):
+            raise IntegrityError(f"Run cancellation {event.id} has no cancellation record")
+        try:
+            cancellation_id = UUID(record_value)
+        except ValueError as error:
+            raise IntegrityError(
+                f"Run cancellation {event.id} has an invalid cancellation record"
+            ) from error
+        cancellation = load_record(
+            _cancellation_path(active.layout, cancellation_id),
+            RunCancellationRecord,
+        )
+        return RunView(
+            run,
+            RunState.CANCELLED,
+            event.timestamp,
+            reason,
+            cancellation,
+        )
     return RunView(run, RunState.SUCCEEDED, event.timestamp)
 
 
 def list_runs(layout: RepositoryLayout) -> tuple[RunView, ...]:
     active = load_active_initiative(
         layout,
+        allow_terminal=True,
         allow_paused=True,
         allow_untrusted_pack=True,
     )
@@ -124,9 +175,9 @@ def cancel_run(
     reason = reason.strip()
     if not reason:
         raise ConflictError("Run cancellation reason must not be empty")
-    run = load_record(active.layout.governed_run_directory / f"{run_id}.json", RunRecord)
     if run_id not in active.state.active_run_ids:
         raise ConflictError(f"Run {run_id} is not active")
+    run = load_record(active.layout.governed_run_directory / f"{run_id}.json", RunRecord)
     is_owner = (
         actor.actor_type is ActorType.OWNER
         and actor.id == active.initiative.owner_identity_id
@@ -136,6 +187,26 @@ def cancel_run(
     step = next((item for item in active.workflow.steps if item.id == run.step_id), None)
     if step is None or active.state.step_states.get(run.step_id) is not StepState.IN_PROGRESS:
         raise IntegrityError(f"Active run {run_id} does not match an in-progress step")
+    run_events = tuple(
+        event
+        for event in read_journal(active.layout.event_journal_file)
+        if event.run_id == run_id and event.event_type == ADAPTER_RUN_EXECUTED
+    )
+    if len(run_events) > 1:
+        raise IntegrityError(f"Run {run_id} has multiple adapter execution events")
+    terminal_execution = run_events[0] if run_events else None
+    if run.adapter_reference is not None and terminal_execution is None:
+        raise ConflictError(
+            "Adapter-run cancellation requires a prior terminal execution event; "
+            "live cross-process cancellation is not supported"
+        )
+    if run.adapter_reference is None and terminal_execution is not None:
+        raise IntegrityError(f"Manual run {run_id} has an adapter execution event")
+    if terminal_execution is not None and terminal_execution.event_hash is None:
+        raise IntegrityError(f"Adapter execution event {terminal_execution.id} is not hash sealed")
+    terminal_execution_hash = (
+        terminal_execution.event_hash if terminal_execution is not None else None
+    )
     externally_risky = run.side_effect_class in {
         SideEffectClass.EXTERNAL_REVERSIBLE,
         SideEffectClass.EXTERNAL_IRREVERSIBLE,
@@ -147,28 +218,92 @@ def cancel_run(
         or step.cancellation_behavior is CancellationBehavior.BLOCK_FOR_OWNER_REVIEW
         else StepState.READY
     )
+    now = utc_now()
+    sequence = active.state.journal_head_sequence + 1
+    cancellation_id = uuid4()
+    run_digest = canonical_json_digest(run.model_dump(mode="json"))
+    affected_record_ids = (
+        (run.id, terminal_execution.id)
+        if terminal_execution is not None
+        else (run.id,)
+    )
+    affected_digests = (
+        (run_digest, terminal_execution_hash)
+        if terminal_execution_hash is not None
+        else (run_digest,)
+    )
+    authorization_basis = (
+        "authorized run worker or configured owner formally cancelled active work; "
+        "managed execution was terminal when applicable"
+    )
+    cancellation = RunCancellationRecord(
+        id=cancellation_id,
+        initiative_id=active.initiative.id,
+        actor_id=actor.id,
+        recorded_at=now,
+        event_sequence=sequence,
+        authorization_basis=authorization_basis,
+        tool_version=__version__,
+        affected_record_ids=affected_record_ids,
+        affected_digests=affected_digests,
+        run_id=run.id,
+        step_id=run.step_id,
+        reason=reason,
+        actor=actor,
+        source_state=StepState.IN_PROGRESS,
+        destination_state=destination,
+        cancellation_behavior=step.cancellation_behavior,
+        side_effect_class=run.side_effect_class,
+        terminal_execution_event_id=(
+            terminal_execution.id if terminal_execution is not None else None
+        ),
+        terminal_execution_event_hash=terminal_execution_hash,
+    )
+    record_digest = canonical_json_digest(cancellation.model_dump(mode="json"))
     event = AuditEvent(
         id=uuid4(),
         initiative_id=active.initiative.id,
-        sequence=active.state.journal_head_sequence + 1,
-        timestamp=utc_now(),
+        sequence=sequence,
+        timestamp=now,
         event_type=RUN_CANCELLED,
         actor=actor,
         run_id=run_id,
-        authorization_basis="run worker or repository owner explicitly cancelled active work",
-        affected_record_ids=(run_id,),
+        authorization_basis=authorization_basis,
+        affected_record_ids=(cancellation_id, *affected_record_ids),
+        affected_digests=(*affected_digests, record_digest),
         metadata={
+            "run_cancellation_record_id": str(cancellation_id),
             "destination_state": destination.value,
             "reason": reason,
             "source_state": StepState.IN_PROGRESS.value,
             "step_id": run.step_id,
+            "terminal_execution_event_id": (
+                str(terminal_execution.id) if terminal_execution is not None else None
+            ),
         },
     )
-    state = append_event_and_update_snapshot(
-        active.layout.event_journal_file,
-        active.layout.state_file,
-        event,
-        active.reducer,
+    path = _cancellation_path(layout, cancellation_id)
+    created_directory = _ensure_directory(path.parent)
+    try:
+        write_record(path, cancellation)
+        state = append_event_and_update_snapshot(
+            active.layout.event_journal_file,
+            active.layout.state_file,
+            event,
+            active.reducer,
+        )
+    except Exception:
+        if not _event_committed(layout, event.id):
+            path.unlink(missing_ok=True)
+            if created_directory:
+                with suppress(OSError):
+                    path.parent.rmdir()
+        raise
+    view = RunView(
+        run,
+        RunState.CANCELLED,
+        event.timestamp,
+        reason,
+        cancellation,
     )
-    view = RunView(run, RunState.CANCELLED, event.timestamp, reason)
-    return RunCancellationResult(view, event, state)
+    return RunCancellationResult(view, event, state, cancellation)

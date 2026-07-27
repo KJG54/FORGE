@@ -126,6 +126,10 @@ semantic-version commitments begin at v1.0.0.
   configured-owner authority, immutable supersession history, state-neutral authority removal,
   deviation-review reopening, historical inspection, retry recovery, restart validation, and
   archive preservation.
+- M4 formal run cancellation with a public immutable cancellation record, exact run and locked
+  policy/risk binding, worker-or-owner authority, terminal adapter-execution proof, fail-closed
+  live-process refusal, deterministic workflow destination, retry recovery, restart validation,
+  inspection, and archive preservation.
 
 ### Limitations
 

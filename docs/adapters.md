@@ -194,6 +194,11 @@ cancellation, returning the bundled workflow step to `ready`. The synchronous co
 repository mutation lock; an unexpected host crash is reported as an interrupted command and is
 never silently resumed.
 
+M4 Increment 9 requires that governed cancellation to bind the exact preceding hash-sealed
+`adapter-run-executed` event. `forge run cancel` refuses an adapter-attributed run without that
+terminal proof. It does not signal a provider process, discover an orphan, or provide
+cross-process cancellation.
+
 ## Manual handoff through the adapter boundary
 
 The existing command remains the portable execution baseline:

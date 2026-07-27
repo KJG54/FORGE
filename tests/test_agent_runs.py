@@ -261,7 +261,8 @@ def test_agent_run_failure_is_audited_and_releases_step(
     )
     assert result.state is expected
     assert result.staged_result is None
-    assert show_run(initialized.layout, result.run_id).status is RunState.CANCELLED
+    cancelled_view = show_run(initialized.layout, result.run_id)
+    assert cancelled_view.status is RunState.CANCELLED
     assert load_active_initiative(initialized.layout).state.step_states[
         "discover"
     ] is StepState.READY
@@ -270,6 +271,15 @@ def test_agent_run_failure_is_audited_and_releases_step(
         for event in read_journal(initialized.layout.event_journal_file)
     ]
     assert event_types[-2:] == ["adapter-run-executed", "run-cancelled"]
+    assert cancelled_view.cancellation is not None
+    assert (
+        cancelled_view.cancellation.terminal_execution_event_id
+        == read_journal(initialized.layout.event_journal_file)[-2].id
+    )
+    assert (
+        cancelled_view.cancellation.terminal_execution_event_hash
+        == read_journal(initialized.layout.event_journal_file)[-2].event_hash
+    )
 
 
 def test_agent_run_is_disabled_without_approval_and_once_is_consumed(

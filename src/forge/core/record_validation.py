@@ -45,7 +45,7 @@ from forge.contracts.recovery import (
     RecoveryRecord,
     SnapshotCondition,
 )
-from forge.contracts.runs import RunRecord
+from forge.contracts.runs import RunCancellationRecord, RunRecord
 from forge.contracts.state import (
     InitiativeLifecycleState,
     IntegrityState,
@@ -214,6 +214,10 @@ def _risk_acceptance_path(layout: RepositoryLayout, acceptance_id: UUID) -> Path
     return layout.risk_acceptance_directory / f"{acceptance_id}.json"
 
 
+def _run_cancellation_path(layout: RepositoryLayout, cancellation_id: UUID) -> Path:
+    return layout.run_cancellation_directory / f"{cancellation_id}.json"
+
+
 def _imported_result_path(layout: RepositoryLayout, result_id: UUID) -> Path:
     return layout.imported_result_directory / f"{result_id}.json"
 
@@ -353,6 +357,104 @@ def _condition_record_ids(event: AuditEvent, condition: str) -> tuple[UUID, ...]
     return record_ids
 
 
+def _validate_run_cancellation(
+    layout: RepositoryLayout,
+    event: AuditEvent,
+    run: RunRecord,
+    workflow: WorkflowDefinition,
+    owner_id: UUID,
+    terminal_execution: AuditEvent | None,
+) -> Path:
+    cancellation_id = _uuid_metadata(event, "run_cancellation_record_id")
+    cancellation_path = _run_cancellation_path(layout, cancellation_id)
+    cancellation = load_record(cancellation_path, RunCancellationRecord)
+    _validate_common(cancellation, event, cancellation_id)
+    step = next((item for item in workflow.steps if item.id == run.step_id), None)
+    if step is None:
+        raise IntegrityError(
+            f"Cancellation event {event.id} references an unknown run step"
+        )
+    externally_risky = run.side_effect_class in {
+        SideEffectClass.EXTERNAL_REVERSIBLE,
+        SideEffectClass.EXTERNAL_IRREVERSIBLE,
+        SideEffectClass.SENSITIVE,
+    }
+    expected_destination = (
+        StepState.BLOCKED
+        if externally_risky
+        or step.cancellation_behavior is CancellationBehavior.BLOCK_FOR_OWNER_REVIEW
+        else StepState.READY
+    )
+    terminal_execution_hash = (
+        terminal_execution.event_hash if terminal_execution is not None else None
+    )
+    run_digest = canonical_json_digest(run.model_dump(mode="json"))
+    expected_record_ids = (
+        (run.id, terminal_execution.id)
+        if terminal_execution is not None
+        else (run.id,)
+    )
+    expected_digests = (
+        (run_digest, terminal_execution_hash)
+        if terminal_execution_hash is not None
+        else (run_digest,)
+    )
+    reason = event.metadata.get("reason")
+    if (
+        (
+            event.actor != run.worker
+            and not (
+                event.actor.actor_type is ActorType.OWNER
+                and event.actor.id == owner_id
+            )
+        )
+        or event.metadata.get("step_id") != run.step_id
+        or event.metadata.get("source_state") != StepState.IN_PROGRESS.value
+        or event.metadata.get("destination_state") != expected_destination.value
+        or not isinstance(reason, str)
+        or not reason
+        or cancellation.id != cancellation_id
+        or cancellation.run_id != run.id
+        or cancellation.step_id != run.step_id
+        or cancellation.reason != reason
+        or cancellation.actor != event.actor
+        or cancellation.source_state is not StepState.IN_PROGRESS
+        or cancellation.destination_state is not expected_destination
+        or cancellation.cancellation_behavior is not step.cancellation_behavior
+        or cancellation.side_effect_class is not run.side_effect_class
+        or cancellation.affected_record_ids != expected_record_ids
+        or cancellation.affected_digests != expected_digests
+        or (
+            run.adapter_reference is None
+            and (
+                terminal_execution is not None
+                or cancellation.terminal_execution_event_id is not None
+                or cancellation.terminal_execution_event_hash is not None
+                or event.metadata.get("terminal_execution_event_id") is not None
+            )
+        )
+        or (
+            run.adapter_reference is not None
+            and (
+                terminal_execution is None
+                or terminal_execution_hash is None
+                or cancellation.terminal_execution_event_id != terminal_execution.id
+                or cancellation.terminal_execution_event_hash != terminal_execution_hash
+                or event.metadata.get("terminal_execution_event_id")
+                != str(terminal_execution.id)
+            )
+        )
+        or event.affected_record_ids != (cancellation_id, *expected_record_ids)
+        or event.affected_digests
+        != (
+            *expected_digests,
+            canonical_json_digest(cancellation.model_dump(mode="json")),
+        )
+    ):
+        raise IntegrityError(f"Cancellation event {event.id} violates run policy")
+    return cancellation_path
+
+
 def validate_governed_records(
     layout: RepositoryLayout,
     events: tuple[AuditEvent, ...],
@@ -380,6 +482,7 @@ def validate_governed_records(
     expected_closures: set[Path] = set()
     expected_abandonments: set[Path] = set()
     expected_runs: set[Path] = set()
+    expected_run_cancellations: set[Path] = set()
     expected_validator_runs: set[Path] = set()
     expected_command_recoveries: set[Path] = set()
     expected_recoveries: set[Path] = set()
@@ -407,7 +510,7 @@ def validate_governed_records(
     used_capability_approval_ids: set[UUID] = set()
     current_pack_trust = load_record(layout.pack_trust_file, PackTrustDecision)
     locked_pack = load_record(layout.pack_lock_file, PackManifest)
-    adapter_execution_run_ids: set[UUID] = set()
+    adapter_execution_events_by_run: dict[UUID, AuditEvent] = {}
     revoked_acceptance_ids: set[UUID] = set()
     revoked_risk_acceptance_ids: set[UUID] = set()
     stale_ids: set[UUID] = set()
@@ -880,44 +983,26 @@ def validate_governed_records(
                 or (execution_state == "succeeded" and exit_code != 0)
                 or (execution_state == "succeeded") != (staged_result_id is not None)
                 or not staged_id_valid
-                or event.run_id in adapter_execution_run_ids
+                or event.run_id in adapter_execution_events_by_run
                 or event.affected_record_ids != (run.id, *run.capability_approval_ids)
                 or event.affected_digests != (run.input_context_digest,)
             ):
                 raise IntegrityError(f"Adapter execution event {event.id} violates run policy")
-            adapter_execution_run_ids.add(event.run_id)
+            adapter_execution_events_by_run[event.run_id] = event
         elif event.event_type == RUN_CANCELLED:
             if event.run_id is None or event.run_id not in runs_by_id:
                 raise IntegrityError(f"Cancellation event {event.id} references an unknown run")
             run = runs_by_id[event.run_id]
-            step = next((item for item in workflow.steps if item.id == run.step_id), None)
-            externally_risky = run.side_effect_class in {
-                SideEffectClass.EXTERNAL_REVERSIBLE,
-                SideEffectClass.EXTERNAL_IRREVERSIBLE,
-                SideEffectClass.SENSITIVE,
-            }
-            expected_destination = (
-                StepState.BLOCKED
-                if externally_risky
-                or step is None
-                or step.cancellation_behavior is CancellationBehavior.BLOCK_FOR_OWNER_REVIEW
-                else StepState.READY
-            )
-            if (
-                (
-                    event.actor != run.worker
-                    and not (
-                        event.actor.actor_type is ActorType.OWNER
-                        and event.actor.id == owner_id
-                    )
+            expected_run_cancellations.add(
+                _validate_run_cancellation(
+                    layout,
+                    event,
+                    run,
+                    workflow,
+                    owner_id,
+                    adapter_execution_events_by_run.get(run.id),
                 )
-                or event.metadata.get("step_id") != run.step_id
-                or event.metadata.get("source_state") != StepState.IN_PROGRESS.value
-                or event.metadata.get("destination_state") != expected_destination.value
-                or not isinstance(event.metadata.get("reason"), str)
-                or not event.metadata.get("reason")
-            ):
-                raise IntegrityError(f"Cancellation event {event.id} violates run policy")
+            )
         elif event.event_type == CLAIM_RECORDED:
             claim_id = _uuid_metadata(event, "claim_id")
             path = _claim_path(layout, claim_id)
@@ -2267,6 +2352,10 @@ def validate_governed_records(
     _validate_directory(layout.closure_directory, expected_closures)
     _validate_directory(layout.abandonment_directory, expected_abandonments)
     _validate_directory(layout.governed_run_directory, expected_runs)
+    _validate_directory(
+        layout.run_cancellation_directory,
+        expected_run_cancellations,
+    )
     _validate_directory(layout.validator_run_directory, expected_validator_runs)
     _validate_directory(
         layout.command_recovery_record_directory,

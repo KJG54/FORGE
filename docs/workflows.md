@@ -91,6 +91,12 @@ Run records remain immutable. `forge run list|show` derives effective `running`,
 never implies step completion: safe work may return to `ready`, while the workflow's stricter
 cancellation rule or external/sensitive side effects move the step to `blocked` for owner review.
 
+M4 Increment 9 adds a separately inspectable immutable cancellation record bound to the exact run
+digest, actor, reason, locked policy, side-effect risk, and derived destination. The run worker or
+configured owner may cancel manual work. Adapter-attributed work can be formally cancelled only
+after its single terminal `adapter-run-executed` event is hash sealed; FORGE refuses to use
+cancellation as a claim that an unproven cross-process worker stopped.
+
 ## Atomic successful closure boundary
 
 Successful closure is owner-only and derives readiness from the locked workflow, current
@@ -252,3 +258,8 @@ ordinary supersession; it never edits the prior record or grants progression aut
 superseded, or withdrawal record is refused. If the prior decision was the current review for a
 workflow deviation, the deviation becomes open again and successful closure remains blocked until
 a fresh current review exists.
+
+M4 Increment 9 makes every successful `forge run cancel <run-id>` produce a public immutable
+`RunCancellationRecord`. Cancellation remains a terminal outcome, not completion or verification.
+Manual runs have no managed process to stop. Adapter runs require a prior terminal execution event;
+live cross-process cancellation remains outside FORGE's current synchronous execution boundary.

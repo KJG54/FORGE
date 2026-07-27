@@ -81,6 +81,7 @@ _ACTIVE_TOP_LEVEL = {
     "recovery-records",
     "recovery-snapshots",
     "risk-acceptances",
+    "run-cancellations",
     "runs",
     "scope-amendments",
     "state.json",

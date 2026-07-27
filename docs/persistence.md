@@ -362,3 +362,21 @@ The `decision_withdraw` idempotency pattern contains exactly one `decision-super
 Replay removes only the prior decision from `open_decision_ids`, adds the withdrawal audit fact,
 and marks the prior stale. It changes no workflow step, run, gate, claim, check, evidence,
 verification, or acceptance state. Terminal archives retain both records and their supersession.
+
+## M4 Increment 9 formal run cancellation
+
+`.forge/active/run-cancellations/<record-id>.json` stores each immutable
+`RunCancellationRecord`. The matching `run-cancelled` event is the workflow commit point and binds
+the cancellation record ID and digest, exact run ID and digest, actor, reason, source and
+destination, locked cancellation behavior, and side-effect classification.
+
+For adapter-attributed runs, both records additionally bind the single preceding hash-sealed
+`adapter-run-executed` event ID and hash. A missing terminal event is refused rather than treated
+as evidence that a live process stopped. Manual runs have no such binding because FORGE started no
+managed process.
+
+The cancellation record is written before the event. If event append fails before commitment,
+only the new record is removed; after event commitment, conservative receipt recovery can rebuild
+the missing idempotency receipt without repeating cancellation. Restart validation recomputes all
+relationships and rejects missing, unexpected, reordered, or altered cancellation records.
+Terminal archives preserve the directory unchanged.
