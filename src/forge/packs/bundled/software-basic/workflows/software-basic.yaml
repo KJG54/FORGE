@@ -1,6 +1,6 @@
 schema_version: "1.0"
 id: software-basic
-version: 0.3.0
+version: 0.4.0
 pack_id: software-basic
 name: Software Basic
 description: A governed six-step workflow for ordinary software initiatives.
@@ -131,7 +131,9 @@ required_artifact_classes:
 required_evidence_classes:
   - check-evidence
 explanation_content:
+  minimal: Follow the declared steps; claims, checks, evidence, and owner acceptance remain separate.
   standard: Follow each declared step and keep claims, checks, evidence, and acceptance separate.
   guided: FORGE will explain each required input, output, blocker, and owner decision in detail.
+  mentored: FORGE explains why each required input, output, blocker, check, evidence record, and owner decision exists while preserving the same permissions, gates, transitions, and acceptance rules.
 compatibility_constraints:
   - forge-contracts-1

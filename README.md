@@ -244,6 +244,13 @@ artifact revisions and records only a `CheckResult`. A pass does not create evid
 step, grant acceptance, or establish semantic or factual truth. Shared pack conformance,
 explanation profiles, resumption, and discovery remain later boundaries.
 
+M5 Increment 4 enables Minimal and Mentored presentation alongside Standard and Guided for both
+bundled packs. The selected inline explanation is exact digest-bound workflow data locked at
+initiative creation. Minimal removes teaching detail, while Mentored adds rationale; neither
+changes permissions, transitions, gates, checks, evidence, verification, acceptance, or next
+actions. Older two-profile packs remain valid for profiles they contain. Both bundled packs are
+now `0.4.0`; shared conformance, long-gap resumption, and discovery remain later boundaries.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -370,6 +377,10 @@ forge --help
 - [M4 Increment 10 structured-local-audit boundary](docs/milestones/m4-increment-10.md)
 - [M4 Increment 11 adversarial closeout](docs/milestones/m4-increment-11.md)
 - [M4 evidence report](docs/milestones/m4-report.md)
+- [M5 Increment 1 declarative-research boundary](docs/milestones/m5-increment-1.md)
+- [M5 Increment 2 digest-bound-template boundary](docs/milestones/m5-increment-2.md)
+- [M5 Increment 3 structural-validator boundary](docs/milestones/m5-increment-3.md)
+- [M5 Increment 4 four-profile presentation boundary](docs/milestones/m5-increment-4.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

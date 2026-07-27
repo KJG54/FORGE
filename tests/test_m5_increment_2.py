@@ -64,7 +64,7 @@ def test_research_templates_are_utf8_data_only_and_digest_bound(
 ) -> None:
     pack = load_pack(RESEARCH_PACK_ROOT, bundled=True)
 
-    assert pack.manifest.version == "0.3.0"
+    assert pack.manifest.version == "0.4.0"
     templates = tuple(
         resource
         for resource in pack.resources
@@ -110,7 +110,7 @@ def test_pack_loader_refuses_binary_and_unsupported_resource_classes(
         ),
         encoding="utf-8",
     )
-    with pytest.raises(ConfigurationError, match="explanation resources remain unavailable"):
+    with pytest.raises(ConfigurationError, match="explanation resource files remain unavailable"):
         load_pack(unsupported)
 
 
@@ -142,7 +142,15 @@ def test_empty_resource_pack_digests_and_pre_resource_locks_remain_compatible() 
         for step in research.workflow().steps
     )
     legacy_workflow = research.workflow().model_copy(
-        update={"version": "0.1.0", "steps": legacy_steps}
+        update={
+            "version": "0.1.0",
+            "steps": legacy_steps,
+            "explanation_content": {
+                key: value
+                for key, value in research.workflow().explanation_content.items()
+                if key in {"standard", "guided"}
+            },
+        }
     )
     legacy_pack = ValidatedPack(
         RESEARCH_PACK_ROOT,
@@ -249,7 +257,7 @@ def test_template_cli_lists_and_shows_available_then_locked_bytes(
         ["pack", "template", "list", "research-basic", "-C", str(tmp_path)],
     )
     assert available_list.exit_code == 0, available_list.stderr
-    assert "Templates from available research-basic@0.3.0" in available_list.stdout
+    assert "Templates from available research-basic@0.4.0" in available_list.stdout
     assert EVIDENCE_TEMPLATE in available_list.stdout
     assert CITATION_TEMPLATE in available_list.stdout
 
@@ -284,7 +292,7 @@ def test_template_cli_lists_and_shows_available_then_locked_bytes(
         ["pack", "template", "list", "research-basic", "-C", str(tmp_path)],
     )
     assert locked_list.exit_code == 0, locked_list.stderr
-    assert "Templates from locked research-basic@0.3.0" in locked_list.stdout
+    assert "Templates from locked research-basic@0.4.0" in locked_list.stdout
     assert len(read_journal(initialized.layout.event_journal_file)) == event_count
 
     unknown = runner.invoke(

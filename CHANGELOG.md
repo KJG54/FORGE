@@ -146,6 +146,9 @@ semantic-version commitments begin at v1.0.0.
   bounded in-process heading and field checks, exact artifact-revision `CheckResult` capture,
   template-only lock compatibility, and explicit separation from processes, evidence,
   verification, acceptance, and factual truth.
+- M5 Minimal and Mentored explanation profiles for both bundled packs, with four-profile
+  digest-bound workflow text, identical governance behavior, pre-write availability checks,
+  legacy Standard/Guided compatibility, and no explanation-resource or authority expansion.
 
 ### Limitations
 

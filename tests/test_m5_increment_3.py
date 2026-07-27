@@ -244,7 +244,7 @@ def test_research_structural_validators_are_data_only_digest_bound_and_compatibl
         if resource.kind is PackResourceKind.STRUCTURAL_VALIDATOR
     )
 
-    assert pack.manifest.version == "0.3.0"
+    assert pack.manifest.version == "0.4.0"
     assert [resource.definition.id for resource in validators if resource.definition] == [
         EVIDENCE_VALIDATOR,
         CITATION_VALIDATOR,
@@ -279,7 +279,15 @@ def test_research_structural_validators_are_data_only_digest_bound_and_compatibl
         }
     )
     legacy_workflow = pack.workflow().model_copy(
-        update={"version": "0.2.0", "steps": legacy_steps}
+        update={
+            "version": "0.2.0",
+            "steps": legacy_steps,
+            "explanation_content": {
+                key: value
+                for key, value in pack.workflow().explanation_content.items()
+                if key in {"standard", "guided"}
+            },
+        }
     )
     legacy_pack = ValidatedPack(
         RESEARCH_PACK_ROOT,
@@ -454,7 +462,7 @@ def test_structural_validator_cli_inspection_is_read_only_and_locked(
         ["pack", "validator", "list", "research-basic", "-C", str(tmp_path)],
     )
     assert before.exit_code == 0, before.stderr
-    assert "available research-basic@0.3.0" in before.stdout
+    assert "available research-basic@0.4.0" in before.stdout
     assert EVIDENCE_VALIDATOR in before.stdout
     assert CITATION_VALIDATOR in before.stdout
 
@@ -489,7 +497,7 @@ def test_structural_validator_cli_inspection_is_read_only_and_locked(
         ["pack", "validator", "list", "research-basic", "-C", str(tmp_path)],
     )
     assert locked.exit_code == 0, locked.stderr
-    assert "locked research-basic@0.3.0" in locked.stdout
+    assert "locked research-basic@0.4.0" in locked.stdout
     assert initialized.layout.event_journal_file.read_bytes() == event_bytes
 
     locked_resource = (

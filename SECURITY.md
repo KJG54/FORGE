@@ -86,3 +86,10 @@ current governed artifact revisions. Structural failure records a failed check; 
 source authenticity, citation correctness, semantic quality, methodology, evidence sufficiency,
 factual truth, verification, or acceptance. Executable validators remain subject to the separate
 tracked profile and exact owner capability-approval boundary.
+
+Explanation profiles are inline declarative workflow text covered by the exact pack digest and
+workflow lock. Minimal, Standard, Guided, and Mentored change only displayed educational detail;
+they are never evaluated as commands or authorization and cannot alter permissions, gates, checks,
+evidence, verification, acceptance, or lifecycle transitions. Pack authors and owners remain
+responsible for reviewing the displayed text. External explanation resource files remain
+unsupported.

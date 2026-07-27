@@ -76,7 +76,7 @@ class ActiveInitiative:
 
     @property
     def explanation(self) -> str:
-        """Return presentation-only guidance for the selected M1 profile."""
+        """Return presentation-only guidance for the selected locked profile."""
         profile = self.initiative.explanation_profile.value
         try:
             return self.workflow.explanation_content[profile]
@@ -157,9 +157,10 @@ def create_initiative(
     pack = find_pack(layout, configuration, pack_id)
     workflow = pack.workflow(workflow_id)
     selected_profile = explanation_profile or configuration.behavior.explanation_profile
-    if selected_profile not in {ExplanationProfile.STANDARD, ExplanationProfile.GUIDED}:
+    if selected_profile.value not in workflow.explanation_content:
         raise ConfigurationError(
-            "M1 supports only standard and guided explanation profiles"
+            f"Workflow {workflow.id!r} does not provide the "
+            f"{selected_profile.value!r} explanation profile"
         )
     now = utc_now()
     initiative_id = uuid4()

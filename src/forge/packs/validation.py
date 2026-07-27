@@ -107,8 +107,8 @@ def validate_pack(pack: ValidatedPack) -> None:
     resources = pack.resources
     if manifest.explanation_paths:
         raise ConfigurationError(
-            "M5 Increment 3 supports templates and structural-validator data resources only; "
-            "explanation resources remain unavailable"
+            "M5 Increment 4 supports inline explanation profiles only; explanation resource "
+            "files remain unavailable"
         )
     declared_paths = (
         *manifest.template_paths,

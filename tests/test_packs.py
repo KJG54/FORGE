@@ -30,7 +30,12 @@ def test_bundled_software_pack_is_data_only_and_digest_valid() -> None:
         "review",
         "close",
     ]
-    assert {"standard", "guided"} <= set(pack.workflow().explanation_content)
+    assert set(pack.workflow().explanation_content) == {
+        "minimal",
+        "standard",
+        "guided",
+        "mentored",
+    }
 
 
 def test_pack_loader_rejects_undeclared_executable_content(tmp_path: Path) -> None:

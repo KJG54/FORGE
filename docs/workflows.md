@@ -139,9 +139,16 @@ the command again or invent a missing transition. Partial command patterns remai
 
 ## Explanation profiles and run cancellation
 
-M1 supports Standard and Guided presentation. The selected profile chooses only locked pack
-explanation text; transition definitions, authority, record requirements, and materialized next
-actions are identical.
+M5 Increment 4 enables Minimal, Standard, Guided, and Mentored presentation for workflows that
+provide the selected inline explanation. Minimal is deliberately terse; Mentored explains why
+records and boundaries matter. The selected profile chooses only exact digest-bound, locked pack
+text. Transition definitions, authority, record requirements, checks, evidence, acceptance, and
+materialized next actions are identical.
+
+Both bundled packs provide all four profiles at version `0.4.0`. Existing two-profile pack locks
+remain valid for Standard and Guided initiatives. Requesting a profile absent from the selected
+workflow fails before initiative state is written. Profiles cannot be switched after creation,
+and external explanation resource files remain unsupported.
 
 Run records remain immutable. `forge run list|show` derives effective `running`, `succeeded`, or
 `cancelled` state from the journal. `forge run cancel` records a terminal cancellation event and

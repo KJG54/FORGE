@@ -1,6 +1,6 @@
 schema_version: "1.0"
 id: research-basic
-version: 0.3.0
+version: 0.4.0
 pack_id: research-basic
 name: Research Basic
 description: A governed seven-step workflow for bounded research initiatives.
@@ -149,7 +149,9 @@ required_artifact_classes:
 required_evidence_classes:
   - research-check-evidence
 explanation_content:
+  minimal: Follow the research steps; sources, claims, structural checks, evidence, and owner acceptance remain separate.
   standard: Follow each research step while keeping sources, claims, structural checks, evidence, and owner acceptance separate.
   guided: FORGE explains each research boundary, required artifact, structural review, limitation, and owner decision without claiming factual truth automatically.
+  mentored: FORGE explains why each research boundary, artifact, structural check, limitation, evidence record, and owner decision matters without treating guidance or structure as factual truth.
 compatibility_constraints:
   - forge-contracts-1

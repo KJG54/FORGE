@@ -226,3 +226,10 @@ cannot express a process, command, hook, environment, network access, or arbitra
 `PackManifest.data_resource_paths` now accepts only definitions satisfying this contract;
 explanation resources remain unsupported. Existing persisted contracts do not change and require
 no migration. The exported schema bundle now contains 51 models.
+
+M5 Increment 4 activates the already-declared Minimal and Mentored `ExplanationProfile` enum values
+without changing the contract. The existing `Initiative.explanation_profile` stores the selected
+value, while `WorkflowDefinition.explanation_content` stores the exact digest-bound inline text.
+No explanation content is copied into materialized state or interpreted by authorization,
+transition, check, evidence, verification, or acceptance services. Existing Standard/Guided locks
+remain valid without migration, and the exported schema bundle remains at 51 models.
