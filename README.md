@@ -227,7 +227,13 @@ M5 Increment 1 adds the bundled, data-only `research-basic` pack. Its seven decl
 question framing, planning, evidence collection, synthesis, structural verification, review, and
 closure through the unchanged core lifecycle. Research sources, citations, claims, checks,
 evidence, and process outcomes remain distinct from factual truth and configured-owner acceptance.
-Templates, executable structural validators, shared pack conformance, new explanation profiles,
+
+M5 Increment 2 adds exact research evidence-register and citation-record templates. Template bytes
+are UTF-8, inventory-checked, individually digested, included in the complete pack digest, and
+copied into governed active state before initiative creation commits. Restart and archives validate
+the locked copies without consulting a later installed pack. `forge pack template list|show`
+provides read-only access; templates never execute, create artifacts or evidence, or establish
+factual truth. Executable structural validators, shared pack conformance, new explanation profiles,
 long-gap resumption changes, and filesystem discovery remain later M5 boundaries.
 
 Initialize an ordinary project repository with:
@@ -237,6 +243,8 @@ forge init --owner-name "Repository Owner"
 forge config validate
 forge pack validate software-basic
 forge pack validate research-basic
+forge pack template list research-basic
+forge pack template show research-basic templates/research-citation-record.md
 forge create "Objective" --scope "Bounded scope" --trust-pack-data \
   --idempotency-key create-objective
 forge pack inspect software-basic

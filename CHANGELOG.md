@@ -139,6 +139,9 @@ semantic-version commitments begin at v1.0.0.
 - M5 bundled data-only `research-basic` pack with declarative question framing, planning, evidence
   collection, synthesis, structural verification, review, and closure; unchanged core lifecycle
   and authority services; and an explicit non-claim of automated factual truth.
+- M5 digest-bound research evidence-register and citation-record templates with strict text and
+  inventory validation, exact governed active copies, restart and archive integrity, legacy
+  no-resource digest compatibility, and read-only available-or-locked template inspection.
 
 ### Limitations
 

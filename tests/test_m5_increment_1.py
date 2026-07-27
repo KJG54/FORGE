@@ -179,8 +179,11 @@ def test_bundled_research_pack_is_complete_data_only_and_digest_valid() -> None:
     workflow = pack.workflow()
 
     assert pack.manifest.id == "research-basic"
-    assert pack.manifest.version == "0.1.0"
-    assert pack.manifest.template_paths == ()
+    assert pack.manifest.version == "0.2.0"
+    assert pack.manifest.template_paths == (
+        "templates/research-evidence-register.md",
+        "templates/research-citation-record.md",
+    )
     assert pack.manifest.explanation_paths == ()
     assert pack.manifest.data_resource_paths == ()
     assert pack.manifest.declared_capability_ids == ()
@@ -212,8 +215,8 @@ def test_research_pack_completes_through_restarted_unchanged_core(
     repository = tmp_path / "research"
     repository.mkdir()
     _run(repository, "init", str(repository), "--owner-name", "Research Owner")
-    assert "research-basic 0.1.0" in _run(repository, "pack", "list")
-    assert "Valid data pack research-basic 0.1.0" in _run(
+    assert "research-basic 0.2.0" in _run(repository, "pack", "list")
+    assert "Valid data pack research-basic 0.2.0" in _run(
         repository,
         "pack",
         "validate",

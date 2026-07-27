@@ -408,3 +408,20 @@ For pre-closeout history, restart accepts the prior event-digest shape and conti
 the original actor, sequence, step, run, revision, and transition-support relationships. Such a
 claim still grants no independent progression authority: a current passing check, evidence packet,
 verification transition, and configured-owner acceptance remain separately required.
+
+## M5 Increment 2 locked pack templates
+
+Resource-bearing initiative creation writes exact validated UTF-8 template bytes below
+`.forge/active/pack-resources/` before its `initiative-created` event. The event and owner trust
+decision already bind the complete pack digest, which now includes each sorted template path,
+resource kind, and SHA-256 content digest. No new event or record model is required.
+
+If creation fails before journal commitment, FORGE removes only the newly created resource tree
+with the other uncommitted creation files. After commitment, the copies are governed input:
+restart, snapshot recovery preflight, and archive loading validate exact declared inventory and
+recompute the pack digest from those bytes without reading the source pack.
+
+Terminal archive construction already copies the complete active tree and includes each resource in
+the archive manifest file inventory. `pack-resources/` is therefore preserved and tamper-evident
+under the existing resumable archive transaction. Earlier no-resource initiatives and archives
+remain unchanged and require no migration.

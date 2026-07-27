@@ -108,6 +108,10 @@ class RepositoryLayout:
         return self.active_directory / "pack.lock.json"
 
     @property
+    def pack_resource_directory(self) -> Path:
+        return self.active_directory / "pack-resources"
+
+    @property
     def pack_trust_file(self) -> Path:
         return self.active_directory / "pack-trust.json"
 

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import shutil
 from collections.abc import Callable, Iterable
 from pathlib import Path
 from typing import cast
@@ -13,13 +15,20 @@ from yaml.tokens import AliasToken, AnchorToken
 from forge.contracts.configuration import ProjectConfiguration
 from forge.contracts.packs import PackManifest
 from forge.contracts.workflows import WorkflowDefinition
-from forge.errors import ConfigurationError, ConflictError, SecurityError
-from forge.packs.validation import ValidatedPack, validate_pack
+from forge.errors import ConfigurationError, ConflictError, IntegrityError, SecurityError
+from forge.packs.validation import (
+    PackResource,
+    PackResourceKind,
+    ValidatedPack,
+    validate_pack,
+)
 from forge.security.paths import resolve_repository_path
+from forge.storage.atomic import atomic_write_bytes, sync_directory
 from forge.storage.repository import RepositoryLayout
 
 MAX_PACK_FILE_BYTES = 1_048_576
 MAX_PACK_TOTAL_BYTES = 10_485_760
+MAX_PACK_RESOURCE_BYTES = 1_048_576
 _EXECUTABLE_SUFFIXES = {
     ".bat",
     ".cmd",
@@ -93,6 +102,139 @@ def _validate_pack_files(root: Path, manifest: PackManifest) -> None:
         raise ConfigurationError(f"Pack is missing declared files: {sorted(missing)}")
 
 
+def _template_resource(path: Path, relative: str) -> PackResource:
+    if path.is_symlink() or not path.is_file():
+        raise SecurityError(f"Pack template is missing, irregular, or symbolic: {path}")
+    if path.suffix.lower() in _EXECUTABLE_SUFFIXES:
+        raise SecurityError(f"Pack template has an executable suffix: {relative}")
+    try:
+        content = path.read_bytes()
+    except OSError as error:
+        raise ConfigurationError(f"Cannot read pack template {path}: {error}") from error
+    if len(content) > MAX_PACK_RESOURCE_BYTES:
+        raise ConfigurationError(
+            f"Pack template exceeds {MAX_PACK_RESOURCE_BYTES} bytes: {path}"
+        )
+    try:
+        content.decode("utf-8-sig")
+    except UnicodeDecodeError as error:
+        raise ConfigurationError(f"Pack templates must be UTF-8 text: {path}") from error
+    return PackResource(
+        path=relative,
+        kind=PackResourceKind.TEMPLATE,
+        content=content,
+        content_digest=f"sha256:{hashlib.sha256(content).hexdigest()}",
+    )
+
+
+def _load_template_resources(
+    root: Path,
+    paths: tuple[str, ...],
+) -> tuple[PackResource, ...]:
+    resources: list[PackResource] = []
+    total_bytes = 0
+    for relative in paths:
+        resource = _template_resource(root / relative, relative)
+        total_bytes += len(resource.content)
+        if total_bytes > MAX_PACK_TOTAL_BYTES:
+            raise ConfigurationError(
+                f"Pack template resources exceed {MAX_PACK_TOTAL_BYTES} aggregate bytes: {root}"
+            )
+        resources.append(resource)
+    return tuple(resources)
+
+
+def load_pack_resources(root: Path, manifest: PackManifest) -> tuple[PackResource, ...]:
+    """Load declared source-pack templates after the complete inventory is validated."""
+    return _load_template_resources(root, manifest.template_paths)
+
+
+def _expected_resource_directories(paths: tuple[str, ...]) -> set[str]:
+    expected: set[str] = set()
+    for relative in paths:
+        parent = Path(relative).parent
+        while parent != Path("."):
+            expected.add(parent.as_posix())
+            parent = parent.parent
+    return expected
+
+
+def load_locked_pack_resources(
+    root: Path,
+    manifest: PackManifest,
+) -> tuple[PackResource, ...]:
+    """Load exact governed template copies without consulting the source pack."""
+    try:
+        expected_files = set(manifest.template_paths)
+        if not expected_files:
+            if root.exists():
+                raise ConfigurationError(
+                    "Locked pack has no declared templates but pack-resources exists"
+                )
+            return ()
+        if root.is_symlink() or not root.is_dir():
+            raise ConfigurationError(
+                "Locked pack-resources directory is missing or unsafe"
+            )
+        expected_directories = _expected_resource_directories(manifest.template_paths)
+        actual_files: set[str] = set()
+        actual_directories: set[str] = set()
+        for candidate in root.rglob("*"):
+            if candidate.is_symlink():
+                raise SecurityError(
+                    f"Locked pack resources contain a symbolic link: {candidate}"
+                )
+            relative = candidate.relative_to(root).as_posix()
+            if candidate.is_dir():
+                actual_directories.add(relative)
+            elif candidate.is_file():
+                actual_files.add(relative)
+            else:
+                raise ConfigurationError(
+                    f"Locked pack resources contain an irregular entry: {candidate}"
+                )
+        if actual_files != expected_files or actual_directories != expected_directories:
+            raise ConfigurationError(
+                "Locked pack resource inventory does not match the exact declared template paths"
+            )
+        return _load_template_resources(root, manifest.template_paths)
+    except (ConfigurationError, SecurityError) as error:
+        raise IntegrityError(f"Invalid locked pack resources: {error}") from error
+
+
+def persist_locked_pack_resources(
+    destination: Path,
+    pack: ValidatedPack,
+) -> bool:
+    """Persist exact resource bytes before the initiative creation event commits."""
+    if not pack.resources:
+        return False
+    if destination.exists():
+        raise ConflictError(f"Refusing to overwrite locked pack resources: {destination}")
+    try:
+        destination.mkdir()
+        sync_directory(destination.parent)
+        for resource in pack.resources:
+            target = destination / resource.path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            atomic_write_bytes(target, resource.content)
+        restored = load_locked_pack_resources(destination, pack.manifest)
+        if restored != pack.resources:
+            raise ConfigurationError(
+                "Locked pack resources did not reproduce the validated source bytes"
+            )
+        return True
+    except Exception:
+        shutil.rmtree(destination, ignore_errors=True)
+        raise
+
+
+def discard_locked_pack_resources(destination: Path) -> None:
+    """Remove only a pre-commit resource tree created by initiative creation."""
+    if destination.exists():
+        shutil.rmtree(destination)
+
+
 def load_pack(path: Path, *, bundled: bool = False) -> ValidatedPack:
     try:
         root = path.resolve(strict=True)
@@ -115,7 +257,14 @@ def load_pack(path: Path, *, bundled: bool = False) -> ValidatedPack:
                 f"Invalid workflow {workflow_id!r} in pack {manifest.id}: {error}"
             ) from error
         workflows.append(workflow)
-    pack = ValidatedPack(root, manifest, tuple(workflows), bundled)
+    resources = load_pack_resources(root, manifest)
+    pack = ValidatedPack(
+        root,
+        manifest,
+        tuple(workflows),
+        resources,
+        bundled,
+    )
     validate_pack(pack)
     return pack
 

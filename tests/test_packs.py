@@ -74,7 +74,7 @@ def test_pack_loader_rejects_yaml_anchors_and_aliases(tmp_path: Path) -> None:
         load_pack(copied)
 
 
-def test_pack_resources_are_refused_until_their_bytes_are_lockable(tmp_path: Path) -> None:
+def test_general_pack_resources_remain_refused(tmp_path: Path) -> None:
     copied = tmp_path / "pack"
     shutil.copytree(PACK_ROOT, copied)
     resource = copied / "notes.txt"
@@ -88,5 +88,5 @@ def test_pack_resources_are_refused_until_their_bytes_are_lockable(tmp_path: Pat
         encoding="utf-8",
     )
 
-    with pytest.raises(ConfigurationError, match="included in the lock digest"):
+    with pytest.raises(ConfigurationError, match="general data resources remain unavailable"):
         load_pack(copied)

@@ -70,3 +70,11 @@ digest of the displayed detail, not raw error text, arguments, environment, cred
 or provider output. Recording is best effort and cannot replace the original refusal. These
 Git-ignored files are diagnostic rather than governed evidence: they are not hash chained,
 archived, or accepted as workflow support, and same-user processes can alter or remove them.
+
+Pack templates are declarative UTF-8 text, not executable capability declarations. FORGE rejects
+symbolic, irregular, executable-suffixed, undeclared, oversized, binary, missing, and additional
+template content; binds accepted bytes into the complete pack digest; and preserves exact locked
+copies with the initiative. `forge pack template show` renders owner-requested validated text only
+and creates no project file or governance fact. These controls do not make template content true,
+safe for every audience, free of secrets, legally reusable, or immune to a malicious same-user
+process. Owners must review template content and any research entered into it.
