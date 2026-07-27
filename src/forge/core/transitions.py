@@ -23,6 +23,7 @@ from forge.storage.canonical import canonical_json_digest
 INITIATIVE_CREATED = "initiative-created"
 INITIATIVE_PAUSED = "initiative-paused"
 INITIATIVE_RESUMED = "initiative-resumed"
+CANONICAL_RESUMPTION_SUMMARY_PROFILE = "canonical-records-v1"
 INTEGRITY_RECOVERED = "integrity-recovered"
 JOURNAL_RECOVERED = "journal-recovered"
 COMMAND_RECOVERED = "command-recovered"
@@ -473,7 +474,19 @@ class WorkflowStateReducer:
             raise IntegrityError("Resume event has an invalid pause event ID") from error
         if recorded_pause_id != pause_event_id:
             raise IntegrityError("Resume event does not match the active pause")
-        _metadata_string(event, "resumption_summary")
+        summary = _metadata_string(event, "resumption_summary")
+        summary_profile = event.metadata.get("resumption_summary_profile")
+        if summary_profile is not None:
+            summary_digest = event.metadata.get("resumption_summary_digest")
+            expected_summary_digest = canonical_json_digest({"summary": summary})
+            if (
+                summary_profile != CANONICAL_RESUMPTION_SUMMARY_PROFILE
+                or summary_digest != expected_summary_digest
+                or expected_summary_digest not in event.affected_digests
+            ):
+                raise IntegrityError(
+                    "Resume event does not bind its canonical resumption summary"
+                )
         if event.metadata.get("resumed_current_step_id") != state.current_step_id:
             raise IntegrityError("Resume event does not match the preserved workflow position")
         return state.model_copy(

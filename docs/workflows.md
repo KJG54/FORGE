@@ -150,6 +150,18 @@ remain valid for Standard and Guided initiatives. Requesting a profile absent fr
 workflow fails before initiative state is written. Profiles cannot be switched after creation,
 and external explanation resource files remain unsupported.
 
+## Canonical long-gap resumption
+
+M5 Increment 5 derives the paused status and resume summary from effective scope, locked workflow
+state, open decisions, current artifact revisions, non-stale evidence packets, and the exact legal
+actions preserved at pause. The artifact section uses paths, identities, revision numbers, and
+digests only; it never embeds project content or discovers unrelated files.
+
+Paused `forge status` displays the same summary that a later `forge resume` records. New resume
+events bind the summary digest and referenced records in the journal hash chain. The summary
+explains current governance but cannot change a state, supply evidence, verify work, or accept it.
+Earlier M2 resume events remain replayable without migration.
+
 Run records remain immutable. `forge run list|show` derives effective `running`, `succeeded`, or
 `cancelled` state from the journal. `forge run cancel` records a terminal cancellation event and
 never implies step completion: safe work may return to `ready`, while the workflow's stricter

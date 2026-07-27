@@ -251,6 +251,13 @@ changes permissions, transitions, gates, checks, evidence, verification, accepta
 actions. Older two-profile packs remain valid for profiles they contain. Both bundled packs are
 now `0.4.0`; shared conformance, long-gap resumption, and discovery remain later boundaries.
 
+M5 Increment 5 upgrades long-gap continuity with one canonical resumption summary derived from the
+validated effective scope, workflow position, step states, open decisions, current artifact
+revision references, non-stale evidence, and preserved legal actions. Paused `forge status` shows
+the summary before mutation; `forge resume` hash-binds the same text and referenced records into
+the resume event. It embeds no artifact content, grants no authority, and performs no unrelated
+filesystem discovery. Bounded discovery and shared conformance remain later boundaries.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -381,6 +388,7 @@ forge --help
 - [M5 Increment 2 digest-bound-template boundary](docs/milestones/m5-increment-2.md)
 - [M5 Increment 3 structural-validator boundary](docs/milestones/m5-increment-3.md)
 - [M5 Increment 4 four-profile presentation boundary](docs/milestones/m5-increment-4.md)
+- [M5 Increment 5 canonical-resumption boundary](docs/milestones/m5-increment-5.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 
