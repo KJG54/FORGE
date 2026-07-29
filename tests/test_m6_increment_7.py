@@ -1,17 +1,19 @@
 from pathlib import Path
+from uuid import UUID
 
+from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
 from forge.contracts.packs import PackTrustState
 from forge.contracts.state import InitiativeLifecycleState, StepState
-from forge.core.agent_context import load_agent_context
-from forge.core.artifacts import list_artifacts
-from forge.core.lifecycle import load_active_initiative
+from forge.core.archival import load_archive
 from forge.packs.loader import load_pack
 from forge.storage.configuration import load_configuration
-from forge.storage.journal import read_journal
+from forge.storage.objects import sha256_digest
+from forge.storage.records import load_record
 from forge.storage.repository import RepositoryLayout
 
 ROOT = Path(__file__).resolve().parents[1]
 PACK_ROOT = ROOT / "packs" / "forge-framework-change"
+M6_INITIATIVE_ID = UUID("ea57c39e-98a9-475f-bb60-bb41f7e90f7c")
 
 
 def _prerequisite_steps(step_id: str, prerequisites: dict[str, tuple[str, ...]]) -> set[str]:
@@ -53,37 +55,60 @@ def test_framework_change_pack_is_data_only_capability_free_and_complete() -> No
         assert set(step.required_inputs) <= available
 
 
-def test_repository_dogfood_state_is_healthy_bound_and_owner_accepted() -> None:
+def test_repository_dogfood_archive_is_healthy_bound_and_owner_accepted() -> None:
     layout = RepositoryLayout.at(ROOT)
     configuration = load_configuration(layout.configuration_file)
-    active = load_active_initiative(layout)
-    artifacts = list_artifacts(layout)
-    events = read_journal(layout.event_journal_file)
-    context = load_agent_context(layout)
+    archive = load_archive(layout, M6_INITIATIVE_ID)
+    active = archive.active
+    events = archive.events
+    artifacts = tuple(
+        load_record(path, ArtifactRecord)
+        for path in sorted(archive.layout.artifact_record_directory.glob("*.json"))
+    )
+    revisions = tuple(
+        load_record(path, ArtifactRevision)
+        for path in sorted(archive.layout.artifact_revision_directory.glob("*.json"))
+    )
+    current_revisions = tuple(
+        revision
+        for revision in revisions
+        if active.state.current_artifact_revisions.get(revision.artifact_id)
+        == revision.revision_number
+    )
 
     assert configuration.behavior.require_clean_git_for_close
     assert configuration.packs.local_paths == ("packs/forge-framework-change",)
     assert active.pack_manifest.id == "forge-framework-change"
     assert active.pack_trust.trust_state is PackTrustState.TRUSTED_DATA
     assert active.workflow.id == "framework-change"
-    assert active.state.lifecycle_state is InitiativeLifecycleState.ACTIVE
-    assert active.state.step_states["scope"] is StepState.COMPLETED
-    assert active.state.step_states["implement"] in {
-        StepState.IN_PROGRESS,
-        StepState.AWAITING_VERIFICATION,
-        StepState.AWAITING_ACCEPTANCE,
-        StepState.COMPLETED,
-    }
+    assert active.state.lifecycle_state is InitiativeLifecycleState.CLOSED
+    assert set(active.state.step_states.values()) == {StepState.COMPLETED}
+    assert archive.closure is not None
+    assert archive.abandonment is None
+    assert not archive.manifest.preliminary
 
     assert {
         "change-scope",
         "release-requirements",
-    } <= {item.artifact.role for item in artifacts}
+        "verification-report",
+        "friction-report",
+        "residual-risk-report",
+        "release-readiness-record",
+        "lessons",
+    } <= {item.role for item in artifacts}
     assert {
         "release/dogfood/change-scope.md",
         "release/dogfood/release-requirements.md",
-    } <= {item.current_revision.path for item in artifacts}
-    assert all(item.working_copy_matches for item in artifacts)
+        "release/dogfood/verification-report.md",
+        "release/dogfood/friction-report.md",
+        "release/dogfood/residual-risk-report.md",
+        "docs/milestones/m6-report.md",
+        "release/dogfood/lessons.md",
+    } <= {item.path for item in current_revisions}
+    assert all(
+        sha256_digest((ROOT / revision.path).read_bytes()) == revision.content_digest
+        for revision in current_revisions
+    )
 
     assert [event.sequence for event in events] == list(range(1, len(events) + 1))
     assert events[0].previous_event_hash is None
@@ -93,7 +118,7 @@ def test_repository_dogfood_state_is_healthy_bound_and_owner_accepted() -> None:
         for index, event in enumerate(events[1:], start=1)
     )
     assert events[-1].event_hash == active.state.journal_head_hash
-    assert len(tuple(layout.acceptance_directory.glob("*.json"))) >= 1
-
-    assert context.active_step.id == active.state.current_step_id
-    assert context.active_step.state == active.state.step_states[context.active_step.id]
+    assert events[-1].event_type == "initiative-closed"
+    assert len(tuple(archive.layout.acceptance_directory.glob("*.json"))) == len(
+        active.workflow.steps
+    )

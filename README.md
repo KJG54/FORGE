@@ -10,8 +10,9 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Pre-alpha foundation:** The name, distribution name, public marks, contracts, and CLI remain
-> provisional. Milestones 1 through 5 are complete and owner-accepted. Milestone 6 release-candidate
-> hardening is in progress. This is not a public production release.
+> provisional. Milestones 1 through 6 are complete and owner-accepted. Milestone 6 produced a
+> verified release candidate; Production v1 publication remains separate M7 work. This is not a
+> public production release.
 
 ## Current capabilities
 
@@ -330,6 +331,12 @@ operational-procedure scenarios. The live framework-change workflow preserves se
 for implementation, validation, risk review, and readiness. See the
 [release-candidate closeout guide](docs/release-candidate-closeout.md).
 
+M6 is complete and owner-accepted as a release-candidate milestone. The exact candidate passed the
+complete local boundary, all 38 pull-request jobs, and all 38 merged-`main` jobs. Classified
+residual risks remain controlled, while tagging, signing, package upload, public support
+commitments, and M7 implementation remain separately gated. See the
+[M6 evidence and release-readiness report](docs/milestones/m6-report.md).
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -475,6 +482,7 @@ forge --help
 - [M6 Increment 6 maintained-performance boundary](docs/milestones/m6-increment-6.md)
 - [M6 Increment 7 governed self-dogfood boundary](docs/milestones/m6-increment-7.md)
 - [M6 Increment 8 release-candidate closeout](docs/milestones/m6-increment-8.md)
+- [M6 evidence and release-readiness report](docs/milestones/m6-report.md)
 - [Documentation index](docs/README.md)
 - [Software and research example repositories](examples/README.md)
 - [Contributing](CONTRIBUTING.md)
