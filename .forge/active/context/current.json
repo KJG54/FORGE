@@ -1,0 +1,51 @@
+{
+  "active_step": {
+    "context_selection_rules": [
+      "initiative-objective"
+    ],
+    "id": "scope",
+    "instructions": "Register the exact scope and release requirements before implementation authority is accepted.",
+    "purpose": "Define the framework change, constraints, compatibility impact, and acceptance criteria.",
+    "required_inputs": [],
+    "state": "awaiting_acceptance"
+  },
+  "approved_scope": "M6 Increment 7 dogfooding and Increment 8 validation, friction, residual-risk, and closeout evidence only; no M7 publication",
+  "expected_evidence": [
+    "Worker claim requirement: outputs-produced",
+    "Check requirement after import: scope-reviewed",
+    "Workflow evidence class after import: check-evidence",
+    "Owner-only acceptance requirement: owner-acceptance",
+    "Returned files require staged import before registration",
+    "Worker claims never constitute checks, evidence, or owner acceptance"
+  ],
+  "known_blockers": [
+    "Active step is awaiting configured-owner acceptance"
+  ],
+  "objective": "Prepare the FORGE M6 release candidate through governed framework-change review",
+  "permitted_actions": [],
+  "prohibited_actions": [
+    "Record or imply owner decisions, acceptance, checks, or evidence",
+    "Modify FORGE-managed paths or undeclared project files",
+    "Read unrelated repository, archive, ignored, environment, or local-secret content",
+    "Execute external or irreversible side effects without separate authorization"
+  ],
+  "relevant_constraints": [
+    "Context selection rule: initiative-objective"
+  ],
+  "relevant_decisions": [],
+  "required_outputs": [
+    "change-scope",
+    "release-requirements"
+  ],
+  "return_contract": {
+    "contract": "agent-result",
+    "manifest_filename": "result.json",
+    "requirements": [
+      "Bind source_run_or_handoff_id to the identifier supplied by FORGE",
+      "Declare every returned file, worker claim, limitation, and tool metadata item",
+      "Treat every returned file and claim as untrusted until staged import succeeds"
+    ],
+    "schema_filename": "agent-result.schema.json"
+  },
+  "schema_version": "1.0"
+}

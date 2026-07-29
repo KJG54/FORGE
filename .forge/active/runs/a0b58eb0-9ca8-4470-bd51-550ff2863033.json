@@ -1,0 +1,35 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "adapter_reference": null,
+  "affected_digests": [],
+  "affected_record_ids": [
+    "a0b58eb0-9ca8-4470-bd51-550ff2863033"
+  ],
+  "authorization_basis": "manual participant began an eligible workflow step",
+  "cancellation_details": null,
+  "capability_approval_ids": [],
+  "capability_ids": [],
+  "correlation_id": null,
+  "ended_at": null,
+  "event_sequence": 2,
+  "exit_metadata": {},
+  "id": "a0b58eb0-9ca8-4470-bd51-550ff2863033",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "input_context_digest": "sha256:ff1b8b3ba95cd0522cf26a3c661280e1c864b4a1f27a27b5a0a550f13a625af1",
+  "output_manifest_path": null,
+  "recorded_at": "2026-07-29T16:55:02.891298Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "side_effect_class": "repository_write",
+  "started_at": "2026-07-29T16:55:02.891303Z",
+  "status": "running",
+  "step_id": "scope",
+  "tool_version": null,
+  "worker": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:f882d8a5b4024530e79a477344d7cb7a016b7a2d4ee939218ac385c19f114676"
+  ],
+  "affected_record_ids": [
+    "d8239d36-29c2-42b3-80fd-715e43e23944"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "current_revision": 1,
+  "event_sequence": 3,
+  "id": "1532afbc-90dc-4a89-be78-e0744d0b99da",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "recorded_at": "2026-07-29T16:55:08.956602Z",
+  "role": "change-scope",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "M6 release-candidate dogfood scope",
+  "tool_version": "0.1.0a0"
+}

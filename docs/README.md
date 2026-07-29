@@ -65,6 +65,8 @@ Release reviewers should also run the
 [dependency, license, vulnerability, and secret review](supply-chain-security-review.md).
 The [performance budget guide](performance.md) defines the maintained release-candidate latency
 workloads and interpretation.
+The [self-dogfooding guide](dogfooding.md) explains how this repository's tracked framework-change
+initiative governs the remaining M6 release work without manufacturing owner acceptance.
 
 ## Documentation authority and maintenance
 

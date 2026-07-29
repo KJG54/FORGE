@@ -1,0 +1,31 @@
+{
+  "active_pause_event_id": null,
+  "active_run_ids": [],
+  "current_artifact_revisions": {
+    "1532afbc-90dc-4a89-be78-e0744d0b99da": 1,
+    "67a5f444-ff28-4876-b421-16353c60eeb6": 1
+  },
+  "current_step_id": "scope",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "integrity_state": "healthy",
+  "journal_head_hash": "sha256:7aba0d7372f1d701cae2b493fa52bab7736d143f6c4d0fc24cf2d0eccc51bbe5",
+  "journal_head_sequence": 9,
+  "lifecycle_state": "active",
+  "open_decision_ids": [],
+  "open_gate_ids": [],
+  "permitted_next_actions": [
+    "acceptance-record:scope"
+  ],
+  "repository_state": "initialized",
+  "schema_version": "1.0",
+  "stale_record_ids": [],
+  "step_states": {
+    "closeout": "pending",
+    "implement": "pending",
+    "review-risk": "pending",
+    "scope": "awaiting_acceptance",
+    "verify-release": "pending"
+  },
+  "workflow_id": "framework-change",
+  "workflow_version": "0.1.0"
+}

@@ -1,0 +1,36 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8557669f290628c561996a456ab9bae6315f67cb8a3437956e99dc695a11434d",
+    "sha256:f882d8a5b4024530e79a477344d7cb7a016b7a2d4ee939218ac385c19f114676"
+  ],
+  "affected_record_ids": [
+    "4ad5ae3e-b093-44de-ae25-4ef75acefeb9",
+    "d8239d36-29c2-42b3-80fd-715e43e23944"
+  ],
+  "assertion": "The bounded M6 dogfood scope and release requirements were produced and registered as exact current revisions",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "4ad5ae3e-b093-44de-ae25-4ef75acefeb9",
+    "d8239d36-29c2-42b3-80fd-715e43e23944"
+  ],
+  "correlation_id": null,
+  "event_sequence": 5,
+  "id": "8e62ecf3-5401-43e0-9bb8-e582574259b4",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "limitations": [
+    "This worker claim does not accept the scope, resolve release risk, or establish release readiness"
+  ],
+  "recorded_at": "2026-07-29T16:55:17.105941Z",
+  "run_id": "a0b58eb0-9ca8-4470-bd51-550ff2863033",
+  "schema_version": "1.0",
+  "step_id": "scope",
+  "tool_version": "0.1.0a0"
+}

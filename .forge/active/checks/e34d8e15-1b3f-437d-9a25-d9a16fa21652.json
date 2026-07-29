@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8557669f290628c561996a456ab9bae6315f67cb8a3437956e99dc695a11434d",
+    "sha256:f882d8a5b4024530e79a477344d7cb7a016b7a2d4ee939218ac385c19f114676"
+  ],
+  "affected_record_ids": [
+    "4ad5ae3e-b093-44de-ae25-4ef75acefeb9",
+    "d8239d36-29c2-42b3-80fd-715e43e23944"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "scope-reviewed",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-07-29T16:55:24.391441Z",
+  "event_sequence": 7,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "e34d8e15-1b3f-437d-9a25-d9a16fa21652",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Reviewed the two registered Markdown artifacts against the authoritative M6 roadmap, local-pack trust boundary, compatibility non-claims, owner authority, and Increment 7 stop point",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "This structural and traceability review does not accept the scope or prove later closeout evidence"
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-07-29T16:55:24.391493Z",
+  "result_digest": "sha256:5d86735da3a86108607e5148f82ff94d1595812ccbebd39f76365e7492bca4f6",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-07-29T16:55:24.391439Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "4ad5ae3e-b093-44de-ae25-4ef75acefeb9",
+    "d8239d36-29c2-42b3-80fd-715e43e23944"
+  ],
+  "tool_version": "0.1.0a0"
+}

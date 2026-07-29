@@ -1,0 +1,30 @@
+schema_version: '1.0'
+project_id: 45ffb472-511f-4d36-bbd8-1d30f3026542
+owner:
+  schema_version: '1.0'
+  id: b1861f2d-80df-45ea-a6e9-e947e798c0da
+  display_name: Krystian Garcia
+  created_at: '2026-07-29T16:54:22.273572Z'
+  local_metadata: {}
+behavior:
+  explanation_profile: mentored
+  require_clean_git_for_close: true
+imports:
+  max_files: 100
+  max_file_bytes: 10485760
+  max_total_bytes: 104857600
+  preserve_failed_staging: true
+artifacts:
+  digest_algorithm: sha256
+  max_preserved_object_bytes: 104857600
+packs:
+  local_paths:
+  - packs/forge-framework-change
+agents:
+  preferred_adapter: null
+capabilities:
+  local_validators: []
+security:
+  secret_path_patterns:
+  - .env
+  - .forge/local/secrets/**
