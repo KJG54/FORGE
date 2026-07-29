@@ -1,0 +1,39 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8557669f290628c561996a456ab9bae6315f67cb8a3437956e99dc695a11434d"
+  ],
+  "affected_record_ids": [
+    "67a5f444-ff28-4876-b421-16353c60eeb6"
+  ],
+  "artifact_id": "67a5f444-ff28-4876-b421-16353c60eeb6",
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "byte_size": 2271,
+  "content_digest": "sha256:8557669f290628c561996a456ab9bae6315f67cb8a3437956e99dc695a11434d",
+  "correlation_id": null,
+  "event_sequence": 4,
+  "id": "4ad5ae3e-b093-44de-ae25-4ef75acefeb9",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "media_type": "text/markdown",
+  "path": "release/dogfood/release-requirements.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/85/57669f290628c561996a456ab9bae6315f67cb8a3437956e99dc695a11434d",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "1b1c0607-e834-4020-9846-5b83475f6502",
+    "metadata": {},
+    "recorded_at": "2026-07-29T16:55:10.286207Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "release/dogfood/release-requirements.md",
+    "source_type": "local-file"
+  },
+  "recorded_at": "2026-07-29T16:55:10.286207Z",
+  "registration_event_id": "754a7743-f37e-44fc-8e80-c0c2f0e01439",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "0.1.0a0"
+}

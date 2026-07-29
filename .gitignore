@@ -14,3 +14,8 @@ build/
 dist/
 .coverage
 htmlcov/
+# FORGE hybrid policy: track governed state, ignore local-only data
+!/forge.yaml
+!/.forge/
+!/.forge/**
+/.forge/local/

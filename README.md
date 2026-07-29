@@ -318,6 +318,12 @@ paths plus isolated replay against temporary workloads containing five validated
 open decisions. Local timing proves only the observed environment; clean-wheel cross-platform
 repetition remains closeout evidence. See the [performance budget guide](docs/performance.md).
 
+M6 Increment 7 initializes this repository as a real FORGE project and governs the remaining
+release-candidate work through a tracked, capability-free local framework-change pack. Exact scope
+and release-requirement artifacts are claim-, check-, evidence-, and digest-bound, while the first
+step remains at configured-owner acceptance instead of allowing the worker to approve its own
+release scope. See the [self-dogfooding guide](docs/dogfooding.md).
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -461,6 +467,7 @@ forge --help
 - [M6 Increment 4 complete-documentation boundary](docs/milestones/m6-increment-4.md)
 - [M6 Increment 5 supply-chain and secret-review boundary](docs/milestones/m6-increment-5.md)
 - [M6 Increment 6 maintained-performance boundary](docs/milestones/m6-increment-6.md)
+- [M6 Increment 7 governed self-dogfood boundary](docs/milestones/m6-increment-7.md)
 - [Documentation index](docs/README.md)
 - [Software and research example repositories](examples/README.md)
 - [Contributing](CONTRIBUTING.md)

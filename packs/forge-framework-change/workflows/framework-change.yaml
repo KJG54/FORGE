@@ -1,0 +1,127 @@
+schema_version: "1.0"
+id: framework-change
+version: 0.1.0
+pack_id: forge-framework-change
+name: FORGE Framework Change
+description: Govern a bounded change to FORGE through release review and owner acceptance.
+steps:
+  - id: scope
+    purpose: Define the framework change, constraints, compatibility impact, and acceptance criteria.
+    instructions: Register the exact scope and release requirements before implementation authority is accepted.
+    prerequisites: []
+    required_inputs: []
+    required_outputs: [change-scope, release-requirements]
+    claim_requirements: [outputs-produced]
+    check_requirements: [scope-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [initiative-objective]
+  - id: implement
+    purpose: Produce the bounded framework change.
+    instructions: Change only what the accepted scope authorizes and preserve governed compatibility boundaries.
+    prerequisites: [scope]
+    required_inputs: [change-scope, release-requirements]
+    required_outputs: [framework-changes]
+    claim_requirements: [outputs-produced]
+    check_requirements: [implementation-validated]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: block_for_owner_review
+    context_selection_rules: [accepted-scope, release-requirements]
+  - id: verify-release
+    purpose: Validate the exact candidate change against its release requirements.
+    instructions: Preserve check and evidence results without treating process success as owner acceptance.
+    prerequisites: [implement]
+    required_inputs: [release-requirements, framework-changes]
+    required_outputs: [verification-report]
+    claim_requirements: [outputs-produced]
+    check_requirements: [release-checks-passed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [release-requirements, framework-changes]
+  - id: review-risk
+    purpose: Review observed friction, limitations, and residual release risk.
+    instructions: Classify every finding and leave release-blocking decisions to the owner.
+    prerequisites: [verify-release]
+    required_inputs: [verification-report]
+    required_outputs: [friction-report, residual-risk-report]
+    claim_requirements: [outputs-produced]
+    check_requirements: [risk-review-complete]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [verification-report]
+  - id: closeout
+    purpose: Record release-candidate readiness and lessons without publishing Production v1.
+    instructions: Bind the readiness record to accepted verification and risk-review outputs.
+    prerequisites: [review-risk]
+    required_inputs: [friction-report, residual-risk-report]
+    required_outputs: [release-readiness-record, lessons]
+    claim_requirements: [outputs-produced]
+    check_requirements: [closeout-ready]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [accepted-risk-review]
+transitions:
+  - id: begin
+    source_state: ready
+    destination_state: in_progress
+    conditions: []
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: submit
+    source_state: in_progress
+    destination_state: awaiting_verification
+    conditions: [claim-recorded]
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: rework
+    source_state: invalidated
+    destination_state: in_progress
+    conditions: []
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: verify
+    source_state: awaiting_verification
+    destination_state: awaiting_acceptance
+    conditions: [required-checks-passed, required-evidence-registered]
+    authority_requirement: forge-cli
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: accept
+    source_state: awaiting_acceptance
+    destination_state: completed
+    conditions: [owner-acceptance-recorded]
+    authority_requirement: owner
+    invalidation_effects: []
+    event_type: step-transitioned
+required_gates: []
+required_artifact_classes:
+  - change-scope
+  - release-requirements
+  - framework-changes
+  - verification-report
+  - friction-report
+  - residual-risk-report
+  - release-readiness-record
+  - lessons
+required_evidence_classes:
+  - check-evidence
+explanation_content:
+  minimal: Follow the declared framework-change steps; checks, evidence, and owner acceptance remain separate.
+  standard: Scope, implement, verify, review risk, and close out the framework change without merging worker claims with owner acceptance.
+  guided: FORGE identifies each required release artifact, check, evidence packet, blocker, and owner decision while preserving the same governance.
+  mentored: FORGE explains why framework scope, compatibility, verification, friction, residual risk, and release readiness remain separately reviewable facts under owner authority.
+compatibility_constraints:
+  - forge-contracts-1

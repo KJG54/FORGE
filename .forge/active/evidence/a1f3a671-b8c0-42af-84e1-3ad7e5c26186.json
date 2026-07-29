@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:951673add5c9d8ada6d49b8d89784ed80cbed47b4219741a2044cfe1ff80a2c2"
+  ],
+  "affected_record_ids": [
+    "d8239d36-29c2-42b3-80fd-715e43e23944",
+    "4ad5ae3e-b093-44de-ae25-4ef75acefeb9",
+    "e34d8e15-1b3f-437d-9a25-d9a16fa21652",
+    "8e62ecf3-5401-43e0-9bb8-e582574259b4"
+  ],
+  "artifact_revision_ids": [
+    "d8239d36-29c2-42b3-80fd-715e43e23944",
+    "4ad5ae3e-b093-44de-ae25-4ef75acefeb9"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "e34d8e15-1b3f-437d-9a25-d9a16fa21652"
+  ],
+  "claim_ids": [
+    "8e62ecf3-5401-43e0-9bb8-e582574259b4"
+  ],
+  "correlation_id": null,
+  "event_sequence": 8,
+  "id": "a1f3a671-b8c0-42af-84e1-3ad7e5c26186",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "limitations": [
+    "This packet supports only scope review and does not establish M6 release readiness"
+  ],
+  "packet_digest": "sha256:951673add5c9d8ada6d49b8d89784ed80cbed47b4219741a2044cfe1ff80a2c2",
+  "purpose": "Bind Increment 7 scope review to the exact dogfood scope, release requirements, worker claim, and structural check",
+  "recorded_at": "2026-07-29T16:55:36.114279Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "0.1.0a0"
+}

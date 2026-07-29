@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8557669f290628c561996a456ab9bae6315f67cb8a3437956e99dc695a11434d"
+  ],
+  "affected_record_ids": [
+    "4ad5ae3e-b093-44de-ae25-4ef75acefeb9"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "current_revision": 1,
+  "event_sequence": 4,
+  "id": "67a5f444-ff28-4876-b421-16353c60eeb6",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "recorded_at": "2026-07-29T16:55:10.286207Z",
+  "role": "release-requirements",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "M6 release requirements",
+  "tool_version": "0.1.0a0"
+}
