@@ -1,0 +1,54 @@
+{
+  "acceptance_event_id": "fa0f1086-77f8-4c7f-8ebb-74680104e52a",
+  "accepted_artifact_revision_ids": [
+    "237787a9-c59d-42d9-b160-6878a59a8df0",
+    "8054ea3a-4731-4a84-baa8-c4471a63dfa3"
+  ],
+  "accepted_check_result_ids": [
+    "5ebb3638-592f-416a-8192-6a7718310db6"
+  ],
+  "accepted_evidence_ids": [
+    "b18553d9-487e-4242-9d82-3a6c418e868e"
+  ],
+  "accepted_scope": "M7 Increments 1-8 under the locked forge-production-release 0.1.0 / production-v1-release 0.1.0 workflow, using the exact current production-v1-scope and naming-channel-contract revisions",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:66872c9602865c05b31e7f7a112f771fd105fa4aa8e86aa416b3cbe3bd3423a6",
+    "sha256:779590261814c052342013d3a18b2b4fc453f02a2f3ca03e540387a7efe17a3b",
+    "sha256:1631dd501d6805d94f57fee7549a2640358315e01aba3a6407a03fac5ef44e9b",
+    "sha256:a533372b4e44e88cb6ee0faad69cfc778985bfe5af80cf52240cea2769e61143"
+  ],
+  "affected_record_ids": [
+    "237787a9-c59d-42d9-b160-6878a59a8df0",
+    "8054ea3a-4731-4a84-baa8-c4471a63dfa3",
+    "5ebb3638-592f-416a-8192-6a7718310db6",
+    "b18553d9-487e-4242-9d82-3a6c418e868e"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 10,
+  "id": "3c058e2a-2676-42e7-8239-1f5818c8eedf",
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "known_limitations": [
+    "The FORGE Governance name review is not trademark or legal clearance",
+    "Package-index availability checks are point-in-time observations and do not reserve the forge-governance name",
+    "Private GitHub vulnerability reporting is not yet enabled or verified",
+    "Complete release-candidate testing is intentionally deferred to M7 Increment 6 closeout"
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "recorded_at": "2026-07-29T21:48:17.354274Z",
+  "residual_risks": [
+    "The public name or distribution name could require revision before publication if legal review, availability, or platform constraints change",
+    "The forge CLI may collide with unrelated commands in some user environments"
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "0.1.0a0"
+}

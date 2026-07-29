@@ -1,0 +1,37 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:66872c9602865c05b31e7f7a112f771fd105fa4aa8e86aa416b3cbe3bd3423a6",
+    "sha256:779590261814c052342013d3a18b2b4fc453f02a2f3ca03e540387a7efe17a3b"
+  ],
+  "affected_record_ids": [
+    "237787a9-c59d-42d9-b160-6878a59a8df0",
+    "8054ea3a-4731-4a84-baa8-c4471a63dfa3"
+  ],
+  "assertion": "The approved M7 scope and naming/channel contract are recorded as the declared scope outputs",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "237787a9-c59d-42d9-b160-6878a59a8df0",
+    "8054ea3a-4731-4a84-baa8-c4471a63dfa3"
+  ],
+  "correlation_id": null,
+  "event_sequence": 5,
+  "id": "73d206b7-a168-4a8c-b922-012d6436a71b",
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "limitations": [
+    "The name review is not trademark or legal clearance",
+    "This claim grants no external rehearsal, tag, credential, or publication authority"
+  ],
+  "recorded_at": "2026-07-29T21:41:19.235935Z",
+  "run_id": "57184002-f858-4153-8716-21f878417f90",
+  "schema_version": "1.0",
+  "step_id": "scope",
+  "tool_version": "0.1.0a0"
+}

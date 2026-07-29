@@ -1,0 +1,15 @@
+{
+  "command": "create",
+  "completed_at": "2026-07-29T21:40:48.815498Z",
+  "events": [
+    {
+      "event_hash": "sha256:e223099a58af9d5d06dbc4ccfd74441327e7f82336cc4c479a93060a940cb433",
+      "event_id": "9bd8b3b7-d47a-40e1-b14c-4276d4b7163f",
+      "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+      "sequence": 1
+    }
+  ],
+  "key": "m7-increment-1-create-successor",
+  "request_digest": "sha256:9ed47ef83e58237901dee321462e9b8c0695fac157c0d01878a84e1f120679c3",
+  "schema_version": "1.0"
+}

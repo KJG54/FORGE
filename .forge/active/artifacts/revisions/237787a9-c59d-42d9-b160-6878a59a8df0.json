@@ -1,0 +1,39 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:66872c9602865c05b31e7f7a112f771fd105fa4aa8e86aa416b3cbe3bd3423a6"
+  ],
+  "affected_record_ids": [
+    "b157e516-57a6-475c-ab48-70197979aabd"
+  ],
+  "artifact_id": "b157e516-57a6-475c-ab48-70197979aabd",
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "byte_size": 3153,
+  "content_digest": "sha256:66872c9602865c05b31e7f7a112f771fd105fa4aa8e86aa416b3cbe3bd3423a6",
+  "correlation_id": null,
+  "event_sequence": 4,
+  "id": "237787a9-c59d-42d9-b160-6878a59a8df0",
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "media_type": "text/markdown",
+  "path": "release/production-v1/naming-and-channel-contract.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/66/872c9602865c05b31e7f7a112f771fd105fa4aa8e86aa416b3cbe3bd3423a6",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "7d87de45-ec59-4902-954d-86ea6a0e9fe3",
+    "metadata": {},
+    "recorded_at": "2026-07-29T21:41:07.051042Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "release/production-v1/naming-and-channel-contract.md",
+    "source_type": "local-file"
+  },
+  "recorded_at": "2026-07-29T21:41:07.051042Z",
+  "registration_event_id": "6adfad00-3aff-415b-b280-90b69c3b5e57",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "0.1.0a0"
+}

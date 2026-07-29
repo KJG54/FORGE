@@ -1,0 +1,183 @@
+schema_version: "1.0"
+id: production-v1-release
+version: 0.1.0
+pack_id: forge-production-release
+name: FORGE Production-v1 Release
+description: Govern one exact Production-v1 candidate through owner-gated publication and closeout.
+steps:
+  - id: scope
+    purpose: Lock the exact M7 scope, public identity, channels, constraints, and acceptance criteria.
+    instructions: Register the owner-reviewed Production-v1 scope and naming/channel contract without treating data-pack trust as release authority.
+    prerequisites: []
+    required_inputs: []
+    required_outputs: [production-v1-scope, naming-channel-contract]
+    claim_requirements: [outputs-produced]
+    check_requirements: [scope-and-channel-contract-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [initiative-objective, predecessor-lineage, owner-reviewed-release-contract]
+  - id: prepare
+    purpose: Prepare the complete exact candidate inputs without publishing or tagging.
+    instructions: Produce the versioned source, distribution artifacts, metadata, support material, release notes, compatibility statement, and recovery procedures required for candidate verification.
+    prerequisites: [scope]
+    required_inputs: [production-v1-scope, naming-channel-contract]
+    required_outputs: [candidate-source, candidate-sdist, candidate-wheel, release-manifest, release-notes, compatibility-statement, support-security-record, publication-plan, rollback-yank-plan]
+    claim_requirements: [outputs-produced]
+    check_requirements: [candidate-inputs-prepared]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: block_for_owner_review
+    context_selection_rules: [accepted-scope, naming-channel-contract, immutable-predecessor]
+  - id: verify-candidate
+    purpose: Verify one exact Production-v1 candidate and disclose every material limitation and residual risk.
+    instructions: Bind the complete closeout matrix and supply-chain results to the exact commit and artifact digests; a green result is not publication authority.
+    prerequisites: [prepare]
+    required_inputs: [candidate-source, candidate-sdist, candidate-wheel, release-manifest, compatibility-statement, support-security-record, publication-plan, rollback-yank-plan]
+    required_outputs: [candidate-verification-report, supply-chain-report, residual-risk-register, prepublication-evidence-record]
+    claim_requirements: [outputs-produced]
+    check_requirements: [exact-candidate-matrix-passed, supply-chain-evidence-complete, residual-risks-classified]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: block_for_owner_review
+    context_selection_rules: [exact-candidate-digests, complete-closeout-evidence, known-limitations]
+  - id: approve-publication
+    purpose: Prepare an exact publication decision for the configured owner.
+    instructions: Bind the proposed tag, commit, artifact hashes, targets, release statements, limitations, rollback/yank procedure, and residual risks for a distinct owner decision.
+    prerequisites: [verify-candidate]
+    required_inputs: [candidate-sdist, candidate-wheel, release-manifest, release-notes, candidate-verification-report, supply-chain-report, residual-risk-register, publication-plan, rollback-yank-plan]
+    required_outputs: [publication-authorization-record]
+    claim_requirements: [outputs-produced]
+    check_requirements: [publication-basis-exact-and-current]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: block_for_owner_review
+    context_selection_rules: [exact-publication-basis, owner-only-publication-authority]
+  - id: publish
+    purpose: Publish only the exact candidate authorized by the owner.
+    instructions: Create the immutable tag and publish the approved unchanged artifacts to only the approved targets; stop on any mismatch or unapproved external effect.
+    prerequisites: [approve-publication]
+    required_inputs: [candidate-sdist, candidate-wheel, release-manifest, release-notes, publication-authorization-record, publication-plan, rollback-yank-plan]
+    required_outputs: [publication-results, public-release-record]
+    claim_requirements: [outputs-produced]
+    check_requirements: [approved-target-results-recorded, published-digests-match]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: block_for_owner_review
+    context_selection_rules: [accepted-publication-authorization, immutable-artifact-digests, external-result-identifiers]
+  - id: verify-publication
+    purpose: Verify the public tag, release, index artifacts, metadata, attestations, documentation, and fresh-user behavior.
+    instructions: Test the public package rather than local source or artifacts and preserve discrepancies without silently replacing the release.
+    prerequisites: [publish]
+    required_inputs: [publication-results, public-release-record, release-manifest, compatibility-statement, supply-chain-report]
+    required_outputs: [public-verification-report, publication-discrepancy-record]
+    claim_requirements: [outputs-produced]
+    check_requirements: [public-artifacts-verified, fresh-install-behavior-verified, public-contracts-consistent]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: block_for_owner_review
+    context_selection_rules: [public-channel-results, public-artifact-digests, declared-support-matrix]
+  - id: retrospective
+    purpose: Record release outcomes, corrections, limitations, residual risks, and post-v1 priorities.
+    instructions: Separate observed release lessons from the owner's prioritization decision and do not begin post-v1 feature work.
+    prerequisites: [verify-publication]
+    required_inputs: [public-verification-report, publication-discrepancy-record, residual-risk-register]
+    required_outputs: [production-v1-retrospective, final-residual-risk-record, post-v1-prioritization-record]
+    claim_requirements: [outputs-produced]
+    check_requirements: [retrospective-and-priorities-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [public-verification-evidence, observed-friction, owner-prioritization-boundary]
+  - id: closeout
+    purpose: Record final M7 completion and archive readiness without rewriting release history.
+    instructions: Bind closeout to every accepted release step, public verification, retrospective, residual risk, and prioritization decision.
+    prerequisites: [retrospective]
+    required_inputs: [public-verification-report, production-v1-retrospective, final-residual-risk-record, post-v1-prioritization-record]
+    required_outputs: [production-v1-closeout-record, production-v1-lessons]
+    claim_requirements: [outputs-produced]
+    check_requirements: [m7-closeout-ready]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [accepted-public-release, accepted-retrospective, complete-m7-evidence]
+transitions:
+  - id: begin
+    source_state: ready
+    destination_state: in_progress
+    conditions: []
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: submit
+    source_state: in_progress
+    destination_state: awaiting_verification
+    conditions: [claim-recorded]
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: rework
+    source_state: invalidated
+    destination_state: in_progress
+    conditions: []
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: verify
+    source_state: awaiting_verification
+    destination_state: awaiting_acceptance
+    conditions: [required-checks-passed, required-evidence-registered]
+    authority_requirement: forge-cli
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: accept
+    source_state: awaiting_acceptance
+    destination_state: completed
+    conditions: [owner-acceptance-recorded]
+    authority_requirement: owner
+    invalidation_effects: []
+    event_type: step-transitioned
+required_gates: []
+required_artifact_classes:
+  - production-v1-scope
+  - naming-channel-contract
+  - candidate-source
+  - candidate-sdist
+  - candidate-wheel
+  - release-manifest
+  - release-notes
+  - compatibility-statement
+  - support-security-record
+  - publication-plan
+  - rollback-yank-plan
+  - candidate-verification-report
+  - supply-chain-report
+  - residual-risk-register
+  - prepublication-evidence-record
+  - publication-authorization-record
+  - publication-results
+  - public-release-record
+  - public-verification-report
+  - publication-discrepancy-record
+  - production-v1-retrospective
+  - final-residual-risk-record
+  - post-v1-prioritization-record
+  - production-v1-closeout-record
+  - production-v1-lessons
+required_evidence_classes:
+  - release-evidence
+explanation_content:
+  minimal: Follow the locked release steps; no check, evidence, or worker action grants owner or publication authority.
+  standard: Scope, prepare, verify, authorize, publish, verify publicly, review, and close one exact release under separate owner acceptance.
+  guided: FORGE identifies the required artifacts, checks, evidence, limitations, exact-artifact bindings, external effects, and owner decisions at each Production-v1 step.
+  mentored: FORGE explains why identity, preparation, candidate verification, publication authorization, external results, public verification, retrospective, and closeout remain separately reviewable facts under owner authority.
+compatibility_constraints:
+  - forge-contracts-1
