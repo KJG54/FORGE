@@ -1,0 +1,44 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:2aeb33f6099fc7ba9e169544d27d637690029658bf8c56606a5992bd30c68f12"
+  ],
+  "affected_record_ids": [
+    "f8819d16-293a-447e-b383-905047755a4c",
+    "9d4fd366-7e71-4d37-8945-d8db0737be4a",
+    "08301ae8-63ee-4724-9053-b7cb0c17a097",
+    "cbd01f6d-dfb0-450b-9f75-51e691117e03"
+  ],
+  "artifact_revision_ids": [
+    "f8819d16-293a-447e-b383-905047755a4c",
+    "9d4fd366-7e71-4d37-8945-d8db0737be4a"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "08301ae8-63ee-4724-9053-b7cb0c17a097"
+  ],
+  "claim_ids": [
+    "cbd01f6d-dfb0-450b-9f75-51e691117e03"
+  ],
+  "correlation_id": null,
+  "event_sequence": 36,
+  "id": "687770f4-df47-4d1a-92c2-d60314fe2bf0",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "limitations": [
+    "Point-in-time classification cannot predict future dependency, runner, or service behavior.",
+    "Acceptance resolves M6 risk review only and grants no M7, tagging, signing, upload, or publication authority."
+  ],
+  "packet_digest": "sha256:2aeb33f6099fc7ba9e169544d27d637690029658bf8c56606a5992bd30c68f12",
+  "purpose": "Bind the exact M6 friction and residual-risk reports, structured risk-review check, and worker claim for owner disposition.",
+  "recorded_at": "2026-07-29T19:31:14.919413Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "0.1.0a0"
+}

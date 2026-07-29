@@ -1,0 +1,15 @@
+{
+  "command": "check_record",
+  "completed_at": "2026-07-29T19:20:29.940039Z",
+  "events": [
+    {
+      "event_hash": "sha256:a8097cf24821174add265e86be023ef2511d75877f6a5d92cfaae5b878493ae5",
+      "event_id": "fc7947db-4fc9-4dc2-a347-6574e6046636",
+      "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+      "sequence": 25
+    }
+  ],
+  "key": "7b065fae-0b2f-4025-a131-1bcc2344ce7e",
+  "request_digest": "sha256:f898e3ef1129931216d8c33203ed17ae51f0d523e2601500e7b65b09ebb662a7",
+  "schema_version": "1.0"
+}

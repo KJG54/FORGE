@@ -1,33 +1,34 @@
 {
   "active_pause_event_id": null,
-  "active_run_ids": [
-    "3420eb84-65f6-44f8-bed1-44c8d20a911e"
-  ],
+  "active_run_ids": [],
   "current_artifact_revisions": {
+    "0459bfd4-5753-403d-ba35-4d1e487b4f85": 1,
     "1532afbc-90dc-4a89-be78-e0744d0b99da": 1,
+    "169a4014-66ee-42e3-977d-b10cd4d985cb": 1,
+    "64ec6da2-4924-4010-a727-7ad539530171": 1,
+    "654c3f8f-c4ae-48e5-934f-86155d373005": 1,
     "656ce803-6242-472e-b307-22a6a70bc239": 1,
-    "67a5f444-ff28-4876-b421-16353c60eeb6": 1
+    "67a5f444-ff28-4876-b421-16353c60eeb6": 1,
+    "871b0138-cd00-4a95-9977-6a59ffddc384": 1
   },
-  "current_step_id": "verify-release",
+  "current_step_id": null,
   "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
   "integrity_state": "healthy",
-  "journal_head_hash": "sha256:2f53a96d907271f484f298ef1563ab09d91745867e4979d48863ce1af7238c47",
-  "journal_head_sequence": 21,
+  "journal_head_hash": "sha256:38e770078fd76b80d075aad9fd8ad168a13da10a2dc9a8cb7ce71fa01b7549c4",
+  "journal_head_sequence": 49,
   "lifecycle_state": "active",
   "open_decision_ids": [],
   "open_gate_ids": [],
-  "permitted_next_actions": [
-    "complete:verify-release"
-  ],
+  "permitted_next_actions": [],
   "repository_state": "initialized",
   "schema_version": "1.0",
   "stale_record_ids": [],
   "step_states": {
-    "closeout": "pending",
+    "closeout": "completed",
     "implement": "completed",
-    "review-risk": "pending",
+    "review-risk": "completed",
     "scope": "completed",
-    "verify-release": "in_progress"
+    "verify-release": "completed"
   },
   "workflow_id": "framework-change",
   "workflow_version": "0.1.0"

@@ -6,16 +6,16 @@ Prepare the FORGE M6 release candidate through governed framework-change review
 
 ## Active step
 
-- ID: `verify-release`
+- ID: `closeout`
 - State: `in_progress`
-- Purpose: Validate the exact candidate change against its release requirements.
-- Instructions: Preserve check and evidence results without treating process success as owner acceptance.
-- Context selection rules: release-requirements, framework-changes
+- Purpose: Record release-candidate readiness and lessons without publishing Production v1.
+- Instructions: Bind the readiness record to accepted verification and risk-review outputs.
+- Context selection rules: accepted-risk-review
 
 ### Selected required inputs
 
-- `release-requirements`: `release/dogfood/release-requirements.md` (sha256:8557669f290628c561996a456ab9bae6315f67cb8a3437956e99dc695a11434d, text/markdown)
-- `framework-changes`: `release/dogfood/framework-changes.md` (sha256:69e206d415340fad0a5a1c89ed00fcc8b27aaac93e9290c6e9f61996f117c0be, text/markdown)
+- `friction-report`: `release/dogfood/friction-report.md` (sha256:8c2f7d83a1e98df23ecb5601e4fdf7fdf93367909791a9752714b31480c4cb69, text/markdown)
+- `residual-risk-report`: `release/dogfood/residual-risk-report.md` (sha256:da0cbe066fb4249821b9be09bf8dfa563f521002553f58f7751fdb0acaddf54a, text/markdown)
 
 ## Approved scope
 
@@ -23,8 +23,7 @@ M6 Increment 7 dogfooding and Increment 8 validation, friction, residual-risk, a
 
 ## Relevant constraints
 
-- Context selection rule: release-requirements
-- Context selection rule: framework-changes
+- Context selection rule: accepted-risk-review
 
 ## Relevant decisions
 
@@ -45,12 +44,13 @@ M6 Increment 7 dogfooding and Increment 8 validation, friction, residual-risk, a
 
 ## Required outputs
 
-- verification-report
+- release-readiness-record
+- lessons
 
 ## Expected evidence
 
 - Worker claim requirement: outputs-produced
-- Check requirement after import: release-checks-passed
+- Check requirement after import: closeout-ready
 - Workflow evidence class after import: check-evidence
 - Owner-only acceptance requirement: owner-acceptance
 - Returned files require staged import before registration

@@ -1,0 +1,53 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:697278804ea38cb206128a389b753ec451e5bfcd1f26107f5b08bee6b8c826ac"
+  ],
+  "affected_record_ids": [
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "release-checks-passed",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-07-29T19:20:29.886185Z",
+  "event_sequence": 25,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "ab832d24-9f37-4b84-af31-fb472d301c8d",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Local release validation: 348 passed and 7 Windows symlink-privilege skips; PR run 30482342649: 38/38 passed at 2f95708d7515560cf2186fcfbd6f3f789badeb75; merged-main run 30483157200: 38/38 passed at 3f36aaa44da02525f962c021ce3c5a6fcec27b03; exact wheel sha256:800443d7c82523d0a11b3de0cb8834f5c1406ea8741f9ec6eb3f095bff4bca9f.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "A point-in-time pass cannot guarantee future dependency or hosted-runner behavior; GitHub Actions Node.js 20 deprecation annotations remain."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-07-29T19:20:29.886235Z",
+  "result_digest": "sha256:d6ab47f67ab64fb717214278ba6a03a320fea1be515bd5edf05be36a8410664d",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-07-29T19:20:29.886183Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4"
+  ],
+  "tool_version": "0.1.0a0"
+}

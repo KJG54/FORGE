@@ -1,0 +1,36 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:35e4eed31ee2f5cb3f78b7f759b05d98baf91c0f232a3ad9cb1e25b74b1144ae",
+    "sha256:32fd17878e6fcd80fcf6decf7641faa6b1fffa73e507b68931084518a01f8ba3"
+  ],
+  "affected_record_ids": [
+    "117b934e-2d18-4455-84f4-b53f0db3cb2f",
+    "a527ab21-d131-4975-b9a2-7ea82a62a338"
+  ],
+  "assertion": "The M6 evidence and release-readiness report maps all eight increments, complete local and remote validation, every roadmap exit criterion, accepted friction, and classified residual risk; the lessons report records actionable improvements while preserving M7 and publication as separate authority.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "117b934e-2d18-4455-84f4-b53f0db3cb2f",
+    "a527ab21-d131-4975-b9a2-7ea82a62a338"
+  ],
+  "correlation_id": null,
+  "event_sequence": 43,
+  "id": "237bf552-6ab7-4c66-9ae9-8e6ec2a60ea7",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "limitations": [
+    "M6 readiness is limited to the verified candidate bytes and does not create a Production v1 tag, signature, package upload, support commitment, or M7 authority."
+  ],
+  "recorded_at": "2026-07-29T19:33:04.287234Z",
+  "run_id": "90b1c7e8-a2b3-41ea-81d0-ac712a765663",
+  "schema_version": "1.0",
+  "step_id": "closeout",
+  "tool_version": "0.1.0a0"
+}

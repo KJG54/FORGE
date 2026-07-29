@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:da0cbe066fb4249821b9be09bf8dfa563f521002553f58f7751fdb0acaddf54a",
+    "sha256:8c2f7d83a1e98df23ecb5601e4fdf7fdf93367909791a9752714b31480c4cb69"
+  ],
+  "affected_record_ids": [
+    "9d4fd366-7e71-4d37-8945-d8db0737be4a",
+    "f8819d16-293a-447e-b383-905047755a4c"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "risk-review-complete",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-07-29T19:31:07.569009Z",
+  "event_sequence": 35,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "08301ae8-63ee-4724-9053-b7cb0c17a097",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Reviewed verification-report revision 0384c2f4-2222-44d9-9c61-f31f5cba49f4; classified F-01 through F-06 and R-01 through R-06; confirmed every risk has severity, M6-blocking status, control, and requested disposition; confirmed no unresolved critical M6 defect and retained the M7 publication prohibition.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "The review is point-in-time and requires fresh assessment if candidate bytes, dependencies, hosted runners, or publication scope change."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-07-29T19:31:07.569063Z",
+  "result_digest": "sha256:580fd71b97b14859591c50bfb3101949da3ca610e4b4172ee6b23cc31ab77783",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-07-29T19:31:07.569007Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "9d4fd366-7e71-4d37-8945-d8db0737be4a",
+    "f8819d16-293a-447e-b383-905047755a4c"
+  ],
+  "tool_version": "0.1.0a0"
+}

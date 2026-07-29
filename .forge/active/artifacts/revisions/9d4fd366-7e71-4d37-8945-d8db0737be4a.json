@@ -1,0 +1,39 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:da0cbe066fb4249821b9be09bf8dfa563f521002553f58f7751fdb0acaddf54a"
+  ],
+  "affected_record_ids": [
+    "654c3f8f-c4ae-48e5-934f-86155d373005"
+  ],
+  "artifact_id": "654c3f8f-c4ae-48e5-934f-86155d373005",
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "byte_size": 3275,
+  "content_digest": "sha256:da0cbe066fb4249821b9be09bf8dfa563f521002553f58f7751fdb0acaddf54a",
+  "correlation_id": null,
+  "event_sequence": 32,
+  "id": "9d4fd366-7e71-4d37-8945-d8db0737be4a",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "media_type": "text/markdown",
+  "path": "release/dogfood/residual-risk-report.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/da/0cbe066fb4249821b9be09bf8dfa563f521002553f58f7751fdb0acaddf54a",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "6f388704-060f-43d3-bd81-1d51beee10be",
+    "metadata": {},
+    "recorded_at": "2026-07-29T19:30:53.585000Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "release/dogfood/residual-risk-report.md",
+    "source_type": "local-file"
+  },
+  "recorded_at": "2026-07-29T19:30:53.585000Z",
+  "registration_event_id": "7db85b23-118b-44fe-a159-e4fc1cc68ea8",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "0.1.0a0"
+}

@@ -1,0 +1,51 @@
+{
+  "acceptance_event_id": "9b497014-7271-4612-99d2-c2fc14a48a5c",
+  "accepted_artifact_revision_ids": [
+    "117b934e-2d18-4455-84f4-b53f0db3cb2f",
+    "a527ab21-d131-4975-b9a2-7ea82a62a338"
+  ],
+  "accepted_check_result_ids": [
+    "0666877a-eca2-468d-8b1f-7b360fd1667a"
+  ],
+  "accepted_evidence_ids": [
+    "efe43f28-41a7-4acc-8062-8b43e6bf1812"
+  ],
+  "accepted_scope": "Close M6 as a verified release-candidate milestone based on release-readiness revision a527ab21-d131-4975-b9a2-7ea82a62a338 and lessons revision 117b934e-2d18-4455-84f4-b53f0db3cb2f, covering all eight increments, complete local and remote validation, every M6 exit criterion, and the accepted residual-risk disposition.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:35e4eed31ee2f5cb3f78b7f759b05d98baf91c0f232a3ad9cb1e25b74b1144ae",
+    "sha256:32fd17878e6fcd80fcf6decf7641faa6b1fffa73e507b68931084518a01f8ba3",
+    "sha256:ca3e3d70e38566527c0fb94d85b63470b0a2bff02e9ff7e211aa37aecb28c274",
+    "sha256:c131175ad011096c31433c071ef63b9e014194abaadce27decedf1322c5ec95a"
+  ],
+  "affected_record_ids": [
+    "117b934e-2d18-4455-84f4-b53f0db3cb2f",
+    "a527ab21-d131-4975-b9a2-7ea82a62a338",
+    "0666877a-eca2-468d-8b1f-7b360fd1667a",
+    "efe43f28-41a7-4acc-8062-8b43e6bf1812"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 48,
+  "id": "41dc1c3c-eb5a-470a-aed7-108478a52102",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "known_limitations": [
+    "The evidence is point-in-time and applies only to the verified candidate bytes; changed bytes require fresh validation and risk review."
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "recorded_at": "2026-07-29T19:33:28.319733Z",
+  "residual_risks": [
+    "Hosted-runner variability, Windows symbolic-link privilege coverage, the narrow UUID scan exception, future security-data staleness, and GitHub Actions runtime maintenance remain controlled risks.",
+    "This acceptance does not create a 1.0.0 tag, signature, package upload, public support commitment, public release, or M7 authority."
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "0.1.0a0"
+}
