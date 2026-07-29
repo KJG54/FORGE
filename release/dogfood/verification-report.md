@@ -60,6 +60,18 @@ was 702.686 ms, and archive access p95 was 821.281 ms. The isolated report diges
 The observed host-contention sensitivity remains a risk-review input. CI keeps performance in
 dedicated matrix jobs rather than intentionally co-running these local workloads.
 
+The first two pull-request executions at commit
+`acaed32db684a5c33e7650c0362458a002d4623e` reproduced macOS / CPython 3.12 budget failures while
+all other matrix cells passed. The first attempt measured startup p95 at 545.671 ms and status p95
+at 1095.765 ms; the second measured startup p95 at 501.199 ms and status p95 at 1396.542 ms. The
+existing macOS budgets of 500 ms and 1000 ms did not represent the slowest supported Python cell
+on the current ARM hosted runner.
+
+The owner approved recalibrating only the macOS platform budgets to 600 ms for startup and 1500 ms
+for status. Measurement remains p95 over 20 samples after three warmups, workloads are unchanged,
+Linux and Windows budgets are unchanged, and the macOS startup budget remains stricter than
+Windows. A new pull-request matrix on the corrected commit remains required evidence.
+
 ## Security finding and remediation
 
 The first snapshot scan identified canonical command-idempotency UUIDs as generic API-key
