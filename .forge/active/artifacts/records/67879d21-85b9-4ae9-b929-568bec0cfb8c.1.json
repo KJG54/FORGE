@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:eeb28e9903019b0603bbcec26ec70435c47e73fbd7322bb49665f3da8f98c89d"
+  ],
+  "affected_record_ids": [
+    "cfe54f78-dbd5-4627-9bc2-e19383f5059d"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 13,
+  "id": "67879d21-85b9-4ae9-b929-568bec0cfb8c",
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "recorded_at": "2026-07-29T22:56:34.263025Z",
+  "role": "compatibility-statement",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "FORGE Governance 1.0 Compatibility Statement",
+  "tool_version": "1.0.0"
+}

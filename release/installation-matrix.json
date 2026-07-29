@@ -26,7 +26,7 @@
   ],
   "artifact": "wheel",
   "expected_distribution": "forge-governance",
-  "expected_version": "0.1.0a0",
+  "expected_version": "1.0.0",
   "expected_schema_count": 51,
   "expected_bundled_packs": [
     "research-basic",

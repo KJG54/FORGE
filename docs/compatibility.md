@@ -1,7 +1,30 @@
-# Pre-v1 Compatibility
+# Production-v1 Compatibility
 
-FORGE has no tagged or publicly distributed pre-v1 release. Its compatibility evidence comes from
-the owner-accepted M1 through M5 baselines published on the main branch.
+FORGE Governance freezes the compatibility boundary for the unpublished
+`forge-governance==1.0.0` candidate. A development commit or local artifact reporting `1.0.0` is
+not a public release; only the separately owner-approved immutable `v1.0.0` tag and matching public
+artifacts establish publication.
+
+The complete reader-facing promise is
+[`release/production-v1/compatibility-statement.md`](../release/production-v1/compatibility-statement.md),
+and [`release/version-contract.json`](../release/version-contract.json) is its machine-readable
+consistency source.
+
+## Semantic-version guarantee
+
+Throughout the 1.x distribution line, FORGE preserves supported schema-`1.0` records, documented
+journal reading and migration, CLI command paths and governance meaning, public contract/schema
+exports, and the `forge-contracts-1` declarative-pack boundary.
+
+- Patch releases correct defects, security, performance, documentation, and internal
+  implementation without requiring new user input.
+- Minor releases may add backward-compatible optional commands, inputs, models, fields, schemas,
+  formats, and migrations.
+- Removing or incompatibly changing an existing guaranteed boundary requires a new distribution
+  major version.
+
+Exact human-readable CLI prose and undocumented implementation modules are not stable interfaces.
+Schema, journal, pack, workflow, and distribution versions remain independent.
 
 ## Contract compatibility
 
@@ -17,7 +40,8 @@ registry grew additively:
 | M5 | `57065f0` | 51 | Structural-validator definition added |
 
 An accepted baseline is not a package release or a promise that every intermediate commit is a
-supported migration source. Public semantic-version guarantees begin at `1.0.0`.
+supported migration source. It is preserved evidence for the inputs now guaranteed throughout
+the 1.x line.
 
 Current code accepts the frozen earlier schema-`1.0` record shapes in
 `tests/fixtures/compatibility/schema-1.0-records.json`. Additive fields use defined defaults.
@@ -48,6 +72,10 @@ FORGE does not claim compatibility with:
 - incomplete history except for separately documented conservative recovery cases;
 - migration or mutation of immutable archives; or
 - downgrade from a current format to an earlier format.
+
+It also does not freeze exact help, status, diagnostic, or error wording; private implementation
+modules; independently installed provider CLI behavior; or cross-major compatibility without a
+later explicit policy.
 
 The machine-readable inventory is
 `tests/fixtures/compatibility/manifest.json`. Any future incompatible change must update that

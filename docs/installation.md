@@ -9,13 +9,13 @@ Create a fresh environment, then install the built wheel:
 
 ```console
 python -m venv .venv
-.venv\Scripts\python.exe -m pip install dist\forge_governance-0.1.0a0-py3-none-any.whl
+.venv\Scripts\python.exe -m pip install dist\forge_governance-1.0.0-py3-none-any.whl
 .venv\Scripts\forge.exe --version
 .venv\Scripts\forge.exe --help
 ```
 
 The example is for Windows. On macOS or Linux, use `.venv/bin/python`,
-`dist/forge_governance-0.1.0a0-py3-none-any.whl`, and `.venv/bin/forge` instead. Installing from
+`dist/forge_governance-1.0.0-py3-none-any.whl`, and `.venv/bin/forge` instead. Installing from
 the wheel uses the package index configured for `pip` to resolve FORGE's runtime dependencies.
 
 ## pipx
@@ -23,7 +23,7 @@ the wheel uses the package index configured for `pip` to resolve FORGE's runtime
 `pipx` installs the CLI and its dependencies into an isolated managed environment:
 
 ```console
-pipx install dist/forge_governance-0.1.0a0-py3-none-any.whl
+pipx install dist/forge_governance-1.0.0-py3-none-any.whl
 forge --version
 forge --help
 ```
@@ -39,11 +39,11 @@ acceptance harness exercises one exact cell:
 
 ```console
 python -m tools.distribution_smoke \
-  --wheel dist/forge_governance-0.1.0a0-py3-none-any.whl \
+  --wheel dist/forge_governance-1.0.0-py3-none-any.whl \
   --mode venv
 
 python -m tools.distribution_smoke \
-  --wheel dist/forge_governance-0.1.0a0-py3-none-any.whl \
+  --wheel dist/forge_governance-1.0.0-py3-none-any.whl \
   --mode pipx
 ```
 

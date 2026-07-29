@@ -1,0 +1,15 @@
+{
+  "command": "decide",
+  "completed_at": "2026-07-29T22:59:22.827927Z",
+  "events": [
+    {
+      "event_hash": "sha256:1d92ae532447780cc6e8a5dbc906ce87aa92489cf78ac92bf7b85dd8cc255ac9",
+      "event_id": "cf7277b2-6053-4d22-981f-e3f2cf0381b1",
+      "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+      "sequence": 14
+    }
+  ],
+  "key": "m7-increment-2-version-contract-decision",
+  "request_digest": "sha256:d65dfe316206363264beaf228e3ffb5303bc27b7774b63fed0a22d6a79486cd1",
+  "schema_version": "1.0"
+}
