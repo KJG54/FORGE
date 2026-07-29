@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "python_implementation": "CPython",
+  "python_versions": [
+    "3.12",
+    "3.13",
+    "3.14"
+  ],
+  "operating_systems": [
+    {
+      "id": "linux",
+      "runner": "ubuntu-latest"
+    },
+    {
+      "id": "macos",
+      "runner": "macos-latest"
+    },
+    {
+      "id": "windows",
+      "runner": "windows-latest"
+    }
+  ],
+  "installation_modes": [
+    "venv",
+    "pipx"
+  ],
+  "artifact": "wheel",
+  "expected_distribution": "forge-governance",
+  "expected_version": "0.1.0a0",
+  "expected_schema_count": 51,
+  "expected_bundled_packs": [
+    "research-basic",
+    "software-basic"
+  ]
+}
