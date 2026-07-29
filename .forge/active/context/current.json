@@ -1,28 +1,44 @@
 {
   "active_step": {
     "context_selection_rules": [
-      "initiative-objective"
+      "release-requirements",
+      "framework-changes"
     ],
-    "id": "scope",
-    "instructions": "Register the exact scope and release requirements before implementation authority is accepted.",
-    "purpose": "Define the framework change, constraints, compatibility impact, and acceptance criteria.",
-    "required_inputs": [],
-    "state": "awaiting_acceptance"
+    "id": "verify-release",
+    "instructions": "Preserve check and evidence results without treating process success as owner acceptance.",
+    "purpose": "Validate the exact candidate change against its release requirements.",
+    "required_inputs": [
+      {
+        "content_digest": "sha256:8557669f290628c561996a456ab9bae6315f67cb8a3437956e99dc695a11434d",
+        "media_type": "text/markdown",
+        "path": "release/dogfood/release-requirements.md",
+        "role": "release-requirements"
+      },
+      {
+        "content_digest": "sha256:69e206d415340fad0a5a1c89ed00fcc8b27aaac93e9290c6e9f61996f117c0be",
+        "media_type": "text/markdown",
+        "path": "release/dogfood/framework-changes.md",
+        "role": "framework-changes"
+      }
+    ],
+    "state": "in_progress"
   },
   "approved_scope": "M6 Increment 7 dogfooding and Increment 8 validation, friction, residual-risk, and closeout evidence only; no M7 publication",
   "expected_evidence": [
     "Worker claim requirement: outputs-produced",
-    "Check requirement after import: scope-reviewed",
+    "Check requirement after import: release-checks-passed",
     "Workflow evidence class after import: check-evidence",
     "Owner-only acceptance requirement: owner-acceptance",
     "Returned files require staged import before registration",
     "Worker claims never constitute checks, evidence, or owner acceptance"
   ],
-  "known_blockers": [
-    "Active step is awaiting configured-owner acceptance"
-  ],
+  "known_blockers": [],
   "objective": "Prepare the FORGE M6 release candidate through governed framework-change review",
-  "permitted_actions": [],
+  "permitted_actions": [
+    "Create only declared returned files within the approved scope",
+    "Report worker claims, tool metadata, and limitations without governance approval",
+    "Use only the selected required-input paths listed in the active step"
+  ],
   "prohibited_actions": [
     "Record or imply owner decisions, acceptance, checks, or evidence",
     "Modify FORGE-managed paths or undeclared project files",
@@ -30,12 +46,12 @@
     "Execute external or irreversible side effects without separate authorization"
   ],
   "relevant_constraints": [
-    "Context selection rule: initiative-objective"
+    "Context selection rule: release-requirements",
+    "Context selection rule: framework-changes"
   ],
   "relevant_decisions": [],
   "required_outputs": [
-    "change-scope",
-    "release-requirements"
+    "verification-report"
   ],
   "return_contract": {
     "contract": "agent-result",

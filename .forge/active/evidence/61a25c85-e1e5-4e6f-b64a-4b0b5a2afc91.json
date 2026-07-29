@@ -1,0 +1,41 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ab1bdd90a93168e18bde6e2e1386feb445247192643b0c890a593747039cebd2"
+  ],
+  "affected_record_ids": [
+    "1a9b1f02-fb23-431a-ad65-34bcd75a2826",
+    "b38bf3ad-a50b-4b59-93f2-7cb39e885a7e",
+    "aef7dd93-28d4-4d7d-a5e3-6609bf0cc1bd"
+  ],
+  "artifact_revision_ids": [
+    "1a9b1f02-fb23-431a-ad65-34bcd75a2826"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "b38bf3ad-a50b-4b59-93f2-7cb39e885a7e"
+  ],
+  "claim_ids": [
+    "aef7dd93-28d4-4d7d-a5e3-6609bf0cc1bd"
+  ],
+  "correlation_id": null,
+  "event_sequence": 17,
+  "id": "61a25c85-e1e5-4e6f-b64a-4b0b5a2afc91",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "limitations": [
+    "Remote matrix execution and complete release validation remain verify-release evidence"
+  ],
+  "packet_digest": "sha256:ab1bdd90a93168e18bde6e2e1386feb445247192643b0c890a593747039cebd2",
+  "purpose": "Bind the exact M6 Increment 8 framework changes, worker implementation claim, and focused implementation validation before owner acceptance",
+  "recorded_at": "2026-07-29T17:46:04.069316Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "0.1.0a0"
+}

@@ -1,0 +1,47 @@
+{
+  "acceptance_event_id": "70036ecd-6553-4345-a973-15dfe6767e8e",
+  "accepted_artifact_revision_ids": [
+    "1a9b1f02-fb23-431a-ad65-34bcd75a2826"
+  ],
+  "accepted_check_result_ids": [
+    "b38bf3ad-a50b-4b59-93f2-7cb39e885a7e"
+  ],
+  "accepted_evidence_ids": [
+    "61a25c85-e1e5-4e6f-b64a-4b0b5a2afc91"
+  ],
+  "accepted_scope": "M6 Increment 8 implementation artifact revision 1a9b1f02-fb23-431a-ad65-34bcd75a2826 at sha256:69e206d415340fad0a5a1c89ed00fcc8b27aaac93e9290c6e9f61996f117c0",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:69e206d415340fad0a5a1c89ed00fcc8b27aaac93e9290c6e9f61996f117c0be",
+    "sha256:70e4dd8988a3d6c8cab4f326cce42a6d4c27d763456c41311af6396b3fb8f2b0",
+    "sha256:ab1bdd90a93168e18bde6e2e1386feb445247192643b0c890a593747039cebd2"
+  ],
+  "affected_record_ids": [
+    "1a9b1f02-fb23-431a-ad65-34bcd75a2826",
+    "b38bf3ad-a50b-4b59-93f2-7cb39e885a7e",
+    "61a25c85-e1e5-4e6f-b64a-4b0b5a2afc91"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 19,
+  "id": "b1b2e52b-027c-4f8f-a1ae-3dfe2b36d42b",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "known_limitations": [
+    "The full local validation and remote 38-job CI matrix remain verify-release evidence"
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "recorded_at": "2026-07-29T18:07:40.496698Z",
+  "residual_risks": [
+    "Cross-platform installation, performance, or procedure-rehearsal failures may require remediation"
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "0.1.0a0"
+}

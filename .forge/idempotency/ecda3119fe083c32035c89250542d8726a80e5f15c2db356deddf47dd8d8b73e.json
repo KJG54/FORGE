@@ -1,0 +1,21 @@
+{
+  "command": "complete",
+  "completed_at": "2026-07-29T17:45:43.517677Z",
+  "events": [
+    {
+      "event_hash": "sha256:a5ba07668f427bb62ff2be62bc021a54d3f03ed001c71036d815ef584c282f45",
+      "event_id": "e3e723fc-778b-41c9-8e66-90cc7ec40696",
+      "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+      "sequence": 14
+    },
+    {
+      "event_hash": "sha256:7bae98a46ba73c54929730009eff25df08c511518874138230def086de09fb34",
+      "event_id": "8f6e6de5-7443-4c6e-b446-152ad4c82212",
+      "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+      "sequence": 15
+    }
+  ],
+  "key": "8fd89445-a665-476f-ab6d-0c07836a9bef",
+  "request_digest": "sha256:ec67316060504216148b1331d6b4b77630fdf3947f3f6dcc1218b184c4b39632",
+  "schema_version": "1.0"
+}

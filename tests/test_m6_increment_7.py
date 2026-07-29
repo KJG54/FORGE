@@ -53,7 +53,7 @@ def test_framework_change_pack_is_data_only_capability_free_and_complete() -> No
         assert set(step.required_inputs) <= available
 
 
-def test_repository_dogfood_state_is_healthy_bound_and_waiting_for_owner() -> None:
+def test_repository_dogfood_state_is_healthy_bound_and_owner_accepted() -> None:
     layout = RepositoryLayout.at(ROOT)
     configuration = load_configuration(layout.configuration_file)
     active = load_active_initiative(layout)
@@ -67,18 +67,22 @@ def test_repository_dogfood_state_is_healthy_bound_and_waiting_for_owner() -> No
     assert active.pack_trust.trust_state is PackTrustState.TRUSTED_DATA
     assert active.workflow.id == "framework-change"
     assert active.state.lifecycle_state is InitiativeLifecycleState.ACTIVE
-    assert active.state.current_step_id == "scope"
-    assert active.state.step_states["scope"] is StepState.AWAITING_ACCEPTANCE
-    assert active.state.permitted_next_actions == ("acceptance-record:scope",)
+    assert active.state.step_states["scope"] is StepState.COMPLETED
+    assert active.state.step_states["implement"] in {
+        StepState.IN_PROGRESS,
+        StepState.AWAITING_VERIFICATION,
+        StepState.AWAITING_ACCEPTANCE,
+        StepState.COMPLETED,
+    }
 
-    assert {item.artifact.role for item in artifacts} == {
+    assert {
         "change-scope",
         "release-requirements",
-    }
-    assert {item.current_revision.path for item in artifacts} == {
+    } <= {item.artifact.role for item in artifacts}
+    assert {
         "release/dogfood/change-scope.md",
         "release/dogfood/release-requirements.md",
-    }
+    } <= {item.current_revision.path for item in artifacts}
     assert all(item.working_copy_matches for item in artifacts)
 
     assert [event.sequence for event in events] == list(range(1, len(events) + 1))
@@ -89,11 +93,7 @@ def test_repository_dogfood_state_is_healthy_bound_and_waiting_for_owner() -> No
         for index, event in enumerate(events[1:], start=1)
     )
     assert events[-1].event_hash == active.state.journal_head_hash
-    assert not layout.acceptance_directory.exists()
+    assert len(tuple(layout.acceptance_directory.glob("*.json"))) >= 1
 
-    assert context.active_step.id == "scope"
-    assert context.active_step.state is StepState.AWAITING_ACCEPTANCE
-    assert context.permitted_actions == ()
-    assert context.known_blockers == (
-        "Active step is awaiting configured-owner acceptance",
-    )
+    assert context.active_step.id == active.state.current_step_id
+    assert context.active_step.state == active.state.step_states[context.active_step.id]

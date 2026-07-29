@@ -7,6 +7,9 @@ semantic-version commitments begin at v1.0.0.
 
 ### Added
 
+- M6 one-wheel closeout matrices across supported operating systems and Python versions, plus
+  maintained fresh-user, performance, backup, migration, recovery, archive, and successor
+  rehearsals under the live governed framework-change initiative.
 - M6 tracked self-dogfooding through a capability-free local framework-change pack, a real
   release-candidate initiative, exact scope artifacts, and an effective owner-acceptance stop.
 - M6 maintained p95 performance budgets and a deterministic shell-free measurement harness for

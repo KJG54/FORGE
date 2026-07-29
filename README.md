@@ -324,6 +324,12 @@ and release-requirement artifacts are claim-, check-, evidence-, and digest-boun
 step remains at configured-owner acceptance instead of allowing the worker to approve its own
 release scope. See the [self-dogfooding guide](docs/dogfooding.md).
 
+M6 Increment 8 expands closeout to the complete supported test and exact-wheel installation
+matrices. One built wheel feeds all downstream installation, fresh-user example, performance, and
+operational-procedure scenarios. The live framework-change workflow preserves separate owner gates
+for implementation, validation, risk review, and readiness. See the
+[release-candidate closeout guide](docs/release-candidate-closeout.md).
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -468,6 +474,7 @@ forge --help
 - [M6 Increment 5 supply-chain and secret-review boundary](docs/milestones/m6-increment-5.md)
 - [M6 Increment 6 maintained-performance boundary](docs/milestones/m6-increment-6.md)
 - [M6 Increment 7 governed self-dogfood boundary](docs/milestones/m6-increment-7.md)
+- [M6 Increment 8 release-candidate closeout](docs/milestones/m6-increment-8.md)
 - [Documentation index](docs/README.md)
 - [Software and research example repositories](examples/README.md)
 - [Contributing](CONTRIBUTING.md)

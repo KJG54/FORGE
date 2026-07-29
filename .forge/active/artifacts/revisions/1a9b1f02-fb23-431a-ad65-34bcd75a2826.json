@@ -1,0 +1,39 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:69e206d415340fad0a5a1c89ed00fcc8b27aaac93e9290c6e9f61996f117c0be"
+  ],
+  "affected_record_ids": [
+    "656ce803-6242-472e-b307-22a6a70bc239"
+  ],
+  "artifact_id": "656ce803-6242-472e-b307-22a6a70bc239",
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "byte_size": 2451,
+  "content_digest": "sha256:69e206d415340fad0a5a1c89ed00fcc8b27aaac93e9290c6e9f61996f117c0be",
+  "correlation_id": null,
+  "event_sequence": 13,
+  "id": "1a9b1f02-fb23-431a-ad65-34bcd75a2826",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "media_type": "text/markdown",
+  "path": "release/dogfood/framework-changes.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/69/e206d415340fad0a5a1c89ed00fcc8b27aaac93e9290c6e9f61996f117c0be",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "ba96c0d0-08f4-4832-a1b0-81412e77c2bd",
+    "metadata": {},
+    "recorded_at": "2026-07-29T17:45:34.459964Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "release/dogfood/framework-changes.md",
+    "source_type": "local-file"
+  },
+  "recorded_at": "2026-07-29T17:45:34.459964Z",
+  "registration_event_id": "ea5fb39f-4cb4-4986-95e5-fab5209c2745",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "0.1.0a0"
+}
