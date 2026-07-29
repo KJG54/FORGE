@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
+import forge.core.agent_context as agent_context
 from forge.cli.app import app
 from forge.contracts.state import StepState
 from forge.contracts.verification import CheckOutcome
@@ -170,6 +171,42 @@ def test_neutral_context_is_deterministic_bounded_and_non_governing(tmp_path: Pa
         assert sentinel not in combined
     assert b"DECISION_INCLUDED_SENTINEL" in combined
     assert not initialized.layout.lock_directory.joinpath("mutation.lock").exists()
+
+
+def test_context_views_replace_only_changed_bytes(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initialized = _initiative(tmp_path)
+    actor = owner_actor(initialized.configuration.owner)
+    generate_agent_context(initialized.layout)
+    writes: list[Path] = []
+    original = agent_context.atomic_write_bytes
+
+    def count_write(path: Path, content: bytes) -> None:
+        writes.append(path)
+        original(path, content)
+
+    monkeypatch.setattr(agent_context, "atomic_write_bytes", count_write)
+
+    generate_agent_context(initialized.layout)
+    assert writes == []
+
+    record_decision(
+        initialized.layout,
+        decision_type="context-performance-change",
+        question="Should changed context replace both generated views?",
+        considered_options=("yes", "no"),
+        chosen_outcome="yes",
+        rationale="Prove unchanged views are skipped without suppressing real updates",
+        actor=actor,
+    )
+    generate_agent_context(initialized.layout)
+
+    assert writes == [
+        initialized.layout.current_agent_context_json_file,
+        initialized.layout.current_agent_context_markdown_file,
+    ]
 
 
 def test_context_selects_only_active_step_required_input_metadata(tmp_path: Path) -> None:

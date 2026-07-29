@@ -313,6 +313,22 @@ def _ensure_context_directory(path: Path) -> bool:
     return True
 
 
+def _write_context_view_if_changed(path: Path, content: bytes) -> None:
+    """Avoid replacing an already-current regenerable context view."""
+
+    if path.is_symlink():
+        raise SecurityError(f"Refusing to manage a symbolic-link context view: {path}")
+    if path.exists():
+        if not path.is_file():
+            raise ConflictError(f"Expected a context view file at {path}")
+        try:
+            if path.read_bytes() == content:
+                return
+        except OSError as error:
+            raise IntegrityError(f"Cannot read existing context view {path}: {error}") from error
+    atomic_write_bytes(path, content)
+
+
 def generate_agent_context(
     layout: RepositoryLayout,
     *,
@@ -339,8 +355,8 @@ def write_agent_context_views(
     markdown_bytes = _render_markdown(context)
     created = _ensure_context_directory(layout.agent_context_directory)
     try:
-        atomic_write_bytes(layout.current_agent_context_json_file, json_bytes)
-        atomic_write_bytes(layout.current_agent_context_markdown_file, markdown_bytes)
+        _write_context_view_if_changed(layout.current_agent_context_json_file, json_bytes)
+        _write_context_view_if_changed(layout.current_agent_context_markdown_file, markdown_bytes)
     except Exception:
         if created:
             for path in (
