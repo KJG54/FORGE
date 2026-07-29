@@ -170,6 +170,18 @@ and instructions, and declared input/output roles contribute terms as well. Matc
 candidate filenames rather than file content. A rule does not grant file access, register an
 artifact, change canonical context, authorize a worker, or satisfy any workflow condition.
 
+## Shared bundled-pack conformance
+
+M5 Increment 7 applies one parameterized conformance contract to `software-basic` and
+`research-basic`. Both must use the same five transition definitions, participant and owner
+authority split, worker actor classes, explicit claim/check/evidence/acceptance sequence, four
+inline explanation profiles, compatibility marker, digest validation, and prerequisite-bound
+input lineage. The same lifecycle service creates each initiative.
+
+The closeout also validates the static repository-local `community-research` fixture using only
+declarative YAML pack files. This proves extension through pack data rather than a Python domain
+module. Conformance tests create no new runtime policy and cannot accept work or the milestone.
+
 Run records remain immutable. `forge run list|show` derives effective `running`, `succeeded`, or
 `cancelled` state from the journal. `forge run cancel` records a terminal cancellation event and
 never implies step completion: safe work may return to `ready`, while the workflow's stricter

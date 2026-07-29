@@ -268,6 +268,13 @@ canonical context. Measured software and research
 scenarios keep SQLite FTS deferred. Shared conformance and cumulative M5 closeout remain later
 boundaries.
 
+M5 Increment 7 adds one shared conformance contract for both bundled packs and closes the
+implementation evidence against all five M5 roadmap exit criteria. It proves shared lifecycle and
+authority structure, domain-neutral public contract fields, identical four-profile governance,
+canonical long-gap resumption, and creation of a repository-local declarative pack containing no
+Python code. Increment 7 adds no runtime feature, schema, pack byte, or authority. M5 remains
+pending explicit owner acceptance and exact closeout CI evidence.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -401,6 +408,8 @@ forge --help
 - [M5 Increment 4 four-profile presentation boundary](docs/milestones/m5-increment-4.md)
 - [M5 Increment 5 canonical-resumption boundary](docs/milestones/m5-increment-5.md)
 - [M5 Increment 6 bounded-filesystem-discovery boundary](docs/milestones/m5-increment-6.md)
+- [M5 Increment 7 shared-conformance closeout](docs/milestones/m5-increment-7.md)
+- [M5 evidence report](docs/milestones/m5-report.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 
