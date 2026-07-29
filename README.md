@@ -285,6 +285,14 @@ hash chain, and the exact registered migration between those storage formats. No
 publicly distributed pre-v1 release exists, and arbitrary intermediate commits are not claimed as
 supported migration sources. See the [pre-v1 compatibility policy](docs/compatibility.md).
 
+M6 Increment 2 defines the 18-cell release-candidate installation matrix: CPython 3.12–3.14 on
+Windows, macOS, and Linux through ordinary virtual environments and `pipx`. A repository-local,
+shell-free harness installs one exact wheel outside the source tree and verifies the installed
+console script, version, help, initialization, configuration, both bundled packs, repository
+health, and all 51 schemas. Local evidence does not establish unexecuted matrix cells, and CI
+execution remains deferred until M6 closeout. See the
+[installation guide](docs/installation.md).
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -359,6 +367,7 @@ forge --help
 - [Dependency rationale](docs/dependencies.md)
 - [Versioned contracts](docs/contracts.md)
 - [Pre-v1 compatibility policy and inventory](docs/compatibility.md)
+- [Installation and supported environments](docs/installation.md)
 - [Journal and materialized state](docs/persistence.md)
 - [Packs, initiatives, and manual runs](docs/workflows.md)
 - [Artifacts, claims, checks, and evidence](docs/artifacts-and-evidence.md)
@@ -422,6 +431,7 @@ forge --help
 - [M5 Increment 7 shared-conformance closeout](docs/milestones/m5-increment-7.md)
 - [M5 evidence report](docs/milestones/m5-report.md)
 - [M6 Increment 1 pre-v1 compatibility boundary](docs/milestones/m6-increment-1.md)
+- [M6 Increment 2 built-distribution installation boundary](docs/milestones/m6-increment-2.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 
