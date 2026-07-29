@@ -327,12 +327,20 @@ def package_license(
 
 def review_dependency_scopes(
     policy: ReviewPolicy,
+    *,
+    scopes: tuple[str, ...] = ("build", "runtime", "development"),
 ) -> tuple[dict[str, tuple[str, ...]], tuple[PackageReview, ...]]:
     """Review every installed package reachable from declared dependency scopes."""
 
+    if not scopes or len(scopes) != len(set(scopes)):
+        raise ReviewError("Dependency review scopes must be unique and non-empty")
+    unknown_scopes = set(scopes) - set(policy.direct_requirements)
+    if unknown_scopes:
+        raise ReviewError(f"Unknown dependency review scopes: {sorted(unknown_scopes)}")
     scope_names: dict[str, tuple[str, ...]] = {}
     packages: dict[str, PackageReview] = {}
-    for scope, direct in policy.direct_requirements.items():
+    for scope in scopes:
+        direct = policy.direct_requirements[scope]
         closure = dependency_closure(direct)
         scope_names[scope] = tuple(sorted(closure))
         for name, installed in closure.items():

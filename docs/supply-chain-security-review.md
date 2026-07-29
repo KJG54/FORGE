@@ -24,8 +24,16 @@ closeout.
 
 ## Run the review
 
-Install development dependencies, PyPA `pip-audit` 2.10 or newer, and Gitleaks 8.30 or newer.
-Neither scanner is a FORGE runtime dependency.
+Install development dependencies, the separately declared build backend, PyPA `pip-audit` 2.10 or
+newer, and Gitleaks 8.30 or newer. A PEP 517 build may use Hatchling in an isolated temporary
+environment without retaining it, so the review environment must install that declared build
+requirement explicitly:
+
+```console
+python -m pip install ".[dev]" "hatchling>=1.27,<2" "pip-audit>=2.10,<3"
+```
+
+Neither scanner nor Hatchling becomes a FORGE runtime dependency.
 
 ```console
 python -m tools.release_security_review

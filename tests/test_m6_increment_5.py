@@ -28,13 +28,17 @@ def test_security_policy_matches_exact_project_dependency_declarations() -> None
     validate_project_policy(policy)
 
 
-def test_installed_dependency_scopes_have_only_allowed_reviewed_licenses() -> None:
+def test_ci_installed_dependency_scopes_have_only_allowed_reviewed_licenses() -> None:
     policy = load_policy()
-    scopes, packages = review_dependency_scopes(policy)
+    scopes, packages = review_dependency_scopes(
+        policy,
+        scopes=("runtime", "development"),
+    )
 
-    assert {"build", "runtime", "development"} == set(scopes)
+    assert {"runtime", "development"} == set(scopes)
+    assert policy.direct_requirements["build"] == ("hatchling>=1.27,<2",)
     assert {"pydantic", "pyyaml", "typer"} <= set(scopes["runtime"])
-    assert {"hatchling", "build", "pytest", "pyright", "ruff"} <= {
+    assert {"build", "pytest", "pyright", "ruff"} <= {
         name for names in scopes.values() for name in names
     }
     assert packages
