@@ -7,6 +7,9 @@ semantic-version commitments begin at v1.0.0.
 
 ### Added
 
+- M6 reproducible dependency, license, vulnerability, and redacted Git-secret review with a strict
+  machine-readable policy, exact legacy-license evidence, and one narrow synthetic-fixture history
+  exception.
 - M6 audience-oriented documentation index and complete user, pack-author, adapter-author,
   architecture, security, troubleshooting, and recovery routes with focused local-link
   conformance.

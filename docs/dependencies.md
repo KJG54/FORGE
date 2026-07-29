@@ -15,3 +15,13 @@ M0 uses the smallest dependency set mandated by the approved specification.
 
 New dependencies require an updated rationale and owner-visible milestone report.
 
+## M6 release review
+
+M6 Increment 5 adds a separate review of the exact declared dependency strings and the build,
+runtime, and development closures installed in the observed environment. The machine-readable
+policy, license allowlist, exact legacy-license overrides, advisory scan, and redacted secret scan
+are documented in [`supply-chain-security-review.md`](supply-chain-security-review.md).
+
+`pip-audit` and Gitleaks are release-review tools, not project runtime or development dependencies.
+Their results are point-in-time evidence and must be repeated against the exact clean-wheel
+environment and review commit at M6 closeout.

@@ -326,7 +326,7 @@ def test_artifact_registration_blocks_secret_locations_and_patterns(tmp_path: Pa
         )
 
     (tmp_path / "credential.txt").write_text(
-        "api_key = '0123456789abcdefghijklmnop'",
+        "api_key = '0123456789abcdefghijklmnop'",  # gitleaks:allow -- synthetic fixture
         encoding="utf-8",
     )
     with pytest.raises(SecurityError, match="credential pattern"):

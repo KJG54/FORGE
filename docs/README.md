@@ -61,6 +61,8 @@ separate trust boundaries:
 
 FORGE supplies governance controls, tamper evidence, and path protections. It does not supply a
 hostile-code sandbox. See the [security guide](security.md) before enabling any local process.
+Release reviewers should also run the
+[dependency, license, vulnerability, and secret review](supply-chain-security-review.md).
 
 ## Documentation authority and maintenance
 
