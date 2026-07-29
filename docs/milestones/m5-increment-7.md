@@ -60,15 +60,14 @@ boundaries from ADR-0044 through ADR-0049 and the unchanged foundational contrac
 - a clean Python 3.14 installed-wheel smoke validated both bundled packs, created a Mentored
   `research-basic` initiative, passed restart/doctor health, imported FORGE from `site-packages`,
   and exported all 52 schema files for the unchanged 51 public models; and
-- the published Increment 6 baseline passed both push-triggered and pull-request-triggered
-  Windows, macOS, and Ubuntu CI jobs on PR #5.
+- the exact Increment 7 implementation commit `f66cf03` passed both push-triggered and
+  pull-request-triggered Windows, macOS, and Ubuntu CI jobs on PR #6.
 
-The remote baseline proves the published Increment 6 revision across all target operating systems.
-It is not claimed as exact Increment 7 evidence. Exact closeout-branch CI remains pending until
-Increment 7 is explicitly published.
+The later evidence-only documentation update changes no runtime, contract, pack, or test behavior;
+its own exact CI result is reviewed before publication is reported complete.
 
 ## Stop point
 
 Stop after the shared suite, complete local/package validation, exact closeout CI evidence, and M5
-implementation report are ready for owner review. Do not begin M6, add SQLite FTS, or mark M5
-owner-accepted without an explicit owner decision.
+implementation report are ready for owner review. This stop point is satisfied. Do not begin M6,
+add SQLite FTS, or mark M5 owner-accepted without an explicit owner decision.

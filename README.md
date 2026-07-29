@@ -273,7 +273,8 @@ implementation evidence against all five M5 roadmap exit criteria. It proves sha
 authority structure, domain-neutral public contract fields, identical four-profile governance,
 canonical long-gap resumption, and creation of a repository-local declarative pack containing no
 Python code. Increment 7 adds no runtime feature, schema, pack byte, or authority. M5 remains
-pending explicit owner acceptance and exact closeout CI evidence.
+pending explicit owner acceptance; the exact Increment 7 implementation passed Windows, macOS,
+and Ubuntu closeout CI.
 
 Initialize an ordinary project repository with:
 

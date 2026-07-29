@@ -2,7 +2,7 @@
 
 **Milestone:** M5 — Research and Educational Proof
 
-**Implementation state:** local closeout complete; exact-branch CI pending
+**Implementation state:** implementation and closeout evidence complete
 
 **Owner acceptance:** pending explicit owner review
 
@@ -43,10 +43,10 @@ discovery suggests filenames under conservative limits without widening worker a
 | All explanation profiles preserve identical governance | satisfied locally | Both bundled packs exercise all four profiles with identical authority, workflow, and initial state |
 | A data-only pack can be created and validated without Python code | satisfied locally | Static YAML-only community-research pack validates and creates through ordinary local-pack services |
 
-The published Increment 6 baseline passed both push and pull-request Windows, macOS, and Ubuntu CI
-jobs on PR #5. Final exact-branch cross-platform CI evidence remains pending. That baseline and
-local satisfaction do not by themselves claim cross-platform success for the final Increment 7
-revision.
+The exact Increment 7 implementation commit `f66cf03` passed both push and pull-request Windows,
+macOS, and Ubuntu CI jobs on PR #6. The subsequent evidence-only documentation update changes no
+runtime, contract, pack, or test behavior and is independently checked before publication is
+reported complete.
 
 ## Architecture and authority evidence
 
@@ -72,10 +72,10 @@ revision.
 - A clean Python 3.14 environment installed the wheel from the built artifact.
 - The installed CLI validated both bundled packs, created a Mentored research initiative, passed
   restart and doctor health, and exported all 51 public schemas plus the index.
-- PR #5's published Increment 6 baseline passed two complete Windows, macOS, and Ubuntu matrices
-  (push and pull-request triggers).
-- Exact Increment 7 cross-platform CI has not run because the closeout branch has not been
-  published; it is not claimed.
+- PR #6's exact Increment 7 implementation commit `f66cf03` passed two complete Windows, macOS,
+  and Ubuntu matrices (push and pull-request triggers).
+- The evidence-only follow-up commit is also required to pass its exact CI before publication is
+  reported complete.
 
 ## Known limitations and deferred work
 
@@ -92,8 +92,8 @@ revision.
 
 ## Owner decision and stop condition
 
-M5 implementation evidence is locally complete and ready for owner review. Exact Increment 7
-cross-platform evidence still requires publication. The milestone is not owner-accepted until the
-repository owner explicitly accepts it after reviewing the completed evidence.
+M5 implementation and cross-platform evidence are complete and ready for owner review. The
+milestone is not owner-accepted until the repository owner explicitly accepts it after reviewing
+the completed evidence.
 
 **Stop:** do not begin M6 or represent M5 as accepted before that decision.
