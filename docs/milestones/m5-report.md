@@ -2,9 +2,9 @@
 
 **Milestone:** M5 — Research and Educational Proof
 
-**Implementation state:** implementation and closeout evidence complete
+**Implementation state:** complete and owner-accepted
 
-**Owner acceptance:** pending explicit owner review
+**Owner acceptance:** accepted in the Codex task by the repository owner on 2026-07-28
 
 **Authorized boundary:** M5 only; M6 has not begun
 
@@ -92,8 +92,9 @@ reported complete.
 
 ## Owner decision and stop condition
 
-M5 implementation and cross-platform evidence are complete and ready for owner review. The
-milestone is not owner-accepted until the repository owner explicitly accepts it after reviewing
-the completed evidence.
+The repository owner explicitly accepted M5 in the Codex task on 2026-07-28 after reviewing the
+implementation and closeout evidence.
 
-**Stop:** do not begin M6 or represent M5 as accepted before that decision.
+**Stop satisfied:** M5 is complete and owner-accepted. M6 must begin from a separately defined,
+bounded increment under the authoritative Production-v1 roadmap. This acceptance does not
+authorize M7 publication.

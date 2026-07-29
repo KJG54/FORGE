@@ -71,3 +71,7 @@ its own exact CI result is reviewed before publication is reported complete.
 Stop after the shared suite, complete local/package validation, exact closeout CI evidence, and M5
 implementation report are ready for owner review. This stop point is satisfied. Do not begin M6,
 add SQLite FTS, or mark M5 owner-accepted without an explicit owner decision.
+
+The repository owner explicitly accepted M5 in the Codex task on 2026-07-28. That decision
+satisfies the owner gate but does not authorize an unbounded M6 implementation or any M7 release
+action.
