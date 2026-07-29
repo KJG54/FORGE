@@ -1,5 +1,27 @@
 # Explicit Active-State Recovery
 
+Recovery is not one general repair command. First run read-only `forge doctor` and `forge status`,
+preserve the observed repository, and select the narrow procedure that matches:
+
+| Observed condition | Procedure |
+|---|---|
+| Missing, invalid, or replay-mismatched active snapshot with a valid journal | `forge recover` |
+| One proven EOF-truncated final M2 journal record | `forge recover` |
+| One provably complete command event group with no receipt | `forge recover-command` |
+| One exact same-host mutation lock whose process is proven dead | `forge remediate-lock` |
+| Complete registered legacy M1 active journal | `forge migrate` |
+| Interrupted closure or abandonment after its terminal decision | Repeat the exact terminal command with the same idempotency key |
+| Damaged or inconsistent immutable archive | Preserve and investigate; no supported archive repair or reopen exists |
+
+Back up the complete repository, including hidden `.forge/` paths, before external storage repair
+or forensic handling. A backup of project artifacts without the journal, records, preserved
+objects, receipts, and archives is not a complete FORGE backup. Validate restored copies with
+`forge doctor` and archived views before relying on them.
+
+If the state is ambiguous or does not satisfy a documented prerequisite, stop. Manual edits can
+destroy provenance needed for diagnosis and safe recovery. See the
+[troubleshooting guide](troubleshooting.md) for exit-code and symptom routing.
+
 `state.json` is a reconstructable view; the hash-chained event journal is authoritative. If
 `forge status` or `forge doctor` reports that the active snapshot is missing, invalid, or does not
 match replay, inspect the repository and then run:

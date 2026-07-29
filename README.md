@@ -300,6 +300,12 @@ copies the examples into temporary directories and completes both workflows thro
 installed `forge` executable; synthetic rehearsal acceptance cannot apply to real work. See the
 [example repositories](examples/README.md).
 
+M6 Increment 4 completes the repository-local documentation routes for users, pack authors,
+adapter contributors, architecture and security reviewers, troubleshooting, and recovery. The
+[documentation index](docs/README.md) connects task-oriented guides to the existing canonical
+feature references without creating new commands, contracts, authority, compatibility promises,
+or release claims.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -440,6 +446,8 @@ forge --help
 - [M6 Increment 1 pre-v1 compatibility boundary](docs/milestones/m6-increment-1.md)
 - [M6 Increment 2 built-distribution installation boundary](docs/milestones/m6-increment-2.md)
 - [M6 Increment 3 example-repository boundary](docs/milestones/m6-increment-3.md)
+- [M6 Increment 4 complete-documentation boundary](docs/milestones/m6-increment-4.md)
+- [Documentation index](docs/README.md)
 - [Software and research example repositories](examples/README.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)

@@ -7,6 +7,9 @@ semantic-version commitments begin at v1.0.0.
 
 ### Added
 
+- M6 audience-oriented documentation index and complete user, pack-author, adapter-author,
+  architecture, security, troubleshooting, and recovery routes with focused local-link
+  conformance.
 - M6 static software and synthetic research example repositories with a temporary-only,
   shell-free installed-CLI workflow rehearsal harness.
 - M6 built-distribution installation acceptance with an explicit 18-cell CPython 3.12–3.14,
