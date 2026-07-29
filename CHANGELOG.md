@@ -7,6 +7,11 @@ semantic-version commitments begin at v1.0.0.
 
 ### Added
 
+- M5 bounded read-only filesystem context discovery with hard inventory limits, filename-only
+  lexical ranking, Git-ignore and configured-secret exclusions, no symlink following, current
+  required-input coverage, fail-closed indeterminate results, and measured software/research
+  precision and recall without a persistent search index.
+
 - Milestone 0 constitutional, legal, packaging, tooling, testing, and CI foundation.
 - Strict schema-versioned M1 canonical contracts and deterministic JSON Schema export.
 - Project configuration validation, owner identity bootstrap, and repository discovery.

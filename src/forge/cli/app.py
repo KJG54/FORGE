@@ -40,6 +40,10 @@ from forge.core.capabilities import (
     revoke_capability_approval,
 )
 from forge.core.command_recovery import recover_command_receipt
+from forge.core.context_discovery import (
+    MAX_DISCOVERY_CANDIDATES,
+    discover_context,
+)
 from forge.core.continuity import pause_initiative, resume_initiative
 from forge.core.decisions import (
     list_decision_views,
@@ -456,6 +460,68 @@ def agent_context(
     typer.echo(f"JSON: {applied.context.json_path}")
     typer.echo(f"Markdown: {applied.context.markdown_path}")
     typer.echo("Vendor reference is derived; FORGE governed state remains authoritative")
+
+
+@agent_app.command("discover")
+def agent_discover(
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory."),
+    ] = Path("."),
+    max_candidates: Annotated[
+        int,
+        typer.Option(
+            "--max-candidates",
+            min=1,
+            max=MAX_DISCOVERY_CANDIDATES,
+            help="Maximum ranked path suggestions to display.",
+        ),
+    ] = MAX_DISCOVERY_CANDIDATES,
+) -> None:
+    """Suggest bounded repository paths for explicit context review."""
+
+    try:
+        layout = discover_repository(directory)
+        report = discover_context(layout, max_candidates=max_candidates)
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"Context discovery profile: {report.profile}")
+    typer.echo(f"Active step: {report.step_id}")
+    typer.echo(f"Structural sufficiency: {report.sufficiency_status.value}")
+    typer.echo(
+        "Current required-input coverage: "
+        f"{len(report.current_required_input_roles)}/{len(report.required_input_roles)}"
+    )
+    typer.echo(
+        "Inventory: "
+        f"inspected={report.inspected_file_count}, "
+        f"eligible={report.eligible_file_count}, "
+        f"ignored={report.ignored_file_count}, "
+        f"policy-excluded={report.policy_excluded_count}, "
+        f"symlinks={report.symlink_excluded_count}, "
+        f"oversized={report.oversized_file_count}, "
+        f"unsupported={report.unsupported_file_count}"
+    )
+    typer.echo(f"Git ignore policy enforced: {report.ignore_policy_enforced}")
+    typer.echo(f"Inventory truncated: {report.inventory_truncated}")
+    typer.echo("Candidate paths:")
+    if not report.candidates:
+        typer.echo("- none")
+    for candidate in report.candidates:
+        terms = ", ".join(candidate.matched_terms) or "governed required input"
+        roles = ", ".join(candidate.registered_roles) or "unregistered"
+        typer.echo(
+            f"- {candidate.path} (score={candidate.score}, bytes={candidate.byte_size}, "
+            f"matches={terms}, roles={roles})"
+        )
+    if report.warnings:
+        typer.echo("Warnings:")
+        for warning in report.warnings:
+            typer.echo(f"- {warning}")
+    typer.echo("Limitations:")
+    for limitation in report.limitations:
+        typer.echo(f"- {limitation}")
 
 
 @agent_app.command("doctor")

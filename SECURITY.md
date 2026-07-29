@@ -100,3 +100,13 @@ content. FORGE checks only already registered artifact paths for current/changed
 not scan unrelated repository, archive, local, ignored, or secret locations. The summary is
 presentation, not evidence or authority; its digest binding detects inconsistent new resume-event
 metadata but does not make same-user processes cryptographically untrusted.
+
+Bounded filesystem discovery inspects path and size metadata but never reads unregistered candidate
+content or follows symbolic links. It may hash an existing governed required input through the
+ordinary artifact-currentness check but never returns its content. It excludes FORGE and hidden
+paths, configured secret locations, common
+dependency/build directories, unsupported or oversized files, and effective Git-ignored paths.
+When Git ignore enforcement is unavailable, unregistered suggestions are withheld. These controls
+reduce accidental disclosure but do not prove that a filename is nonsensitive, relevant, safe, or
+true. Hard inventory limits can make the structural result insufficient, and suggestions grant no
+registration, worker, workflow, evidence, verification, or acceptance authority.
