@@ -7,6 +7,10 @@ semantic-version commitments begin at v1.0.0.
 
 ### Added
 
+- M6 pre-v1 compatibility baseline inventory with accepted M1–M5 model counts, frozen schema-`1.0`
+  record fixtures, exact legacy/current journal fixtures, migration-registry coverage, additive
+  legacy-record loading, deterministic M1-to-M2 conversion, and explicit non-claims for unreleased
+  or unknown formats.
 - M5 bounded read-only filesystem context discovery with hard inventory limits, filename-only
   lexical ranking, Git-ignore and configured-secret exclusions, no symlink following, current
   required-input coverage, fail-closed indeterminate results, and measured software/research

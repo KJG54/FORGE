@@ -1,0 +1,117 @@
+[
+  {
+    "expected_current_defaults": {
+      "agents.preferred_adapter": null,
+      "capabilities.local_validators": []
+    },
+    "model": "project-configuration",
+    "payload": {
+      "owner": {
+        "created_at": "2026-07-13T12:00:00Z",
+        "display_name": "Compatibility Fixture Owner",
+        "id": "00000000-0000-4000-8000-000000000010",
+        "schema_version": "1.0"
+      },
+      "project_id": "00000000-0000-4000-8000-000000000011",
+      "schema_version": "1.0"
+    }
+  },
+  {
+    "expected_current_defaults": {
+      "active_pause_event_id": null,
+      "journal_head_hash": null
+    },
+    "model": "materialized-state",
+    "payload": {
+      "repository_state": "initialized",
+      "schema_version": "1.0"
+    }
+  },
+  {
+    "expected_current_defaults": {
+      "abandonment_event_id": null,
+      "abandonment_record_id": null,
+      "preliminary": true
+    },
+    "model": "archive-manifest",
+    "payload": {
+      "archive_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "closure_event_id": "00000000-0000-4000-8000-000000000013",
+      "closure_record_id": "00000000-0000-4000-8000-000000000012",
+      "created_at": "2026-07-13T12:05:00Z",
+      "files": [],
+      "initiative_id": "00000000-0000-4000-8000-000000000014",
+      "limitations": [
+        "M1 archives are not hash-chained and do not claim interruption recovery"
+      ],
+      "object_references": [],
+      "preliminary": true,
+      "schema_version": "1.0",
+      "terminal_state": "closed"
+    }
+  },
+  {
+    "expected_current_defaults": {
+      "capability_approval_ids": []
+    },
+    "model": "run-record",
+    "payload": {
+      "actor_id": "00000000-0000-4000-8000-000000000020",
+      "affected_digests": [],
+      "affected_record_ids": [],
+      "authorization_basis": "worker started through the supported manual boundary",
+      "capability_ids": [],
+      "event_sequence": 2,
+      "exit_metadata": {},
+      "id": "00000000-0000-4000-8000-000000000021",
+      "initiative_id": "00000000-0000-4000-8000-000000000014",
+      "input_context_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "recorded_at": "2026-07-13T12:10:00Z",
+      "schema_version": "1.0",
+      "side_effect_class": "read_only",
+      "status": "running",
+      "step_id": "discover",
+      "worker": {
+        "actor_type": "human_contributor",
+        "display_label": "Compatibility Fixture Worker",
+        "id": "00000000-0000-4000-8000-000000000020",
+        "schema_version": "1.0",
+        "tool_reference": null
+      }
+    }
+  },
+  {
+    "expected_current_defaults": {
+      "capability_approval_id": null,
+      "execution_status": null,
+      "invocation_digest": null
+    },
+    "model": "check-result",
+    "payload": {
+      "actor": {
+        "actor_type": "human_contributor",
+        "display_label": "Compatibility Fixture Reviewer",
+        "id": "00000000-0000-4000-8000-000000000030",
+        "schema_version": "1.0",
+        "tool_reference": null
+      },
+      "actor_id": "00000000-0000-4000-8000-000000000030",
+      "affected_digests": [],
+      "affected_record_ids": [],
+      "authorization_basis": "reviewer recorded a manual structural observation",
+      "check_id": "outputs-present",
+      "check_version": "1",
+      "ended_at": "2026-07-13T12:20:00Z",
+      "event_sequence": 3,
+      "id": "00000000-0000-4000-8000-000000000031",
+      "initiative_id": "00000000-0000-4000-8000-000000000014",
+      "invocation_metadata": {},
+      "outcome": "passed",
+      "recorded_at": "2026-07-13T12:20:00Z",
+      "result_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "schema_version": "1.0",
+      "started_at": "2026-07-13T12:19:00Z",
+      "target_artifact_revision_ids": []
+    }
+  }
+]

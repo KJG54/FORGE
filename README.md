@@ -10,8 +10,8 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Pre-alpha foundation:** The name, distribution name, public marks, contracts, and CLI remain
-> provisional. Milestones 1 through 5 are complete and owner-accepted. Milestone 6 has not begun.
-> This is not a public production release.
+> provisional. Milestones 1 through 5 are complete and owner-accepted. Milestone 6 release-candidate
+> hardening is in progress. This is not a public production release.
 
 ## Current capabilities
 
@@ -277,6 +277,14 @@ owner-accepted; the exact Increment 7 implementation and evidence commits passed
 and Ubuntu closeout CI. The complete accepted evidence is recorded in the
 [M5 evidence report](docs/milestones/m5-report.md).
 
+M6 Increment 1 freezes the exact pre-v1 compatibility inventory. All accepted persisted contracts
+use schema version `1.0`; the accepted public registry grew from 37 M1 models to 51 M5 models
+without removing an earlier public model. Synthetic fixtures exercise compatibility-critical
+additive defaults, future-version refusal, the complete legacy M1 unhashed journal, the current M2
+hash chain, and the exact registered migration between those storage formats. No tagged or
+publicly distributed pre-v1 release exists, and arbitrary intermediate commits are not claimed as
+supported migration sources. See the [pre-v1 compatibility policy](docs/compatibility.md).
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -350,6 +358,7 @@ forge --help
 - [Architecture decisions](docs/adr/README.md)
 - [Dependency rationale](docs/dependencies.md)
 - [Versioned contracts](docs/contracts.md)
+- [Pre-v1 compatibility policy and inventory](docs/compatibility.md)
 - [Journal and materialized state](docs/persistence.md)
 - [Packs, initiatives, and manual runs](docs/workflows.md)
 - [Artifacts, claims, checks, and evidence](docs/artifacts-and-evidence.md)
@@ -412,6 +421,7 @@ forge --help
 - [M5 Increment 6 bounded-filesystem-discovery boundary](docs/milestones/m5-increment-6.md)
 - [M5 Increment 7 shared-conformance closeout](docs/milestones/m5-increment-7.md)
 - [M5 evidence report](docs/milestones/m5-report.md)
+- [M6 Increment 1 pre-v1 compatibility boundary](docs/milestones/m6-increment-1.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

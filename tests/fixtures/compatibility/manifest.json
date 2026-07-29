@@ -1,0 +1,115 @@
+{
+  "accepted_baselines": [
+    {
+      "added_models": [
+        "acceptance-record",
+        "actor",
+        "agent-handoff",
+        "agent-result",
+        "approval-revocation",
+        "artifact-record",
+        "artifact-revision",
+        "archive-manifest",
+        "archived-file",
+        "archived-object-reference",
+        "audit-event",
+        "authority-grant",
+        "capability-definition",
+        "check-result",
+        "claim",
+        "closure-record",
+        "decision-record",
+        "decision-supersession",
+        "emergency-override",
+        "evidence-packet",
+        "gate",
+        "initiative",
+        "initiative-reference",
+        "materialized-state",
+        "owner-identity",
+        "pack-manifest",
+        "pack-trust-decision",
+        "project-configuration",
+        "provenance-record",
+        "returned-file",
+        "risk-acceptance",
+        "run-record",
+        "scope-amendment",
+        "step-definition",
+        "transition-definition",
+        "workflow-definition",
+        "workflow-deviation"
+      ],
+      "commit": "cd205c9",
+      "milestone": "M1",
+      "public_model_count": 37
+    },
+    {
+      "added_models": [
+        "abandonment-record",
+        "command-recovery-record",
+        "idempotency-receipt",
+        "journal-recovery-record",
+        "lock-remediation-record",
+        "migration-record",
+        "recovery-record"
+      ],
+      "commit": "f9dee0e",
+      "milestone": "M2",
+      "public_model_count": 44
+    },
+    {
+      "added_models": [
+        "canonical-agent-context",
+        "capability-approval",
+        "capability-revocation"
+      ],
+      "commit": "c3f3d32",
+      "milestone": "M3",
+      "public_model_count": 47
+    },
+    {
+      "added_models": [
+        "local-audit-event",
+        "local-validator-definition",
+        "run-cancellation-record"
+      ],
+      "commit": "6179f7a",
+      "milestone": "M4",
+      "public_model_count": 50
+    },
+    {
+      "added_models": [
+        "structural-validator-definition"
+      ],
+      "commit": "57065f0",
+      "milestone": "M5",
+      "public_model_count": 51
+    }
+  ],
+  "contract_schema_versions": [
+    {
+      "fixture": "schema-1.0-records.json",
+      "schema_version": "1.0",
+      "status": "supported-pre-v1"
+    }
+  ],
+  "journal_formats": [
+    {
+      "fixture": "m1-unhashed-events.jsonl",
+      "format": "m1-unhashed-event-journal",
+      "migration_id": "legacy-m1-journal-to-m2-hash-chain-v1",
+      "mutation_support": "migration-required",
+      "schema_version": "1.0"
+    },
+    {
+      "fixture": "m2-hash-chained-events.jsonl",
+      "format": "m2-sha256-event-chain",
+      "migration_id": null,
+      "mutation_support": "current",
+      "schema_version": "1.0"
+    }
+  ],
+  "manifest_version": 1,
+  "public_pre_v1_releases": []
+}

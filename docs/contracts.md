@@ -42,6 +42,12 @@ caller supplies `--force`; unrelated files in the destination are preserved.
 Pre-v1 schemas may change only through the accepted ADR and migration policy. Exporting a schema
 does not create public semantic-version compatibility before v1.0.0.
 
+M6 Increment 1 freezes the accepted M1–M5 public-model inventory and compatibility-critical
+schema-`1.0` fixtures in [`compatibility.md`](compatibility.md). The accepted registry grew
+additively from 37 to 51 models without removing an earlier public model. These baselines are
+published development evidence, not tagged package releases; public semantic-version guarantees
+still begin at v1.0.0.
+
 ## Increment 4 and 5 record services
 
 M1 Increment 4 persists `ArtifactRecord` snapshots and immutable `ArtifactRevision`, `Claim`,
