@@ -1,9 +1,13 @@
 import json
 from pathlib import Path
+from uuid import UUID
 
 import pytest
 
+import forge.core.archival as archival
+from forge.core.status import inspect_status
 from forge.storage.journal import read_journal
+from forge.storage.repository import RepositoryLayout
 from tools.performance_review import (
     CASE_IDS,
     DEFAULT_POLICY,
@@ -80,6 +84,42 @@ def test_repository_fixture_uses_real_archives_and_open_decisions(tmp_path: Path
     assert len(tuple(fixture.layout.decision_directory.glob("*.json"))) == 3
     assert len(read_journal(fixture.layout.event_journal_file)) == 4
     assert len(read_journal(fixture.journal_path)) == 10
+
+
+def test_selected_archive_status_validates_each_archive_once(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    fixture = create_repository_fixture(
+        tmp_path,
+        archive_count=3,
+        decision_count=1,
+        journal_event_count=10,
+    )
+    validated: list[Path] = []
+    original = archival._validate_archive_directory  # pyright: ignore[reportPrivateUsage]
+
+    def count_validation(
+        layout: RepositoryLayout,
+        path: Path,
+        initiative_id: UUID,
+        *,
+        validate_predecessor_archives: bool = True,
+    ) -> archival.ArchiveView:
+        validated.append(path)
+        return original(
+            layout,
+            path,
+            initiative_id,
+            validate_predecessor_archives=validate_predecessor_archives,
+        )
+
+    monkeypatch.setattr(archival, "_validate_archive_directory", count_validation)
+    report = inspect_status(fixture.layout, archive_id=fixture.archive_ids[-1])
+
+    assert report.integrity_state.value == "healthy"
+    assert len(validated) == len(fixture.archive_ids)
+    assert len(set(validated)) == len(fixture.archive_ids)
 
 
 def test_performance_harness_never_uses_shell_command_strings() -> None:

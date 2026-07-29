@@ -277,6 +277,25 @@ def _write_owner_exclusively(path: Path, owner: LockOwner | RemediationLockOwner
         raise IntegrityError(f"Cannot create repository lock {path}: {error}") from error
 
 
+def _prepare_lock_directory(layout: RepositoryLayout) -> None:
+    for directory in (layout.local_directory, layout.lock_directory):
+        if directory.is_symlink() or (directory.exists() and not directory.is_dir()):
+            raise SecurityError(f"Repository lock directory is unsafe: {directory}")
+        if directory.exists():
+            continue
+        try:
+            directory.mkdir()
+        except FileExistsError:
+            if directory.is_symlink() or not directory.is_dir():
+                raise SecurityError(
+                    f"Repository lock directory is unsafe: {directory}"
+                ) from None
+        except OSError as error:
+            raise IntegrityError(
+                f"Cannot create repository lock directory {directory}: {error}"
+            ) from error
+
+
 def _release_owned(path: Path, token: str, *, label: str) -> None:
     current = _read_remediation(path) if label == "remediation" else _read(path)
     if current.token != token:
@@ -331,6 +350,7 @@ def stale_lock_remediation_guard(
 
 @contextmanager
 def repository_mutation_lock(layout: RepositoryLayout, *, command: str) -> Generator[LockOwner]:
+    _prepare_lock_directory(layout)
     path = _path(layout)
     owner = LockOwner(
         token=str(uuid4()),

@@ -28,6 +28,10 @@ rendering, filesystem access, and output capture. The replay case runs in-proces
 iterations per sample so CLI startup does not hide parsing, contract validation, sequence
 validation, and hash-chain verification.
 
+Selected archive status validates every archive exactly once and reuses the selected validated
+view for detailed rendering. It does not cache validation across commands or omit any manifest,
+inventory, record, journal, preserved-object, or terminal-identity check.
+
 ## Budgets
 
 | Case | Linux p95 | macOS p95 | Windows p95 |

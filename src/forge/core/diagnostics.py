@@ -31,7 +31,24 @@ def inspect_repository_health(layout: RepositoryLayout) -> DiagnosticReport:
     """Validate implemented storage, pack, archive, and hybrid Git boundaries."""
     configuration = load_configuration(layout.configuration_file)
     packs = available_packs(layout, configuration)
-    missing = [str(path) for path in layout.required_directories if not path.is_dir()]
+    optional_after_git_checkout = {
+        layout.active_directory,
+        *(
+            path
+            for path in layout.required_directories
+            if path == layout.local_directory or layout.local_directory in path.parents
+        ),
+    }
+    missing = [
+        str(path)
+        for path in layout.required_directories
+        if not path.is_dir()
+        and (
+            path not in optional_after_git_checkout
+            or path.exists()
+            or path.is_symlink()
+        )
+    ]
     if missing:
         raise IntegrityError(
             f"Required FORGE directories are missing: {missing}; rerun 'forge init'"

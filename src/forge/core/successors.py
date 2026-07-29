@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from uuid import UUID
 
 from forge.contracts.artifacts import ArtifactRevision
@@ -44,10 +45,20 @@ def build_predecessor_references(
         for item in layout.archive_directory.iterdir()
         if item.name.startswith(".") and item.name.endswith(".staging")
     )
-    retired = tuple(
-        item.name
-        for item in layout.local_directory.iterdir()
-        if item.name.startswith(("closed-active-", "abandoned-active-"))
+    if layout.local_directory.is_symlink() or (
+        layout.local_directory.exists() and not layout.local_directory.is_dir()
+    ):
+        raise IntegrityError(
+            f"Local FORGE path is irregular or symbolic: {layout.local_directory}"
+        )
+    retired = (
+        tuple(
+            item.name
+            for item in layout.local_directory.iterdir()
+            if item.name.startswith(("closed-active-", "abandoned-active-"))
+        )
+        if layout.local_directory.is_dir()
+        else ()
     )
     if staging or retired:
         raise ConflictError(
@@ -73,6 +84,9 @@ def validate_predecessor_references(
     layout: RepositoryLayout,
     initiative: Initiative,
     creation_event: AuditEvent,
+    *,
+    predecessor_initiatives: Mapping[UUID, Initiative] | None = None,
+    validate_archives: bool = True,
 ) -> None:
     """Validate persisted successor links without inheriting predecessor state."""
     from forge.core.archival import load_archive
@@ -88,8 +102,14 @@ def validate_predecessor_references(
         canonical = _reference(reference.initiative_id)
         if reference != canonical:
             raise IntegrityError("Initiative predecessor reference is not canonical")
-        archive = load_archive(layout, reference.initiative_id)
-        if archive.active.initiative.id != reference.initiative_id:
+        if not validate_archives:
+            continue
+        predecessor = (
+            predecessor_initiatives.get(reference.initiative_id)
+            if predecessor_initiatives is not None
+            else load_archive(layout, reference.initiative_id).active.initiative
+        )
+        if predecessor is None or predecessor.id != reference.initiative_id:
             raise IntegrityError("Initiative predecessor reference does not match its archive")
     if references and (
         not set(identifiers).issubset(initiative.affected_record_ids)

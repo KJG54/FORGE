@@ -40,6 +40,7 @@ from forge.errors import (
     ConfigurationError,
     ConflictError,
     IntegrityError,
+    SecurityError,
     TransitionError,
 )
 from forge.packs.loader import (
@@ -105,13 +106,36 @@ class ManualRunResult:
     transition: TransitionResult
 
 
-def _require_empty_active_directory(layout: RepositoryLayout) -> None:
+def _prepare_empty_active_directory(layout: RepositoryLayout) -> bool:
+    if layout.active_directory.is_symlink():
+        raise SecurityError(
+            f"Refusing to manage a symbolic active path: {layout.active_directory}"
+        )
+    if layout.active_directory.exists() and not layout.active_directory.is_dir():
+        raise SecurityError(
+            f"Refusing to manage an irregular active path: {layout.active_directory}"
+        )
+    created = False
+    if not layout.active_directory.exists():
+        try:
+            layout.active_directory.mkdir()
+            created = True
+        except FileExistsError:
+            if layout.active_directory.is_symlink() or not layout.active_directory.is_dir():
+                raise SecurityError(
+                    f"Refusing to manage an unsafe active path: {layout.active_directory}"
+                ) from None
+        except OSError as error:
+            raise IntegrityError(
+                f"Cannot create active governance directory: {layout.active_directory}: {error}"
+            ) from error
     contents = tuple(layout.active_directory.iterdir())
     if contents:
         raise ConflictError(
             "An active initiative or unmanaged active-state content already exists: "
             f"{[path.name for path in contents]}"
         )
+    return created
 
 
 def _input_context_digest(active: ActiveInitiative, step_id: str) -> str:
@@ -149,7 +173,6 @@ def create_initiative(
             "Initiative creation requires explicit owner confirmation that the selected pack "
             "is trusted as data; executable capabilities remain separately disabled"
         )
-    _require_empty_active_directory(layout)
     predecessor_references = build_predecessor_references(layout, predecessor_ids)
     bound_predecessor_ids = tuple(
         item.initiative_id for item in predecessor_references
@@ -232,6 +255,7 @@ def create_initiative(
         },
     )
     created: list[Path] = []
+    active_directory_created = _prepare_empty_active_directory(layout)
     resources_created = False
     try:
         resources_created = persist_locked_pack_resources(
@@ -266,6 +290,9 @@ def create_initiative(
                 path.unlink(missing_ok=True)
             if resources_created:
                 discard_locked_pack_resources(layout.pack_resource_directory)
+            if active_directory_created:
+                with suppress(OSError):
+                    layout.active_directory.rmdir()
         raise
     active = ActiveInitiative(
         layout,
@@ -283,6 +310,7 @@ def load_replayed_active_initiative(
     layout: RepositoryLayout,
     *,
     journal_events: tuple[AuditEvent, ...] | None = None,
+    validate_predecessor_archives: bool = True,
 ) -> tuple[ActiveInitiative, tuple[AuditEvent, ...]]:
     """Validate locked active records and replay the authoritative journal.
 
@@ -345,7 +373,12 @@ def load_replayed_active_initiative(
         or creation_metadata.get("pack_trust_decision_id") != str(trust.id)
     ):
         raise IntegrityError("Initiative creation event does not match locked records")
-    validate_predecessor_references(layout, initiative, events[0])
+    validate_predecessor_references(
+        layout,
+        initiative,
+        events[0],
+        validate_archives=validate_predecessor_archives,
+    )
     reducer = WorkflowStateReducer(workflow, configuration.owner.id)
     try:
         replayed_state = replay_events(events, reducer)
@@ -375,8 +408,12 @@ def load_active_initiative(
     allow_terminal: bool = False,
     allow_paused: bool = False,
     allow_untrusted_pack: bool = False,
+    validate_predecessor_archives: bool = True,
 ) -> ActiveInitiative:
-    active, events = load_replayed_active_initiative(layout)
+    active, events = load_replayed_active_initiative(
+        layout,
+        validate_predecessor_archives=validate_predecessor_archives,
+    )
     try:
         report = inspect_snapshot_integrity(
             layout.event_journal_file,

@@ -33,6 +33,14 @@ git add -- forge.yaml .forge/
 
 The local subtree remains excluded by the generated policy.
 
+Git transports files rather than directories. An archive-only clean checkout therefore need not
+contain the empty `.forge/active/` marker or ignored `.forge/local/` runtime tree created on the
+original machine. Their absence is not missing governed content: read-only commands validate the
+archives and terminal-transaction markers without recreating them, while the next mutation safely
+creates only the required lock and active directories. Irregular or symbolic replacements remain
+refused. This boundary is recorded in
+[ADR-0058](adr/ADR-0058-git-portable-empty-runtime-directories.md).
+
 M3 managed `AGENTS.md` and `CLAUDE.md` references are ordinary derived root documents rather than
 governed `.forge/` state. FORGE creates or updates one only after a read-only preview and explicit
 `--apply`, and never stages or commits it. The owner's existing Git ignore policy continues to

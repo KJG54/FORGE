@@ -16,7 +16,7 @@ from forge.contracts.state import (
 )
 from forge.core.archival import ArchiveSummary
 from forge.core.lifecycle import load_active_initiative
-from forge.errors import IntegrityError
+from forge.errors import ConflictError, IntegrityError
 from forge.storage.journal import read_journal
 from forge.storage.repository import RepositoryLayout
 
@@ -48,13 +48,23 @@ def inspect_status(
     *,
     archive_id: UUID | None = None,
 ) -> StatusReport:
-    from forge.core.archival import list_archive_summaries, load_archive
+    from forge.core.archival import list_validated_archives, summarize_archive
 
     try:
-        archive_summaries = list_archive_summaries(layout)
+        archives = list_validated_archives(layout)
+        archive_summaries = tuple(summarize_archive(archive) for archive in archives)
         archived_ids = tuple(summary.initiative_id for summary in archive_summaries)
         if archive_id is not None:
-            archived = load_archive(layout, archive_id)
+            archived = next(
+                (
+                    archive
+                    for archive in archives
+                    if archive.active.initiative.id == archive_id
+                ),
+                None,
+            )
+            if archived is None:
+                raise ConflictError(f"Unknown archived initiative {archive_id}")
             from forge.core.scope_amendments import effective_scope_summary
 
             return StatusReport(
@@ -86,12 +96,9 @@ def inspect_status(
         for path in layout.archive_directory.iterdir()
         if path.name.startswith(".") and path.name.endswith(".staging")
     )
-    retired = tuple(
-        path.name
-        for path in layout.local_directory.iterdir()
-        if path.name.startswith(("closed-active-", "abandoned-active-"))
-    )
-    if not layout.active_directory.exists():
+    if layout.local_directory.is_symlink() or (
+        layout.local_directory.exists() and not layout.local_directory.is_dir()
+    ):
         return StatusReport(
             repository_state=RepositoryState.INITIALIZED,
             integrity_state=IntegrityState.INTEGRITY_ERROR,
@@ -99,9 +106,57 @@ def inspect_status(
             state=None,
             next_actions=(),
             blockers=(
-                "Terminal retirement is incomplete; retry the terminal command with the same "
-                "idempotency key",
+                f"Local FORGE path is irregular or symbolic: {layout.local_directory}",
             ),
+            archived_initiative_ids=archived_ids,
+            archive_summaries=archive_summaries,
+        )
+    retired = (
+        tuple(
+            path.name
+            for path in layout.local_directory.iterdir()
+            if path.name.startswith(("closed-active-", "abandoned-active-"))
+        )
+        if layout.local_directory.is_dir()
+        else ()
+    )
+    active_exists = layout.active_directory.exists()
+    if layout.active_directory.is_symlink() or (
+        active_exists and not layout.active_directory.is_dir()
+    ):
+        return StatusReport(
+            repository_state=RepositoryState.INITIALIZED,
+            integrity_state=IntegrityState.INTEGRITY_ERROR,
+            initiative=None,
+            state=None,
+            next_actions=(),
+            blockers=(
+                f"Active FORGE path is irregular or symbolic: {layout.active_directory}",
+            ),
+            archived_initiative_ids=archived_ids,
+            archive_summaries=archive_summaries,
+        )
+    if not active_exists:
+        if staging or retired:
+            return StatusReport(
+                repository_state=RepositoryState.INITIALIZED,
+                integrity_state=IntegrityState.INTEGRITY_ERROR,
+                initiative=None,
+                state=None,
+                next_actions=(),
+                blockers=(
+                    "Terminal retirement is incomplete; retry the terminal command with the same "
+                    f"idempotency key (staging={staging}, retired={retired})",
+                ),
+                archived_initiative_ids=archived_ids,
+                archive_summaries=archive_summaries,
+            )
+        return StatusReport(
+            repository_state=RepositoryState.INITIALIZED,
+            integrity_state=IntegrityState.HEALTHY,
+            initiative=None,
+            state=None,
+            next_actions=("create",) if not archived_ids else ("create-successor",),
             archived_initiative_ids=archived_ids,
             archive_summaries=archive_summaries,
         )

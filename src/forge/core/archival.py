@@ -413,6 +413,8 @@ def _validate_archive_directory(
     layout: RepositoryLayout,
     path: Path,
     initiative_id: UUID,
+    *,
+    validate_predecessor_archives: bool = True,
 ) -> ArchiveView:
     manifest = load_record(path / _MANIFEST_NAME, ArchiveManifest)
     if canonical_json_digest(_manifest_payload(manifest)) != manifest.archive_digest:
@@ -424,6 +426,7 @@ def _validate_archive_directory(
         archived_layout,
         allow_terminal=True,
         allow_untrusted_pack=True,
+        validate_predecessor_archives=validate_predecessor_archives,
     )
     if (
         active.initiative.id != initiative_id
@@ -516,6 +519,50 @@ def load_archive(layout: RepositoryLayout, initiative_id: UUID) -> ArchiveView:
     return _validate_archive_directory(layout, path, initiative_id)
 
 
+def list_validated_archives(layout: RepositoryLayout) -> tuple[ArchiveView, ...]:
+    """Load every archive exactly once in canonical initiative-ID order."""
+    archives = tuple(
+        _validate_archive_directory(
+            layout,
+            _archive_path(layout, initiative_id),
+            initiative_id,
+            validate_predecessor_archives=False,
+        )
+        for initiative_id in list_archive_ids(layout)
+    )
+    initiatives = {
+        archive.active.initiative.id: archive.active.initiative for archive in archives
+    }
+    from forge.core.successors import validate_predecessor_references
+
+    for archive in archives:
+        validate_predecessor_references(
+            layout,
+            archive.active.initiative,
+            archive.events[0],
+            predecessor_initiatives=initiatives,
+        )
+
+    visiting: set[UUID] = set()
+    visited: set[UUID] = set()
+
+    def visit(initiative_id: UUID) -> None:
+        if initiative_id in visited:
+            return
+        if initiative_id in visiting:
+            raise IntegrityError("Archived initiative predecessor lineage contains a cycle")
+        visiting.add(initiative_id)
+        initiative = initiatives[initiative_id]
+        for reference in initiative.predecessor_references:
+            visit(reference.initiative_id)
+        visiting.remove(initiative_id)
+        visited.add(initiative_id)
+
+    for initiative_id in initiatives:
+        visit(initiative_id)
+    return archives
+
+
 def summarize_archive(archive: ArchiveView) -> ArchiveSummary:
     """Build a display-only summary from an already validated archive."""
     state = archive.active.state
@@ -543,7 +590,7 @@ def summarize_archive(archive: ArchiveView) -> ArchiveSummary:
 
 def list_archive_summaries(layout: RepositoryLayout) -> tuple[ArchiveSummary, ...]:
     """Validate every archive and summarize it in canonical initiative-ID order."""
-    return tuple(summarize_archive(load_archive(layout, item)) for item in list_archive_ids(layout))
+    return tuple(summarize_archive(archive) for archive in list_validated_archives(layout))
 
 
 def _validate_committed_closure(

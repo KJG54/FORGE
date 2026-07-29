@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -162,10 +163,30 @@ def test_close_preserves_exact_bytes_and_supports_read_only_restart(
         "Changed after closure", encoding="utf-8"
     )
     assert load_archive(initialized.layout, initiative_id).manifest == restarted.manifest
+    archive_bytes = {
+        path.relative_to(result.archive.layout.active_directory): path.read_bytes()
+        for path in result.archive.layout.active_directory.rglob("*")
+        if path.is_file()
+    }
+    initialized.layout.active_directory.rmdir()
+    shutil.rmtree(initialized.layout.local_directory)
     default_status = inspect_status(initialized.layout)
+    assert default_status.integrity_state.value == "healthy"
     assert default_status.initiative is None
     assert default_status.archived_initiative_ids == (initiative_id,)
     assert default_status.next_actions == ("create-successor",)
+    status_result = runner.invoke(
+        app,
+        ["status", "-C", str(initialized.layout.root)],
+    )
+    assert status_result.exit_code == 0, status_result.stderr
+    assert "Integrity: healthy" in status_result.stdout
+    doctor_result = runner.invoke(
+        app,
+        ["doctor", "-C", str(initialized.layout.root)],
+    )
+    assert doctor_result.exit_code == 0, doctor_result.stderr
+    assert "FORGE repository health: healthy" in doctor_result.stdout
     archived_status = inspect_status(initialized.layout, archive_id=initiative_id)
     assert archived_status.integrity_state.value == "healthy"
     assert archived_status.selected_archive_id == initiative_id
@@ -180,16 +201,30 @@ def test_close_preserves_exact_bytes_and_supports_read_only_restart(
         archive_id=initiative_id,
         event_type="initiative-closed",
     ) == (history[-1],)
-    successor = create_initiative(
-        initialized.layout,
-        objective="Continue from accepted archived work",
-        declared_scope_summary="Fresh governed work with explicit predecessor provenance",
-        actor=actor,
-        trust_pack_data=True,
-        predecessor_ids=(initiative_id,),
+    successor_result = runner.invoke(
+        app,
+        [
+            "create",
+            "Continue from accepted archived work",
+            "--scope",
+            "Fresh governed work with explicit predecessor provenance",
+            "--predecessor",
+            str(initiative_id),
+            "--trust-pack-data",
+            "-C",
+            str(initialized.layout.root),
+        ],
     )
-    assert successor.active.initiative.id != initiative_id
-    assert successor.active.initiative.predecessor_references[0].initiative_id == initiative_id
+    assert successor_result.exit_code == 0, successor_result.stderr
+    successor = load_active_initiative(initialized.layout)
+    assert successor.initiative.id != initiative_id
+    assert successor.initiative.predecessor_references[0].initiative_id == initiative_id
+    assert initialized.layout.active_directory.is_dir()
+    assert {
+        path.relative_to(result.archive.layout.active_directory): path.read_bytes()
+        for path in result.archive.layout.active_directory.rglob("*")
+        if path.is_file()
+    } == archive_bytes
 
 
 def test_close_rejects_changed_working_bytes(tmp_path: Path) -> None:

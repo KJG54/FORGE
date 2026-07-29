@@ -11,6 +11,7 @@ preserve the observed repository, and select the narrow procedure that matches:
 | One exact same-host mutation lock whose process is proven dead | `forge remediate-lock` |
 | Complete registered legacy M1 active journal | `forge migrate` |
 | Interrupted closure or abandonment after its terminal decision | Repeat the exact terminal command with the same idempotency key |
+| Missing empty `.forge/active/` after a clean checkout, with valid archives and no transaction markers | Healthy no-active state; create a successor normally |
 | Damaged or inconsistent immutable archive | Preserve and investigate; no supported archive repair or reopen exists |
 
 Back up the complete repository, including hidden `.forge/` paths, before external storage repair
@@ -21,6 +22,12 @@ objects, receipts, and archives is not a complete FORGE backup. Validate restore
 If the state is ambiguous or does not satisfy a documented prerequisite, stop. Manual edits can
 destroy provenance needed for diagnosis and safe recovery. See the
 [troubleshooting guide](troubleshooting.md) for exit-code and symptom routing.
+
+Do not manually create `.forge/active/` merely because Git omitted the empty directory. `forge
+status` and `forge doctor` validate the archive-only state without writing, and `forge create
+--predecessor ...` recreates the directory after its normal archive and interrupted-transaction
+checks. Staging directories, retired-active markers, unexpected content, symbolic paths, and
+non-directory paths are different conditions and remain fail-closed.
 
 `state.json` is a reconstructable view; the hash-chained event journal is authoritative. If
 `forge status` or `forge doctor` reports that the active snapshot is missing, invalid, or does not
