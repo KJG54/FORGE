@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import builtins
 import sys
-from collections.abc import Callable
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 import pytest
@@ -15,12 +15,18 @@ def test_exact_version_request_avoids_full_application_import(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    original_import: Callable[..., object] = builtins.__import__
+    original_import = builtins.__import__
 
-    def guarded_import(name: str, *args: object, **kwargs: object) -> object:
+    def guarded_import(
+        name: str,
+        globals: Mapping[str, object] | None = None,
+        locals: Mapping[str, object] | None = None,
+        fromlist: Sequence[str] | None = (),
+        level: int = 0,
+    ) -> object:
         if name == "forge.cli.app":
             raise AssertionError("exact version request imported the full CLI application")
-        return original_import(name, *args, **kwargs)
+        return original_import(name, globals, locals, fromlist, level)
 
     monkeypatch.setattr(builtins, "__import__", guarded_import)
     monkeypatch.setattr(sys, "argv", ["forge", "--version"])
