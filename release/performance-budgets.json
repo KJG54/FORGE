@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "python_implementation": "CPython",
+  "python_versions": [
+    "3.12",
+    "3.13",
+    "3.14"
+  ],
+  "operating_systems": [
+    "linux",
+    "macos",
+    "windows"
+  ],
+  "measurement": {
+    "clock": "perf_counter_ns",
+    "warmups": 3,
+    "samples": 20,
+    "percentile": 95,
+    "timeout_seconds": 15
+  },
+  "workload": {
+    "archive_count": 5,
+    "decision_count": 25,
+    "journal_event_count": 1000
+  },
+  "cases": {
+    "startup": {
+      "description": "Cold forge --version console startup",
+      "iterations_per_sample": 1,
+      "budget_ms": {
+        "linux": 500,
+        "macos": 500,
+        "windows": 750
+      }
+    },
+    "status": {
+      "description": "Active CLI status with five validated archives and 25 open decisions",
+      "iterations_per_sample": 1,
+      "budget_ms": {
+        "linux": 1000,
+        "macos": 1000,
+        "windows": 1500
+      }
+    },
+    "journal_replay": {
+      "description": "Canonical read and validation of a 1000-event hash-chained journal",
+      "iterations_per_sample": 3,
+      "budget_ms": {
+        "linux": 150,
+        "macos": 150,
+        "windows": 200
+      }
+    },
+    "context_generation": {
+      "description": "Neutral CLI context generation with 25 open decisions",
+      "iterations_per_sample": 1,
+      "budget_ms": {
+        "linux": 1000,
+        "macos": 1000,
+        "windows": 1500
+      }
+    },
+    "archive_access": {
+      "description": "CLI status for one archive while validating five archive summaries",
+      "iterations_per_sample": 1,
+      "budget_ms": {
+        "linux": 1000,
+        "macos": 1000,
+        "windows": 1500
+      }
+    }
+  }
+}
