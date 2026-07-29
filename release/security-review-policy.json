@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "project_name": "forge-governance",
+  "direct_requirements": {
+    "build": [
+      "hatchling>=1.27,<2"
+    ],
+    "runtime": [
+      "pydantic>=2.10,<3",
+      "pyyaml>=6.0.2,<7",
+      "typer>=0.15,<1"
+    ],
+    "development": [
+      "build>=1.2.2,<2",
+      "pyright>=1.1.390,<2",
+      "pytest>=8.3,<9",
+      "ruff>=0.9,<1"
+    ]
+  },
+  "allowed_license_expressions": [
+    "Apache-2.0",
+    "Apache-2.0 OR BSD-2-Clause",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "MIT",
+    "MPL-2.0",
+    "PSF-2.0"
+  ],
+  "license_overrides": {
+    "colorama": {
+      "version": "0.4.6",
+      "expression": "BSD-3-Clause",
+      "license_file": "colorama-0.4.6.dist-info/licenses/LICENSE.txt",
+      "license_file_sha256": "cac35c02686e5d04a5a7140bfb3b36e73aed496656e891102e428886d7930318",
+      "reason": "Legacy metadata declares only the generic BSD classifier; exact installed license bytes are BSD-3-Clause."
+    },
+    "nodeenv": {
+      "version": "1.10.0",
+      "expression": "BSD-3-Clause",
+      "license_file": "nodeenv-1.10.0.dist-info/licenses/LICENSE",
+      "license_file_sha256": "606faf42d48b54d539dae99db6fecd48544535587e27275b319a3f36113cb6fa",
+      "reason": "Legacy metadata says BSD without an SPDX expression; exact installed license bytes are BSD-3-Clause."
+    }
+  },
+  "minimum_tool_versions": {
+    "gitleaks": "8.30.0",
+    "pip-audit": "2.10.0"
+  },
+  "secret_history_exceptions": [
+    "d73226943b208c8482e0fd7e919cb4070cf14b47:tests/test_artifacts_and_evidence.py:generic-api-key:307"
+  ]
+}

@@ -306,6 +306,12 @@ adapter contributors, architecture and security reviewers, troubleshooting, and 
 feature references without creating new commands, contracts, authority, compatibility promises,
 or release claims.
 
+M6 Increment 5 adds a reproducible dependency, license, vulnerability, and secret-review boundary.
+It inventories installed build/runtime/development closures, validates explicit license policy,
+audits exact installed runtime versions, and scans full Git history plus a bounded current snapshot
+with redaction. The only secret exception is one exact historical synthetic-test fingerprint. See
+the [supply-chain and secret review](docs/supply-chain-security-review.md).
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -447,6 +453,7 @@ forge --help
 - [M6 Increment 2 built-distribution installation boundary](docs/milestones/m6-increment-2.md)
 - [M6 Increment 3 example-repository boundary](docs/milestones/m6-increment-3.md)
 - [M6 Increment 4 complete-documentation boundary](docs/milestones/m6-increment-4.md)
+- [M6 Increment 5 supply-chain and secret-review boundary](docs/milestones/m6-increment-5.md)
 - [Documentation index](docs/README.md)
 - [Software and research example repositories](examples/README.md)
 - [Contributing](CONTRIBUTING.md)
