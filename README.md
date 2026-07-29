@@ -258,6 +258,16 @@ the summary before mutation; `forge resume` hash-binds the same text and referen
 the resume event. It embeds no artifact content, grants no authority, and performs no unrelated
 filesystem discovery. Bounded discovery and shared conformance remain later boundaries.
 
+M5 Increment 6 adds read-only bounded filesystem context discovery. `forge agent discover`
+inventories only path metadata under hard limits, never follows symbolic links, excludes hidden,
+FORGE, configured-secret, unsupported, oversized, and Git-ignored paths, and withholds
+unregistered suggestions if ignore enforcement is unavailable. Filename-only lexical ranking and
+current required-input coverage produce an advisory structural sufficiency result; unregistered
+candidate content is never read and no content is registered, authorized, returned, or added to
+canonical context. Measured software and research
+scenarios keep SQLite FTS deferred. Shared conformance and cumulative M5 closeout remain later
+boundaries.
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -284,6 +294,7 @@ forge recover-command <interrupted-key> --reason "Receipt write was interrupted"
 forge remediate-lock --reason "Confirmed the interrupted process exited" \
   --idempotency-key <stable-remediation-key>
 forge agent context --target neutral
+forge agent discover
 forge agent context --target codex
 forge agent context --target codex --apply
 forge agent doctor
@@ -389,6 +400,7 @@ forge --help
 - [M5 Increment 3 structural-validator boundary](docs/milestones/m5-increment-3.md)
 - [M5 Increment 4 four-profile presentation boundary](docs/milestones/m5-increment-4.md)
 - [M5 Increment 5 canonical-resumption boundary](docs/milestones/m5-increment-5.md)
+- [M5 Increment 6 bounded-filesystem-discovery boundary](docs/milestones/m5-increment-6.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 

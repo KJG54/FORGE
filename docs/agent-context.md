@@ -107,3 +107,28 @@ run to `workspace/context.json` and copies only digest-verified `required_inputs
 return an `AgentResult` bundle below `workspace/result/`; no tracked context view or project target
 is changed by execution. Returned bytes remain untrusted and require explicit import application,
 claim, checks, evidence, and owner acceptance.
+
+## Bounded filesystem discovery
+
+M5 Increment 6 adds a separate owner-review aid:
+
+```console
+forge agent discover
+forge agent discover --max-candidates 16
+```
+
+It inventories only bounded path metadata and ranks filename matches using the objective, effective
+scope, active-step instructions and context-selection rules, and declared input/output roles. It
+does not read unregistered candidate content or return any file content. Existing governed
+required inputs may be hashed through the ordinary currentness check so the command can report
+whether they exist at their registered revisions.
+
+The inventory never follows symbolic links. It excludes FORGE state, hidden paths, control files,
+configured secret locations, common dependency/build directories, unsupported or oversized files,
+and paths ignored by Git. If Git ignore rules cannot be enforced, the command withholds
+unregistered suggestions and labels the result `indeterminate`.
+
+`sufficient` is a structural result, not a semantic claim. It means current required inputs are
+present and the bounded pass completed without exhausting a hard limit. A displayed candidate is
+not registered, copied into canonical context, authorized for a worker, or accepted as relevant or
+true. Those actions remain explicit and governed.

@@ -26,6 +26,18 @@ def _matches_path_pattern(path: str, pattern: str) -> bool:
     return fnmatch.fnmatchcase(path, normalized_pattern)
 
 
+def matching_secret_path_pattern(
+    path: str,
+    secret_path_patterns: tuple[str, ...],
+) -> str | None:
+    """Return the first configured secret-location pattern matching one safe path."""
+
+    return next(
+        (pattern for pattern in secret_path_patterns if _matches_path_pattern(path, pattern)),
+        None,
+    )
+
+
 def screen_governed_content(
     path: str,
     content: bytes,
@@ -38,10 +50,7 @@ def screen_governed_content(
     """
     if path == ".forge" or path.startswith(".forge/"):
         raise SecurityError("FORGE-managed paths cannot be registered as project artifacts")
-    matching = next(
-        (pattern for pattern in secret_path_patterns if _matches_path_pattern(path, pattern)),
-        None,
-    )
+    matching = matching_secret_path_pattern(path, secret_path_patterns)
     if matching is not None:
         raise SecurityError(
             f"Artifact path {path!r} matches configured secret location {matching!r}"

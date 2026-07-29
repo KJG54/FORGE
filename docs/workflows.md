@@ -162,6 +162,14 @@ events bind the summary digest and referenced records in the journal hash chain.
 explains current governance but cannot change a state, supply evidence, verify work, or accept it.
 Earlier M2 resume events remain replayable without migration.
 
+## Bounded context discovery
+
+M5 Increment 6 uses each active step's existing `context_selection_rules` only as bounded lexical
+selection input for advisory filesystem discovery. The objective, effective scope, step purpose
+and instructions, and declared input/output roles contribute terms as well. Matching applies to
+candidate filenames rather than file content. A rule does not grant file access, register an
+artifact, change canonical context, authorize a worker, or satisfy any workflow condition.
+
 Run records remain immutable. `forge run list|show` derives effective `running`, `succeeded`, or
 `cancelled` state from the journal. `forge run cancel` records a terminal cancellation event and
 never implies step completion: safe work may return to `ready`, while the workflow's stricter

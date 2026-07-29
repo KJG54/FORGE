@@ -240,3 +240,8 @@ presentation derived from existing `Initiative`, `MaterializedState`, `DecisionR
 metadata identifies the derivation profile and canonical summary digest; existing generic event
 fields bind referenced records and digests. Earlier resume events remain compatible, no migration
 is required, and the exported schema bundle remains at 51 models.
+
+M5 Increment 6 adds no public or persisted contract. Bounded discovery reports and measurement
+results are disposable internal service values derived from validated governed state plus bounded
+repository path metadata. They create no journal, snapshot, archive, pack, or context record.
+Existing data needs no migration, and the exported schema bundle remains at 51 models.
