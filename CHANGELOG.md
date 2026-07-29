@@ -7,6 +7,8 @@ semantic-version commitments begin at v1.0.0.
 
 ### Added
 
+- M6 static software and synthetic research example repositories with a temporary-only,
+  shell-free installed-CLI workflow rehearsal harness.
 - M6 built-distribution installation acceptance with an explicit 18-cell CPython 3.12–3.14,
   Windows/macOS/Linux, venv/`pipx` matrix and a shell-free exact-wheel smoke harness.
 - M6 pre-v1 compatibility baseline inventory with accepted M1–M5 model counts, frozen schema-`1.0`
