@@ -32,3 +32,15 @@ idempotency key. FORGE validates the committed migration and preserved source, r
 snapshot, and completes the receipt without adding another migration event. Do not use migration
 for truncated, malformed, mixed, or tampered journals; those conditions are refused without
 mutation. Archived initiatives remain immutable.
+
+## Supported pre-v1 sources
+
+M6 Increment 1 records the complete supported schema and storage-format inventory in
+[`compatibility.md`](compatibility.md). All accepted records use contract schema version `1.0`.
+The complete M1 unhashed journal is the only registered legacy source format, and the M2 SHA-256
+event chain is the only current target format. Accepted milestone commits are evidence baselines,
+not a promise to migrate arbitrary intermediate commits or unknown journal shapes.
+
+Synthetic frozen fixtures prove the exact deterministic edge without containing owner, project,
+credential, provider, or artifact data. Unknown, mixed, malformed, truncated, or tampered inputs
+retain their existing refusal or separately documented conservative recovery behavior.
