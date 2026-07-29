@@ -28,6 +28,12 @@ rendering, filesystem access, and output capture. The replay case runs in-proces
 iterations per sample so CLI startup does not hide parsing, contract validation, sequence
 validation, and hash-chain verification.
 
+The exact `forge --version` path loads only the lightweight console dispatcher and package version.
+Every other invocation lazily loads the complete Typer application and retains the same command
+behavior. This keeps the startup budget focused on the public version query rather than unrelated
+governance modules while preserving process-launch, interpreter, import, entry-point, and output
+costs.
+
 Selected archive status validates every archive exactly once and reuses the selected validated
 view for detailed rendering. It does not cache validation across commands or omit any manifest,
 inventory, record, journal, preserved-object, or terminal-identity check.

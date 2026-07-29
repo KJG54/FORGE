@@ -33,7 +33,7 @@ dev = [
 ]
 
 [project.scripts]
-forge = "forge.cli.app:main"
+forge = "forge.cli.entrypoint:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/forge"]
