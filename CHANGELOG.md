@@ -11,6 +11,9 @@ semantic-version commitments begin at v1.0.0.
   lexical ranking, Git-ignore and configured-secret exclusions, no symlink following, current
   required-input coverage, fail-closed indeterminate results, and measured software/research
   precision and recall without a persistent search index.
+- M5 shared bundled-pack conformance and closeout evidence covering generic lifecycle services,
+  domain-neutral public fields, profile-invariant governance, canonical resumption, and a
+  Python-free repository-local data pack without adding runtime or schema behavior.
 
 - Milestone 0 constitutional, legal, packaging, tooling, testing, and CI foundation.
 - Strict schema-versioned M1 canonical contracts and deterministic JSON Schema export.
