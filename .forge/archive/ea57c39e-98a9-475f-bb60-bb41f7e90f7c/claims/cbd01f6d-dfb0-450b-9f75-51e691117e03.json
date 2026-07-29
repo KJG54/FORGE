@@ -1,0 +1,36 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:da0cbe066fb4249821b9be09bf8dfa563f521002553f58f7751fdb0acaddf54a",
+    "sha256:8c2f7d83a1e98df23ecb5601e4fdf7fdf93367909791a9752714b31480c4cb69"
+  ],
+  "affected_record_ids": [
+    "9d4fd366-7e71-4d37-8945-d8db0737be4a",
+    "f8819d16-293a-447e-b383-905047755a4c"
+  ],
+  "assertion": "The M6 friction report classifies six observed closeout frictions, and the residual-risk report classifies six remaining risks with severity, controls, M6 blocking status, and requested owner disposition; no critical M6 defect remains and public release remains explicitly blocked pending separate M7 authority.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "9d4fd366-7e71-4d37-8945-d8db0737be4a",
+    "f8819d16-293a-447e-b383-905047755a4c"
+  ],
+  "correlation_id": null,
+  "event_sequence": 33,
+  "id": "cbd01f6d-dfb0-450b-9f75-51e691117e03",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "limitations": [
+    "Risk classification is based on point-in-time local, PR, and merged-main evidence and cannot predict future dependency, runner, or service changes."
+  ],
+  "recorded_at": "2026-07-29T19:30:59.873629Z",
+  "run_id": "da2b1b76-e863-4ee3-b93f-d9854bac1715",
+  "schema_version": "1.0",
+  "step_id": "review-risk",
+  "tool_version": "0.1.0a0"
+}

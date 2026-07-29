@@ -1,0 +1,75 @@
+{
+  "accepted_artifact_revision_ids": [
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4",
+    "117b934e-2d18-4455-84f4-b53f0db3cb2f",
+    "1a9b1f02-fb23-431a-ad65-34bcd75a2826",
+    "4ad5ae3e-b093-44de-ae25-4ef75acefeb9",
+    "9d4fd366-7e71-4d37-8945-d8db0737be4a",
+    "a527ab21-d131-4975-b9a2-7ea82a62a338",
+    "d8239d36-29c2-42b3-80fd-715e43e23944",
+    "f8819d16-293a-447e-b383-905047755a4c"
+  ],
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:697278804ea38cb206128a389b753ec451e5bfcd1f26107f5b08bee6b8c826ac",
+    "sha256:35e4eed31ee2f5cb3f78b7f759b05d98baf91c0f232a3ad9cb1e25b74b1144ae",
+    "sha256:69e206d415340fad0a5a1c89ed00fcc8b27aaac93e9290c6e9f61996f117c0be",
+    "sha256:8557669f290628c561996a456ab9bae6315f67cb8a3437956e99dc695a11434d",
+    "sha256:da0cbe066fb4249821b9be09bf8dfa563f521002553f58f7751fdb0acaddf54a",
+    "sha256:32fd17878e6fcd80fcf6decf7641faa6b1fffa73e507b68931084518a01f8ba3",
+    "sha256:f882d8a5b4024530e79a477344d7cb7a016b7a2d4ee939218ac385c19f114676",
+    "sha256:8c2f7d83a1e98df23ecb5601e4fdf7fdf93367909791a9752714b31480c4cb69"
+  ],
+  "affected_record_ids": [
+    "af22ac43-0cc6-44f7-a99d-4e30ae69f36a",
+    "b1b2e52b-027c-4f8f-a1ae-3dfe2b36d42b",
+    "2e488573-9f37-4893-a8c9-55a27662a97e",
+    "73026cc8-0d4b-44e0-9656-3957e8f6d8a8",
+    "41dc1c3c-eb5a-470a-aed7-108478a52102",
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4",
+    "117b934e-2d18-4455-84f4-b53f0db3cb2f",
+    "1a9b1f02-fb23-431a-ad65-34bcd75a2826",
+    "4ad5ae3e-b093-44de-ae25-4ef75acefeb9",
+    "9d4fd366-7e71-4d37-8945-d8db0737be4a",
+    "a527ab21-d131-4975-b9a2-7ea82a62a338",
+    "d8239d36-29c2-42b3-80fd-715e43e23944",
+    "f8819d16-293a-447e-b383-905047755a4c"
+  ],
+  "archive_reference": ".forge/archive/ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "authorization_basis": "configured owner closed fully accepted work for atomic M2 archival",
+  "closing_summary": "M6 is complete and owner-accepted as a verified release-candidate milestone. All eight increments, complete local and remote validation, classified residual risk, readiness evidence, and lessons are accepted. This closure does not authorize tagging, signing, package upload, public Production v1 release, post-v1 commitments, or M7 implementation.",
+  "closure_event_id": "6b3bd831-51d8-4414-9ae9-f8e2d5611681",
+  "correlation_id": null,
+  "current_artifact_revision_ids": [
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4",
+    "117b934e-2d18-4455-84f4-b53f0db3cb2f",
+    "1a9b1f02-fb23-431a-ad65-34bcd75a2826",
+    "4ad5ae3e-b093-44de-ae25-4ef75acefeb9",
+    "9d4fd366-7e71-4d37-8945-d8db0737be4a",
+    "a527ab21-d131-4975-b9a2-7ea82a62a338",
+    "d8239d36-29c2-42b3-80fd-715e43e23944",
+    "f8819d16-293a-447e-b383-905047755a4c"
+  ],
+  "event_sequence": 50,
+  "final_acceptance_ids": [
+    "af22ac43-0cc6-44f7-a99d-4e30ae69f36a",
+    "b1b2e52b-027c-4f8f-a1ae-3dfe2b36d42b",
+    "2e488573-9f37-4893-a8c9-55a27662a97e",
+    "73026cc8-0d4b-44e0-9656-3957e8f6d8a8",
+    "41dc1c3c-eb5a-470a-aed7-108478a52102"
+  ],
+  "id": "1270cce5-a6dc-469b-9852-3ad35c5ea10e",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "recorded_at": "2026-07-29T19:34:53.969282Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "terminal_state": "closed",
+  "tool_version": "0.1.0a0"
+}

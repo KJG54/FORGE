@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:1ff56ce4f82fa57b5997bcbf69b3c20ec07dd8695c6eb96f034e247fd051a004"
+  ],
+  "affected_record_ids": [
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4",
+    "ab832d24-9f37-4b84-af31-fb472d301c8d",
+    "5ec2dcc1-8205-42ed-9aea-608e40c2378c"
+  ],
+  "artifact_revision_ids": [
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "ab832d24-9f37-4b84-af31-fb472d301c8d"
+  ],
+  "claim_ids": [
+    "5ec2dcc1-8205-42ed-9aea-608e40c2378c"
+  ],
+  "correlation_id": null,
+  "event_sequence": 26,
+  "id": "9ad5fad9-91fb-4408-9826-43cca201ef80",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "limitations": [
+    "Point-in-time validation does not guarantee future hosted-runner or dependency behavior.",
+    "This packet establishes verification evidence only; it grants no owner acceptance, final M6 readiness, closeout, or M7 publication authority.",
+    "GitHub Actions Node.js 20 deprecation annotations remain a non-blocking review-risk input."
+  ],
+  "packet_digest": "sha256:1ff56ce4f82fa57b5997bcbf69b3c20ec07dd8695c6eb96f034e247fd051a004",
+  "purpose": "Bind the exact M6 Increment 8 verification report, release-validation check, completion claim, pull-request run, and merged-main run for owner review.",
+  "recorded_at": "2026-07-29T19:20:47.765480Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "0.1.0a0"
+}

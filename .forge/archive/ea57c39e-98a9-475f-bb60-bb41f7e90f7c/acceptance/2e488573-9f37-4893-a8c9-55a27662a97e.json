@@ -1,0 +1,47 @@
+{
+  "acceptance_event_id": "df4508b0-75b9-44cf-bc47-df92e9cb65d4",
+  "accepted_artifact_revision_ids": [
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4"
+  ],
+  "accepted_check_result_ids": [
+    "ab832d24-9f37-4b84-af31-fb472d301c8d"
+  ],
+  "accepted_evidence_ids": [
+    "9ad5fad9-91fb-4408-9826-43cca201ef80"
+  ],
+  "accepted_scope": "M6 Increment 8 release verification evidence in verification-report revision 0384c2f4-2222-44d9-9c61-f31f5cba49f4, including complete local validation, PR run 30482342649 at 2f95708d7515560cf2186fcfbd6f3f789badeb75, and merged-main run 30483157200 at 3f36aaa44da02525f962c021ce3c5a6fcec27b03.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:697278804ea38cb206128a389b753ec451e5bfcd1f26107f5b08bee6b8c826ac",
+    "sha256:d6ab47f67ab64fb717214278ba6a03a320fea1be515bd5edf05be36a8410664d",
+    "sha256:1ff56ce4f82fa57b5997bcbf69b3c20ec07dd8695c6eb96f034e247fd051a004"
+  ],
+  "affected_record_ids": [
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4",
+    "ab832d24-9f37-4b84-af31-fb472d301c8d",
+    "9ad5fad9-91fb-4408-9826-43cca201ef80"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 28,
+  "id": "2e488573-9f37-4893-a8c9-55a27662a97e",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "known_limitations": [
+    "The evidence is point-in-time and cannot guarantee future hosted-runner or dependency behavior; it grants no M7 publication authority."
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "recorded_at": "2026-07-29T19:26:49.224707Z",
+  "residual_risks": [
+    "GitHub Actions Node.js 20 deprecation annotations require disposition during review-risk."
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "0.1.0a0"
+}

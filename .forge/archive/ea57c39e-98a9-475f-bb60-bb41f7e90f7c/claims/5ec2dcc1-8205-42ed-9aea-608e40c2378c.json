@@ -1,0 +1,33 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:697278804ea38cb206128a389b753ec451e5bfcd1f26107f5b08bee6b8c826ac"
+  ],
+  "affected_record_ids": [
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4"
+  ],
+  "assertion": "Complete local, pull-request, and merged-main release validation passed for the exact M6 candidate, including 348 local tests, the corrected 38-job PR matrix at 2f95708d7515560cf2186fcfbd6f3f789badeb75, and the 38-job merged-main matrix at 3f36aaa44da02525f962c021ce3c5a6fcec27b03.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4"
+  ],
+  "correlation_id": null,
+  "event_sequence": 23,
+  "id": "5ec2dcc1-8205-42ed-9aea-608e40c2378c",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "limitations": [
+    "This is point-in-time evidence and cannot guarantee future hosted-runner or dependency behavior; GitHub Actions Node.js 20 deprecation annotations remain a non-blocking risk-review input."
+  ],
+  "recorded_at": "2026-07-29T19:20:21.978271Z",
+  "run_id": "3420eb84-65f6-44f8-bed1-44c8d20a911e",
+  "schema_version": "1.0",
+  "step_id": "verify-release",
+  "tool_version": "0.1.0a0"
+}

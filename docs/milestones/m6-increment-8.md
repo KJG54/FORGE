@@ -40,20 +40,21 @@ does not establish M6 readiness or authorize M7, and with all Increment 8 valida
 friction, and risk work still identified as outstanding.
 
 The owner explicitly accepted the exact `implement` artifact revision after focused validation.
-The `verify-release` step is active: complete local validation has passed, while the required
-pull-request and merged-`main` matrices remain pending publication and remote execution.
+The owner subsequently accepted the exact `verify-release`, `review-risk`, and `closeout` evidence.
+All workflow steps are complete, and the initiative is preserved in a hardened successful archive.
 
 ## Validation evidence
 
 Focused implementation evidence is recorded and owner-accepted. Local closeout evidence covers 348
 passing tests, Ruff, strict Pyright, source and wheel builds, both installation modes, both example
 workflows, all maintained procedures, performance budgets, and the supply-chain and secret review.
-The draft verification report preserves exact artifact and report digests. Remote pull-request and
-merged-commit evidence still belongs to `verify-release`; friction, residual-risk, readiness, and
-lessons evidence remain later governed steps.
+The corrected pull-request candidate and exact merged-`main` commit each passed all 38 jobs. The
+governed friction, residual-risk, readiness, and lessons artifacts are accepted and preserved in
+the [M6 evidence and release-readiness report](m6-report.md).
 
 ## Stop points
 
 Stop at every configured-owner acceptance gate. Do not treat a claim, check, evidence packet,
-green CI result, merge, or this milestone document as acceptance. Do not accept M6 or begin M7
-without the owner's final explicit decision.
+green CI result, merge, or this milestone document as acceptance. This stop point is satisfied:
+M6 is complete and owner-accepted. Do not begin M7, tag, sign, upload, or publish without a
+separate owner-authorized scope.

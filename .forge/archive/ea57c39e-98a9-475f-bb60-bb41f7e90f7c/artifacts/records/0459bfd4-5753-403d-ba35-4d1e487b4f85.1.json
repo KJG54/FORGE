@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8c2f7d83a1e98df23ecb5601e4fdf7fdf93367909791a9752714b31480c4cb69"
+  ],
+  "affected_record_ids": [
+    "f8819d16-293a-447e-b383-905047755a4c"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "current_revision": 1,
+  "event_sequence": 31,
+  "id": "0459bfd4-5753-403d-ba35-4d1e487b4f85",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "recorded_at": "2026-07-29T19:30:52.753987Z",
+  "role": "friction-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "M6 release-candidate friction report",
+  "tool_version": "0.1.0a0"
+}

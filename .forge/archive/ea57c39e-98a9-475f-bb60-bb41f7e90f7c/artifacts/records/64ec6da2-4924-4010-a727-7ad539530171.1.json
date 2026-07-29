@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:697278804ea38cb206128a389b753ec451e5bfcd1f26107f5b08bee6b8c826ac"
+  ],
+  "affected_record_ids": [
+    "0384c2f4-2222-44d9-9c61-f31f5cba49f4"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "current_revision": 1,
+  "event_sequence": 22,
+  "id": "64ec6da2-4924-4010-a727-7ad539530171",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "recorded_at": "2026-07-29T19:20:15.776622Z",
+  "role": "verification-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "M6 Increment 8 verification report",
+  "tool_version": "0.1.0a0"
+}

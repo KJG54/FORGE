@@ -1,0 +1,39 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8c2f7d83a1e98df23ecb5601e4fdf7fdf93367909791a9752714b31480c4cb69"
+  ],
+  "affected_record_ids": [
+    "0459bfd4-5753-403d-ba35-4d1e487b4f85"
+  ],
+  "artifact_id": "0459bfd4-5753-403d-ba35-4d1e487b4f85",
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "byte_size": 3322,
+  "content_digest": "sha256:8c2f7d83a1e98df23ecb5601e4fdf7fdf93367909791a9752714b31480c4cb69",
+  "correlation_id": null,
+  "event_sequence": 31,
+  "id": "f8819d16-293a-447e-b383-905047755a4c",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "media_type": "text/markdown",
+  "path": "release/dogfood/friction-report.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/8c/2f7d83a1e98df23ecb5601e4fdf7fdf93367909791a9752714b31480c4cb69",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "77015339-8e40-4a74-a77d-a8af86a869e0",
+    "metadata": {},
+    "recorded_at": "2026-07-29T19:30:52.753987Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "release/dogfood/friction-report.md",
+    "source_type": "local-file"
+  },
+  "recorded_at": "2026-07-29T19:30:52.753987Z",
+  "registration_event_id": "77dd7acd-8cb8-4be6-9a0a-305544ea3734",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "0.1.0a0"
+}

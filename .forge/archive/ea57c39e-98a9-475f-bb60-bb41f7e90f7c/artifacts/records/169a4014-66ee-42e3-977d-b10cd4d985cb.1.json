@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:32fd17878e6fcd80fcf6decf7641faa6b1fffa73e507b68931084518a01f8ba3"
+  ],
+  "affected_record_ids": [
+    "a527ab21-d131-4975-b9a2-7ea82a62a338"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "current_revision": 1,
+  "event_sequence": 41,
+  "id": "169a4014-66ee-42e3-977d-b10cd4d985cb",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "recorded_at": "2026-07-29T19:32:53.477525Z",
+  "role": "release-readiness-record",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "M6 evidence and release-readiness report",
+  "tool_version": "0.1.0a0"
+}

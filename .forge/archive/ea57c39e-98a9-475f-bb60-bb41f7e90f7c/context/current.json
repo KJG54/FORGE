@@ -1,0 +1,66 @@
+{
+  "active_step": {
+    "context_selection_rules": [
+      "accepted-risk-review"
+    ],
+    "id": "closeout",
+    "instructions": "Bind the readiness record to accepted verification and risk-review outputs.",
+    "purpose": "Record release-candidate readiness and lessons without publishing Production v1.",
+    "required_inputs": [
+      {
+        "content_digest": "sha256:8c2f7d83a1e98df23ecb5601e4fdf7fdf93367909791a9752714b31480c4cb69",
+        "media_type": "text/markdown",
+        "path": "release/dogfood/friction-report.md",
+        "role": "friction-report"
+      },
+      {
+        "content_digest": "sha256:da0cbe066fb4249821b9be09bf8dfa563f521002553f58f7751fdb0acaddf54a",
+        "media_type": "text/markdown",
+        "path": "release/dogfood/residual-risk-report.md",
+        "role": "residual-risk-report"
+      }
+    ],
+    "state": "in_progress"
+  },
+  "approved_scope": "M6 Increment 7 dogfooding and Increment 8 validation, friction, residual-risk, and closeout evidence only; no M7 publication",
+  "expected_evidence": [
+    "Worker claim requirement: outputs-produced",
+    "Check requirement after import: closeout-ready",
+    "Workflow evidence class after import: check-evidence",
+    "Owner-only acceptance requirement: owner-acceptance",
+    "Returned files require staged import before registration",
+    "Worker claims never constitute checks, evidence, or owner acceptance"
+  ],
+  "known_blockers": [],
+  "objective": "Prepare the FORGE M6 release candidate through governed framework-change review",
+  "permitted_actions": [
+    "Create only declared returned files within the approved scope",
+    "Report worker claims, tool metadata, and limitations without governance approval",
+    "Use only the selected required-input paths listed in the active step"
+  ],
+  "prohibited_actions": [
+    "Record or imply owner decisions, acceptance, checks, or evidence",
+    "Modify FORGE-managed paths or undeclared project files",
+    "Read unrelated repository, archive, ignored, environment, or local-secret content",
+    "Execute external or irreversible side effects without separate authorization"
+  ],
+  "relevant_constraints": [
+    "Context selection rule: accepted-risk-review"
+  ],
+  "relevant_decisions": [],
+  "required_outputs": [
+    "release-readiness-record",
+    "lessons"
+  ],
+  "return_contract": {
+    "contract": "agent-result",
+    "manifest_filename": "result.json",
+    "requirements": [
+      "Bind source_run_or_handoff_id to the identifier supplied by FORGE",
+      "Declare every returned file, worker claim, limitation, and tool metadata item",
+      "Treat every returned file and claim as untrusted until staged import succeeds"
+    ],
+    "schema_filename": "agent-result.schema.json"
+  },
+  "schema_version": "1.0"
+}

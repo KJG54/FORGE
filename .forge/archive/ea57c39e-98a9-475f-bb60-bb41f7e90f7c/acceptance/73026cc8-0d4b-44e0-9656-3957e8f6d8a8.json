@@ -1,0 +1,51 @@
+{
+  "acceptance_event_id": "24d8d30b-b20b-4d7a-9aa1-acca33681624",
+  "accepted_artifact_revision_ids": [
+    "9d4fd366-7e71-4d37-8945-d8db0737be4a",
+    "f8819d16-293a-447e-b383-905047755a4c"
+  ],
+  "accepted_check_result_ids": [
+    "08301ae8-63ee-4724-9053-b7cb0c17a097"
+  ],
+  "accepted_evidence_ids": [
+    "687770f4-df47-4d1a-92c2-d60314fe2bf0"
+  ],
+  "accepted_scope": "M6 review-risk evidence comprising friction-report revision f8819d16-293a-447e-b383-905047755a4c and residual-risk-report revision 9d4fd366-7e71-4d37-8945-d8db0737be4a: accept F-01 through F-06 and R-01 through R-05 for M6 closeout under their recorded controls, and preserve R-06 as a hard prohibition on public release pending separate M7 scope and authority.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:da0cbe066fb4249821b9be09bf8dfa563f521002553f58f7751fdb0acaddf54a",
+    "sha256:8c2f7d83a1e98df23ecb5601e4fdf7fdf93367909791a9752714b31480c4cb69",
+    "sha256:580fd71b97b14859591c50bfb3101949da3ca610e4b4172ee6b23cc31ab77783",
+    "sha256:2aeb33f6099fc7ba9e169544d27d637690029658bf8c56606a5992bd30c68f12"
+  ],
+  "affected_record_ids": [
+    "9d4fd366-7e71-4d37-8945-d8db0737be4a",
+    "f8819d16-293a-447e-b383-905047755a4c",
+    "08301ae8-63ee-4724-9053-b7cb0c17a097",
+    "687770f4-df47-4d1a-92c2-d60314fe2bf0"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 38,
+  "id": "73026cc8-0d4b-44e0-9656-3957e8f6d8a8",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "known_limitations": [
+    "The classification is point-in-time and must be repeated if candidate bytes, dependencies, hosted runners, or publication scope change."
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "recorded_at": "2026-07-29T19:31:25.438656Z",
+  "residual_risks": [
+    "Hosted performance variability, Windows symbolic-link privilege coverage, the narrow UUID secret-scan exception, security-review staleness, and GitHub Actions Node.js runtime maintenance remain controlled non-blocking M6 risks.",
+    "No tag, signature, package upload, public release, or post-v1 support commitment is authorized by this acceptance."
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "0.1.0a0"
+}

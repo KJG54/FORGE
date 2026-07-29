@@ -1,0 +1,44 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:c131175ad011096c31433c071ef63b9e014194abaadce27decedf1322c5ec95a"
+  ],
+  "affected_record_ids": [
+    "a527ab21-d131-4975-b9a2-7ea82a62a338",
+    "117b934e-2d18-4455-84f4-b53f0db3cb2f",
+    "0666877a-eca2-468d-8b1f-7b360fd1667a",
+    "237bf552-6ab7-4c66-9ae9-8e6ec2a60ea7"
+  ],
+  "artifact_revision_ids": [
+    "a527ab21-d131-4975-b9a2-7ea82a62a338",
+    "117b934e-2d18-4455-84f4-b53f0db3cb2f"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "0666877a-eca2-468d-8b1f-7b360fd1667a"
+  ],
+  "claim_ids": [
+    "237bf552-6ab7-4c66-9ae9-8e6ec2a60ea7"
+  ],
+  "correlation_id": null,
+  "event_sequence": 46,
+  "id": "efe43f28-41a7-4acc-8062-8b43e6bf1812",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "limitations": [
+    "The evidence applies only to the verified M6 candidate bytes and is point-in-time.",
+    "Closeout does not tag, sign, upload, publish, create post-v1 commitments, or authorize M7."
+  ],
+  "packet_digest": "sha256:c131175ad011096c31433c071ef63b9e014194abaadce27decedf1322c5ec95a",
+  "purpose": "Bind the exact M6 evidence/readiness report, lessons, closeout check, and worker claim for final owner acceptance.",
+  "recorded_at": "2026-07-29T19:33:13.412410Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "0.1.0a0"
+}

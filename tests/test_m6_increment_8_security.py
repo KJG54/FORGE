@@ -9,6 +9,10 @@ UUID_PATTERN = (
 )
 GOVERNED_PATHS = {
     r"(?:^|/)\.forge/active/events\.jsonl$",
+    (
+        r"(?:^|/)\.forge/archive/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-"
+        r"[0-9a-f]{4}-[0-9a-f]{12}/events\.jsonl$"
+    ),
     r"(?:^|/)\.forge/idempotency/[0-9a-f]{64}\.json$",
 }
 

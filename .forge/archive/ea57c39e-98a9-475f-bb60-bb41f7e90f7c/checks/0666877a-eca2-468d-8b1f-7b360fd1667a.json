@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:35e4eed31ee2f5cb3f78b7f759b05d98baf91c0f232a3ad9cb1e25b74b1144ae",
+    "sha256:32fd17878e6fcd80fcf6decf7641faa6b1fffa73e507b68931084518a01f8ba3"
+  ],
+  "affected_record_ids": [
+    "117b934e-2d18-4455-84f4-b53f0db3cb2f",
+    "a527ab21-d131-4975-b9a2-7ea82a62a338"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "closeout-ready",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-07-29T19:33:05.159957Z",
+  "event_sequence": 45,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "0666877a-eca2-468d-8b1f-7b360fd1667a",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Reviewed release-readiness revision a527ab21-d131-4975-b9a2-7ea82a62a338 and lessons revision 117b934e-2d18-4455-84f4-b53f0db3cb2f; confirmed all eight M6 increments, local validation, PR and merged-main matrices, five exit criteria, risk acceptance, limitations, lessons, and the explicit no-publication stop point are present.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "This closeout check applies only to the verified M6 candidate and cannot authorize changed bytes or M7 publication."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-07-29T19:33:05.160022Z",
+  "result_digest": "sha256:ca3e3d70e38566527c0fb94d85b63470b0a2bff02e9ff7e211aa37aecb28c274",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-07-29T19:33:05.159955Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "117b934e-2d18-4455-84f4-b53f0db3cb2f",
+    "a527ab21-d131-4975-b9a2-7ea82a62a338"
+  ],
+  "tool_version": "0.1.0a0"
+}
