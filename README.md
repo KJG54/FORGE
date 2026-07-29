@@ -293,6 +293,13 @@ health, and all 51 schemas. Local evidence does not establish unexecuted matrix 
 execution remains deferred until M6 closeout. See the
 [installation guide](docs/installation.md).
 
+M6 Increment 3 adds uninitialized software and synthetic research example repositories. Each
+contains all artifacts required by its bundled workflow but no FORGE state, owner identity,
+decision, check, evidence, acceptance, credential, or executable content. A release-test harness
+copies the examples into temporary directories and completes both workflows through an exact
+installed `forge` executable; synthetic rehearsal acceptance cannot apply to real work. See the
+[example repositories](examples/README.md).
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -432,6 +439,8 @@ forge --help
 - [M5 evidence report](docs/milestones/m5-report.md)
 - [M6 Increment 1 pre-v1 compatibility boundary](docs/milestones/m6-increment-1.md)
 - [M6 Increment 2 built-distribution installation boundary](docs/milestones/m6-increment-2.md)
+- [M6 Increment 3 example-repository boundary](docs/milestones/m6-increment-3.md)
+- [Software and research example repositories](examples/README.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 
