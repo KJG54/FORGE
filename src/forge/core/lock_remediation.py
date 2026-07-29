@@ -170,6 +170,8 @@ def validate_lock_remediation_store(
 ) -> int:
     """Validate every local remediation authorization and preserved lock pair."""
     directory = layout.lock_remediation_directory
+    if not directory.exists() and not directory.is_symlink():
+        return 0
     if directory.is_symlink() or not directory.is_dir():
         raise SecurityError(f"Lock-remediation directory is unsafe: {directory}")
     count = 0

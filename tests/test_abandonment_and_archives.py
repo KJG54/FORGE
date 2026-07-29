@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 from uuid import uuid4
 
@@ -103,6 +104,41 @@ def test_abandon_preserves_registered_bytes_without_claiming_acceptance(
     assert restarted.active.state.lifecycle_state is InitiativeLifecycleState.ABANDONED
     assert restarted.events[-1].id == result.event.id
     assert not tuple(initialized.layout.active_directory.iterdir())
+    initialized.layout.active_directory.rmdir()
+    shutil.rmtree(initialized.layout.local_directory)
+
+    status = runner.invoke(
+        app,
+        ["status", "-C", str(initialized.layout.root)],
+    )
+    assert status.exit_code == 0, status.stderr
+    assert "Integrity: healthy" in status.stdout
+    doctor = runner.invoke(
+        app,
+        ["doctor", "-C", str(initialized.layout.root)],
+    )
+    assert doctor.exit_code == 0, doctor.stderr
+    successor = runner.invoke(
+        app,
+        [
+            "create",
+            "Continue after the abandoned attempt",
+            "--scope",
+            "Fresh work with explicit abandoned predecessor provenance",
+            "--predecessor",
+            str(initiative_id),
+            "--trust-pack-data",
+            "-C",
+            str(initialized.layout.root),
+        ],
+    )
+    assert successor.exit_code == 0, successor.stderr
+    assert (
+        load_active_initiative(initialized.layout)
+        .initiative.predecessor_references[0]
+        .initiative_id
+        == initiative_id
+    )
 
 
 def test_abandon_blocks_active_runs_then_allows_cancelled_and_paused_work(

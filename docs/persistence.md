@@ -28,6 +28,20 @@ the journal commit but before snapshot replacement, the journal remains authorit
 missing or stale snapshot is reported as `integrity_error`. FORGE does not silently normalize the
 snapshot.
 
+## Git-portable empty directories
+
+Git cannot preserve empty directories. After a terminal initiative is fully archived, a clean
+checkout may therefore omit the empty `.forge/active/` marker and every empty or ignored
+`.forge/local/` runtime directory. Under
+[ADR-0058](adr/ADR-0058-git-portable-empty-runtime-directories.md), missing active state is healthy
+only when every archive validates and no archive-staging or retired-active marker exists.
+
+Status and diagnostics remain read-only and do not manufacture directories. A later governed
+mutation safely creates the local lock path, and successor creation recreates `.forge/active/`
+only after validating archives and terminal markers. Symbolic, non-directory, unexpectedly
+populated, staged, or retired paths remain fail-closed. No archive, journal, receipt, terminal
+record, or preserved object is rewritten by this rule.
+
 ## Replay boundary
 
 The storage layer owns sequence validation, replay mechanics, journal-head projection, snapshot

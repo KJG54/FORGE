@@ -4,6 +4,9 @@ from pathlib import Path
 import pytest
 
 from forge.contracts.state import ExplanationProfile
+from forge.core.authorization import owner_actor
+from forge.core.lifecycle import create_initiative
+from forge.core.status import inspect_status
 from forge.errors import ConfigurationError, ConflictError, SecurityError
 from forge.storage.configuration import load_configuration
 from forge.storage.repository import GITIGNORE_BLOCK, discover_repository, initialize_repository
@@ -145,6 +148,29 @@ def test_discovery_rejects_replaced_managed_directory_symlink(tmp_path: Path) ->
 
     with pytest.raises(SecurityError, match="symbolic link"):
         discover_repository(tmp_path)
+
+
+def test_status_and_creation_refuse_non_directory_active_path(tmp_path: Path) -> None:
+    result = initialize_repository(tmp_path, owner_display_name="Owner")
+    result.layout.active_directory.rmdir()
+    result.layout.active_directory.write_text("irregular active path\n", encoding="utf-8")
+
+    report = inspect_status(result.layout)
+    assert report.integrity_state.value == "integrity_error"
+    assert report.blockers == (
+        f"Active FORGE path is irregular or symbolic: {result.layout.active_directory}",
+    )
+    with pytest.raises(SecurityError, match="irregular active path"):
+        create_initiative(
+            result.layout,
+            objective="Must remain blocked",
+            declared_scope_summary="Unsafe active path must not be replaced",
+            actor=owner_actor(result.configuration.owner),
+            trust_pack_data=True,
+        )
+    assert result.layout.active_directory.read_text(encoding="utf-8") == (
+        "irregular active path\n"
+    )
 
 
 def test_init_validates_packs_before_writing_repository_files(

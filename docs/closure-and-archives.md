@@ -61,6 +61,14 @@ The retry validates the committed owner decision, rebuilds incomplete staging wh
 only an exactly matching promoted archive, finishes retirement, and only then writes the completion
 receipt. It never appends a duplicate terminal event.
 
+Git does not transport the empty `.forge/active/` directory recreated after successful retirement.
+Its absence in a clean archive-only checkout is therefore a healthy no-active-initiative state
+only after every archive validates and no staging or retired-active marker exists. A real marker,
+unexpected active content, symbolic path, or non-directory path remains an interrupted or unsafe
+state. Read-only inspection does not recreate the directory; successor creation does so only after
+the archive and marker checks pass. See
+[ADR-0058](adr/ADR-0058-git-portable-empty-runtime-directories.md).
+
 ## Archive contents and inspection
 
 The archive contains the complete terminal journal and snapshot, initiative and locked workflow,
