@@ -7,6 +7,8 @@ semantic-version commitments begin at v1.0.0.
 
 ### Added
 
+- M6 maintained p95 performance budgets and a deterministic shell-free measurement harness for
+  startup, status, 1,000-event journal replay, context generation, and archive access.
 - M6 reproducible dependency, license, vulnerability, and redacted Git-secret review with a strict
   machine-readable policy, exact legacy-license evidence, and one narrow synthetic-fixture history
   exception.

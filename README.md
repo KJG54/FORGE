@@ -312,6 +312,12 @@ audits exact installed runtime versions, and scans full Git history plus a bound
 with redaction. The only secret exception is one exact historical synthetic-test fingerprint. See
 the [supply-chain and secret review](docs/supply-chain-security-review.md).
 
+M6 Increment 6 defines maintained p95 budgets for cold startup, active status, 1,000-event journal
+replay, canonical context generation, and archive access. A shell-free harness measures exact CLI
+paths plus isolated replay against temporary workloads containing five validated archives and 25
+open decisions. Local timing proves only the observed environment; clean-wheel cross-platform
+repetition remains closeout evidence. See the [performance budget guide](docs/performance.md).
+
 Initialize an ordinary project repository with:
 
 ```console
@@ -454,6 +460,7 @@ forge --help
 - [M6 Increment 3 example-repository boundary](docs/milestones/m6-increment-3.md)
 - [M6 Increment 4 complete-documentation boundary](docs/milestones/m6-increment-4.md)
 - [M6 Increment 5 supply-chain and secret-review boundary](docs/milestones/m6-increment-5.md)
+- [M6 Increment 6 maintained-performance boundary](docs/milestones/m6-increment-6.md)
 - [Documentation index](docs/README.md)
 - [Software and research example repositories](examples/README.md)
 - [Contributing](CONTRIBUTING.md)

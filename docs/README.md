@@ -63,6 +63,8 @@ FORGE supplies governance controls, tamper evidence, and path protections. It do
 hostile-code sandbox. See the [security guide](security.md) before enabling any local process.
 Release reviewers should also run the
 [dependency, license, vulnerability, and secret review](supply-chain-security-review.md).
+The [performance budget guide](performance.md) defines the maintained release-candidate latency
+workloads and interpretation.
 
 ## Documentation authority and maintenance
 
