@@ -1,0 +1,16 @@
+{
+  "data_resource_paths": [],
+  "declared_capability_ids": [],
+  "explanation_paths": [],
+  "id": "forge-production-release",
+  "integrity_digest": "sha256:fb23e9b8fb7692db9c277168175c18090f940b9f0a425bb27c80a1013afda497",
+  "provided_workflow_ids": [
+    "production-v1-release"
+  ],
+  "schema_compatibility": [
+    "forge-contracts-1"
+  ],
+  "schema_version": "1.0",
+  "template_paths": [],
+  "version": "0.1.0"
+}

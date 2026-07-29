@@ -77,7 +77,7 @@ def test_repository_dogfood_archive_is_healthy_bound_and_owner_accepted() -> Non
     )
 
     assert configuration.behavior.require_clean_git_for_close
-    assert configuration.packs.local_paths == ("packs/forge-framework-change",)
+    assert "packs/forge-framework-change" in configuration.packs.local_paths
     assert active.pack_manifest.id == "forge-framework-change"
     assert active.pack_trust.trust_state is PackTrustState.TRUSTED_DATA
     assert active.workflow.id == "framework-change"

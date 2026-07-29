@@ -1,0 +1,45 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:a533372b4e44e88cb6ee0faad69cfc778985bfe5af80cf52240cea2769e61143"
+  ],
+  "affected_record_ids": [
+    "8054ea3a-4731-4a84-baa8-c4471a63dfa3",
+    "237787a9-c59d-42d9-b160-6878a59a8df0",
+    "5ebb3638-592f-416a-8192-6a7718310db6",
+    "73d206b7-a168-4a8c-b922-012d6436a71b"
+  ],
+  "artifact_revision_ids": [
+    "8054ea3a-4731-4a84-baa8-c4471a63dfa3",
+    "237787a9-c59d-42d9-b160-6878a59a8df0"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "5ebb3638-592f-416a-8192-6a7718310db6"
+  ],
+  "claim_ids": [
+    "73d206b7-a168-4a8c-b922-012d6436a71b"
+  ],
+  "correlation_id": null,
+  "event_sequence": 8,
+  "id": "b18553d9-487e-4242-9d82-3a6c418e868e",
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "limitations": [
+    "Automated search and index availability checks are not legal clearance and may become stale",
+    "No repository setting, trusted publisher, tag, release, or package upload has been created",
+    "Complete release testing is intentionally deferred to exact-candidate closeout"
+  ],
+  "packet_digest": "sha256:a533372b4e44e88cb6ee0faad69cfc778985bfe5af80cf52240cea2769e61143",
+  "purpose": "Bind the exact M7 scope and naming/channel artifacts, worker claim, and focused structural check for owner acceptance review",
+  "recorded_at": "2026-07-29T21:41:39.334978Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "0.1.0a0"
+}

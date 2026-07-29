@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:779590261814c052342013d3a18b2b4fc453f02a2f3ca03e540387a7efe17a3b"
+  ],
+  "affected_record_ids": [
+    "8054ea3a-4731-4a84-baa8-c4471a63dfa3"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "current_revision": 1,
+  "event_sequence": 3,
+  "id": "a8141811-26fb-4b95-8dda-d160c6e0499d",
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "recorded_at": "2026-07-29T21:41:06.062355Z",
+  "role": "production-v1-scope",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "FORGE M7 Production-v1 Scope",
+  "tool_version": "0.1.0a0"
+}

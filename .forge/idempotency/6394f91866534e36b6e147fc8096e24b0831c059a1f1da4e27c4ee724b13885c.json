@@ -1,0 +1,15 @@
+{
+  "command": "artifact_add",
+  "completed_at": "2026-07-29T21:41:07.112994Z",
+  "events": [
+    {
+      "event_hash": "sha256:3733e333fbf816663da73b3b28f5e79435178665ac02673386aeacf43d8614b6",
+      "event_id": "6adfad00-3aff-415b-b280-90b69c3b5e57",
+      "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+      "sequence": 4
+    }
+  ],
+  "key": "m7-increment-1-add-contract",
+  "request_digest": "sha256:53a84f521e6b562aea20aa99adff048489a387ad52740e44963fb600d3f83793",
+  "schema_version": "1.0"
+}

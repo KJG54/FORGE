@@ -20,6 +20,7 @@ artifacts:
 packs:
   local_paths:
   - packs/forge-framework-change
+  - packs/forge-production-release
 agents:
   preferred_adapter: null
 capabilities:
