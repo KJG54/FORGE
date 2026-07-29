@@ -1,0 +1,53 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 0.1.0a0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:69e206d415340fad0a5a1c89ed00fcc8b27aaac93e9290c6e9f61996f117c0be"
+  ],
+  "affected_record_ids": [
+    "1a9b1f02-fb23-431a-ad65-34bcd75a2826"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "implementation-validated",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-07-29T17:45:54.676520Z",
+  "event_sequence": 16,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "b38bf3ad-a50b-4b59-93f2-7cb39e885a7e",
+  "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Reviewed the exact SHA-256 implementation manifest and 38-job CI topology; pytest tests/test_m6_increment_4.py tests/test_m6_increment_7.py tests/test_m6_increment_8.py passed 9 tests; Ruff and strict Pyright passed; the local procedure rehearsal passed all 7 procedures",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "The remote 38-job matrix and complete release validation have not run; they belong to verify-release"
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-07-29T17:45:54.676570Z",
+  "result_digest": "sha256:70e4dd8988a3d6c8cab4f326cce42a6d4c27d763456c41311af6396b3fb8f2b0",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-07-29T17:45:54.676518Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "1a9b1f02-fb23-431a-ad65-34bcd75a2826"
+  ],
+  "tool_version": "0.1.0a0"
+}

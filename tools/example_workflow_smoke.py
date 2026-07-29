@@ -379,8 +379,8 @@ def parse_args(arguments: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--forge",
-        required=True,
         type=Path,
+        default=Path(shutil.which("forge") or "forge"),
         help="Exact installed forge console executable to exercise.",
     )
     parser.add_argument(

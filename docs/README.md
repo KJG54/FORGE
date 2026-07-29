@@ -67,6 +67,8 @@ The [performance budget guide](performance.md) defines the maintained release-ca
 workloads and interpretation.
 The [self-dogfooding guide](dogfooding.md) explains how this repository's tracked framework-change
 initiative governs the remaining M6 release work without manufacturing owner acceptance.
+The [release-candidate closeout guide](release-candidate-closeout.md) defines the one-wheel matrix,
+operational rehearsals, governed evidence sequence, and final M6 evidence requirements.
 
 ## Documentation authority and maintenance
 

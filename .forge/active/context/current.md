@@ -6,15 +6,16 @@ Prepare the FORGE M6 release candidate through governed framework-change review
 
 ## Active step
 
-- ID: `scope`
-- State: `awaiting_acceptance`
-- Purpose: Define the framework change, constraints, compatibility impact, and acceptance criteria.
-- Instructions: Register the exact scope and release requirements before implementation authority is accepted.
-- Context selection rules: initiative-objective
+- ID: `verify-release`
+- State: `in_progress`
+- Purpose: Validate the exact candidate change against its release requirements.
+- Instructions: Preserve check and evidence results without treating process success as owner acceptance.
+- Context selection rules: release-requirements, framework-changes
 
 ### Selected required inputs
 
-- None
+- `release-requirements`: `release/dogfood/release-requirements.md` (sha256:8557669f290628c561996a456ab9bae6315f67cb8a3437956e99dc695a11434d, text/markdown)
+- `framework-changes`: `release/dogfood/framework-changes.md` (sha256:69e206d415340fad0a5a1c89ed00fcc8b27aaac93e9290c6e9f61996f117c0be, text/markdown)
 
 ## Approved scope
 
@@ -22,7 +23,8 @@ M6 Increment 7 dogfooding and Increment 8 validation, friction, residual-risk, a
 
 ## Relevant constraints
 
-- Context selection rule: initiative-objective
+- Context selection rule: release-requirements
+- Context selection rule: framework-changes
 
 ## Relevant decisions
 
@@ -30,7 +32,9 @@ M6 Increment 7 dogfooding and Increment 8 validation, friction, residual-risk, a
 
 ## Permitted actions
 
-- No worker action is currently permitted
+- Create only declared returned files within the approved scope
+- Report worker claims, tool metadata, and limitations without governance approval
+- Use only the selected required-input paths listed in the active step
 
 ## Prohibited actions
 
@@ -41,13 +45,12 @@ M6 Increment 7 dogfooding and Increment 8 validation, friction, residual-risk, a
 
 ## Required outputs
 
-- change-scope
-- release-requirements
+- verification-report
 
 ## Expected evidence
 
 - Worker claim requirement: outputs-produced
-- Check requirement after import: scope-reviewed
+- Check requirement after import: release-checks-passed
 - Workflow evidence class after import: check-evidence
 - Owner-only acceptance requirement: owner-acceptance
 - Returned files require staged import before registration
@@ -64,4 +67,4 @@ M6 Increment 7 dogfooding and Increment 8 validation, friction, residual-risk, a
 
 ## Known blockers
 
-- Active step is awaiting configured-owner acceptance
+- None

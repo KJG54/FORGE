@@ -1,0 +1,19 @@
+title = "FORGE release secret scanning"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "generic-api-key"
+
+  [[rules.allowlists]]
+  description = "Canonical FORGE command-idempotency UUIDs in governed records"
+  condition = "AND"
+  regexTarget = "secret"
+  regexes = [
+    '''^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$''',
+  ]
+  paths = [
+    '''(?:^|/)\.forge/active/events\.jsonl$''',
+    '''(?:^|/)\.forge/idempotency/[0-9a-f]{64}\.json$''',
+  ]
