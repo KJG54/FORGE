@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 
+from forge import __version__
 from forge.contracts import CONTRACT_MODELS, SCHEMA_VERSION
 from forge.errors import ConflictError
 
@@ -19,6 +20,8 @@ def schema_bundle() -> dict[str, bytes]:
     }
     files["index.json"] = _json_bytes(
         {
+            "forge_version": __version__,
+            "pack_schema_compatibility": "forge-contracts-1",
             "schema_version": SCHEMA_VERSION,
             "schemas": {
                 name: f"{name}.schema.json" for name in sorted(CONTRACT_MODELS)

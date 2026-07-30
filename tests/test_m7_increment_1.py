@@ -147,21 +147,17 @@ def test_m7_successor_is_bound_to_m6_with_owner_accepted_scope() -> None:
     assert active.workflow.id == "production-v1-release"
     assert active.state.lifecycle_state is InitiativeLifecycleState.ACTIVE
     assert active.state.step_states["scope"] is StepState.COMPLETED
-    assert active.state.step_states["prepare"] is StepState.READY
-    assert set(active.state.step_states.values()) == {
-        StepState.COMPLETED,
-        StepState.READY,
-        StepState.PENDING,
-    }
-    assert set(current_by_role) == {
+    assert {
         "production-v1-scope",
         "naming-channel-contract",
-    }
+    } <= set(current_by_role)
     assert {
-        revision.path for revision in current_by_role.values()
-    } == {
         "release/production-v1/scope.md",
         "release/production-v1/naming-and-channel-contract.md",
+    } <= {revision.path for revision in current_by_role.values()}
+    scope_revision_ids = {
+        current_by_role[role].id
+        for role in ("production-v1-scope", "naming-channel-contract")
     }
     assert all(
         sha256_digest((ROOT / revision.path).read_bytes()) == revision.content_digest
@@ -175,21 +171,15 @@ def test_m7_successor_is_bound_to_m6_with_owner_accepted_scope() -> None:
     assert claims[0].step_id == "scope"
     assert checks[0].check_id == "scope-and-channel-contract-reviewed"
     assert checks[0].outcome.value == "passed"
-    assert set(checks[0].target_artifact_revision_ids) == {
-        revision.id for revision in current_by_role.values()
-    }
+    assert set(checks[0].target_artifact_revision_ids) == scope_revision_ids
     assert evidence[0].claim_ids == (claims[0].id,)
     assert evidence[0].check_result_ids == (checks[0].id,)
-    assert set(evidence[0].artifact_revision_ids) == {
-        revision.id for revision in current_by_role.values()
-    }
+    assert set(evidence[0].artifact_revision_ids) == scope_revision_ids
     acceptance_paths = tuple(layout.acceptance_directory.glob("*.json"))
     assert len(acceptance_paths) == 1
     acceptance = load_record(acceptance_paths[0], AcceptanceRecord)
     assert acceptance.id == SCOPE_ACCEPTANCE_ID
-    assert set(acceptance.accepted_artifact_revision_ids) == {
-        revision.id for revision in current_by_role.values()
-    }
+    assert set(acceptance.accepted_artifact_revision_ids) == scope_revision_ids
     assert acceptance.accepted_check_result_ids == (checks[0].id,)
     assert acceptance.accepted_evidence_ids == (evidence[0].id,)
     assert "M7 Increments 1-8" in acceptance.accepted_scope

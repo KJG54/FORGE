@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "release_status": "candidate-unpublished",
+  "distribution": {
+    "name": "forge-governance",
+    "version": "1.0.0",
+    "import_package": "forge",
+    "console_script": "forge",
+    "entry_point": "forge.cli.entrypoint:main",
+    "wheel_filename": "forge_governance-1.0.0-py3-none-any.whl",
+    "sdist_filename": "forge_governance-1.0.0.tar.gz",
+    "release_tag": "v1.0.0"
+  },
+  "support": {
+    "python_implementation": "CPython",
+    "python_versions": [
+      "3.12",
+      "3.13",
+      "3.14"
+    ],
+    "operating_systems": [
+      "linux",
+      "macos",
+      "windows"
+    ],
+    "installation_modes": [
+      "venv",
+      "pipx"
+    ]
+  },
+  "persisted_contracts": {
+    "schema_versions": [
+      "1.0"
+    ],
+    "public_model_count": 51,
+    "pack_schema_compatibility": "forge-contracts-1",
+    "journal_formats": [
+      {
+        "id": "m1-unhashed-event-journal",
+        "schema_version": "1.0",
+        "mutation_support": "migration-required",
+        "migration_id": "legacy-m1-journal-to-m2-hash-chain-v1"
+      },
+      {
+        "id": "m2-sha256-event-chain",
+        "schema_version": "1.0",
+        "mutation_support": "current",
+        "migration_id": null
+      }
+    ]
+  },
+  "packs": {
+    "bundled": [
+      {
+        "id": "research-basic",
+        "version": "0.4.0",
+        "schema_compatibility": "forge-contracts-1"
+      },
+      {
+        "id": "software-basic",
+        "version": "0.4.0",
+        "schema_compatibility": "forge-contracts-1"
+      }
+    ],
+    "repository_local": [
+      {
+        "id": "forge-framework-change",
+        "version": "0.1.0",
+        "schema_compatibility": "forge-contracts-1"
+      },
+      {
+        "id": "forge-production-release",
+        "version": "0.1.0",
+        "schema_compatibility": "forge-contracts-1"
+      }
+    ]
+  },
+  "public_python_surface": [
+    "forge.__version__",
+    "forge.contracts",
+    "forge.schemas"
+  ],
+  "cli_command_paths": [
+    "abandon",
+    "acceptance",
+    "acceptance record",
+    "acceptance revoke",
+    "acceptance show",
+    "agent",
+    "agent context",
+    "agent discover",
+    "agent doctor",
+    "agent run",
+    "artifact",
+    "artifact add",
+    "artifact list",
+    "artifact revise",
+    "artifact show",
+    "audit",
+    "audit list",
+    "audit show",
+    "begin",
+    "capability",
+    "capability approve",
+    "capability inspect",
+    "capability list",
+    "capability revoke",
+    "check",
+    "check list",
+    "check record",
+    "check run",
+    "check show",
+    "check structure",
+    "close",
+    "complete",
+    "config",
+    "config show",
+    "config validate",
+    "create",
+    "decide",
+    "decision",
+    "decision show",
+    "decision withdraw",
+    "deviation",
+    "deviation record",
+    "deviation review",
+    "deviation show",
+    "doctor",
+    "evidence",
+    "evidence add",
+    "evidence list",
+    "evidence show",
+    "handoff",
+    "history",
+    "import-result",
+    "init",
+    "migrate",
+    "next",
+    "override",
+    "override record",
+    "override show",
+    "pack",
+    "pack inspect",
+    "pack list",
+    "pack template",
+    "pack template list",
+    "pack template show",
+    "pack trust",
+    "pack untrust",
+    "pack validate",
+    "pack validator",
+    "pack validator list",
+    "pack validator show",
+    "pause",
+    "recover",
+    "recover-command",
+    "remediate-lock",
+    "resume",
+    "risk",
+    "risk accept",
+    "risk revoke",
+    "risk show",
+    "run",
+    "run cancel",
+    "run list",
+    "run show",
+    "schema",
+    "schema export",
+    "scope",
+    "scope amend",
+    "scope show",
+    "status",
+    "verify"
+  ],
+  "semantic_version_guarantees": {
+    "patch": "Compatible defect, security, performance, documentation, and internal implementation corrections that require no new user input.",
+    "minor": "Backward-compatible commands, optional inputs, models, defaulted fields, schemas, formats, and migration paths.",
+    "major": "Required before removing or incompatibly changing a guaranteed persisted, CLI, or public Python boundary."
+  },
+  "non_guarantees": [
+    "exact-human-readable-cli-prose",
+    "undocumented-internal-python-modules",
+    "arbitrary-intermediate-commits",
+    "unknown-or-malformed-persisted-formats",
+    "persisted-format-downgrade",
+    "immutable-archive-migration",
+    "external-provider-cli-behavior",
+    "unpromised-cross-major-compatibility"
+  ],
+  "publication_metadata": {
+    "status": "pending-m7-increment-4",
+    "development_status_classifier": "Development Status :: 2 - Pre-Alpha",
+    "project_urls_complete": false,
+    "dated_changelog_section_complete": false
+  }
+}

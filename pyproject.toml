@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "forge-governance"
-version = "0.1.0a0"
+version = "1.0.0"
 description = "A local-first governance framework for human-directed, AI-assisted work"
 readme = "README.md"
 requires-python = ">=3.12"

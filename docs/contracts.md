@@ -36,6 +36,9 @@ forge schema export --output schemas
 ```
 
 The command writes one deterministic `*.schema.json` file per public model plus `index.json`.
+The index binds the export to the current FORGE distribution version, contract schema version,
+`forge-contracts-1` declarative-pack compatibility marker, and exact schema filename map. These
+versions are independent rather than mechanically synchronized.
 Existing identical files are accepted. Changed generated files are not overwritten unless the
 caller supplies `--force`; unrelated files in the destination are preserved.
 

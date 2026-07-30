@@ -90,7 +90,7 @@ jobs:
       - name: Exercise exact built wheel
         run: >-
           python -m tools.distribution_smoke
-          --wheel dist/forge_governance-0.1.0a0-py3-none-any.whl
+          --wheel dist/forge_governance-1.0.0-py3-none-any.whl
           --mode ${{ matrix.mode }}
 
   release-scenarios:
@@ -115,7 +115,7 @@ jobs:
       - name: Install exact built wheel
         run: >-
           python -m pip install --upgrade pip
-          dist/forge_governance-0.1.0a0-py3-none-any.whl
+          dist/forge_governance-1.0.0-py3-none-any.whl
       - name: Enforce performance budgets
         run: python -m tools.performance_review
       - name: Complete both fresh-user examples

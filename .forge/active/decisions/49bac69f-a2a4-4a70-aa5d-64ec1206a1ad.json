@@ -1,0 +1,42 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:c325414d4cdef1c74c33e520008bbca43ebbc02471616315aaf813f81faaa8a1",
+    "sha256:a6eb13ba6b678b6c29d590804c9474fd37a8502b694c2437866ad6c060c3a47f",
+    "sha256:eeb28e9903019b0603bbcec26ec70435c47e73fbd7322bb49665f3da8f98c89d"
+  ],
+  "affected_record_ids": [
+    "cfe54f78-dbd5-4627-9bc2-e19383f5059d"
+  ],
+  "authorization_basis": "configured owner recorded an explicit governance decision",
+  "bound_digests": [
+    "sha256:c325414d4cdef1c74c33e520008bbca43ebbc02471616315aaf813f81faaa8a1",
+    "sha256:a6eb13ba6b678b6c29d590804c9474fd37a8502b694c2437866ad6c060c3a47f",
+    "sha256:eeb28e9903019b0603bbcec26ec70435c47e73fbd7322bb49665f3da8f98c89d"
+  ],
+  "chosen_outcome": "Freeze 1.0.0 with independent schema, journal, pack, and workflow versions",
+  "considered_options": [
+    "Keep 0.1.0a0 until publication",
+    "Use a 1.0.0 release-candidate suffix",
+    "Freeze 1.0.0 with independent schema, journal, pack, and workflow versions"
+  ],
+  "correlation_id": null,
+  "decision_type": "production-v1-version-contract",
+  "event_sequence": 14,
+  "id": "49bac69f-a2a4-4a70-aa5d-64ec1206a1ad",
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "question": "Which distribution version and compatibility boundary governs the Production-v1 candidate?",
+  "rationale": "The approved Increment 2 contract requires later preparation and exact-candidate work to exercise the final distribution version while preserving independent compatibility domains and separate publication authority",
+  "recorded_at": "2026-07-29T22:59:22.777146Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "status": "active",
+  "tool_version": "1.0.0"
+}

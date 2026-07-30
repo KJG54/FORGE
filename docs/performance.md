@@ -38,6 +38,11 @@ Selected archive status validates every archive exactly once and reuses the sele
 view for detailed rendering. It does not cache validation across commands or omit any manifest,
 inventory, record, journal, preserved-object, or terminal-identity check.
 
+Context generation still derives and validates the complete neutral context on every command.
+When a generated JSON or Markdown view already contains the exact current bytes, FORGE preserves
+that file instead of performing another atomic flush and replacement. Changed context continues
+to replace each affected view atomically.
+
 ## Budgets
 
 | Case | Linux p95 | macOS p95 | Windows p95 |

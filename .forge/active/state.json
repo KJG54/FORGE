@@ -1,20 +1,25 @@
 {
   "active_pause_event_id": null,
-  "active_run_ids": [],
+  "active_run_ids": [
+    "0fca736a-c6e3-46d1-99db-b2b779ec9596"
+  ],
   "current_artifact_revisions": {
+    "67879d21-85b9-4ae9-b929-568bec0cfb8c": 1,
     "a8141811-26fb-4b95-8dda-d160c6e0499d": 1,
     "b157e516-57a6-475c-ab48-70197979aabd": 1
   },
   "current_step_id": "prepare",
   "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
   "integrity_state": "healthy",
-  "journal_head_hash": "sha256:ade4b26ba3ec1632cb5580bdb73ca70772b0b17acc51f2ec454c4d495bfe34d8",
-  "journal_head_sequence": 11,
+  "journal_head_hash": "sha256:1d92ae532447780cc6e8a5dbc906ce87aa92489cf78ac92bf7b85dd8cc255ac9",
+  "journal_head_sequence": 14,
   "lifecycle_state": "active",
-  "open_decision_ids": [],
+  "open_decision_ids": [
+    "49bac69f-a2a4-4a70-aa5d-64ec1206a1ad"
+  ],
   "open_gate_ids": [],
   "permitted_next_actions": [
-    "begin:prepare"
+    "complete:prepare"
   ],
   "repository_state": "initialized",
   "schema_version": "1.0",
@@ -22,7 +27,7 @@
   "step_states": {
     "approve-publication": "pending",
     "closeout": "pending",
-    "prepare": "ready",
+    "prepare": "in_progress",
     "publish": "pending",
     "retrospective": "pending",
     "scope": "completed",

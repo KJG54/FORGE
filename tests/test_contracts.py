@@ -6,6 +6,7 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
+from forge import __version__
 from forge.contracts import (
     CONTRACT_MODELS,
     Actor,
@@ -97,6 +98,8 @@ def test_schema_bundle_is_deterministic_and_self_describing(tmp_path: Path) -> N
     exported = export_schema_bundle(tmp_path / "schemas")
     assert len(exported) == len(CONTRACT_MODELS) + 1
     index = json.loads((tmp_path / "schemas" / "index.json").read_text(encoding="utf-8"))
+    assert index["forge_version"] == __version__
+    assert index["pack_schema_compatibility"] == "forge-contracts-1"
     assert index["schema_version"] == SCHEMA_VERSION
     assert set(index["schemas"]) == set(CONTRACT_MODELS)
 
