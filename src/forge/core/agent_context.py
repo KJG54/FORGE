@@ -18,6 +18,7 @@ from forge.contracts.agents import (
 from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
 from forge.contracts.decisions import DecisionRecord
 from forge.contracts.state import InitiativeLifecycleState, StepState
+from forge.core.agent_protocol import load_agent_protocol
 from forge.core.artifacts import assert_working_revision_current
 from forge.core.lifecycle import ActiveInitiative, load_active_initiative
 from forge.core.scope_amendments import effective_scope_summary
@@ -40,6 +41,9 @@ class AgentContextGenerationResult:
     context: CanonicalAgentContext
     json_path: Path
     markdown_path: Path
+    protocol_path: Path
+    protocol_version: str
+    protocol_digest: str
 
 
 _ACTIONABLE_STATES = {StepState.READY, StepState.IN_PROGRESS, StepState.INVALIDATED}
@@ -334,7 +338,7 @@ def generate_agent_context(
     *,
     target: AgentContextTarget = AgentContextTarget.NEUTRAL,
 ) -> AgentContextGenerationResult:
-    """Atomically replace the two regenerable neutral current-context views."""
+    """Atomically replace the regenerable protocol and neutral current-context views."""
 
     if target is not AgentContextTarget.NEUTRAL:
         raise ConfigurationError(
@@ -351,10 +355,13 @@ def write_agent_context_views(
 ) -> AgentContextGenerationResult:
     """Replace regenerable context files while the caller holds mutation exclusion."""
 
+    protocol = load_agent_protocol()
+    protocol_path = layout.agent_context_directory / protocol.filename
     json_bytes = render_record(context)
     markdown_bytes = _render_markdown(context)
     created = _ensure_context_directory(layout.agent_context_directory)
     try:
+        _write_context_view_if_changed(protocol_path, protocol.content)
         _write_context_view_if_changed(layout.current_agent_context_json_file, json_bytes)
         _write_context_view_if_changed(layout.current_agent_context_markdown_file, markdown_bytes)
     except Exception:
@@ -362,6 +369,7 @@ def write_agent_context_views(
             for path in (
                 layout.current_agent_context_markdown_file,
                 layout.current_agent_context_json_file,
+                protocol_path,
             ):
                 path.unlink(missing_ok=True)
             with suppress(OSError):
@@ -371,6 +379,9 @@ def write_agent_context_views(
         context=context,
         json_path=layout.current_agent_context_json_file,
         markdown_path=layout.current_agent_context_markdown_file,
+        protocol_path=protocol_path,
+        protocol_version=protocol.version,
+        protocol_digest=protocol.digest,
     )
 
 

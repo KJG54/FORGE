@@ -15,6 +15,7 @@ from forge.core.agent_context import (
     generate_agent_context,
     load_agent_context,
 )
+from forge.core.agent_protocol import load_agent_protocol
 from forge.core.archival import abandon_initiative, load_archive
 from forge.core.artifacts import add_artifact
 from forge.core.authorization import owner_actor
@@ -253,6 +254,10 @@ def test_agent_context_cli_generates_tracked_neutral_views(tmp_path: Path) -> No
     assert "Generated neutral canonical agent context" in result.stdout
     assert (tmp_path / ".forge" / "active" / "context" / "current.json").is_file()
     assert (tmp_path / ".forge" / "active" / "context" / "current.md").is_file()
+    protocol = load_agent_protocol()
+    assert (
+        tmp_path / ".forge" / "active" / "context" / protocol.filename
+    ).read_bytes() == protocol.content
 
 
 def test_context_directory_symlink_is_rejected_when_supported(tmp_path: Path) -> None:
@@ -275,6 +280,7 @@ def test_generated_context_is_preserved_and_validated_during_archival(tmp_path: 
     generated = generate_agent_context(initialized.layout)
     json_bytes = generated.json_path.read_bytes()
     markdown_bytes = generated.markdown_path.read_bytes()
+    protocol_bytes = generated.protocol_path.read_bytes()
 
     result = abandon_initiative(
         initialized.layout,
@@ -287,3 +293,6 @@ def test_generated_context_is_preserved_and_validated_during_archival(tmp_path: 
 
     assert archived.layout.current_agent_context_json_file.read_bytes() == json_bytes
     assert archived.layout.current_agent_context_markdown_file.read_bytes() == markdown_bytes
+    assert (
+        archived.layout.agent_context_directory / generated.protocol_path.name
+    ).read_bytes() == protocol_bytes
