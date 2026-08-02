@@ -1,0 +1,493 @@
+{
+  "compatibility_constraints": [
+    "forge-contracts-1"
+  ],
+  "description": "Govern one exact Production-v1 candidate through owner-gated publication and closeout.",
+  "explanation_content": {
+    "guided": "FORGE identifies the required artifacts, checks, evidence, limitations, exact-artifact bindings, external effects, and owner decisions at each Production-v1 step.",
+    "mentored": "FORGE explains why identity, preparation, candidate verification, publication authorization, external results, public verification, retrospective, and closeout remain separately reviewable facts under owner authority.",
+    "minimal": "Follow the locked release steps; no check, evidence, or worker action grants owner or publication authority.",
+    "standard": "Scope, prepare, verify, authorize, publish, verify publicly, review, and close one exact release under separate owner acceptance."
+  },
+  "id": "production-v1-release",
+  "name": "FORGE Production-v1 Release",
+  "pack_id": "forge-production-release",
+  "required_artifact_classes": [
+    "production-v1-scope",
+    "naming-channel-contract",
+    "candidate-source",
+    "candidate-sdist",
+    "candidate-wheel",
+    "release-manifest",
+    "release-notes",
+    "compatibility-statement",
+    "support-security-record",
+    "publication-plan",
+    "rollback-yank-plan",
+    "candidate-verification-report",
+    "supply-chain-report",
+    "residual-risk-register",
+    "prepublication-evidence-record",
+    "publication-authorization-record",
+    "publication-results",
+    "public-release-record",
+    "public-verification-report",
+    "publication-discrepancy-record",
+    "production-v1-retrospective",
+    "final-residual-risk-record",
+    "post-v1-prioritization-record",
+    "production-v1-closeout-record",
+    "production-v1-lessons"
+  ],
+  "required_evidence_classes": [
+    "release-evidence"
+  ],
+  "required_gates": [],
+  "schema_version": "1.0",
+  "steps": [
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "return_to_ready",
+      "check_requirements": [
+        "scope-and-channel-contract-reviewed"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "initiative-objective",
+        "predecessor-lineage",
+        "owner-reviewed-release-contract"
+      ],
+      "id": "scope",
+      "instructions": "Register the owner-reviewed Production-v1 scope and naming/channel contract without treating data-pack trust as release authority.",
+      "prerequisites": [],
+      "purpose": "Lock the exact M7 scope, public identity, channels, constraints, and acceptance criteria.",
+      "required_inputs": [],
+      "required_outputs": [
+        "production-v1-scope",
+        "naming-channel-contract"
+      ],
+      "schema_version": "1.0"
+    },
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "block_for_owner_review",
+      "check_requirements": [
+        "candidate-inputs-prepared"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "accepted-scope",
+        "naming-channel-contract",
+        "immutable-predecessor"
+      ],
+      "id": "prepare",
+      "instructions": "Produce the versioned source, distribution artifacts, metadata, support material, release notes, compatibility statement, and recovery procedures required for candidate verification.",
+      "prerequisites": [
+        "scope"
+      ],
+      "purpose": "Prepare the complete exact candidate inputs without publishing or tagging.",
+      "required_inputs": [
+        "production-v1-scope",
+        "naming-channel-contract"
+      ],
+      "required_outputs": [
+        "candidate-source",
+        "candidate-sdist",
+        "candidate-wheel",
+        "release-manifest",
+        "release-notes",
+        "compatibility-statement",
+        "support-security-record",
+        "publication-plan",
+        "rollback-yank-plan"
+      ],
+      "schema_version": "1.0"
+    },
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "block_for_owner_review",
+      "check_requirements": [
+        "exact-candidate-matrix-passed",
+        "supply-chain-evidence-complete",
+        "residual-risks-classified"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "exact-candidate-digests",
+        "complete-closeout-evidence",
+        "known-limitations"
+      ],
+      "id": "verify-candidate",
+      "instructions": "Bind the complete closeout matrix and supply-chain results to the exact commit and artifact digests; a green result is not publication authority.",
+      "prerequisites": [
+        "prepare"
+      ],
+      "purpose": "Verify one exact Production-v1 candidate and disclose every material limitation and residual risk.",
+      "required_inputs": [
+        "candidate-source",
+        "candidate-sdist",
+        "candidate-wheel",
+        "release-manifest",
+        "compatibility-statement",
+        "support-security-record",
+        "publication-plan",
+        "rollback-yank-plan"
+      ],
+      "required_outputs": [
+        "candidate-verification-report",
+        "supply-chain-report",
+        "residual-risk-register",
+        "prepublication-evidence-record"
+      ],
+      "schema_version": "1.0"
+    },
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "block_for_owner_review",
+      "check_requirements": [
+        "publication-basis-exact-and-current"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "exact-publication-basis",
+        "owner-only-publication-authority"
+      ],
+      "id": "approve-publication",
+      "instructions": "Bind the proposed tag, commit, artifact hashes, targets, release statements, limitations, rollback/yank procedure, and residual risks for a distinct owner decision.",
+      "prerequisites": [
+        "verify-candidate"
+      ],
+      "purpose": "Prepare an exact publication decision for the configured owner.",
+      "required_inputs": [
+        "candidate-sdist",
+        "candidate-wheel",
+        "release-manifest",
+        "release-notes",
+        "candidate-verification-report",
+        "supply-chain-report",
+        "residual-risk-register",
+        "publication-plan",
+        "rollback-yank-plan"
+      ],
+      "required_outputs": [
+        "publication-authorization-record"
+      ],
+      "schema_version": "1.0"
+    },
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "block_for_owner_review",
+      "check_requirements": [
+        "approved-target-results-recorded",
+        "published-digests-match"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "accepted-publication-authorization",
+        "immutable-artifact-digests",
+        "external-result-identifiers"
+      ],
+      "id": "publish",
+      "instructions": "Create the immutable tag and publish the approved unchanged artifacts to only the approved targets; stop on any mismatch or unapproved external effect.",
+      "prerequisites": [
+        "approve-publication"
+      ],
+      "purpose": "Publish only the exact candidate authorized by the owner.",
+      "required_inputs": [
+        "candidate-sdist",
+        "candidate-wheel",
+        "release-manifest",
+        "release-notes",
+        "publication-authorization-record",
+        "publication-plan",
+        "rollback-yank-plan"
+      ],
+      "required_outputs": [
+        "publication-results",
+        "public-release-record"
+      ],
+      "schema_version": "1.0"
+    },
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "block_for_owner_review",
+      "check_requirements": [
+        "public-artifacts-verified",
+        "fresh-install-behavior-verified",
+        "public-contracts-consistent"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "public-channel-results",
+        "public-artifact-digests",
+        "declared-support-matrix"
+      ],
+      "id": "verify-publication",
+      "instructions": "Test the public package rather than local source or artifacts and preserve discrepancies without silently replacing the release.",
+      "prerequisites": [
+        "publish"
+      ],
+      "purpose": "Verify the public tag, release, index artifacts, metadata, attestations, documentation, and fresh-user behavior.",
+      "required_inputs": [
+        "publication-results",
+        "public-release-record",
+        "release-manifest",
+        "compatibility-statement",
+        "supply-chain-report"
+      ],
+      "required_outputs": [
+        "public-verification-report",
+        "publication-discrepancy-record"
+      ],
+      "schema_version": "1.0"
+    },
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "return_to_ready",
+      "check_requirements": [
+        "retrospective-and-priorities-reviewed"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "public-verification-evidence",
+        "observed-friction",
+        "owner-prioritization-boundary"
+      ],
+      "id": "retrospective",
+      "instructions": "Separate observed release lessons from the owner's prioritization decision and do not begin post-v1 feature work.",
+      "prerequisites": [
+        "verify-publication"
+      ],
+      "purpose": "Record release outcomes, corrections, limitations, residual risks, and post-v1 priorities.",
+      "required_inputs": [
+        "public-verification-report",
+        "publication-discrepancy-record",
+        "residual-risk-register"
+      ],
+      "required_outputs": [
+        "production-v1-retrospective",
+        "final-residual-risk-record",
+        "post-v1-prioritization-record"
+      ],
+      "schema_version": "1.0"
+    },
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "return_to_ready",
+      "check_requirements": [
+        "m7-closeout-ready"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "accepted-public-release",
+        "accepted-retrospective",
+        "complete-m7-evidence"
+      ],
+      "id": "closeout",
+      "instructions": "Bind closeout to every accepted release step, public verification, retrospective, residual risk, and prioritization decision.",
+      "prerequisites": [
+        "retrospective"
+      ],
+      "purpose": "Record final M7 completion and archive readiness without rewriting release history.",
+      "required_inputs": [
+        "public-verification-report",
+        "production-v1-retrospective",
+        "final-residual-risk-record",
+        "post-v1-prioritization-record"
+      ],
+      "required_outputs": [
+        "production-v1-closeout-record",
+        "production-v1-lessons"
+      ],
+      "schema_version": "1.0"
+    }
+  ],
+  "transitions": [
+    {
+      "authority_requirement": "participant",
+      "conditions": [],
+      "destination_state": "in_progress",
+      "event_type": "step-transitioned",
+      "id": "begin",
+      "invalidation_effects": [],
+      "schema_version": "1.0",
+      "source_state": "ready"
+    },
+    {
+      "authority_requirement": "participant",
+      "conditions": [
+        "claim-recorded"
+      ],
+      "destination_state": "awaiting_verification",
+      "event_type": "step-transitioned",
+      "id": "submit",
+      "invalidation_effects": [],
+      "schema_version": "1.0",
+      "source_state": "in_progress"
+    },
+    {
+      "authority_requirement": "participant",
+      "conditions": [],
+      "destination_state": "in_progress",
+      "event_type": "step-transitioned",
+      "id": "rework",
+      "invalidation_effects": [],
+      "schema_version": "1.0",
+      "source_state": "invalidated"
+    },
+    {
+      "authority_requirement": "forge-cli",
+      "conditions": [
+        "required-checks-passed",
+        "required-evidence-registered"
+      ],
+      "destination_state": "awaiting_acceptance",
+      "event_type": "step-transitioned",
+      "id": "verify",
+      "invalidation_effects": [],
+      "schema_version": "1.0",
+      "source_state": "awaiting_verification"
+    },
+    {
+      "authority_requirement": "owner",
+      "conditions": [
+        "owner-acceptance-recorded"
+      ],
+      "destination_state": "completed",
+      "event_type": "step-transitioned",
+      "id": "accept",
+      "invalidation_effects": [],
+      "schema_version": "1.0",
+      "source_state": "awaiting_acceptance"
+    }
+  ],
+  "version": "0.1.0"
+}

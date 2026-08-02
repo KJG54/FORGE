@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102",
+    "sha256:4346c90eba0856ece1bc524c7a3097ab54c2d3098a0d7033a2665e7c24b3d94c",
+    "sha256:365aa6f7d7c3adbad7b445475c6f7ce2322004f1c075deb4972ec13acd725b52"
+  ],
+  "affected_record_ids": [
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768",
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9"
+  ],
+  "authorization_basis": "configured owner recorded an explicit governance decision",
+  "bound_digests": [
+    "sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102",
+    "sha256:4346c90eba0856ece1bc524c7a3097ab54c2d3098a0d7033a2665e7c24b3d94c",
+    "sha256:365aa6f7d7c3adbad7b445475c6f7ce2322004f1c075deb4972ec13acd725b52"
+  ],
+  "chosen_outcome": "Deliver a personal local 1.0.0 candidate with the approved conversational contracts, preserve existing integrity boundaries, and stop at extended owner testing without public publication",
+  "considered_options": [
+    "Continue the locked public M7 publication workflow",
+    "Deliver a personal local candidate with the mandatory conversational layer and defer every public release action",
+    "Stop FORGE development at the completed M6 baseline"
+  ],
+  "correlation_id": null,
+  "decision_type": "local-production-v1-conversational-contract",
+  "event_sequence": 5,
+  "id": "0b29f759-667c-492d-a45b-a0526f84eaa2",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "question": "What outcome, channels, interaction contracts, compatibility boundary, and stop point govern local Production v1?",
+  "rationale": "Owner testing established that daily conversational usability is mandatory and public release ceremony is not the current objective; the local candidate preserves engineering rigor without falsifying the abandoned public workflow",
+  "recorded_at": "2026-08-01T23:08:58.903271Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "status": "active",
+  "tool_version": "1.0.0"
+}

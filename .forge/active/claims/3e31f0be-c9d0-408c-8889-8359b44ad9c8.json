@@ -1,0 +1,36 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:4346c90eba0856ece1bc524c7a3097ab54c2d3098a0d7033a2665e7c24b3d94c",
+    "sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102"
+  ],
+  "affected_record_ids": [
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768"
+  ],
+  "assertion": "The exact local Production-v1 change scope and release requirements define the approved conversational contracts, compatibility constraints, exclusions, validation boundary, and extended-owner-testing stop point",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768"
+  ],
+  "correlation_id": null,
+  "event_sequence": 6,
+  "id": "3e31f0be-c9d0-408c-8889-8359b44ad9c8",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "ADR-0061 is source-controlled and digest-bound by the owner decision but is not a separate artifact role because the immutable framework-change workflow declares only change-scope and release-requirements for this step"
+  ],
+  "recorded_at": "2026-08-01T23:09:09.755516Z",
+  "run_id": "fef2ac24-fc49-4dcc-a87a-0536fdb3958d",
+  "schema_version": "1.0",
+  "step_id": "scope",
+  "tool_version": "1.0.0"
+}

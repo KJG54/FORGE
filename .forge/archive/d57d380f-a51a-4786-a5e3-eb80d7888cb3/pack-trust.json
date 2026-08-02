@@ -4,24 +4,24 @@
     "display_label": "Krystian Garcia",
     "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
     "schema_version": "1.0",
-    "tool_reference": "forge 1.0.0"
+    "tool_reference": "forge 0.1.0a0"
   },
   "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
   "affected_digests": [
-    "sha256:6e9ab5f0cdc8e67757b3fcd8cc710936149ca8f4df3a6c81d3fc0be29e3b68f4"
+    "sha256:fb23e9b8fb7692db9c277168175c18090f940b9f0a425bb27c80a1013afda497"
   ],
   "affected_record_ids": [
-    "26c0c628-cc77-478c-b77b-0c1d703891ac"
+    "d57d380f-a51a-4786-a5e3-eb80d7888cb3"
   ],
   "authorization_basis": "configured owner explicitly trusted the selected pack as data and created a successor",
   "correlation_id": null,
   "event_sequence": 1,
-  "id": "dafbe3a6-c464-4818-96ff-c9a44680472e",
-  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
-  "pack_id": "forge-framework-change",
+  "id": "11fc9988-25ac-4ab8-beac-28d5339e3afe",
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "pack_id": "forge-production-release",
   "pack_version": "0.1.0",
   "rationale": "Owner confirmed this exact validated pack version for the initiative",
-  "recorded_at": "2026-08-01T23:03:21.591058Z",
+  "recorded_at": "2026-07-29T21:40:48.732176Z",
   "run_id": null,
   "schema_version": "1.0",
   "tool_version": null,

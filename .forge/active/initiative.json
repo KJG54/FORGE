@@ -1,26 +1,33 @@
 {
   "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
   "affected_digests": [
-    "sha256:fb23e9b8fb7692db9c277168175c18090f940b9f0a425bb27c80a1013afda497"
+    "sha256:6e9ab5f0cdc8e67757b3fcd8cc710936149ca8f4df3a6c81d3fc0be29e3b68f4"
   ],
   "affected_record_ids": [
-    "11fc9988-25ac-4ab8-beac-28d5339e3afe",
+    "dafbe3a6-c464-4818-96ff-c9a44680472e",
+    "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
     "ea57c39e-98a9-475f-bb60-bb41f7e90f7c"
   ],
   "authorization_basis": "configured owner explicitly trusted the selected pack as data and created a successor",
   "correlation_id": null,
-  "creation_event_id": "9bd8b3b7-d47a-40e1-b14c-4276d4b7163f",
-  "declared_scope_summary": "Execute M7 Increments 1-8 under the locked production-v1 workflow; publish only the exact owner-authorized forge-governance 1.0.0 candidate and complete public verification, retrospective, and closeout",
+  "creation_event_id": "b009de69-6e4a-4794-83b3-0ef71305c310",
+  "declared_scope_summary": "Design, implement, document, package, and validate the local FORGE 1.0.0 candidate: document-first conversational bootstrap, canonical transaction receipts, a safe local scratchpad and warm recap, per-step mentoring, honest authority/operator provenance, explicit owner-only command ceremony, rejection and plan-change handling, and archive-derived successor briefs. Preserve existing compatibility, security, recovery, exact-byte, replay, idempotency, and archive invariants. Build and test one exact local wheel and sdist, then stop at extended owner testing. Exclude public naming clearance, tags, PyPI/TestPyPI, GitHub Releases, public support channels, publication automation, hosted or multi-user operation, and final owner acceptance.",
   "event_sequence": 1,
   "explanation_profile": "mentored",
-  "id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
-  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
   "lifecycle_state": "active",
-  "objective": "Deliver an owner-approved public FORGE Governance Production v1 release",
+  "objective": "Deliver and validate a feature-complete personal/local FORGE Production-v1 candidate with an intuitive conversational layer for direct Codex and Claude Code workspace agents, ready for extended owner testing without public publication",
   "owner_identity_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
-  "pack_id": "forge-production-release",
+  "pack_id": "forge-framework-change",
   "pack_version": "0.1.0",
   "predecessor_references": [
+    {
+      "archive_reference": ".forge/archive/d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+      "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+      "relationship": "successor-of",
+      "schema_version": "1.0"
+    },
     {
       "archive_reference": ".forge/archive/ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
       "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
@@ -28,10 +35,10 @@
       "schema_version": "1.0"
     }
   ],
-  "recorded_at": "2026-07-29T21:40:48.732176Z",
+  "recorded_at": "2026-08-01T23:03:21.591058Z",
   "run_id": null,
   "schema_version": "1.0",
   "tool_version": null,
-  "workflow_id": "production-v1-release",
+  "workflow_id": "framework-change",
   "workflow_version": "0.1.0"
 }

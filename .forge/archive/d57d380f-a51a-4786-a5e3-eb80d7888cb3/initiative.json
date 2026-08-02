@@ -1,0 +1,37 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:fb23e9b8fb7692db9c277168175c18090f940b9f0a425bb27c80a1013afda497"
+  ],
+  "affected_record_ids": [
+    "11fc9988-25ac-4ab8-beac-28d5339e3afe",
+    "ea57c39e-98a9-475f-bb60-bb41f7e90f7c"
+  ],
+  "authorization_basis": "configured owner explicitly trusted the selected pack as data and created a successor",
+  "correlation_id": null,
+  "creation_event_id": "9bd8b3b7-d47a-40e1-b14c-4276d4b7163f",
+  "declared_scope_summary": "Execute M7 Increments 1-8 under the locked production-v1 workflow; publish only the exact owner-authorized forge-governance 1.0.0 candidate and complete public verification, retrospective, and closeout",
+  "event_sequence": 1,
+  "explanation_profile": "mentored",
+  "id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "lifecycle_state": "active",
+  "objective": "Deliver an owner-approved public FORGE Governance Production v1 release",
+  "owner_identity_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "pack_id": "forge-production-release",
+  "pack_version": "0.1.0",
+  "predecessor_references": [
+    {
+      "archive_reference": ".forge/archive/ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+      "initiative_id": "ea57c39e-98a9-475f-bb60-bb41f7e90f7c",
+      "relationship": "successor-of",
+      "schema_version": "1.0"
+    }
+  ],
+  "recorded_at": "2026-07-29T21:40:48.732176Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": null,
+  "workflow_id": "production-v1-release",
+  "workflow_version": "0.1.0"
+}

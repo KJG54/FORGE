@@ -2,10 +2,10 @@
   "data_resource_paths": [],
   "declared_capability_ids": [],
   "explanation_paths": [],
-  "id": "forge-framework-change",
-  "integrity_digest": "sha256:6e9ab5f0cdc8e67757b3fcd8cc710936149ca8f4df3a6c81d3fc0be29e3b68f4",
+  "id": "forge-production-release",
+  "integrity_digest": "sha256:fb23e9b8fb7692db9c277168175c18090f940b9f0a425bb27c80a1013afda497",
   "provided_workflow_ids": [
-    "framework-change"
+    "production-v1-release"
   ],
   "schema_compatibility": [
     "forge-contracts-1"

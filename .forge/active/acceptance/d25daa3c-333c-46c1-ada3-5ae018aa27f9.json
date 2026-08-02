@@ -1,0 +1,53 @@
+{
+  "acceptance_event_id": "b6ea491b-7f62-4ec4-9106-5267cff32df5",
+  "accepted_artifact_revision_ids": [
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768"
+  ],
+  "accepted_check_result_ids": [
+    "032e5f25-84b6-4b44-b8cf-c6b37846b8fb"
+  ],
+  "accepted_evidence_ids": [
+    "5e0cbe91-4f51-47ac-9f70-20646feb74fc"
+  ],
+  "accepted_scope": "L1 local Production-v1 scope and conversational contracts exactly as bound to change-scope revision cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768, release-requirements revision 2dbeb4be-33e3-4bda-9e4d-3c7816985cf9, owner decision 0b29f759-667c-492d-a45b-a0526f84eaa2, passed check 032e5f25-84b6-4b44-b8cf-c6b37846b8fb, and evidence packet 5e0cbe91-4f51-47ac-9f70-20646feb74fc; this accepts implementation authority for L2-L9 but does not accept implementation, candidate readiness, publication, or final Production-v1 status",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:4346c90eba0856ece1bc524c7a3097ab54c2d3098a0d7033a2665e7c24b3d94c",
+    "sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102",
+    "sha256:02dc50629f6c935a0dabddfa6a17e66809f45f8db0eee6d597f48422674170c9",
+    "sha256:80203cce8c13167f4dae4826f1051d100b5854c25af21a8d2b7807a614385105"
+  ],
+  "affected_record_ids": [
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768",
+    "032e5f25-84b6-4b44-b8cf-c6b37846b8fb",
+    "5e0cbe91-4f51-47ac-9f70-20646feb74fc"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 11,
+  "id": "d25daa3c-333c-46c1-ada3-5ae018aa27f9",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "known_limitations": [
+    "ADR-0061 is digest-bound by the owner decision and tests but is not a separate workflow artifact role",
+    "The current CLI attributes direct routine invocation to the configured owner; L6 must add honest operator provenance, and this acceptance does not claim the owner personally authored the worker claim",
+    "Native Codex and Claude Code journeys and exact-candidate validation remain future L9 evidence"
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-02T00:09:13.408096Z",
+  "residual_risks": [
+    "Material implementation discoveries may require an explicit reviewed contract revision before dependent work",
+    "Direct workspace agents remain within the same-user filesystem threat boundary without cryptographic owner authentication"
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}
