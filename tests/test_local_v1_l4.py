@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -11,6 +12,7 @@ from forge.storage.journal import read_journal
 from forge.storage.repository import RepositoryLayout
 
 runner = CliRunner()
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def _active_repository(path: Path) -> RepositoryLayout:
@@ -46,6 +48,15 @@ def _scratchpad(initiative_id: UUID, sequence: int, notes: str) -> str:
 
 def _recap(path: Path):  # type: ignore[no-untyped-def]
     return runner.invoke(app, ["recap", "-C", str(path)])
+
+
+def test_recap_is_in_the_unpublished_candidate_cli_contract() -> None:
+    contract = json.loads(
+        (ROOT / "release" / "version-contract.json").read_text(encoding="utf-8")
+    )
+
+    assert contract["release_status"] == "candidate-unpublished"
+    assert "recap" in contract["cli_command_paths"]
 
 
 def test_recap_separates_validated_position_from_missing_and_empty_notes(
