@@ -14,6 +14,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import NoReturn
 
+from tools.receipt_fields import ReceiptFieldError, receipt_value
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES_ROOT = PROJECT_ROOT / "examples"
 
@@ -187,7 +189,7 @@ def _register_artifact(
             "text/markdown",
         ),
     )
-    return _value(output, "Revision ID: ")
+    return receipt_value(output, "revision_id")
 
 
 def _record_check(
@@ -216,7 +218,7 @@ def _record_check(
             "Example structure and presence do not establish production or factual correctness",
         ),
     )
-    return _value(output, "Recorded check result ").split(":", 1)[0]
+    return receipt_value(output, "check_result_id")
 
 
 def _advance_step(
@@ -242,7 +244,7 @@ def _advance_step(
             "The synthetic rehearsal claim does not establish production or factual correctness",
         ),
     )
-    claim_id = _value(claim_output, "Recorded claim ")
+    claim_id = receipt_value(claim_output, "claim_id")
     check_result_ids = tuple(
         _record_check(
             executable,
@@ -397,7 +399,7 @@ def main(arguments: Sequence[str] | None = None) -> int:
     example_ids = tuple(sorted(SCENARIOS)) if args.example == "all" else (args.example,)
     try:
         results = run_rehearsal(args.forge, example_ids)
-    except (ExampleSmokeError, OSError) as error:
+    except (ExampleSmokeError, OSError, ReceiptFieldError) as error:
         print(f"example workflow smoke failed: {error}", file=sys.stderr)
         return 1
     print(

@@ -193,7 +193,8 @@ def test_agent_run_stages_untrusted_output_then_completes_as_recorded_worker(
         ],
     )
     assert completed.exit_code == 0, completed.stdout
-    assert "Claim actor: OpenAI Codex CLI" in completed.stdout
+    assert 'actor="OpenAI Codex CLI"' in completed.stdout
+    assert f"run_id={result.run_id}" in completed.stdout
     assert load_active_initiative(initialized.layout).state.step_states[
         "discover"
     ] is StepState.AWAITING_VERIFICATION

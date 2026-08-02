@@ -97,6 +97,12 @@ forge acceptance record discover \
   --residual-risk "Requirement quality remains owner judgment"
 ```
 
+Each high-frequency mutation above returns a concise
+[canonical transaction receipt](../transaction-receipts.md). Use identifiers such as `run_id`,
+`revision_id`, `claim_id`, and `check_result_id` from its `Recorded` line as inputs to later
+commands. The `Means` line reports replay-validated blockers and legal next actions. Use
+`forge history` and the applicable `show` command for detailed inspection.
+
 The separation is intentional:
 
 1. a participant begins work;

@@ -201,11 +201,7 @@ def test_cli_withdrawal_is_idempotent_inspectable_and_tamper_evident(
     first = runner.invoke(app, arguments)
     assert first.exit_code == 0, first.stdout
     withdrawal_id = UUID(
-        next(
-            line.rsplit(" ", 1)[-1]
-            for line in first.stdout.splitlines()
-            if line.startswith("Withdrawal decision:")
-        )
+        first.stdout.split("decision_id=", 1)[1].split(";", 1)[0]
     )
     event_count = len(
         initialized.layout.event_journal_file.read_text(encoding="utf-8").splitlines()

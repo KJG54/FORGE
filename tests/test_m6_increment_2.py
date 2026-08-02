@@ -53,6 +53,14 @@ def test_installation_matrix_matches_current_public_package() -> None:
         assert f"Programming Language :: Python :: {version}" in metadata["classifiers"]
 
 
+def test_distribution_build_prunes_local_runtime_state_before_traversal() -> None:
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    build = project["tool"]["hatch"]["build"]
+
+    assert build["exclude"] == ["/.forge/local/**"]
+    assert build["skip-excluded-dirs"] is True
+
+
 def test_cross_platform_installed_executable_paths_are_explicit(tmp_path: Path) -> None:
     assert environment_python(tmp_path, "Windows") == tmp_path / "Scripts" / "python.exe"
     assert environment_python(tmp_path, "Linux") == tmp_path / "bin" / "python"

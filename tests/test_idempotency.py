@@ -53,7 +53,7 @@ def test_repeated_command_replays_without_duplicate_events(tmp_path: Path) -> No
     layout = _initialize(tmp_path)
     first = _create(tmp_path, key="create-once")
     assert first.exit_code == 0, first.output
-    assert "Idempotency key: create-once" in first.stdout
+    assert "transaction=create:create-once" in first.stdout
     original_journal = layout.event_journal_file.read_bytes()
     events = read_journal(layout.event_journal_file)
     assert len(events) == 1
@@ -62,7 +62,9 @@ def test_repeated_command_replays_without_duplicate_events(tmp_path: Path) -> No
 
     replay = _create(tmp_path, key="create-once")
     assert replay.exit_code == 0, replay.output
-    assert "Idempotent replay; committed event(s):" in replay.stdout
+    assert "Idempotent replay of create transaction create-once" in replay.stdout
+    assert "zero new events" in replay.stdout
+    assert str(events[0].id) in replay.stdout
     assert layout.event_journal_file.read_bytes() == original_journal
 
     conflict = _create(tmp_path, key="create-once", objective="Different objective")

@@ -50,6 +50,14 @@ class IdempotencyInvocation:
 
 
 @dataclass(frozen=True)
+class CompletedIdempotentTransaction:
+    """One validated completion receipt and its exact committed events."""
+
+    receipt: IdempotencyReceipt
+    events: tuple[AuditEvent, ...]
+
+
+@dataclass(frozen=True)
 class IncompleteIdempotencyCommand:
     key: str
     command: str
@@ -307,6 +315,30 @@ def validate_idempotency_store(layout: RepositoryLayout) -> int:
     raw = _read_raw_registry(layout)
     _validate_registry(raw)
     return len(raw.receipts)
+
+
+def load_completed_idempotent_transaction(
+    layout: RepositoryLayout,
+    key: str,
+) -> CompletedIdempotentTransaction:
+    """Load one receipt and its journal events after validating the complete store."""
+
+    key = _validate_key(key)
+    raw = _read_raw_registry(layout)
+    _validate_registry(raw)
+    receipt = raw.receipts.get(key)
+    if receipt is None:
+        raise ConflictError(f"Idempotency key {key!r} has no completed transaction")
+    events_by_id = {
+        event.id: event for _metadata_value, event in raw.event_groups.get(key, ())
+    }
+    try:
+        events = tuple(events_by_id[reference.event_id] for reference in receipt.events)
+    except KeyError as error:
+        raise IntegrityError(
+            f"Idempotency receipt {key!r} references an unavailable journal event"
+        ) from error
+    return CompletedIdempotentTransaction(receipt=receipt, events=events)
 
 
 def inspect_incomplete_command(

@@ -8,9 +8,11 @@ forge create "Objective" --scope "Bounded scope" --trust-pack-data \
   --idempotency-key create-initiative-2026-07-14
 ```
 
-When the option is omitted, FORGE generates a UUID and prints it before running the mutation. Save
-that value if you may need to retry. Repeating the exact command request with the same key returns
-the already committed event IDs without creating another record or transition.
+When the option is omitted, FORGE generates a UUID. Canonical receipt-enabled commands report it
+as the transaction identity after a successful commit; other mutation commands retain their
+existing key output. Save that value if you may need to retry. Repeating the exact command request
+with the same key returns a canonical replay receipt with the original event range and IDs and
+states that it created zero new events.
 
 A key identifies one request for the entire repository, including archived initiatives. Do not
 reuse it for changed arguments or changed intent. FORGE reports that reuse as a conflict. Ambient
@@ -21,6 +23,11 @@ Completion receipts live under `.forge/idempotency/` and are governed project st
 is checked against exact hash-chained events. Do not edit or delete these files. If an interruption
 commits journal events before the completion receipt is durable, FORGE refuses retries and other
 mutations with an explicit recovery-required error.
+
+Do not confuse that persisted completion record with the concise
+[canonical transaction receipt](transaction-receipts.md) printed by the CLI. The latter is a
+non-persisted validated view derived from the durable receipt, its exact journal events, and the
+replayed resulting state.
 
 M2 Increment 13 adds explicit owner recovery for an ordinary command whose complete registered
 event pattern is provably committed at the active journal tail:

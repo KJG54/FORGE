@@ -105,7 +105,7 @@ def test_profiles_change_only_locked_presentation_not_governance(
         ("research-basic", ExplanationProfile.MENTORED),
     ),
 )
-def test_cli_selects_new_profiles_and_reports_locked_guidance(
+def test_cli_selects_new_profiles_and_reports_canonical_receipt(
     tmp_path: Path,
     pack_id: str,
     profile: ExplanationProfile,
@@ -135,10 +135,11 @@ def test_cli_selects_new_profiles_and_reports_locked_guidance(
     )
 
     assert result.exit_code == 0, result.stderr
-    assert f"Guidance ({profile.value})" in result.stdout
+    assert "Recorded -> initiative-created" in result.stdout
+    assert "Means    ->" in result.stdout
     active = load_active_initiative(initialized.layout)
     assert active.initiative.explanation_profile is profile
-    assert active.explanation in result.stdout
+    assert active.explanation
 
 
 def test_two_profile_pack_remains_valid_and_unavailable_profile_fails_precommit(

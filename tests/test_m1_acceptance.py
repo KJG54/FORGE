@@ -52,11 +52,24 @@ def _run(repository: Path, *arguments: str, expected: int = 0) -> str:
 
 
 def _value(output: str, prefix: str) -> str:
-    return next(
-        line.removeprefix(prefix)
-        for line in output.splitlines()
-        if line.startswith(prefix)
+    legacy = next(
+        (
+            line.removeprefix(prefix)
+            for line in output.splitlines()
+            if line.startswith(prefix)
+        ),
+        None,
     )
+    if legacy is not None:
+        return legacy
+    receipt_fields = {
+        "Recorded claim ": "claim_id",
+        "Recorded check result ": "check_result_id",
+        "Started manual run ": "run_id",
+    }
+    marker = f"{receipt_fields[prefix]}="
+    value = output.split(marker, 1)[1]
+    return value.split(";", 1)[0].split(")", 1)[0]
 
 
 def _init(repository: Path) -> None:
@@ -247,7 +260,7 @@ def test_restarted_process_software_walkthrough_with_import_revision_and_closure
         str(requirements.artifact.id),
         "requirements.md",
     )
-    assert "Stale dependency effects:" in revised
+    assert "Recorded -> artifact-revised" in revised
     assert "Step discover: invalidated" in _run(repository, "status")
     _advance(
         repository,
@@ -319,7 +332,8 @@ def test_diagnostics_profiles_and_cancellation_are_bounded_m1_behaviors(
             "--explanation",
             profile.value,
         )
-        assert f"Guidance ({profile.value})" in output
+        assert "Recorded -> initiative-created" in output
+        assert "Means    ->" in output
         _run(repository, "doctor")
     standard_active = load_active_initiative(RepositoryLayout.at(standard))
     guided_active = load_active_initiative(RepositoryLayout.at(guided))
