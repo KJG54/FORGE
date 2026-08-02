@@ -145,10 +145,15 @@ records and boundaries matter. The selected profile chooses only exact digest-bo
 text. Transition definitions, authority, record requirements, checks, evidence, acceptance, and
 materialized next actions are identical.
 
-Both bundled packs provide all four profiles at version `0.4.0`. Existing two-profile pack locks
-remain valid for Standard and Guided initiatives. Requesting a profile absent from the selected
-workflow fails before initiative state is written. Profiles cannot be switched after creation,
-and external explanation resource files remain unsupported.
+Both bundled packs provide all four workflow-level profiles. `software-basic@0.5.0` also provides
+authored Mentored guidance for each step; `research-basic@0.4.0` continues to use workflow-level
+fallback. Existing packs and workflow locks without the optional step map retain their prior
+digest and remain valid for every profile they provide. The active step text takes precedence,
+while its locked workflow text is the deterministic fallback. Guidance shown at creation and in a
+warm recap is advisory and skippable: it cannot change transitions, authority, requirements,
+checks, evidence, or acceptance. Requesting a profile absent from the selected workflow still
+fails before initiative state is written, profiles cannot be switched after creation, and external
+explanation resource files remain unsupported.
 
 ## Canonical long-gap resumption
 

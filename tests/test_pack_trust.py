@@ -145,7 +145,7 @@ def test_cli_previews_exact_data_only_boundary_and_records_history(tmp_path: Pat
     preview = runner.invoke(app, arguments)
 
     assert preview.exit_code == 0, preview.stderr
-    assert "Locked pack: software-basic@0.4.0" in preview.stdout
+    assert "Locked pack: software-basic@0.5.0" in preview.stdout
     assert "Trust boundary: validated declarative data only; never executable authority" in (
         preview.stdout
     )

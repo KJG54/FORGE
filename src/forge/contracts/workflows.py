@@ -52,6 +52,7 @@ class StepDefinition(VersionedModel):
     allowed_transitions: tuple[SymbolicId, ...]
     cancellation_behavior: CancellationBehavior
     context_selection_rules: tuple[NonEmptyString, ...] = ()
+    explanation_content: dict[str, NonEmptyString] = Field(default_factory=dict)
 
 
 class WorkflowDefinition(VersionedModel):

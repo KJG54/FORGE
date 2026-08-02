@@ -1374,9 +1374,11 @@ def create(
         f"{result.active.workflow.id} {result.active.workflow.version}"
     )
     typer.echo(f"Next: {', '.join(result.active.state.permitted_next_actions)}")
+    guidance = result.active.explanation_guidance
+    guidance_scope = f"step {guidance.step_id}" if guidance.source == "step" else "workflow"
     typer.echo(
-        f"Guidance ({result.active.initiative.explanation_profile.value}): "
-        f"{result.active.explanation}"
+        f"Guidance ({guidance.profile.value}, {guidance_scope}; advisory and skippable): "
+        f"{guidance.content}"
     )
 
 
@@ -1561,6 +1563,19 @@ def recap(
         typer.echo(
             f"Current step: {report.current_step_id} ({report.current_step_state})"
         )
+    if report.guidance is not None:
+        guidance = report.guidance
+        guidance_scope = (
+            f"step {guidance.step_id}" if guidance.source == "step" else "workflow fallback"
+        )
+        reasons = ["warm recap"]
+        if guidance.first_step_encounter:
+            reasons.append("first encounter with this step")
+        typer.echo(
+            f"Mentoring ({guidance.profile.value}, {guidance_scope}; advisory and skippable)"
+        )
+        typer.echo(f"Reason: {', '.join(reasons)}")
+        typer.echo(f"Guidance: {guidance.content}")
     governed_time = (
         report.last_governed_event_at.isoformat()
         if report.last_governed_event_at is not None

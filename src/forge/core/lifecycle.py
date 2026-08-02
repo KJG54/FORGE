@@ -62,6 +62,17 @@ from forge.storage.snapshots import (
 
 
 @dataclass(frozen=True)
+class ExplanationGuidance:
+    """Selected advisory text plus its locked source and novelty context."""
+
+    content: str
+    profile: ExplanationProfile
+    source: str
+    step_id: str | None
+    first_step_encounter: bool
+
+
+@dataclass(frozen=True)
 class ActiveInitiative:
     layout: RepositoryLayout
     initiative: Initiative
@@ -78,13 +89,43 @@ class ActiveInitiative:
     @property
     def explanation(self) -> str:
         """Return presentation-only guidance for the selected locked profile."""
-        profile = self.initiative.explanation_profile.value
-        try:
-            return self.workflow.explanation_content[profile]
-        except KeyError as error:
-            raise IntegrityError(
-                f"Locked workflow lacks explanation content for profile {profile!r}"
-            ) from error
+        return self.explanation_guidance.content
+
+    @property
+    def explanation_guidance(self) -> ExplanationGuidance:
+        """Prefer current-step guidance and retain the old workflow fallback."""
+        selected_profile = self.initiative.explanation_profile
+        profile = selected_profile.value
+        step_id = self.state.current_step_id
+        step = next(
+            (item for item in self.workflow.steps if item.id == step_id),
+            None,
+        )
+        if step is not None and profile in step.explanation_content:
+            content = step.explanation_content[profile]
+            source = "step"
+        else:
+            source = "workflow"
+            try:
+                content = self.workflow.explanation_content[profile]
+            except KeyError as error:
+                raise IntegrityError(
+                    f"Locked workflow lacks explanation content for profile {profile!r}"
+                ) from error
+
+        first_step_encounter = False
+        if step_id is not None:
+            first_step_encounter = not any(
+                event.metadata.get("step_id") == step_id
+                for event in read_journal(self.layout.event_journal_file)
+            )
+        return ExplanationGuidance(
+            content=content,
+            profile=selected_profile,
+            source=source,
+            step_id=step_id,
+            first_step_encounter=first_step_encounter,
+        )
 
 
 @dataclass(frozen=True)
