@@ -122,6 +122,17 @@ def _value(output: str, prefix: str) -> str:
     _fail(f"Command output did not contain a value after {prefix!r}")
 
 
+def _receipt_value(output: str, field: str) -> str:
+    marker = f"{field}="
+    for line in output.splitlines():
+        _prefix, separator, remainder = line.partition(marker)
+        if separator:
+            value = remainder.split(";", 1)[0].split(")", 1)[0].strip()
+            if value:
+                return value
+    _fail(f"Command receipt did not contain a value for {field!r}")
+
+
 def _environment() -> dict[str, str]:
     environment = os.environ.copy()
     environment.update(
@@ -187,7 +198,7 @@ def _register_artifact(
             "text/markdown",
         ),
     )
-    return _value(output, "Revision ID: ")
+    return _receipt_value(output, "revision_id")
 
 
 def _record_check(
@@ -216,7 +227,7 @@ def _record_check(
             "Example structure and presence do not establish production or factual correctness",
         ),
     )
-    return _value(output, "Recorded check result ").split(":", 1)[0]
+    return _receipt_value(output, "check_result_id")
 
 
 def _advance_step(
@@ -242,7 +253,7 @@ def _advance_step(
             "The synthetic rehearsal claim does not establish production or factual correctness",
         ),
     )
-    claim_id = _value(claim_output, "Recorded claim ")
+    claim_id = _receipt_value(claim_output, "claim_id")
     check_result_ids = tuple(
         _record_check(
             executable,

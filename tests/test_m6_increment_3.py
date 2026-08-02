@@ -1,8 +1,10 @@
 from pathlib import Path
 
+import pytest
+
 from forge.packs.loader import load_pack
 from forge.security.secrets import screen_governed_content
-from tools.example_workflow_smoke import SCENARIOS
+from tools.example_workflow_smoke import SCENARIOS, ExampleSmokeError, _receipt_value
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES_ROOT = ROOT / "examples"
@@ -64,3 +66,18 @@ def test_example_harness_cannot_target_an_existing_repository() -> None:
     assert "--directory" not in source
     assert "--work-directory" not in source
     assert "shell=False" in source
+
+
+def test_example_harness_reads_canonical_receipt_identifiers() -> None:
+    output = (
+        "Recorded -> artifact-registered (revision_id=revision-1); "
+        "claim-recorded (claim_id=claim-1); "
+        "check-recorded (check_result_id=check-1) [sequence 1-3; events events]\n"
+        "Means    -> integrity=healthy"
+    )
+
+    assert _receipt_value(output, "revision_id") == "revision-1"
+    assert _receipt_value(output, "claim_id") == "claim-1"
+    assert _receipt_value(output, "check_result_id") == "check-1"
+    with pytest.raises(ExampleSmokeError, match="missing_id"):
+        _receipt_value(output, "missing_id")
