@@ -1,0 +1,53 @@
+{
+  "abandonment_event_id": "082d92b9-f750-4252-be90-154b28e38c3a",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:66872c9602865c05b31e7f7a112f771fd105fa4aa8e86aa416b3cbe3bd3423a6",
+    "sha256:779590261814c052342013d3a18b2b4fc453f02a2f3ca03e540387a7efe17a3b",
+    "sha256:eeb28e9903019b0603bbcec26ec70435c47e73fbd7322bb49665f3da8f98c89d"
+  ],
+  "affected_record_ids": [
+    "237787a9-c59d-42d9-b160-6878a59a8df0",
+    "8054ea3a-4731-4a84-baa8-c4471a63dfa3",
+    "cfe54f78-dbd5-4627-9bc2-e19383f5059d"
+  ],
+  "archive_reference": ".forge/archive/d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "authorization_basis": "configured owner abandoned unfinished work for atomic M2 archival",
+  "correlation_id": null,
+  "current_artifact_revision_ids": [
+    "237787a9-c59d-42d9-b160-6878a59a8df0",
+    "8054ea3a-4731-4a84-baa8-c4471a63dfa3",
+    "cfe54f78-dbd5-4627-9bc2-e19383f5059d"
+  ],
+  "event_sequence": 16,
+  "id": "c9ce7edf-2540-4d46-8e1c-e9eed096037d",
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "reason": "The locked public-release workflow no longer matches the owner-approved local Production-v1 outcome",
+  "recorded_at": "2026-08-01T22:57:08.128582Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "terminal_state": "abandoned",
+  "tool_version": "1.0.0",
+  "unfinished_step_ids": [
+    "prepare",
+    "verify-candidate",
+    "approve-publication",
+    "publish",
+    "verify-publication",
+    "retrospective",
+    "closeout"
+  ],
+  "unfinished_work_summary": "Public preparation, candidate verification, publication approval, publication, public verification, retrospective, and closeout remain incomplete; accepted work is preserved for explicit reuse under a suitable successor",
+  "unresolved_risks": [
+    "The conversational-layer contracts and implementation remain incomplete",
+    "Merged Increment 2 compatibility code has not received governed step acceptance",
+    "Local Production-v1 acceptance requires extended owner testing in real Codex and Claude Code projects"
+  ]
+}

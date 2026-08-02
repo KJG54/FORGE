@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102"
+  ],
+  "affected_record_ids": [
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 3,
+  "id": "a25738ee-aa58-45fa-ae8a-759590b8abcd",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "recorded_at": "2026-08-01T23:08:31.495682Z",
+  "role": "change-scope",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Local Production-v1 change scope",
+  "tool_version": "1.0.0"
+}

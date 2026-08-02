@@ -1,0 +1,33 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:dc544cbd87ab364b690625d844db3673ca54620a9817c809e936081b2cac557c"
+  ],
+  "affected_record_ids": [
+    "0fca736a-c6e3-46d1-99db-b2b779ec9596"
+  ],
+  "authorization_basis": "authorized run worker or configured owner formally cancelled active work; managed execution was terminal when applicable",
+  "cancellation_behavior": "block_for_owner_review",
+  "correlation_id": null,
+  "destination_state": "blocked",
+  "event_sequence": 15,
+  "id": "5f1727e2-9a32-427d-a54f-53f63bea3a6d",
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "reason": "The owner replaced the public-release objective with a personal/local Production-v1 objective",
+  "recorded_at": "2026-08-01T22:55:27.252234Z",
+  "run_id": "0fca736a-c6e3-46d1-99db-b2b779ec9596",
+  "schema_version": "1.0",
+  "side_effect_class": "repository_write",
+  "source_state": "in_progress",
+  "step_id": "prepare",
+  "terminal_execution_event_hash": null,
+  "terminal_execution_event_id": null,
+  "tool_version": "1.0.0"
+}

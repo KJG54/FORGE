@@ -10,7 +10,7 @@ from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
 from forge.contracts.base import SCHEMA_VERSION
 from forge.contracts.decisions import DecisionRecord, DecisionStatus
 from forge.contracts.state import StepState
-from forge.core.lifecycle import load_active_initiative
+from forge.core.archival import load_archive
 from forge.schemas.export import schema_bundle
 from forge.storage.objects import sha256_digest
 from forge.storage.records import load_record
@@ -80,16 +80,18 @@ def test_compatibility_statement_distinguishes_candidate_from_publication() -> N
     assert "error prose is not a stable machine interface" in statement
 
 
-def test_governed_prepare_step_registers_only_the_increment_2_output() -> None:
+def test_abandoned_public_m7_preserves_unaccepted_increment_2_output() -> None:
     layout = RepositoryLayout.at(ROOT)
-    active = load_active_initiative(layout)
+    archive = load_archive(layout, M7_INITIATIVE_ID)
+    active = archive.active
+    archived_layout = archive.layout
     artifacts = tuple(
         load_record(path, ArtifactRecord)
-        for path in sorted(layout.artifact_record_directory.glob("*.json"))
+        for path in sorted(archived_layout.artifact_record_directory.glob("*.json"))
     )
     revisions = tuple(
         load_record(path, ArtifactRevision)
-        for path in sorted(layout.artifact_revision_directory.glob("*.json"))
+        for path in sorted(archived_layout.artifact_revision_directory.glob("*.json"))
     )
     current_revisions = {
         revision.artifact_id: revision
@@ -104,8 +106,11 @@ def test_governed_prepare_step_registers_only_the_increment_2_output() -> None:
 
     assert active.initiative.id == M7_INITIATIVE_ID
     assert active.state.step_states["scope"] is StepState.COMPLETED
-    assert active.state.step_states["prepare"] is StepState.IN_PROGRESS
-    assert active.state.active_run_ids == (PREPARE_RUN_ID,)
+    assert active.state.step_states["prepare"] is StepState.BLOCKED
+    assert active.state.active_run_ids == ()
+    assert (
+        archived_layout.governed_run_directory / f"{PREPARE_RUN_ID}.json"
+    ).is_file()
     assert compatibility.id == COMPATIBILITY_REVISION_ID
     assert compatibility.path == "release/production-v1/compatibility-statement.md"
     assert sha256_digest((ROOT / compatibility.path).read_bytes()) == (
@@ -116,7 +121,7 @@ def test_governed_prepare_step_registers_only_the_increment_2_output() -> None:
         for role in current_by_role
         if role in active.workflow.steps[1].required_outputs
     } == {"compatibility-statement"}
-    decision_paths = tuple(layout.decision_directory.glob("*.json"))
+    decision_paths = tuple(archived_layout.decision_directory.glob("*.json"))
     assert len(decision_paths) == 1
     decision = load_record(decision_paths[0], DecisionRecord)
     assert decision.id == VERSION_DECISION_ID
@@ -128,4 +133,4 @@ def test_governed_prepare_step_registers_only_the_increment_2_output() -> None:
         "sha256:a6eb13ba6b678b6c29d590804c9474fd37a8502b694c2437866ad6c060c3a47f",
         "sha256:eeb28e9903019b0603bbcec26ec70435c47e73fbd7322bb49665f3da8f98c89d",
     }
-    assert len(tuple(layout.acceptance_directory.glob("*.json"))) == 1
+    assert len(tuple(archived_layout.acceptance_directory.glob("*.json"))) == 1

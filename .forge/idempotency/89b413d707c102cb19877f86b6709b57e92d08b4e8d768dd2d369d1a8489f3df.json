@@ -1,0 +1,15 @@
+{
+  "command": "abandon",
+  "completed_at": "2026-08-01T22:57:08.811766Z",
+  "events": [
+    {
+      "event_hash": "sha256:a8be77af0bbb5fa71a58013ad03ecb5b1944783b214744b66516687f01040115",
+      "event_id": "082d92b9-f750-4252-be90-154b28e38c3a",
+      "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+      "sequence": 16
+    }
+  ],
+  "key": "local-v1-l1-abandon-public-m7-20260801",
+  "request_digest": "sha256:76a7361cc27b03c423213996c1811a7943e3b2f292bd36658bf9b2ff21d40f8c",
+  "schema_version": "1.0"
+}

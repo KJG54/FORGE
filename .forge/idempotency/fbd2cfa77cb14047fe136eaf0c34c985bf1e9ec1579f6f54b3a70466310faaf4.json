@@ -1,0 +1,15 @@
+{
+  "command": "decide",
+  "completed_at": "2026-08-01T23:08:58.958840Z",
+  "events": [
+    {
+      "event_hash": "sha256:f96559c66b784f0ffd48d829ed47e80da77f88d75b1e65ab674167a246eedf0a",
+      "event_id": "c50d37ba-1219-4d92-a896-a786d36b0e72",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 5
+    }
+  ],
+  "key": "local-v1-l1-record-contract-decision-20260801",
+  "request_digest": "sha256:373f6cbfd6801c0e0ccab9b87faf2ebf1d509cc338ffd990656e640800ae5246",
+  "schema_version": "1.0"
+}

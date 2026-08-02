@@ -4,9 +4,8 @@ from uuid import UUID
 from forge.contracts.artifacts import ArtifactRecord, ArtifactRevision
 from forge.contracts.packs import PackTrustState
 from forge.contracts.state import InitiativeLifecycleState, StepState
-from forge.contracts.verification import AcceptanceRecord
-from forge.core.lifecycle import load_active_initiative
-from forge.core.verification import list_checks, list_claims, list_evidence
+from forge.contracts.verification import AcceptanceRecord, CheckResult, Claim, EvidencePacket
+from forge.core.archival import load_archive
 from forge.packs.loader import load_pack
 from forge.packs.validation import calculate_pack_digest
 from forge.storage.configuration import load_configuration
@@ -113,16 +112,18 @@ def test_increment_1_contract_records_approved_identity_and_stop_point() -> None
     assert "no standalone package-signing key" in contract
 
 
-def test_m7_successor_is_bound_to_m6_with_owner_accepted_scope() -> None:
+def test_abandoned_public_m7_preserves_owner_accepted_scope() -> None:
     layout = RepositoryLayout.at(ROOT)
-    active = load_active_initiative(layout)
+    archive = load_archive(layout, M7_INITIATIVE_ID)
+    active = archive.active
+    archived_layout = archive.layout
     artifacts = tuple(
         load_record(path, ArtifactRecord)
-        for path in sorted(layout.artifact_record_directory.glob("*.json"))
+        for path in sorted(archived_layout.artifact_record_directory.glob("*.json"))
     )
     revisions = tuple(
         load_record(path, ArtifactRevision)
-        for path in sorted(layout.artifact_revision_directory.glob("*.json"))
+        for path in sorted(archived_layout.artifact_revision_directory.glob("*.json"))
     )
     current_revisions = {
         revision.artifact_id: revision
@@ -145,7 +146,7 @@ def test_m7_successor_is_bound_to_m6_with_owner_accepted_scope() -> None:
     )
     assert active.pack_trust.trust_state is PackTrustState.TRUSTED_DATA
     assert active.workflow.id == "production-v1-release"
-    assert active.state.lifecycle_state is InitiativeLifecycleState.ACTIVE
+    assert active.state.lifecycle_state is InitiativeLifecycleState.ABANDONED
     assert active.state.step_states["scope"] is StepState.COMPLETED
     assert {
         "production-v1-scope",
@@ -164,9 +165,18 @@ def test_m7_successor_is_bound_to_m6_with_owner_accepted_scope() -> None:
         for revision in current_by_role.values()
     )
 
-    claims = list_claims(layout)
-    checks = list_checks(layout)
-    evidence = list_evidence(layout)
+    claims = tuple(
+        load_record(path, Claim)
+        for path in sorted(archived_layout.claim_directory.glob("*.json"))
+    )
+    checks = tuple(
+        load_record(path, CheckResult)
+        for path in sorted(archived_layout.check_directory.glob("*.json"))
+    )
+    evidence = tuple(
+        load_record(path, EvidencePacket)
+        for path in sorted(archived_layout.evidence_directory.glob("*.json"))
+    )
     assert len(claims) == len(checks) == len(evidence) == 1
     assert claims[0].step_id == "scope"
     assert checks[0].check_id == "scope-and-channel-contract-reviewed"
@@ -175,7 +185,7 @@ def test_m7_successor_is_bound_to_m6_with_owner_accepted_scope() -> None:
     assert evidence[0].claim_ids == (claims[0].id,)
     assert evidence[0].check_result_ids == (checks[0].id,)
     assert set(evidence[0].artifact_revision_ids) == scope_revision_ids
-    acceptance_paths = tuple(layout.acceptance_directory.glob("*.json"))
+    acceptance_paths = tuple(archived_layout.acceptance_directory.glob("*.json"))
     assert len(acceptance_paths) == 1
     acceptance = load_record(acceptance_paths[0], AcceptanceRecord)
     assert acceptance.id == SCOPE_ACCEPTANCE_ID

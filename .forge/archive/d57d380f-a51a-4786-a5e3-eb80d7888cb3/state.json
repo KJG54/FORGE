@@ -1,0 +1,35 @@
+{
+  "active_pause_event_id": null,
+  "active_run_ids": [],
+  "current_artifact_revisions": {
+    "67879d21-85b9-4ae9-b929-568bec0cfb8c": 1,
+    "a8141811-26fb-4b95-8dda-d160c6e0499d": 1,
+    "b157e516-57a6-475c-ab48-70197979aabd": 1
+  },
+  "current_step_id": null,
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "integrity_state": "healthy",
+  "journal_head_hash": "sha256:a8be77af0bbb5fa71a58013ad03ecb5b1944783b214744b66516687f01040115",
+  "journal_head_sequence": 16,
+  "lifecycle_state": "abandoned",
+  "open_decision_ids": [
+    "49bac69f-a2a4-4a70-aa5d-64ec1206a1ad"
+  ],
+  "open_gate_ids": [],
+  "permitted_next_actions": [],
+  "repository_state": "initialized",
+  "schema_version": "1.0",
+  "stale_record_ids": [],
+  "step_states": {
+    "approve-publication": "pending",
+    "closeout": "pending",
+    "prepare": "blocked",
+    "publish": "pending",
+    "retrospective": "pending",
+    "scope": "completed",
+    "verify-candidate": "pending",
+    "verify-publication": "pending"
+  },
+  "workflow_id": "production-v1-release",
+  "workflow_version": "0.1.0"
+}

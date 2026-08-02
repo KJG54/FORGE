@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:4346c90eba0856ece1bc524c7a3097ab54c2d3098a0d7033a2665e7c24b3d94c",
+    "sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102"
+  ],
+  "affected_record_ids": [
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "scope-reviewed",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-01T23:09:28.641688Z",
+  "event_sequence": 8,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "032e5f25-84b6-4b44-b8cf-c6b37846b8fb",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "ruff check .; python -m pyright --pythonpath .venv/Scripts/python.exe; python -m tools.version_consistency; python -m pytest tests/test_local_v1_l1.py tests/test_m7_increment_1.py tests/test_m7_increment_2.py -q",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "Focused scope validation passed 11 tests; the complete candidate suite is reserved for later implementation and exact-candidate verification"
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-01T23:09:28.641741Z",
+  "result_digest": "sha256:02dc50629f6c935a0dabddfa6a17e66809f45f8db0eee6d597f48422674170c9",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-01T23:09:28.641686Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768"
+  ],
+  "tool_version": "1.0.0"
+}

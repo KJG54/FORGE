@@ -1,0 +1,45 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:80203cce8c13167f4dae4826f1051d100b5854c25af21a8d2b7807a614385105"
+  ],
+  "affected_record_ids": [
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768",
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9",
+    "032e5f25-84b6-4b44-b8cf-c6b37846b8fb",
+    "3e31f0be-c9d0-408c-8889-8359b44ad9c8"
+  ],
+  "artifact_revision_ids": [
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768",
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "032e5f25-84b6-4b44-b8cf-c6b37846b8fb"
+  ],
+  "claim_ids": [
+    "3e31f0be-c9d0-408c-8889-8359b44ad9c8"
+  ],
+  "correlation_id": null,
+  "event_sequence": 9,
+  "id": "5e0cbe91-4f51-47ac-9f70-20646feb74fc",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "ADR-0061 is bound by owner decision 0b29f759-667c-492d-a45b-a0526f84eaa2 and focused tests but is not a declared workflow artifact role",
+    "The current CLI attributes direct routine invocation to the configured owner; L6 must add honest operator provenance, so this evidence does not claim that the owner personally authored the worker claim",
+    "Native Codex and Claude Code journeys and the complete candidate matrix remain future L9 evidence"
+  ],
+  "packet_digest": "sha256:80203cce8c13167f4dae4826f1051d100b5854c25af21a8d2b7807a614385105",
+  "purpose": "Bind the approved local-v1 scope and requirements to the focused contract, historical-archive, lint, type, and version-consistency validation",
+  "recorded_at": "2026-08-01T23:09:43.427014Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

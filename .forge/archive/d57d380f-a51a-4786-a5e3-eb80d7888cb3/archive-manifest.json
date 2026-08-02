@@ -1,0 +1,167 @@
+{
+  "abandonment_event_id": "082d92b9-f750-4252-be90-154b28e38c3a",
+  "abandonment_record_id": "c9ce7edf-2540-4d46-8e1c-e9eed096037d",
+  "archive_digest": "sha256:a27c24c252a01cd6c5b5ba07860dbb1217de3d8f3b7c79897415cdc5123900b0",
+  "closure_event_id": null,
+  "closure_record_id": null,
+  "created_at": "2026-08-01T22:57:08.403060Z",
+  "files": [
+    {
+      "byte_size": 2257,
+      "content_digest": "sha256:73d15345d904532361e35808c7c7311615b023fd6968e8e6a8521fdd92924a0d",
+      "path": "abandonment/c9ce7edf-2540-4d46-8e1c-e9eed096037d.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 2442,
+      "content_digest": "sha256:4db9e0b29ff00dee5b94963dea183b9aadcf3ff16df40133398e41826693fad8",
+      "path": "acceptance/3c058e2a-2676-42e7-8239-1f5818c8eedf.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 938,
+      "content_digest": "sha256:87e244dd46ce1c801209fcc61d07c1ef3c271879d06c3740044a7ffc4bba24fb",
+      "path": "artifacts/records/67879d21-85b9-4ae9-b929-568bec0cfb8c.1.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 921,
+      "content_digest": "sha256:f00f4231e986324b5135ec3c2514c1499efc03e5cc66b31c1eec17bd90ce6f7c",
+      "path": "artifacts/records/a8141811-26fb-4b95-8dda-d160c6e0499d.1.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 944,
+      "content_digest": "sha256:1e5b809cbf0014799038394479be7e709f79fc83bb5fecf7ba7014202fc6e11e",
+      "path": "artifacts/records/b157e516-57a6-475c-ab48-70197979aabd.1.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1564,
+      "content_digest": "sha256:beab386023b44760d7e559851c129cb801196a90b37131ea71c0c5d392e8166b",
+      "path": "artifacts/revisions/237787a9-c59d-42d9-b160-6878a59a8df0.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1520,
+      "content_digest": "sha256:8943f644c409f455018f22860f5b019f6229d255a76f070b7ed8538ea30d6d27",
+      "path": "artifacts/revisions/8054ea3a-4731-4a84-baa8-c4471a63dfa3.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1555,
+      "content_digest": "sha256:e14b8aeb70555a4a80d9ab2af9478dc53e04625afe9ef421b98e1ffc3c1254c3",
+      "path": "artifacts/revisions/cfe54f78-dbd5-4627-9bc2-e19383f5059d.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 2127,
+      "content_digest": "sha256:bbbcfc85d0d2a74621d158a3a35b41c1def3599929e322504b58b61ea9907361",
+      "path": "checks/5ebb3638-592f-416a-8192-6a7718310db6.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1417,
+      "content_digest": "sha256:f183b21eced5236010727a6d17d5de69619c56c2c292ca2078d7a90147805da4",
+      "path": "claims/73d206b7-a168-4a8c-b922-012d6436a71b.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1930,
+      "content_digest": "sha256:2227caca15c27b0681a93fb48f3d33ba37e94d497b72bfa3fbf4ad8d6053f3f1",
+      "path": "decisions/49bac69f-a2a4-4a70-aa5d-64ec1206a1ad.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 23463,
+      "content_digest": "sha256:2db03684d1e5601681f3a559ee90c155ee0647fc9a10501ded164decdbdf69f6",
+      "path": "events.jsonl",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1750,
+      "content_digest": "sha256:c4a2fd0842d65aa3d010791f0d25f754aa6d4d0c8aa387172ee58f96ebdd5711",
+      "path": "evidence/b18553d9-487e-4242-9d82-3a6c418e868e.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1588,
+      "content_digest": "sha256:36d2d61f5dc792c68ec628e53ea0a6e74e153d3ac7c9d597dea4da5dde17e78e",
+      "path": "initiative.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1016,
+      "content_digest": "sha256:01cc653664113f3f86a9d07f3b30f8dbd614689157135ad1470f012fde0dec3d",
+      "path": "pack-trust.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 417,
+      "content_digest": "sha256:753c22325a648111bedff01ec7fbc6ff832e5233537ec07aaa63eb53086d1590",
+      "path": "pack.lock.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1275,
+      "content_digest": "sha256:8ec9326bce681a5a26ded03648d0ac5bbd68d70376619848f8bfd53335d7c069",
+      "path": "run-cancellations/5f1727e2-9a32-427d-a54f-53f63bea3a6d.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1143,
+      "content_digest": "sha256:744a4dbe97126692b0e693d3ca66d2e5578431aa77c89127a14b0c213c2c9f04",
+      "path": "runs/0fca736a-c6e3-46d1-99db-b2b779ec9596.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1142,
+      "content_digest": "sha256:0f578f5bd43247c91acd2c4a1779d2f5b931c6c30eb8302a3596b3161edad573",
+      "path": "runs/57184002-f858-4153-8716-21f878417f90.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 1081,
+      "content_digest": "sha256:0e745fe2b3922e4b69ac55877788d635860ef5f137d2729034c873f6ffa8fa37",
+      "path": "state.json",
+      "schema_version": "1.0"
+    },
+    {
+      "byte_size": 14790,
+      "content_digest": "sha256:69c0badd0937f81cb890edf4023aba5b9ad99e470b8639ef3bd2ac1872458947",
+      "path": "workflow.lock.json",
+      "schema_version": "1.0"
+    }
+  ],
+  "initiative_id": "d57d380f-a51a-4786-a5e3-eb80d7888cb3",
+  "limitations": [],
+  "object_references": [
+    {
+      "accepted": false,
+      "artifact_revision_id": "237787a9-c59d-42d9-b160-6878a59a8df0",
+      "byte_size": 3153,
+      "content_digest": "sha256:66872c9602865c05b31e7f7a112f771fd105fa4aa8e86aa416b3cbe3bd3423a6",
+      "preserved_object_path": ".forge/objects/sha256/66/872c9602865c05b31e7f7a112f771fd105fa4aa8e86aa416b3cbe3bd3423a6",
+      "schema_version": "1.0"
+    },
+    {
+      "accepted": false,
+      "artifact_revision_id": "8054ea3a-4731-4a84-baa8-c4471a63dfa3",
+      "byte_size": 4339,
+      "content_digest": "sha256:779590261814c052342013d3a18b2b4fc453f02a2f3ca03e540387a7efe17a3b",
+      "preserved_object_path": ".forge/objects/sha256/77/9590261814c052342013d3a18b2b4fc453f02a2f3ca03e540387a7efe17a3b",
+      "schema_version": "1.0"
+    },
+    {
+      "accepted": false,
+      "artifact_revision_id": "cfe54f78-dbd5-4627-9bc2-e19383f5059d",
+      "byte_size": 3667,
+      "content_digest": "sha256:eeb28e9903019b0603bbcec26ec70435c47e73fbd7322bb49665f3da8f98c89d",
+      "preserved_object_path": ".forge/objects/sha256/ee/b28e9903019b0603bbcec26ec70435c47e73fbd7322bb49665f3da8f98c89d",
+      "schema_version": "1.0"
+    }
+  ],
+  "preliminary": false,
+  "schema_version": "1.0",
+  "terminal_state": "abandoned"
+}

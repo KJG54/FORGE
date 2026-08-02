@@ -1,0 +1,15 @@
+{
+  "command": "artifact_add",
+  "completed_at": "2026-08-01T23:08:31.563862Z",
+  "events": [
+    {
+      "event_hash": "sha256:85f525b64c5f63d5a76bf2b23d85f6451534f9ce0f3fbab7bce43573785a9d37",
+      "event_id": "aa3508f8-07a0-4a13-89ce-81e69e25f4b8",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 3
+    }
+  ],
+  "key": "local-v1-l1-add-change-scope-20260801",
+  "request_digest": "sha256:6ed01d6468c2bc849f0e862b2e9f63b78fe934d51cb810b19daddd095b0264f0",
+  "schema_version": "1.0"
+}
