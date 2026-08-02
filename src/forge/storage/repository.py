@@ -152,6 +152,14 @@ class RepositoryLayout:
         return self.local_directory / "audit-events"
 
     @property
+    def conversation_directory(self) -> Path:
+        return self.local_directory / "conversation"
+
+    @property
+    def scratchpad_file(self) -> Path:
+        return self.conversation_directory / "scratchpad.md"
+
+    @property
     def capability_approval_directory(self) -> Path:
         return self.active_directory / "capability-approvals"
 

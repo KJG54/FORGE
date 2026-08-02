@@ -10,7 +10,7 @@ from forge.storage.objects import sha256_digest
 
 AGENT_PROTOCOL_VERSION = "1.0.0"
 AGENT_PROTOCOL_FILENAME = f"agent-protocol-{AGENT_PROTOCOL_VERSION}.md"
-AGENT_PROTOCOL_DIGEST = "sha256:ac346354b12cc80d74732586407bd0d3771fd03dd2b7fff598337cbf59a1bf9c"
+AGENT_PROTOCOL_DIGEST = "sha256:36002c81ed99a71b192f05a76e15d8043bbeb9007c85b20ed6119b6230207b04"
 
 
 @dataclass(frozen=True)
@@ -41,6 +41,7 @@ def load_agent_protocol() -> AgentProtocol:
         "## Exact owner confirmation before bootstrap",
         "## Bootstrap next action",
         "## Git, delegation, and threat model",
+        "For an ordinary gap, run `forge recap`.",
     )
     missing = tuple(fragment for fragment in required_fragments if fragment not in decoded)
     if missing:

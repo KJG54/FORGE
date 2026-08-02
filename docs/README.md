@@ -27,6 +27,7 @@ remain the canonical detail; the guides connect them without redefining contract
   [governed lifecycle](user-guide/README.md).
 - Inspect the uninitialized [software and research examples](../examples/README.md).
 - [Pause and resume](continuity.md) work without relying on chat history.
+- Return after an ordinary gap with a [safe local scratchpad and warm recap](scratchpad-and-recap.md).
 - Read [canonical transaction receipts](transaction-receipts.md), then use detailed history and
   record inspection when a concise mutation result needs forensic expansion.
 - [Close, abandon, and inspect archives](closure-and-archives.md), or create a

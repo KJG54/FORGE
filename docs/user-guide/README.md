@@ -49,10 +49,15 @@ Use these commands after creation and whenever a process, terminal, or chat rest
 forge status
 forge next
 forge history
+forge recap
 ```
 
 They validate the journal, locked records, preserved objects, and snapshot before reporting state.
 The journal is authoritative; `state.json` is a reconstructable view.
+
+`forge recap` adds a clearly separate, ungoverned local scratchpad to the validated warm-resume
+view. See [local scratchpad and warm recap](../scratchpad-and-recap.md) for the bounded file format,
+reconciliation states, and the distinction from owner-authorized pause/resume.
 
 ## 4. Complete one workflow step
 

@@ -76,6 +76,8 @@ def test_protocol_is_exact_and_covers_the_l2_bootstrap_contract() -> None:
         "Bootstrap next action",
         "forge agent context --target <codex|claude> --apply",
         "same-user threat model",
+        "For an ordinary gap, run `forge recap`.",
+        ".forge/local/conversation/scratchpad.md",
     ):
         assert required in text
 
