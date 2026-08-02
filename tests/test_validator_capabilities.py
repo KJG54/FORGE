@@ -684,10 +684,10 @@ def test_validator_cli_run_records_result_without_rendering_raw_output(
     )
 
     assert executed.exit_code == 0, executed.stdout
-    assert "Execution status: completed" in executed.stdout
-    assert "Recorded check result" in executed.stdout
+    assert "check-recorded (" in executed.stdout
+    assert "outcome=passed" in executed.stdout
     assert "validator succeeded" not in executed.stdout
-    assert "does not create evidence" in executed.stdout
+    assert "Means    ->" in executed.stdout
     checks = list_checks(initialized.layout)
     assert len(checks) == 1
     shown = runner.invoke(

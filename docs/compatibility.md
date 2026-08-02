@@ -32,6 +32,13 @@ model. The L2 implementation leaves the 51-model schema registry and valid old r
 locks unchanged. Existing managed `AGENTS.md` and `CLAUDE.md` marker spans refresh in place while
 preserving all owner-authored bytes outside the span.
 
+Local Production-v1 L3 adds a non-persisted canonical transaction-receipt presentation for
+selected high-frequency mutations. It is derived from existing schema-`1.0` idempotency receipts,
+exact journal events, and replayed status; it adds no model, field, event type, migration, or stored
+format. The `Recorded`/`Means` semantics, exact event identity, zero-new-event replay statement,
+and absence of `Recorded` on refusals are intentional CLI behavior. Exact prose, metadata ordering,
+and spacing remain outside the stable interface.
+
 ## Contract compatibility
 
 All independently persisted public records use `schema_version: "1.0"`. The accepted public

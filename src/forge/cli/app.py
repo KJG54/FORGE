@@ -1,8 +1,11 @@
 """Command-line presentation for the currently authorized FORGE increment."""
 
 from collections.abc import Callable
+from contextlib import redirect_stdout
+from contextvars import ContextVar
 from functools import wraps
 from inspect import signature
+from io import StringIO
 from pathlib import Path
 from typing import Annotated
 from uuid import UUID
@@ -94,6 +97,13 @@ from forge.core.scope_amendments import (
 )
 from forge.core.status import inspect_status
 from forge.core.structural_validation import execute_structural_check
+from forge.core.transaction_receipts import (
+    GovernedPosition,
+    build_refusal_receipt,
+    build_transaction_receipt,
+    capture_governed_position,
+    render_transaction_receipt,
+)
 from forge.core.validators import execute_validator_check
 from forge.core.vendor_context import apply_vendor_context, preview_vendor_context
 from forge.core.verification import (
@@ -148,6 +158,35 @@ IdempotencyOption = Annotated[
         help="Stable retry key; FORGE generates and reports one when omitted.",
     ),
 ]
+
+_RECEIPT_COMMANDS = {
+    "acceptance_record",
+    "acceptance_revoke",
+    "artifact_add",
+    "artifact_revise",
+    "begin",
+    "check_record",
+    "check_run",
+    "check_structure",
+    "complete",
+    "create",
+    "decide",
+    "decision_withdraw",
+    "evidence_add",
+    "pause",
+    "resume",
+    "scope_amend",
+    "verify",
+}
+_RECEIPT_MUTATION_ACTIVE: ContextVar[bool] = ContextVar(
+    "forge_receipt_mutation_active", default=False
+)
+
+
+class _ReceiptRefusal(Exception):
+    def __init__(self, error: ForgeError) -> None:
+        super().__init__(str(error))
+        self.error = error
 app.add_typer(schema_app, name="schema")
 app.add_typer(config_app, name="config")
 app.add_typer(pack_app, name="pack")
@@ -171,6 +210,9 @@ app.add_typer(audit_app, name="audit")
 def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
     @wraps(function)
     def locked(*args: P.args, **kwargs: P.kwargs) -> None:
+        layout = None
+        position_before: GovernedPosition | None = None
+        receipt_enabled = function.__name__ in _RECEIPT_COMMANDS
         try:
             bound = signature(function).bind(*args, **kwargs)
             bound.apply_defaults()
@@ -189,6 +231,8 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
                 function(*args, **kwargs)
                 return
             with repository_mutation_lock(layout, command=function.__name__):
+                if receipt_enabled:
+                    position_before = capture_governed_position(layout)
                 provided_key = parameters.pop("idempotency_key", None)
                 parameters.pop("directory", None)
                 if provided_key is not None and not isinstance(provided_key, str):
@@ -207,16 +251,66 @@ def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
                         else ()
                     ),
                 ) as invocation:
-                    typer.echo(f"Idempotency key: {invocation.key}")
                     if invocation.is_replay:
-                        assert invocation.receipt is not None
-                        event_ids = ", ".join(
-                            str(item.event_id) for item in invocation.receipt.events
-                        )
-                        typer.echo(f"Idempotent replay; committed event(s): {event_ids}")
+                        if receipt_enabled:
+                            receipt = build_transaction_receipt(
+                                layout,
+                                key=invocation.key,
+                                replayed=True,
+                            )
+                            typer.echo(render_transaction_receipt(receipt))
+                        else:
+                            typer.echo(f"Idempotency key: {invocation.key}")
+                            assert invocation.receipt is not None
+                            event_ids = ", ".join(
+                                str(item.event_id) for item in invocation.receipt.events
+                            )
+                            typer.echo(
+                                f"Idempotent replay; committed event(s): {event_ids}"
+                            )
                         return
-                    function(*args, **kwargs)
+                    if receipt_enabled:
+                        token = _RECEIPT_MUTATION_ACTIVE.set(True)
+                        try:
+                            with redirect_stdout(StringIO()):
+                                function(*args, **kwargs)
+                        finally:
+                            _RECEIPT_MUTATION_ACTIVE.reset(token)
+                    else:
+                        typer.echo(f"Idempotency key: {invocation.key}")
+                        function(*args, **kwargs)
+                if receipt_enabled:
+                    receipt = build_transaction_receipt(
+                        layout,
+                        key=invocation.key,
+                        replayed=False,
+                    )
+                    rendered_receipt = render_transaction_receipt(receipt)
+                else:
+                    rendered_receipt = None
+            if rendered_receipt is not None:
+                typer.echo(rendered_receipt)
+        except _ReceiptRefusal as refusal:
+            assert layout is not None
+            receipt = build_refusal_receipt(
+                layout,
+                command=function.__name__,
+                error=refusal.error,
+                position_before=position_before,
+            )
+            typer.echo(render_transaction_receipt(receipt), err=True)
+            raise typer.Exit(code=int(refusal.error.exit_code)) from refusal
         except ForgeError as error:
+            if receipt_enabled and layout is not None:
+                _record_cli_failure(error)
+                receipt = build_refusal_receipt(
+                    layout,
+                    command=function.__name__,
+                    error=error,
+                    position_before=position_before,
+                )
+                typer.echo(render_transaction_receipt(receipt), err=True)
+                raise typer.Exit(code=int(error.exit_code)) from error
             _fail(error)
 
     return locked
@@ -654,6 +748,8 @@ def _record_cli_failure(error: ForgeError) -> None:
 
 def _fail(error: ForgeError) -> None:
     _record_cli_failure(error)
+    if _RECEIPT_MUTATION_ACTIVE.get():
+        raise _ReceiptRefusal(error)
     typer.echo(f"Error: {error}", err=True)
     raise typer.Exit(code=int(error.exit_code))
 

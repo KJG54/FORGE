@@ -73,11 +73,23 @@ def _run(repository: Path, *arguments: str, expected: int = 0) -> str:
 
 
 def _value(output: str, prefix: str) -> str:
-    return next(
-        line.removeprefix(prefix)
-        for line in output.splitlines()
-        if line.startswith(prefix)
+    legacy = next(
+        (
+            line.removeprefix(prefix)
+            for line in output.splitlines()
+            if line.startswith(prefix)
+        ),
+        None,
     )
+    if legacy is not None:
+        return legacy
+    receipt_fields = {
+        "Recorded claim ": "claim_id",
+        "Recorded check result ": "check_result_id",
+    }
+    marker = f"{receipt_fields[prefix]}="
+    value = output.split(marker, 1)[1]
+    return value.split(";", 1)[0].split(")", 1)[0]
 
 
 def _current_revision_ids(

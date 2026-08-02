@@ -243,7 +243,7 @@ def test_create_successor_cli_reports_lineage(tmp_path: Path) -> None:
         ],
     )
     assert result.exit_code == 0, result.stderr
-    assert f"Predecessor: {predecessor_id}" in result.stdout
+    assert f"predecessors={predecessor_id}" in result.stdout
     assert str(load_active_initiative(initialized.layout).initiative.id) in result.stdout
 
 

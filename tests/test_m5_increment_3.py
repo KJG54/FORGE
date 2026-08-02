@@ -360,9 +360,9 @@ def test_structural_checks_pass_without_process_and_remain_separate_from_evidenc
         ],
     )
     assert cli_result.exit_code == 0, cli_result.stderr
-    assert "Recorded check result" in cli_result.stdout
-    assert "Structural findings: none" in cli_result.stdout
-    assert "No process or executable capability was started" in cli_result.stdout
+    assert "Recorded -> check-recorded" in cli_result.stdout
+    assert "outcome=passed" in cli_result.stdout
+    assert "Means    ->" in cli_result.stdout
     cli_check = list_checks(initialized.layout)[-1]
     assert cli_check.check_id == EVIDENCE_CHECK
 

@@ -104,7 +104,8 @@ def test_pack_create_status_next_and_begin_commands(tmp_path: Path) -> None:
         ],
     )
     assert created.exit_code == 0, created.stdout
-    assert "Next: begin:discover" in created.stdout
+    assert "Recorded -> initiative-created" in created.stdout
+    assert "legal_actions=begin:discover" in created.stdout
 
     next_result = runner.invoke(app, ["next", "-C", str(tmp_path)])
     assert next_result.exit_code == 0, next_result.stdout
@@ -112,8 +113,9 @@ def test_pack_create_status_next_and_begin_commands(tmp_path: Path) -> None:
 
     begun = runner.invoke(app, ["begin", "discover", "-C", str(tmp_path)])
     assert begun.exit_code == 0, begun.stdout
-    assert "Started manual run" in begun.stdout
-    assert "separate from checks, evidence, and owner acceptance" in begun.stdout
+    assert "Recorded -> step-transitioned" in begun.stdout
+    assert "step=discover:in_progress" in begun.stdout
+    _line_value(begun.stdout, "Started manual run ")
 
     status = runner.invoke(app, ["status", "-C", str(tmp_path)])
     assert status.exit_code == 0, status.stdout
@@ -124,11 +126,26 @@ def test_pack_create_status_next_and_begin_commands(tmp_path: Path) -> None:
 
 
 def _line_value(output: str, prefix: str) -> str:
-    return next(
-        line.removeprefix(prefix)
-        for line in output.splitlines()
-        if line.startswith(prefix)
+    legacy = next(
+        (
+            line.removeprefix(prefix)
+            for line in output.splitlines()
+            if line.startswith(prefix)
+        ),
+        None,
     )
+    if legacy is not None:
+        return legacy
+    receipt_fields = {
+        "Revision ID: ": "revision_id",
+        "Recorded claim ": "claim_id",
+        "Recorded check result ": "check_result_id",
+        "Recorded owner acceptance ": "acceptance_id",
+        "Started manual run ": "run_id",
+    }
+    marker = f"{receipt_fields[prefix]}="
+    value = output.split(marker, 1)[1]
+    return value.split(";", 1)[0].split(")", 1)[0]
 
 
 def test_artifact_claim_check_evidence_and_verify_commands(tmp_path: Path) -> None:
@@ -252,12 +269,12 @@ def test_artifact_claim_check_evidence_and_verify_commands(tmp_path: Path) -> No
         ],
     )
     assert evidenced.exit_code == 0, evidenced.stdout
-    assert "does not automatically establish truth" in evidenced.stdout
+    assert "Recorded -> evidence-registered" in evidenced.stdout
 
     verified = runner.invoke(app, ["verify", "discover", "-C", str(tmp_path)])
     assert verified.exit_code == 0, verified.stdout
-    assert "Step discover: awaiting_acceptance" in verified.stdout
-    assert "forge acceptance record discover" in verified.stdout
+    assert "step=discover:awaiting_acceptance" in verified.stdout
+    assert "legal_actions=acceptance-record:discover" in verified.stdout
 
     accepted = runner.invoke(
         app,
@@ -275,7 +292,8 @@ def test_artifact_claim_check_evidence_and_verify_commands(tmp_path: Path) -> No
     )
     assert accepted.exit_code == 0, accepted.stdout
     acceptance_id = _line_value(accepted.stdout, "Recorded owner acceptance ")
-    assert "Step discover: completed" in accepted.stdout
+    assert "acceptance-recorded" in accepted.stdout
+    assert "step=plan:ready" in accepted.stdout
 
     shown = runner.invoke(
         app, ["acceptance", "show", acceptance_id, "-C", str(tmp_path)]
@@ -304,7 +322,7 @@ def test_artifact_claim_check_evidence_and_verify_commands(tmp_path: Path) -> No
         ],
     )
     assert decided.exit_code == 0, decided.stdout
-    assert "Recorded decision" in decided.stdout
+    assert "Recorded -> decision-recorded" in decided.stdout
 
     revoked = runner.invoke(
         app,

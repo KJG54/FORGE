@@ -71,11 +71,10 @@ def test_cli_security_refusal_records_sanitized_local_event(tmp_path: Path) -> N
     assert event.outcome == "refused"
     assert event.exit_code == 40
     assert event.error_type == "SecurityError"
-    displayed_error = next(
-        line.removeprefix("Error: ")
-        for line in refused.output.splitlines()
-        if line.startswith("Error: ")
-    )
+    displayed_error = refused.output.split("Refused artifact add: ", 1)[1].split(
+        "; validated no new governed events",
+        1,
+    )[0]
     assert event.detail_digest == sha256_digest(displayed_error.encode())
     stored = (
         initialized.layout.local_audit_event_directory / f"{event.id}.json"

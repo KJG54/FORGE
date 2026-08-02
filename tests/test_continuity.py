@@ -100,18 +100,22 @@ def test_pause_and_resume_survive_restart_with_durable_summary(tmp_path: Path) -
     )
 
     assert resumed.exit_code == 0, resumed.output
-    assert "Summary: Resuming objective: Continuity objective." in resumed.stdout
-    assert "Pause reason: Waiting for owner review." in resumed.stdout
+    assert "Recorded -> initiative-resumed" in resumed.stdout
+    assert "step=discover:ready" in resumed.stdout
     resumed_state = load_snapshot(layout.state_file)
     assert resumed_state.lifecycle_state is InitiativeLifecycleState.ACTIVE
     assert resumed_state.active_pause_event_id is None
     assert resumed_state.current_step_id == before.current_step_id
     assert resumed_state.step_states == before.step_states
     assert resumed_state.permitted_next_actions == before.permitted_next_actions
-    assert [event.event_type for event in read_journal(layout.event_journal_file)][-2:] == [
+    events = read_journal(layout.event_journal_file)
+    assert [event.event_type for event in events][-2:] == [
         "initiative-paused",
         "initiative-resumed",
     ]
+    summary = events[-1].metadata["resumption_summary"]
+    assert "Resuming objective: Continuity objective." in summary
+    assert "Pause reason: Waiting for owner review." in summary
 
 
 def test_paused_initiative_rejects_normal_mutation_but_allows_idempotent_replay(
