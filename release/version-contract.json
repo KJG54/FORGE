@@ -153,6 +153,7 @@
     "pack validator list",
     "pack validator show",
     "pause",
+    "recap",
     "recover",
     "recover-command",
     "remediate-lock",

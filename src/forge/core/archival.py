@@ -117,6 +117,7 @@ class ArchiveSummary:
     objective: str
     terminal_state: InitiativeLifecycleState
     archived_at: datetime
+    last_event_at: datetime
     event_count: int
     journal_head_sequence: int
     journal_head_hash: str | None
@@ -571,6 +572,7 @@ def summarize_archive(archive: ArchiveView) -> ArchiveSummary:
         objective=archive.active.initiative.objective,
         terminal_state=archive.manifest.terminal_state,
         archived_at=archive.manifest.created_at,
+        last_event_at=archive.events[-1].timestamp,
         event_count=len(archive.events),
         journal_head_sequence=state.journal_head_sequence,
         journal_head_hash=state.journal_head_hash,

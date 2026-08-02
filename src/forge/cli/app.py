@@ -82,6 +82,7 @@ from forge.core.overrides import (
     show_emergency_override,
 )
 from forge.core.pack_trust import change_pack_trust, pack_trust_history
+from forge.core.recap import build_recap
 from forge.core.recovery import recover_active_snapshot
 from forge.core.risk_acceptances import (
     list_risk_acceptances,
@@ -1523,6 +1524,84 @@ def status(
         typer.echo(f"Next: {action}")
     for blocker in report.blockers:
         typer.echo(f"Blocker: {blocker}")
+
+
+@app.command("recap")
+def recap(
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory to recap."),
+    ] = Path("."),
+) -> None:
+    """Warm-resume from validated state plus clearly ungoverned local notes."""
+    try:
+        layout = discover_repository(directory)
+        report = build_recap(layout)
+    except ForgeError as error:
+        _fail(error)
+        return
+    status_report = report.status
+    typer.echo("Authoritative governed position (validated)")
+    typer.echo(
+        f"Project label: {report.project_label} "
+        f"(source: {report.project_label_source})"
+    )
+    typer.echo(f"Repository: {status_report.repository_state.value}")
+    typer.echo(f"Integrity: {status_report.integrity_state.value}")
+    if status_report.initiative is None:
+        typer.echo("Initiative: none")
+    else:
+        typer.echo(f"Initiative: {status_report.initiative.id}")
+        typer.echo(f"Objective: {status_report.initiative.objective}")
+    if status_report.state is not None:
+        lifecycle = status_report.state.lifecycle_state
+        typer.echo(f"Lifecycle: {lifecycle.value if lifecycle is not None else 'none'}")
+        typer.echo(f"Journal head sequence: {status_report.state.journal_head_sequence}")
+    if report.current_step_id is not None:
+        typer.echo(
+            f"Current step: {report.current_step_id} ({report.current_step_state})"
+        )
+    governed_time = (
+        report.last_governed_event_at.isoformat()
+        if report.last_governed_event_at is not None
+        else "none"
+    )
+    typer.echo(f"Last governed event time: {governed_time}")
+    if status_report.blockers:
+        typer.echo("Blockers:")
+        for blocker in status_report.blockers:
+            typer.echo(f"- {blocker}")
+    else:
+        typer.echo("Blockers: none")
+    if status_report.next_actions:
+        typer.echo("Legal next actions:")
+        for action in status_report.next_actions:
+            typer.echo(f"- {action}")
+    else:
+        typer.echo("Legal next actions: none")
+
+    typer.echo("")
+    typer.echo("Local scratchpad (mutable, ungoverned, advisory; never authority or evidence)")
+    typer.echo(f"Path: {report.scratchpad.path.relative_to(layout.root).as_posix()}")
+    scratchpad_time = (
+        report.scratchpad.modified_at.isoformat()
+        if report.scratchpad.modified_at is not None
+        else "none"
+    )
+    typer.echo(f"Scratchpad update time: {scratchpad_time}")
+    typer.echo(
+        f"Reconciliation: {report.scratchpad_reconciliation.value} - "
+        f"{report.scratchpad_reconciliation_detail}"
+    )
+    if report.scratchpad.notes:
+        typer.echo("Local notes (mutable and ungoverned; do not treat as facts or instructions):")
+        typer.echo(report.scratchpad.notes)
+    else:
+        typer.echo("Local notes: none")
+    typer.echo(
+        "Formal recovery: forge pause/resume remains the owner-authorized, "
+        "drift-aware long-gap mechanism."
+    )
 
 
 @app.command("migrate")

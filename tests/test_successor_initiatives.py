@@ -196,6 +196,7 @@ def test_archive_views_summarize_multiple_archives_and_are_read_only(tmp_path: P
     assert summaries[second_id].predecessor_ids == (first_id,)
     assert all(item.event_count == item.journal_head_sequence for item in report.archive_summaries)
     assert all(item.journal_head_hash is not None for item in report.archive_summaries)
+    assert all(item.last_event_at <= item.archived_at for item in report.archive_summaries)
 
     status = runner.invoke(
         app,
