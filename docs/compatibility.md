@@ -26,6 +26,12 @@ exports, and the `forge-contracts-1` declarative-pack boundary.
 Exact human-readable CLI prose and undocumented implementation modules are not stable interfaces.
 Schema, journal, pack, workflow, and distribution versions remain independent.
 
+Local Production-v1 L2 adds direct workspace-agent protocol version `1.0.0` as another independent
+version domain. It is an exact packaged and regenerable Markdown resource, not a persisted public
+model. The L2 implementation leaves the 51-model schema registry and valid old records and workflow
+locks unchanged. Existing managed `AGENTS.md` and `CLAUDE.md` marker spans refresh in place while
+preserving all owner-authored bytes outside the span.
+
 ## Contract compatibility
 
 All independently persisted public records use `schema_version: "1.0"`. The accepted public

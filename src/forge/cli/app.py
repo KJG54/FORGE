@@ -27,6 +27,7 @@ from forge.core.acceptance import (
 )
 from forge.core.agent_adapters import inspect_agent_adapter, prepare_agent_handoff
 from forge.core.agent_context import AgentContextTarget, generate_agent_context
+from forge.core.agent_protocol import load_agent_protocol
 from forge.core.agent_runs import execute_agent_run
 from forge.core.archival import abandon_initiative, close_initiative
 from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact, show_artifact
@@ -403,6 +404,21 @@ def capability_revoke(
     typer.echo(f"Revocation record: {result.revocation.id}")
 
 
+@agent_app.command("protocol")
+def agent_protocol() -> None:
+    """Print the installed workspace-agent protocol without requiring a repository."""
+
+    try:
+        protocol = load_agent_protocol()
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(f"FORGE agent protocol version: {protocol.version}")
+    typer.echo(f"Protocol digest: {protocol.digest}")
+    typer.echo()
+    typer.echo(protocol.content.decode("utf-8"), nl=False)
+
+
 @agent_app.command("context")
 def agent_context(
     directory: Annotated[
@@ -428,6 +444,10 @@ def agent_context(
             typer.echo(f"Generated {target.value} canonical agent context")
             typer.echo(f"JSON: {result.json_path}")
             typer.echo(f"Markdown: {result.markdown_path}")
+            typer.echo(
+                f"Protocol: {result.protocol_path} "
+                f"(version {result.protocol_version}, {result.protocol_digest})"
+            )
             if result.context.known_blockers:
                 typer.echo("Known blockers:")
                 for blocker in result.context.known_blockers:
@@ -441,6 +461,8 @@ def agent_context(
         typer.echo(f"Current digest: {preview.current_digest or '<missing>'}")
         typer.echo(f"Proposed digest: {preview.proposed_digest}")
         typer.echo(f"Neutral context digest: {preview.context_digest}")
+        typer.echo(f"Protocol version: {preview.protocol_version}")
+        typer.echo(f"Protocol digest: {preview.protocol_digest}")
         typer.echo("Managed block preview:")
         typer.echo(preview.managed_block.decode("utf-8"), nl=False)
         if not apply_changes:
@@ -459,6 +481,10 @@ def agent_context(
     typer.echo(f"{outcome}: {applied.preview.path}")
     typer.echo(f"JSON: {applied.context.json_path}")
     typer.echo(f"Markdown: {applied.context.markdown_path}")
+    typer.echo(
+        f"Protocol: {applied.context.protocol_path} "
+        f"(version {applied.context.protocol_version}, {applied.context.protocol_digest})"
+    )
     typer.echo("Vendor reference is derived; FORGE governed state remains authoritative")
 
 

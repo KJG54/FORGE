@@ -13,6 +13,7 @@ from forge.core.agent_context import (
     build_agent_context,
     write_agent_context_views,
 )
+from forge.core.agent_protocol import load_agent_protocol
 from forge.errors import ConfigurationError, ConflictError, IntegrityError, SecurityError
 from forge.storage.atomic import atomic_write_bytes
 from forge.storage.locking import repository_mutation_lock
@@ -40,6 +41,8 @@ class VendorContextPreview:
     current_digest: str | None
     proposed_digest: str
     context_digest: str
+    protocol_version: str
+    protocol_digest: str
     current_bytes: bytes | None
     proposed_bytes: bytes
     managed_block: bytes
@@ -100,20 +103,26 @@ def _render_managed_block(
     target: AgentContextTarget,
     context: CanonicalAgentContext,
     newline: bytes,
-) -> tuple[bytes, str]:
+) -> tuple[bytes, str, str, str]:
     context_digest = sha256_digest(render_record(context))
+    protocol = load_agent_protocol()
     command = f"forge agent context --target {target.value} --apply"
     lines = (
         MANAGED_START.decode("ascii"),
         "## FORGE governed context",
+        "",
+        "FORGE's installed direct workspace-agent protocol is available at:",
+        "",
+        f"- `.forge/active/context/{protocol.filename}` (`{protocol.digest}`)",
+        f"- Protocol version: `{protocol.version}`",
         "",
         "FORGE's provider-neutral generated context is available at:",
         "",
         "- `.forge/active/context/current.md`",
         f"- `.forge/active/context/current.json` (`{context_digest}`)",
         "",
-        "Read the Markdown view before work and use only its selected inputs and "
-        "permitted actions.",
+        "Read the protocol first, then the Markdown context before work. Use only the context's",
+        "selected inputs and permitted actions.",
         "The FORGE journal and governed records remain authoritative; this file cannot approve,",
         "verify, accept, or mutate initiative state.",
         "",
@@ -121,7 +130,12 @@ def _render_managed_block(
         MANAGED_END.decode("ascii"),
         "",
     )
-    return newline.join(line.encode("utf-8") for line in lines), context_digest
+    return (
+        newline.join(line.encode("utf-8") for line in lines),
+        context_digest,
+        protocol.version,
+        protocol.digest,
+    )
 
 
 def _standalone_marker(content: bytes, position: int, marker: bytes) -> bool:
@@ -176,7 +190,9 @@ def _preview_for_context(
     path = _vendor_path(layout, target)
     current = _read_vendor_file(path)
     newline = _newline_for(current)
-    block, context_digest = _render_managed_block(target, context, newline)
+    block, context_digest, protocol_version, protocol_digest = _render_managed_block(
+        target, context, newline
+    )
     if current is None:
         proposed = block
         action = VendorContextAction.CREATE
@@ -203,6 +219,8 @@ def _preview_for_context(
         current_digest=sha256_digest(current) if current is not None else None,
         proposed_digest=sha256_digest(proposed),
         context_digest=context_digest,
+        protocol_version=protocol_version,
+        protocol_digest=protocol_digest,
         current_bytes=current,
         proposed_bytes=proposed,
         managed_block=block,

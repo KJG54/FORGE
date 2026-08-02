@@ -362,6 +362,7 @@ forge recover-command <interrupted-key> --reason "Receipt write was interrupted"
   --idempotency-key <distinct-recovery-key>
 forge remediate-lock --reason "Confirmed the interrupted process exited" \
   --idempotency-key <stable-remediation-key>
+forge agent protocol
 forge agent context --target neutral
 forge agent discover
 forge agent context --target codex
@@ -424,6 +425,7 @@ forge --help
 - [Pause and long-gap resume](docs/continuity.md)
 - [Hybrid Git collaboration policy](docs/git-policy.md)
 - [Canonical neutral agent context](docs/agent-context.md)
+- [Local Production-v1 L2 protocol boundary](docs/milestones/local-v1-l2.md)
 - [Neutral agent adapters and manual fallback](docs/adapters.md)
 - [Trusted local validator declarations](docs/validators.md)
 - [Repository initialization](docs/user-guide/initialization.md)

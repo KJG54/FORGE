@@ -90,6 +90,7 @@
     "agent context",
     "agent discover",
     "agent doctor",
+    "agent protocol",
     "agent run",
     "artifact",
     "artifact add",

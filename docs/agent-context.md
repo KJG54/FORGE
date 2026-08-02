@@ -11,12 +11,32 @@ forge agent context --target neutral
 
 FORGE validates the active initiative and writes deterministic views to:
 
+- `.forge/active/context/agent-protocol-1.0.0.md`;
 - `.forge/active/context/current.json`;
 - `.forge/active/context/current.md`.
 
 These files are generated and tracked by the hybrid Git policy. They are not journal events,
 decisions, evidence, or acceptance, and they never replace the authoritative governed records from
 which they are derived.
+
+## Direct workspace-agent protocol
+
+Local Production-v1 L2 adds a repository-independent entry point:
+
+```console
+forge agent protocol
+```
+
+It prints the installed protocol version, SHA-256 digest, and exact content without looking for
+`forge.yaml` or `.forge/`. Direct Codex and Claude Code workspace agents use that document for
+first-contact state detection, document-first interviewing, coverage playback, draft vision and
+milestone scope, separate initialization and creation confirmation, owner gates, daily labor
+split, plan changes, delegation, Git/FORGE separation, and the same-user threat model.
+
+The protocol is an exact packaged Markdown resource, not a public record, journal event, permission,
+check, evidence packet, or acceptance. Generating canonical context copies the identical bytes
+beside `current.json` and `current.md`. The managed vendor reference binds its version and digest so
+the workspace agent can read the protocol before the repository-specific canonical context.
 
 ## Included information
 
@@ -67,10 +87,10 @@ forge agent context --target claude --apply
 ```
 
 The first command is always a read-only preview. It reports whether FORGE would create, append,
-replace, or leave the target unchanged, displays exact current/proposed/context digests, and shows
-only the managed reference block. It never echoes existing user content. `--apply` explicitly
-confirms the displayed plan, regenerates neutral `current.json` and `current.md`, and updates
-`AGENTS.md` or `CLAUDE.md` atomically.
+replace, or leave the target unchanged, displays exact current/proposed/context/protocol digests,
+and shows only the managed reference block. It never echoes existing user content. `--apply`
+explicitly confirms the displayed plan, regenerates the installed protocol copy plus neutral
+`current.json` and `current.md`, and updates `AGENTS.md` or `CLAUDE.md` atomically.
 
 FORGE owns only the span between these standalone markers:
 
@@ -81,8 +101,8 @@ FORGE owns only the span between these standalone markers:
 
 All bytes outside that span are preserved. With no block, existing content remains an exact prefix.
 Malformed or duplicate markers, symbolic links, non-UTF-8 files, oversized results, and any file or
-neutral-context change after preview are refused. The block contains references and the exact
-canonical JSON digest rather than embedding the assignment.
+neutral-context change after preview are refused. The block contains the exact protocol version and
+digest plus references and the canonical JSON digest rather than embedding either document.
 
 M3 Increment 3 adds the neutral adapter interface, a process-free manual implementation, and
 read-only `forge agent doctor` selection diagnostics. `forge handoff` derives this same canonical
