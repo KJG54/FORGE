@@ -18,6 +18,7 @@ from forge import __version__
 from forge.storage.journal import read_journal, render_event
 from forge.storage.repository import RepositoryLayout
 from forge.storage.snapshots import load_snapshot, write_snapshot
+from tools.receipt_fields import ReceiptFieldError, receipt_value
 
 
 class ProcedureRehearsalError(RuntimeError):
@@ -105,15 +106,6 @@ def _run_expected_failure(
         )
 
 
-def _value(output: str, prefix: str) -> str:
-    for line in output.splitlines():
-        if line.startswith(prefix):
-            value = line.removeprefix(prefix).strip()
-            if value:
-                return value
-    _fail(f"Command output omitted value prefix {prefix!r}")
-
-
 def _initialize_active(
     executable: Path,
     repository: Path,
@@ -144,9 +136,9 @@ def _initialize_active(
         ),
         cwd=repository.parent,
         environment=environment,
-        expected_output="Created initiative ",
+        expected_output="Recorded -> initiative-created",
     )
-    return _value(created, "Created initiative ")
+    return receipt_value(created, "initiative")
 
 
 def _make_legacy_journal(repository: Path) -> None:
@@ -327,9 +319,9 @@ def _rehearse_abandonment_successor(
         ),
         cwd=root,
         environment=environment,
-        expected_output=f"Predecessor: {predecessor_id}",
+        expected_output=f"predecessors={predecessor_id}",
     )
-    successor_id = _value(successor, "Created initiative ")
+    successor_id = receipt_value(successor, "initiative")
     if successor_id == predecessor_id:
         _fail("Successor reused the predecessor initiative identity")
     _run(
@@ -441,7 +433,12 @@ def main() -> int:
             if output.exists():
                 _fail(f"Refusing to overwrite procedure report: {output}")
             output.write_text(rendered, encoding="utf-8")
-    except (OSError, ProcedureRehearsalError, subprocess.TimeoutExpired) as error:
+    except (
+        OSError,
+        ProcedureRehearsalError,
+        ReceiptFieldError,
+        subprocess.TimeoutExpired,
+    ) as error:
         print(f"release procedure rehearsal failed: {error}", file=sys.stderr)
         return 1
     return 0

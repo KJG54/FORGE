@@ -4,7 +4,8 @@ import pytest
 
 from forge.packs.loader import load_pack
 from forge.security.secrets import screen_governed_content
-from tools.example_workflow_smoke import SCENARIOS, ExampleSmokeError, _receipt_value
+from tools.example_workflow_smoke import SCENARIOS
+from tools.receipt_fields import ReceiptFieldError, receipt_value
 
 ROOT = Path(__file__).resolve().parents[1]
 EXAMPLES_ROOT = ROOT / "examples"
@@ -76,8 +77,8 @@ def test_example_harness_reads_canonical_receipt_identifiers() -> None:
         "Means    -> integrity=healthy"
     )
 
-    assert _receipt_value(output, "revision_id") == "revision-1"
-    assert _receipt_value(output, "claim_id") == "claim-1"
-    assert _receipt_value(output, "check_result_id") == "check-1"
-    with pytest.raises(ExampleSmokeError, match="missing_id"):
-        _receipt_value(output, "missing_id")
+    assert receipt_value(output, "revision_id") == "revision-1"
+    assert receipt_value(output, "claim_id") == "claim-1"
+    assert receipt_value(output, "check_result_id") == "check-1"
+    with pytest.raises(ReceiptFieldError, match="missing_id"):
+        receipt_value(output, "missing_id")
