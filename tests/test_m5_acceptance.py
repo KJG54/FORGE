@@ -91,7 +91,8 @@ def test_bundled_packs_pass_one_shared_conformance_contract(
     workflow = pack.workflow()
 
     assert pack.manifest.id == pack_id
-    assert pack.manifest.version == workflow.version == "0.4.0"
+    expected_version = "0.5.0" if pack_id == "software-basic" else "0.4.0"
+    assert pack.manifest.version == workflow.version == expected_version
     assert pack.manifest.provided_workflow_ids == (workflow.id,)
     assert pack.manifest.declared_capability_ids == ()
     assert pack.manifest.explanation_paths == ()

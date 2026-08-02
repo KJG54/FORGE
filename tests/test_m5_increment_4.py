@@ -33,8 +33,9 @@ def test_bundled_packs_supply_exactly_four_digest_bound_profiles(
     pack = load_pack(BUNDLED_PACK_ROOT / pack_id, bundled=True)
     workflow = pack.workflow()
 
-    assert pack.manifest.version == "0.4.0"
-    assert workflow.version == "0.4.0"
+    expected_version = "0.5.0" if pack_id == "software-basic" else "0.4.0"
+    assert pack.manifest.version == expected_version
+    assert workflow.version == expected_version
     assert set(workflow.explanation_content) == {
         profile.value for profile in ALL_PROFILES
     }
@@ -76,7 +77,14 @@ def test_profiles_change_only_locked_presentation_not_governance(
 
         assert created.active.initiative.explanation_profile is profile
         assert active.initiative.explanation_profile is profile
-        assert active.explanation == active.workflow.explanation_content[profile.value]
+        selected_step = next(
+            step for step in active.workflow.steps if step.id == active.state.current_step_id
+        )
+        expected = selected_step.explanation_content.get(
+            profile.value,
+            active.workflow.explanation_content[profile.value],
+        )
+        assert active.explanation == expected
         explanations.add(active.explanation)
 
         governance = active.workflow.model_dump(exclude={"explanation_content"})
@@ -150,6 +158,10 @@ def test_two_profile_pack_remains_valid_and_unavailable_profile_fails_precommit(
     legacy_workflow = current.workflow().model_copy(
         update={
             "version": "0.3.0",
+            "steps": tuple(
+                step.model_copy(update={"explanation_content": {}})
+                for step in current.workflow().steps
+            ),
             "explanation_content": {
                 key: value
                 for key, value in current.workflow().explanation_content.items()

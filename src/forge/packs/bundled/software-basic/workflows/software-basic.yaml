@@ -1,6 +1,6 @@
 schema_version: "1.0"
 id: software-basic
-version: 0.4.0
+version: 0.5.0
 pack_id: software-basic
 name: Software Basic
 description: A governed six-step workflow for ordinary software initiatives.
@@ -18,6 +18,8 @@ steps:
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [initiative-objective]
+    explanation_content:
+      mentored: Before building anything, make the objective, constraints, and requirements explicit. This gives later planning and verification a stable target without treating discovery notes as accepted truth until the owner accepts them.
   - id: plan
     purpose: Define the implementation plan.
     instructions: Produce a plan traceable to the accepted discovery outputs.
@@ -31,6 +33,8 @@ steps:
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [accepted-discovery]
+    explanation_content:
+      mentored: Turn the accepted discovery outputs into a traceable implementation plan. The plan narrows execution, but it does not authorize work outside the accepted scope or replace later evidence and owner acceptance.
   - id: execute
     purpose: Produce the governed project work.
     instructions: Work only within the accepted objective, scope, and plan.
@@ -44,6 +48,8 @@ steps:
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: block_for_owner_review
     context_selection_rules: [accepted-plan]
+    explanation_content:
+      mentored: Produce the project artifacts within the accepted plan and keep claims separate from proof. Completing the work creates a claim for verification; it does not mean the work has passed checks or been accepted.
   - id: verify
     purpose: Check the governed work against declared requirements.
     instructions: Record checks and evidence without treating process success as acceptance.
@@ -57,6 +63,8 @@ steps:
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [requirements, project-artifacts]
+    explanation_content:
+      mentored: Test the exact governed artifact revisions against the declared requirements and record evidence. Passing checks supports the next decision, but only the owner can accept the result.
   - id: review
     purpose: Review outcomes, limitations, and residual risks.
     instructions: Produce a review record bound to the verified artifact revisions.
@@ -70,6 +78,8 @@ steps:
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [verification-report]
+    explanation_content:
+      mentored: Review what the verified work achieved, where it is limited, and which risks remain. Bind the review to the verified revisions so later closure does not silently rely on changed work.
   - id: close
     purpose: Prepare accepted work and lessons for governed closure.
     instructions: Record lessons and closure materials without bypassing final acceptance.
@@ -83,6 +93,8 @@ steps:
     allowed_transitions: [begin, rework, submit, verify, accept]
     cancellation_behavior: return_to_ready
     context_selection_rules: [accepted-review]
+    explanation_content:
+      mentored: Capture durable lessons and closure material while keeping final acceptance explicit. Closure preserves the governed history; it does not erase limitations or turn advisory lessons into authority.
 transitions:
   - id: begin
     source_state: ready

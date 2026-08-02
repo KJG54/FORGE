@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum
 
+from forge.core.lifecycle import ExplanationGuidance, load_active_initiative
 from forge.core.scratchpad import ScratchpadDocument, read_scratchpad
 from forge.core.status import StatusReport, inspect_status
 from forge.storage.journal import read_journal
@@ -32,6 +33,7 @@ class RecapReport:
     last_governed_event_at: datetime | None
     current_step_id: str | None
     current_step_state: str | None
+    guidance: ExplanationGuidance | None
     scratchpad: ScratchpadDocument
     scratchpad_reconciliation: ScratchpadReconciliation
     scratchpad_reconciliation_detail: str
@@ -105,6 +107,15 @@ def build_recap(layout: RepositoryLayout) -> RecapReport:
     current_step_state = None
     if status.state is not None and current_step_id is not None:
         current_step_state = status.state.step_states[current_step_id].value
+    guidance = None
+    if status.initiative is not None and status.state is not None:
+        active = load_active_initiative(
+            layout,
+            allow_terminal=True,
+            allow_paused=True,
+            allow_untrusted_pack=True,
+        )
+        guidance = active.explanation_guidance
     return RecapReport(
         project_label=layout.root.name,
         project_label_source="repository directory; friendly and non-canonical",
@@ -112,6 +123,7 @@ def build_recap(layout: RepositoryLayout) -> RecapReport:
         last_governed_event_at=_last_governed_event_at(layout, status),
         current_step_id=current_step_id,
         current_step_state=current_step_state,
+        guidance=guidance,
         scratchpad=scratchpad,
         scratchpad_reconciliation=reconciliation,
         scratchpad_reconciliation_detail=detail,
