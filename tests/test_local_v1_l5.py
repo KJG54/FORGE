@@ -7,6 +7,7 @@ import pytest
 from typer.testing import CliRunner
 
 from forge.cli.app import app
+from forge.contracts.configuration import ProjectConfiguration
 from forge.contracts.state import ExplanationProfile
 from forge.contracts.workflows import StepDefinition
 from forge.core.authorization import owner_actor
@@ -14,7 +15,7 @@ from forge.core.lifecycle import create_initiative, load_active_initiative
 from forge.errors import ConfigurationError
 from forge.packs.loader import load_pack
 from forge.packs.validation import ValidatedPack, calculate_pack_digest, validate_pack
-from forge.storage.repository import initialize_repository
+from forge.storage.repository import RepositoryLayout, initialize_repository
 
 ROOT = Path(__file__).resolve().parents[1]
 BUNDLED = ROOT / "src" / "forge" / "packs" / "bundled"
@@ -129,7 +130,15 @@ def test_pre_l5_pack_digest_and_raw_workflow_lock_remain_compatible(
 
     assert calculate_pack_digest(old_manifest, (old_workflow,)) == OLD_SOFTWARE_DIGEST
     validate_pack(old_pack)
-    monkeypatch.setattr("forge.core.lifecycle.find_pack", lambda *_args: old_pack)
+
+    def find_old_pack(
+        _layout: RepositoryLayout,
+        _configuration: ProjectConfiguration,
+        _pack_id: str,
+    ) -> ValidatedPack:
+        return old_pack
+
+    monkeypatch.setattr("forge.core.lifecycle.find_pack", find_old_pack)
 
     initialized, _ = _create(tmp_path)
     lock_payload = json.loads(initialized.layout.workflow_lock_file.read_text(encoding="utf-8"))

@@ -7,6 +7,7 @@ import json
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
+from typing import cast
 
 from forge.contracts.packs import PackManifest
 from forge.contracts.structural_validators import StructuralValidatorDefinition
@@ -55,10 +56,11 @@ def calculate_pack_digest(
     resources: tuple[PackResource, ...] = (),
 ) -> str:
     """Bind a pack manifest, workflows, and declared resource bytes without self-hashing."""
-    workflow_payloads = []
+    workflow_payloads: list[dict[str, object]] = []
     for workflow in sorted(workflows, key=lambda item: (item.id, item.version)):
-        workflow_payload = workflow.model_dump(mode="json")
-        for step in workflow_payload["steps"]:
+        workflow_payload = cast(dict[str, object], workflow.model_dump(mode="json"))
+        steps = cast(list[dict[str, object]], workflow_payload["steps"])
+        for step in steps:
             # Preserve the canonical bytes used by pre-L5 locks. The additive field
             # participates in the digest only when a pack actually supplies content.
             if not step["explanation_content"]:
