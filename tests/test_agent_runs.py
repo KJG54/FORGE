@@ -8,7 +8,7 @@ from typer.testing import CliRunner
 import forge.core.agent_adapters as adapter_core
 from forge.adapters import AdapterOperationState, AgentAdapter, CodexAgentAdapter
 from forge.cli.app import app
-from forge.contracts.actors import ActorType
+from forge.contracts.actors import ActorType, OperatorType
 from forge.contracts.capabilities import CapabilityTrustState
 from forge.contracts.state import RunState, StepState
 from forge.core.agent_runs import execute_agent_run
@@ -194,7 +194,14 @@ def test_agent_run_stages_untrusted_output_then_completes_as_recorded_worker(
     )
     assert completed.exit_code == 0, completed.stdout
     assert 'actor="OpenAI Codex CLI"' in completed.stdout
+    assert "operator_type=registered-adapter" in completed.stdout
     assert f"run_id={result.run_id}" in completed.stdout
+    claim_event = next(
+        event
+        for event in read_journal(initialized.layout.event_journal_file)
+        if event.event_type == "claim-recorded"
+    )
+    assert claim_event.metadata["operator_type"] == OperatorType.REGISTERED_ADAPTER.value
     assert load_active_initiative(initialized.layout).state.step_states[
         "discover"
     ] is StepState.AWAITING_VERIFICATION

@@ -9,12 +9,18 @@ from pathlib import Path
 from uuid import UUID, uuid4
 
 from forge import __version__
-from forge.contracts.actors import Actor, ActorType
+from forge.contracts.actors import Actor, ActorType, OperatorType
 from forge.contracts.agents import AgentResult
 from forge.contracts.base import utc_now
 from forge.contracts.events import AuditEvent
 from forge.contracts.state import StepState
-from forge.contracts.verification import CheckOutcome, CheckResult, Claim, EvidencePacket
+from forge.contracts.verification import (
+    CheckOutcome,
+    CheckResult,
+    Claim,
+    EvidencePacket,
+    claim_digest_payload,
+)
 from forge.contracts.workflows import StepDefinition
 from forge.core.artifacts import current_revisions_for_roles, load_artifact_revision
 from forge.core.authorization import forge_cli_actor
@@ -267,6 +273,8 @@ def complete_step(
     assertion: str,
     actor: Actor,
     limitations: tuple[str, ...] = (),
+    operator_type: OperatorType | None = None,
+    operator_session_reference: str | None = None,
 ) -> CompletionResult:
     active = load_active_initiative(layout)
     step = _step(active, step_id)
@@ -280,6 +288,25 @@ def complete_step(
     run_id = _active_run_for_step(active, step_id, actor)
     if actor.actor_type is ActorType.AGENT_ADAPTER:
         _require_imported_agent_claim(active, run_id=run_id, assertion=assertion)
+    if operator_type is None:
+        operator_type = {
+            ActorType.OWNER: OperatorType.OWNER_SHELL,
+            ActorType.HUMAN_CONTRIBUTOR: OperatorType.MANUAL_CONTRIBUTOR,
+            ActorType.AGENT_ADAPTER: OperatorType.REGISTERED_ADAPTER,
+        }.get(actor.actor_type, OperatorType.SERVICE)
+    if actor.actor_type is ActorType.AGENT_ADAPTER:
+        if operator_type is not OperatorType.REGISTERED_ADAPTER:
+            raise ConfigurationError(
+                "An agent-adapter claim must identify its operator as registered-adapter"
+            )
+    elif operator_type is OperatorType.REGISTERED_ADAPTER:
+        raise ConfigurationError(
+            "registered-adapter operator attribution requires an agent-adapter actor"
+        )
+    if operator_session_reference is not None:
+        operator_session_reference = _require_text(
+            "Operator session reference", operator_session_reference
+        )
     revisions = current_revisions_for_roles(active, step.required_outputs)
     now = utc_now()
     sequence = active.state.journal_head_sequence + 1
@@ -301,8 +328,18 @@ def complete_step(
         claimed_artifact_revision_ids=tuple(revision.id for revision in revisions),
         limitations=limitations,
         actor=actor,
+        operator_type=operator_type,
+        operator_session_reference=operator_session_reference,
     )
-    claim_digest = canonical_json_digest(claim.model_dump(mode="json"))
+    claim_digest = canonical_json_digest(claim_digest_payload(claim))
+    metadata: dict[str, object] = {
+        "claim_id": str(claim_id),
+        "step_id": step_id,
+        "artifact_revision_ids": [str(revision.id) for revision in revisions],
+        "operator_type": operator_type.value,
+    }
+    if operator_session_reference is not None:
+        metadata["operator_session_reference"] = operator_session_reference
     event = AuditEvent(
         id=uuid4(),
         initiative_id=active.initiative.id,
@@ -317,11 +354,7 @@ def complete_step(
             claim_digest,
             *(revision.content_digest for revision in revisions),
         ),
-        metadata={
-            "claim_id": str(claim_id),
-            "step_id": step_id,
-            "artifact_revision_ids": [str(revision.id) for revision in revisions],
-        },
+        metadata=metadata,
     )
     _append_record_event(active, _claim_path(layout, claim_id), claim, event)
     refreshed = load_active_initiative(layout)

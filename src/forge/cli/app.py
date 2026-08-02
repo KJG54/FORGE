@@ -15,6 +15,7 @@ from typer._click.core import Context
 from typer._click.globals import get_current_context
 
 from forge import __version__
+from forge.contracts.actors import OperatorType
 from forge.contracts.capabilities import CapabilityTrustState, SideEffectClass
 from forge.contracts.decisions import WORKFLOW_DEVIATION_REVIEW_DECISION_TYPE
 from forge.contracts.local_audit import LocalAuditCategory
@@ -81,6 +82,7 @@ from forge.core.overrides import (
     record_emergency_override,
     show_emergency_override,
 )
+from forge.core.owner_ceremony import owner_action_presentation
 from forge.core.pack_trust import change_pack_trust, pack_trust_history
 from forge.core.recap import build_recap
 from forge.core.recovery import recover_active_snapshot
@@ -1924,6 +1926,12 @@ def history(
             details.append(f"step={step}")
         if event.run_id is not None:
             details.append(f"run={event.run_id}")
+        operator_type = event.metadata.get("operator_type")
+        if isinstance(operator_type, str):
+            details.append(f"operator={operator_type}")
+        operator_session = event.metadata.get("operator_session_reference")
+        if isinstance(operator_session, str):
+            details.append(f"operator-session={operator_session}")
         typer.echo(" ".join(details))
 
 
@@ -2023,7 +2031,17 @@ def next_actions(
         return
     if report.next_actions:
         for action in report.next_actions:
-            typer.echo(action)
+            presentation = owner_action_presentation(action)
+            if presentation is None:
+                typer.echo(action)
+                continue
+            typer.echo(f"Owner action: {presentation.action}")
+            typer.echo(f"Owner command: {presentation.command}")
+            typer.echo(f"Consequence: {presentation.consequence}")
+            typer.echo(
+                "Ceremony: run personally or explicitly direct the agent; "
+                "caller attribution is not authentication."
+            )
     else:
         typer.echo("No legal next actions")
     for blocker in report.blockers:
@@ -2411,6 +2429,23 @@ def complete(
         list[str] | None,
         typer.Option("--limitation", help="Repeat for each known claim limitation."),
     ] = None,
+    operator: Annotated[
+        OperatorType | None,
+        typer.Option(
+            "--operator",
+            help=(
+                "Caller-declared local operator; improves attribution but is not "
+                "authentication."
+            ),
+        ),
+    ] = None,
+    session_reference: Annotated[
+        str | None,
+        typer.Option(
+            "--session-reference",
+            help="Optional spoofable same-user session reference; not authentication.",
+        ),
+    ] = None,
     idempotency_key: IdempotencyOption = None,
 ) -> None:
     """Record a worker claim and submit current declared outputs for checking."""
@@ -2432,12 +2467,18 @@ def complete(
             assertion=assertion,
             actor=actor,
             limitations=tuple(limitation or ()),
+            operator_type=operator,
+            operator_session_reference=session_reference,
         )
     except ForgeError as error:
         _fail(error)
         return
     typer.echo(f"Recorded claim {result.claim.id}")
     typer.echo(f"Claim actor: {result.claim.actor.display_label}")
+    typer.echo(f"Claim operator: {result.claim.operator_type.value}")
+    if result.claim.operator_session_reference is not None:
+        typer.echo(f"Operator session: {result.claim.operator_session_reference}")
+    typer.echo("Operator attribution is caller-declared and is not authentication")
     typer.echo(f"Step {step_id}: {result.transition.state.step_states[step_id].value}")
     typer.echo("The claim is not a check, evidence packet, or owner acceptance")
 

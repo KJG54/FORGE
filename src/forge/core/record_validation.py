@@ -60,6 +60,7 @@ from forge.contracts.verification import (
     CheckResult,
     Claim,
     EvidencePacket,
+    claim_digest_payload,
 )
 from forge.contracts.workflows import CancellationBehavior, WorkflowDefinition
 from forge.core.authorization import migration_actor
@@ -1017,7 +1018,12 @@ def validate_governed_records(
                 for revision_id in revision_ids
                 if revision_id in revisions_by_id
             )
-            claim_digest = canonical_json_digest(claim.model_dump(mode="json"))
+            claim_digest = canonical_json_digest(claim_digest_payload(claim))
+            operator_type = (
+                claim.operator_type.value if claim.operator_type is not None else None
+            )
+            event_operator_type = event.metadata.get("operator_type")
+            event_operator_session = event.metadata.get("operator_session_reference")
             allowed_event_digests = {
                 revision_digests,
                 (claim_digest, *revision_digests),
@@ -1032,6 +1038,8 @@ def validate_governed_records(
                 or claim.affected_digests != revision_digests
                 or event.affected_record_ids != (claim_id, *revision_ids)
                 or event.affected_digests not in allowed_event_digests
+                or event_operator_type != operator_type
+                or event_operator_session != claim.operator_session_reference
             ):
                 raise IntegrityError(f"Claim record does not match event {event.id}")
             claims_by_id[claim_id] = claim
