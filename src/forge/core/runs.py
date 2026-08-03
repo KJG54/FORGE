@@ -33,6 +33,7 @@ class RunView:
     ended_at: datetime | None = None
     cancellation_details: str | None = None
     cancellation: RunCancellationRecord | None = None
+    invalidation_details: str | None = None
 
 
 @dataclass(frozen=True)
@@ -83,9 +84,10 @@ def _load_runs(active: ActiveInitiative) -> tuple[RunRecord, ...]:
 
 
 def _view(active: ActiveInitiative, run: RunRecord) -> RunView:
+    journal = read_journal(active.layout.event_journal_file)
     events = [
         event
-        for event in read_journal(active.layout.event_journal_file)
+        for event in journal
         if event.run_id == run.id
     ]
     terminal = [
@@ -101,6 +103,24 @@ def _view(active: ActiveInitiative, run: RunRecord) -> RunView:
     ]
     if len(terminal) > 1:
         raise IntegrityError(f"Run {run.id} has multiple terminal events")
+    invalidations = [
+        event
+        for event in journal
+        if str(run.id) in event.metadata.get("invalidated_run_ids", [])
+    ]
+    if len(invalidations) > 1 or (terminal and invalidations):
+        raise IntegrityError(f"Run {run.id} has multiple terminal events")
+    if invalidations:
+        event = invalidations[0]
+        return RunView(
+            run,
+            RunState.CANCELLED,
+            event.timestamp,
+            invalidation_details=(
+                f"Invalidated by {event.event_type} event {event.id}; "
+                "no formal run-cancellation record was created"
+            ),
+        )
     if not terminal:
         if run.id not in active.state.active_run_ids:
             raise IntegrityError(f"Run {run.id} is neither active nor terminal")

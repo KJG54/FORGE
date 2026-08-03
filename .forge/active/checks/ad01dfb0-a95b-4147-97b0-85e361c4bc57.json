@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:624f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8",
+    "sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102"
+  ],
+  "affected_record_ids": [
+    "5a7ebeec-483f-4352-af15-79c69fd96567",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "scope-reviewed",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-03T04:12:14.459418Z",
+  "event_sequence": 18,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "ad01dfb0-a95b-4147-97b0-85e361c4bc57",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Reviewed release-requirements r1-to-r2 diff: only exact L8 artifact identity/freeze and L9 validation-boundary clauses were added; change-scope r1 is unchanged; focused lifecycle regression, Ruff, and Pyright passed.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "This validates scope consistency and mechanics, not owner acceptance or final candidate fitness."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-03T04:12:14.459492Z",
+  "result_digest": "sha256:37e47df74f35ba204e432225ea582228995ef6615664717148560bbe3e73d7ea",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-03T04:12:14.459416Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "5a7ebeec-483f-4352-af15-79c69fd96567",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768"
+  ],
+  "tool_version": "1.0.0"
+}

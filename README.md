@@ -10,9 +10,9 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Unpublished local candidate:** Milestones 1 through 6 are complete and owner-accepted. Local
-> Production-v1 increments L1 through L7 are integrated, and L8 records one exact local wheel and
-> source distribution for the final validation increment. The candidate is for extended owner
-> testing; it is not tagged, publicly distributed, or finally accepted as Production v1.
+> Production-v1 increments L1 through L8 are integrated, and L9 automated candidate validation is
+> complete. Native-app owner observations and extended real-project testing remain separate. The
+> candidate is not tagged, publicly distributed, or finally accepted as Production v1.
 
 The current v1 definition is the
 [Local Production-v1 candidate](release/local-production-v1/README.md): a personal, local-first
@@ -25,8 +25,10 @@ Local Production-v1 L1-L7 add a repository-independent conversational protocol, 
 transaction receipts, a safe local scratchpad and warm recap, deterministic plan-change guidance,
 additive Mentored explanations, explicit configured-authority/operator ceremony, and
 archive-derived milestone successor briefs. L8 integrates those capabilities into the exact local
-candidate contract, documentation, limitations, risks, and owner test campaign. Complete candidate
-validation remains L9 work.
+candidate contract, documentation, limitations, risks, and owner test campaign. L9 validates the
+exact candidate through the complete local suite, clean installations, maintained lifecycle
+rehearsals, security review, and performance budgets. Native Codex and Claude Code owner
+observations and extended use remain distinct from automated evidence and final acceptance.
 
 M1 Increments 1 through 8 provide strict versioned data contracts, deterministic JSON Schema export,
 project configuration validation, owner identity bootstrap, repository discovery, safe path

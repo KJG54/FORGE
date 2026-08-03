@@ -1,0 +1,53 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:4346c90eba0856ece1bc524c7a3097ab54c2d3098a0d7033a2665e7c24b3d94c",
+    "sha256:624f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8"
+  ],
+  "affected_record_ids": [
+    "0b051a04-de28-4e4c-be80-2dd47b23b905",
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9",
+    "032e5f25-84b6-4b44-b8cf-c6b37846b8fb",
+    "0b29f759-667c-492d-a45b-a0526f84eaa2",
+    "3e31f0be-c9d0-408c-8889-8359b44ad9c8",
+    "5e0cbe91-4f51-47ac-9f70-20646feb74fc",
+    "d25daa3c-333c-46c1-ada3-5ae018aa27f9"
+  ],
+  "artifact_id": "0b051a04-de28-4e4c-be80-2dd47b23b905",
+  "authorization_basis": "participant registered a new immutable artifact revision and FORGE propagated dependency staleness",
+  "byte_size": 8708,
+  "content_digest": "sha256:624f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8",
+  "correlation_id": null,
+  "event_sequence": 14,
+  "id": "5a7ebeec-483f-4352-af15-79c69fd96567",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "media_type": "text/markdown",
+  "path": "release/local-production-v1/release-requirements.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/62/4f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "5d68ee81-283b-444f-b3b5-61dfcc7c799f",
+    "metadata": {},
+    "recorded_at": "2026-08-03T04:06:58.179540Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "release/local-production-v1/release-requirements.md",
+    "source_type": "local-file"
+  },
+  "recorded_at": "2026-08-03T04:06:58.179540Z",
+  "registration_event_id": "f61731f6-d4e6-4c8a-9cc0-8ec03bfba10c",
+  "revision_number": 2,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [
+    "032e5f25-84b6-4b44-b8cf-c6b37846b8fb",
+    "0b29f759-667c-492d-a45b-a0526f84eaa2",
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9",
+    "3e31f0be-c9d0-408c-8889-8359b44ad9c8",
+    "5e0cbe91-4f51-47ac-9f70-20646feb74fc",
+    "d25daa3c-333c-46c1-ada3-5ae018aa27f9"
+  ],
+  "superseded_revision_number": 1,
+  "tool_version": "1.0.0"
+}

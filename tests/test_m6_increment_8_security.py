@@ -7,6 +7,10 @@ UUID_PATTERN = (
     "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-"
     "[0-9a-f]{4}-[0-9a-f]{12}$"
 )
+MILESTONE_KEY_PATTERN = (
+    r"^(?:m[0-9]+-increment-[0-9]+|local-v1-l[0-9]+)"
+    r"(?:-[a-z0-9]+)+(?:-[0-9]{8})?$"
+)
 GOVERNED_PATHS = {
     r"(?:^|/)\.forge/active/events\.jsonl$",
     (
@@ -17,7 +21,7 @@ GOVERNED_PATHS = {
 }
 
 
-def test_gitleaks_exception_is_rule_uuid_and_path_scoped() -> None:
+def test_gitleaks_exception_is_rule_idempotency_value_and_path_scoped() -> None:
     document = tomllib.loads(CONFIG_PATH.read_text(encoding="utf-8"))
 
     assert document["extend"] == {"useDefault": True}
@@ -30,5 +34,5 @@ def test_gitleaks_exception_is_rule_uuid_and_path_scoped() -> None:
     allowlist = rule["allowlists"][0]
     assert allowlist["condition"] == "AND"
     assert allowlist["regexTarget"] == "secret"
-    assert allowlist["regexes"] == [UUID_PATTERN]
+    assert allowlist["regexes"] == [UUID_PATTERN, MILESTONE_KEY_PATTERN]
     assert set(allowlist["paths"]) == GOVERNED_PATHS

@@ -1,33 +1,37 @@
 {
   "active_pause_event_id": null,
-  "active_run_ids": [
-    "846ec267-09a6-4dbc-b6ff-c803350c44aa"
-  ],
+  "active_run_ids": [],
   "current_artifact_revisions": {
-    "0b051a04-de28-4e4c-be80-2dd47b23b905": 1,
+    "0b051a04-de28-4e4c-be80-2dd47b23b905": 2,
     "a25738ee-aa58-45fa-ae8a-759590b8abcd": 1
   },
-  "current_step_id": "implement",
+  "current_step_id": "scope",
   "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
   "integrity_state": "healthy",
-  "journal_head_hash": "sha256:b0bbcdb0753558ca5a23e3df16e4d128738aa18b45f25f266d8d204b858c4739",
-  "journal_head_sequence": 13,
+  "journal_head_hash": "sha256:bba6f0ef7511b35618ddff06bcef9258c04e2c85f6c8eeb0db9eb013026e53b6",
+  "journal_head_sequence": 20,
   "lifecycle_state": "active",
-  "open_decision_ids": [
-    "0b29f759-667c-492d-a45b-a0526f84eaa2"
-  ],
+  "open_decision_ids": [],
   "open_gate_ids": [],
   "permitted_next_actions": [
-    "complete:implement"
+    "acceptance-record:scope",
+    "begin:implement"
   ],
   "repository_state": "initialized",
   "schema_version": "1.0",
-  "stale_record_ids": [],
+  "stale_record_ids": [
+    "032e5f25-84b6-4b44-b8cf-c6b37846b8fb",
+    "0b29f759-667c-492d-a45b-a0526f84eaa2",
+    "2dbeb4be-33e3-4bda-9e4d-3c7816985cf9",
+    "3e31f0be-c9d0-408c-8889-8359b44ad9c8",
+    "5e0cbe91-4f51-47ac-9f70-20646feb74fc",
+    "d25daa3c-333c-46c1-ada3-5ae018aa27f9"
+  ],
   "step_states": {
     "closeout": "pending",
-    "implement": "in_progress",
+    "implement": "invalidated",
     "review-risk": "pending",
-    "scope": "completed",
+    "scope": "awaiting_acceptance",
     "verify-release": "pending"
   },
   "workflow_id": "framework-change",

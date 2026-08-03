@@ -1,0 +1,38 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:624f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8",
+    "sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102"
+  ],
+  "affected_record_ids": [
+    "5a7ebeec-483f-4352-af15-79c69fd96567",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768"
+  ],
+  "assertion": "The current change scope and revised release requirements preserve the owner-approved Local Production-v1 boundary; revision 2 adds only the exact L8 artifact identity and L9 validation split already implemented and reviewed.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "5a7ebeec-483f-4352-af15-79c69fd96567",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768"
+  ],
+  "correlation_id": null,
+  "event_sequence": 16,
+  "id": "756f7826-ba83-48b1-8fec-6e97ec0b0d61",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "This worker claim does not renew owner acceptance or establish candidate readiness."
+  ],
+  "operator_session_reference": "codex-local-v1-l9",
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-03T04:12:03.833653Z",
+  "run_id": "0cd8b816-7073-40eb-929e-38f3dd9fe174",
+  "schema_version": "1.0",
+  "step_id": "scope",
+  "tool_version": "1.0.0"
+}

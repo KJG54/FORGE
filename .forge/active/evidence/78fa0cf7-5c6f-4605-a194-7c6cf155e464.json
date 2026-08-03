@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:d684bcc6a52e84c3452d54caafd7dd3c6f5d5a3f9a7659ddf67ce65039a2c513"
+  ],
+  "affected_record_ids": [
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768",
+    "5a7ebeec-483f-4352-af15-79c69fd96567",
+    "ad01dfb0-a95b-4147-97b0-85e361c4bc57",
+    "756f7826-ba83-48b1-8fec-6e97ec0b0d61"
+  ],
+  "artifact_revision_ids": [
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768",
+    "5a7ebeec-483f-4352-af15-79c69fd96567"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "ad01dfb0-a95b-4147-97b0-85e361c4bc57"
+  ],
+  "claim_ids": [
+    "756f7826-ba83-48b1-8fec-6e97ec0b0d61"
+  ],
+  "correlation_id": null,
+  "event_sequence": 19,
+  "id": "78fa0cf7-5c6f-4605-a194-7c6cf155e464",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "Automated and agent review cannot renew configured-owner acceptance."
+  ],
+  "packet_digest": "sha256:d684bcc6a52e84c3452d54caafd7dd3c6f5d5a3f9a7659ddf67ce65039a2c513",
+  "purpose": "Bind the unchanged owner-approved change scope and the explicit release-requirements revision to the reviewed L9 scope rework.",
+  "recorded_at": "2026-08-03T04:12:30.582850Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

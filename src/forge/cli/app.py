@@ -2147,6 +2147,8 @@ def run_show(
     typer.echo(f"Input context: {run.record.input_context_digest}")
     if run.cancellation_details is not None:
         typer.echo(f"Cancellation: {run.cancellation_details}")
+    if run.invalidation_details is not None:
+        typer.echo(f"Invalidation: {run.invalidation_details}")
     if run.cancellation is not None:
         typer.echo(f"Cancellation record: {run.cancellation.id}")
         typer.echo(

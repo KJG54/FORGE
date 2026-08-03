@@ -74,8 +74,9 @@ The [self-dogfooding guide](dogfooding.md) explains how this repository's tracke
 initiative governs the remaining M6 release work without manufacturing owner acceptance.
 The historical [M6 release-candidate closeout guide](release-candidate-closeout.md) defines its
 one-wheel matrix and evidence requirements. The current
-[Local Production-v1 candidate](../release/local-production-v1/README.md) records the L8 artifact
-identity, limitations, risks, and L9 owner test campaign without authorizing public publication.
+[Local Production-v1 candidate](../release/local-production-v1/README.md) records the exact artifact
+identity, L9 automated validation, limitations, risks, and owner campaign without authorizing public
+publication or final acceptance.
 
 ## Documentation authority and maintenance
 

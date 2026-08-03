@@ -1,0 +1,15 @@
+{
+  "command": "artifact_revise",
+  "completed_at": "2026-08-03T04:06:58.378126Z",
+  "events": [
+    {
+      "event_hash": "sha256:841b87f58ae4bc5b56aa5b90edb5a4f342c26bcaa96c255a36b1558e7c1fd97e",
+      "event_id": "f61731f6-d4e6-4c8a-9cc0-8ec03bfba10c",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 14
+    }
+  ],
+  "key": "local-v1-l9-revise-release-requirements-20260803",
+  "request_digest": "sha256:c774889568ae1954d9d67dd2549fb621958161de76dce49fbeef24270466d86a",
+  "schema_version": "1.0"
+}
