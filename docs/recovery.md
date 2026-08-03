@@ -19,6 +19,12 @@ or forensic handling. A backup of project artifacts without the journal, records
 objects, receipts, and archives is not a complete FORGE backup. Validate restored copies with
 `forge doctor` and archived views before relying on them.
 
+Local Production-v1 validation includes a real backup/restore exercise on the owner's machine; the
+procedure and evidence fields are in the
+[owner test guide](../release/local-production-v1/owner-test-guide.md). Perform that exercise on a
+controlled copy. A successful restore is evidence for the observed storage path and bytes, not a
+general guarantee or permission to repair canonical state manually.
+
 If the state is ambiguous or does not satisfy a documented prerequisite, stop. Manual edits can
 destroy provenance needed for diagnosis and safe recovery. See the
 [troubleshooting guide](troubleshooting.md) for exit-code and symptom routing.

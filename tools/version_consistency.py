@@ -25,6 +25,7 @@ from forge.storage.migrations import (
     LEGACY_JOURNAL_FORMAT,
     registered_migrations,
 )
+from tools.local_candidate import validate_manifest_contract
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION_CONTRACT = ROOT / "release" / "version-contract.json"
@@ -351,6 +352,34 @@ def validate_version_consistency(
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     dated_complete = publication.get("dated_changelog_section_complete")
     _require_equal("## [1.0.0]" in changelog, dated_complete, "dated changelog completeness")
+    _require_equal(
+        publication.get("status"),
+        "not-authorized-local-candidate",
+        "publication metadata status",
+    )
+    _require_equal(
+        publication.get("public_publication_authorized"),
+        False,
+        "public publication authorization",
+    )
+    _require_equal(publication.get("release_tag_created"), False, "release tag state")
+
+    local_candidate = _object(contract.get("local_candidate"), "local candidate")
+    _require_equal(
+        local_candidate.get("status"),
+        "unpublished-local-candidate",
+        "local candidate status",
+    )
+    _require_equal(
+        local_candidate.get("downstream_installation_artifact"),
+        "wheel",
+        "local candidate downstream artifact",
+    )
+    _require_equal(local_candidate.get("integration_increment"), "L8", "integration increment")
+    _require_equal(local_candidate.get("validation_increment"), "L9", "validation increment")
+    manifest = validate_manifest_contract()
+    _require_equal(manifest.get("distribution"), expected_name, "candidate distribution")
+    _require_equal(manifest.get("version"), expected_version, "candidate version")
 
     return {
         "schema_version": 1,

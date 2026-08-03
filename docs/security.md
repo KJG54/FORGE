@@ -29,7 +29,7 @@ Keep these out of governed artifacts and tracked state:
 
 Configured secret paths and recognizable credential patterns are screened, but detection is
 heuristic. A clean screen does not prove content secret-free. Review bytes before registration,
-import, acceptance, Git staging, or publication.
+import, acceptance, Git staging, or external sharing.
 
 Machine-local material belongs below `.forge/local/`, which the hybrid Git policy ignores. If Git
 already tracks such a path, inspect it for sensitive content before removing it from the index.
@@ -118,3 +118,10 @@ provider, outside FORGE.
   disposable or controlled copies.
 - Platform and installation claims name the exact observed matrix cells.
 - Residual risks and limitations remain explicit and owner-resolved before release progression.
+
+For the unpublished local candidate, “owner” is configured governance authority and “operator” is
+the process or agent that invoked a command. Native Codex and Claude Code run inside the owner's
+same-user trust boundary. Exact command presentation and owner ceremony reduce accidental action;
+they do not cryptographically authenticate a human or isolate a malicious same-user process. See
+the candidate [limitations](../release/local-production-v1/known-limitations.md) and
+[residual risks](../release/local-production-v1/residual-risks.md).

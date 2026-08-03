@@ -192,9 +192,20 @@
     "unpromised-cross-major-compatibility"
   ],
   "publication_metadata": {
-    "status": "pending-m7-increment-4",
+    "status": "not-authorized-local-candidate",
     "development_status_classifier": "Development Status :: 2 - Pre-Alpha",
     "project_urls_complete": false,
-    "dated_changelog_section_complete": false
+    "dated_changelog_section_complete": false,
+    "public_publication_authorized": false,
+    "release_tag_created": false
+  },
+  "local_candidate": {
+    "status": "unpublished-local-candidate",
+    "artifact_directory": "dist/local-production-v1",
+    "manifest": "release/local-production-v1/candidate-manifest.json",
+    "hashes": "release/local-production-v1/SHA256SUMS",
+    "downstream_installation_artifact": "wheel",
+    "integration_increment": "L8",
+    "validation_increment": "L9"
   }
 }

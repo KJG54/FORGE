@@ -42,6 +42,13 @@ skip-excluded-dirs = true
 [tool.hatch.build.targets.wheel]
 packages = ["src/forge"]
 
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.forge/local/**",
+  "/release/local-production-v1/candidate-manifest.json",
+  "/release/local-production-v1/SHA256SUMS",
+]
+
 [tool.pytest.ini_options]
 addopts = "-ra --strict-config --strict-markers"
 pythonpath = ["."]

@@ -4,6 +4,11 @@
 
 **Status:** Owner-approved direction; design and implementation have not begun
 
+**Execution update (2026-08-02):** L1-L7 are merged. L8 integrates current-facing documentation
+and records one exact unpublished wheel/source candidate. L9 complete validation and the later
+extended-use acceptance decision remain pending. This progress note does not rewrite the original
+handoff or its historical public-M7 evidence.
+
 **Target:** Produce a feature-complete personal/local Production-v1 candidate that is ready for
 extended owner testing through the native Codex and Claude Code Windows applications
 

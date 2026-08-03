@@ -14,6 +14,12 @@ residual risks remain explicit fields.
 Acceptance is a separate fact. A successful run, claim, passing check, or evidence packet never
 implies it.
 
+Owner acceptance of a workflow step is also narrower than candidate or milestone acceptance. The
+L8 manifest and hashes identify artifact bytes; L9 automated or owner-observed results supply
+evidence about those bytes. Neither declares final Local Production v1 accepted. That later decision
+requires an explicit owner judgment after extended real-project testing and cannot be inferred from
+a merge, green CI, version string, local build, receipt, or completed framework-change workflow.
+
 ```console
 forge acceptance record discover \
   --scope "Discovery outputs only" \

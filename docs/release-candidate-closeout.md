@@ -3,6 +3,11 @@
 M6 Increment 8 closes the release-candidate evidence boundary. It does not tag, publish, sign, or
 authorize Production v1.
 
+> **Historical boundary:** This page describes the completed M6 closeout matrix. The current v1
+> definition is the [unpublished Local Production-v1 candidate](../release/local-production-v1/README.md).
+> Its exact artifacts are integrated in L8 and validated in L9; public M7 publication is abandoned
+> and is not a local-v1 blocker.
+
 ## Remote validation topology
 
 The GitHub Actions workflow builds one wheel and reuses that exact artifact:
@@ -71,4 +76,5 @@ Closeout is not complete until the exact candidate commit has:
 - an M6 evidence report mapping every roadmap deliverable and exit criterion.
 
 Failures remain release-blocking until corrected or explicitly classified and resolved by the
-owner. M7 remains a separate owner decision.
+owner. The former public M7 initiative was later abandoned; its immutable archive and decisions
+remain historical evidence rather than current execution authority.

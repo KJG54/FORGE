@@ -1,11 +1,16 @@
 # Changelog
 
-All notable changes will be documented here. FORGE follows milestone evidence before public
-semantic-version commitments begin at v1.0.0.
+All notable changes will be documented here. The current `1.0.0` identity belongs to an unpublished
+local candidate; public semantic-version publication remains outside the accepted v1 scope.
 
 ## [Unreleased]
 
 ### Added
+
+- Local Production-v1 L1-L8 scope and architecture, direct workspace-agent protocol, canonical
+  transaction receipts, local scratchpad and warm recap, deterministic plan-change guidance,
+  Mentored explanations, authority/operator ceremony, archive-derived successor briefs, and one
+  manifest-bound local wheel/source candidate with limitations, risks, and owner test guidance.
 
 - M6 one-wheel closeout matrices across supported operating systems and Python versions, plus
   maintained fresh-user, performance, backup, migration, recovery, archive, and successor

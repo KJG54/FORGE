@@ -5,6 +5,12 @@ the bundled `software-basic` workflow; the `research-basic` workflow follows the
 sequence with seven research-specific steps. Use `forge <command> --help` for the complete option
 set and [the static examples](../../examples/README.md) for mapped sample artifacts.
 
+For the current v1 effort, install only the wheel recorded by the
+[Local Production-v1 candidate manifest](../../release/local-production-v1/README.md). The direct
+workspace-agent protocol can explain and present commands, and an owner can explicitly direct the
+agent to execute a reviewed command. The protocol does not replace configured FORGE authority,
+turn agent operation into human authentication, or make a receipt equal acceptance.
+
 ## 1. Install and initialize
 
 Install the exact built distribution using the [installation guide](../installation.md). Then
@@ -183,6 +189,9 @@ forge abandon \
 Both operations create immutable terminal archives through resumable transactions. Abandonment is
 not closure. Read [closure and archives](../closure-and-archives.md) before a terminal decision.
 Continued work starts a new [successor initiative](../successors.md); archives never reopen.
+Before starting the next milestone in a fresh task, generate `forge successor brief --archive
+<initiative-id>`. Review its governed facts and exact reusable revisions separately from fresh Git,
+branch, version, and worktree observations; successor creation imports no progress or acceptance.
 
 ## 8. Respond to failures conservatively
 
@@ -208,3 +217,6 @@ state matches its narrow proof.
   maintenance.
 - Validate an archive before relying on it, and use a successor rather than editing terminal
   history.
+- During the candidate campaign, record native Codex and Claude actions that cannot be automated as
+  owner-observed, not programmatically proven. Follow the complete
+  [owner test guide](../../release/local-production-v1/owner-test-guide.md).
