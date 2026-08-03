@@ -2475,7 +2475,12 @@ def complete(
         return
     typer.echo(f"Recorded claim {result.claim.id}")
     typer.echo(f"Claim actor: {result.claim.actor.display_label}")
-    typer.echo(f"Claim operator: {result.claim.operator_type.value}")
+    operator_label = (
+        result.claim.operator_type.value
+        if result.claim.operator_type is not None
+        else "legacy-unspecified"
+    )
+    typer.echo(f"Claim operator: {operator_label}")
     if result.claim.operator_session_reference is not None:
         typer.echo(f"Operator session: {result.claim.operator_session_reference}")
     typer.echo("Operator attribution is caller-declared and is not authentication")

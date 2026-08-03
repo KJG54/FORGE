@@ -47,3 +47,10 @@ direction.
 Passing focused checks establishes only L6 implementation evidence. The encompassing Local
 Production-v1 `implement` step remains in progress, and L7 and later increments remain outside
 this change.
+
+After the first PR quality run exposed a silent Windows `pyright.exe` false pass, L6 added the
+repository-owned `python -m tools.quality_gate` command. It runs Ruff and Pyright through the same
+active Python interpreter, binds Pyright to that interpreter, and refuses success when either tool
+omits its expected identifying result. GitHub Actions uses the same command. This fast gate is
+required before publishing every increment; the full cross-platform test and release matrices
+remain deferred to milestone closeout unless a focused failure requires them sooner.

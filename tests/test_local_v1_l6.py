@@ -39,7 +39,7 @@ def _in_progress(
         trust_pack_data=True,
     )
     begin_manual_run(initialized.layout, step_id="discover", actor=actor)
-    revisions = []
+    revisions: list[ArtifactRevision] = []
     for filename, role in (
         ("objective.md", "objective-and-constraints"),
         ("requirements.md", "requirements"),

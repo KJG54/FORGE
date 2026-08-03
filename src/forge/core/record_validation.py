@@ -457,6 +457,48 @@ def _validate_run_cancellation(
     return cancellation_path
 
 
+def _validate_claim_event(
+    layout: RepositoryLayout,
+    event: AuditEvent,
+    revisions_by_id: dict[UUID, ArtifactRevision],
+) -> tuple[Path, Claim]:
+    """Validate one claim event without expanding the main event dispatch complexity."""
+
+    claim_id = _uuid_metadata(event, "claim_id")
+    path = _claim_path(layout, claim_id)
+    claim = load_record(path, Claim)
+    _validate_common(claim, event, claim_id)
+    revision_ids = _uuid_list_metadata(event, "artifact_revision_ids")
+    revision_digests = tuple(
+        revisions_by_id[revision_id].content_digest
+        for revision_id in revision_ids
+        if revision_id in revisions_by_id
+    )
+    claim_digest = canonical_json_digest(claim_digest_payload(claim))
+    operator_type = claim.operator_type.value if claim.operator_type is not None else None
+    event_operator_type = event.metadata.get("operator_type")
+    event_operator_session = event.metadata.get("operator_session_reference")
+    allowed_event_digests = {
+        revision_digests,
+        (claim_digest, *revision_digests),
+    }
+    if (
+        claim.id != claim_id
+        or claim.actor != event.actor
+        or claim.step_id != event.metadata.get("step_id")
+        or claim.claimed_artifact_revision_ids != revision_ids
+        or not set(revision_ids).issubset(revisions_by_id)
+        or claim.affected_record_ids != revision_ids
+        or claim.affected_digests != revision_digests
+        or event.affected_record_ids != (claim_id, *revision_ids)
+        or event.affected_digests not in allowed_event_digests
+        or event_operator_type != operator_type
+        or event_operator_session != claim.operator_session_reference
+    ):
+        raise IntegrityError(f"Claim record does not match event {event.id}")
+    return path, claim
+
+
 def validate_governed_records(
     layout: RepositoryLayout,
     events: tuple[AuditEvent, ...],
@@ -1007,43 +1049,10 @@ def validate_governed_records(
                 )
             )
         elif event.event_type == CLAIM_RECORDED:
-            claim_id = _uuid_metadata(event, "claim_id")
-            path = _claim_path(layout, claim_id)
+            path, claim = _validate_claim_event(layout, event, revisions_by_id)
             expected_claims.add(path)
-            claim = load_record(path, Claim)
-            _validate_common(claim, event, claim_id)
-            revision_ids = _uuid_list_metadata(event, "artifact_revision_ids")
-            revision_digests = tuple(
-                revisions_by_id[revision_id].content_digest
-                for revision_id in revision_ids
-                if revision_id in revisions_by_id
-            )
-            claim_digest = canonical_json_digest(claim_digest_payload(claim))
-            operator_type = (
-                claim.operator_type.value if claim.operator_type is not None else None
-            )
-            event_operator_type = event.metadata.get("operator_type")
-            event_operator_session = event.metadata.get("operator_session_reference")
-            allowed_event_digests = {
-                revision_digests,
-                (claim_digest, *revision_digests),
-            }
-            if (
-                claim.id != claim_id
-                or claim.actor != event.actor
-                or claim.step_id != event.metadata.get("step_id")
-                or claim.claimed_artifact_revision_ids != revision_ids
-                or not set(revision_ids).issubset(revisions_by_id)
-                or claim.affected_record_ids != revision_ids
-                or claim.affected_digests != revision_digests
-                or event.affected_record_ids != (claim_id, *revision_ids)
-                or event.affected_digests not in allowed_event_digests
-                or event_operator_type != operator_type
-                or event_operator_session != claim.operator_session_reference
-            ):
-                raise IntegrityError(f"Claim record does not match event {event.id}")
-            claims_by_id[claim_id] = claim
-            record_steps[claim_id] = claim.step_id
+            claims_by_id[claim.id] = claim
+            record_steps[claim.id] = claim.step_id
         elif event.event_type == CHECK_RECORDED:
             result_id = _uuid_metadata(event, "check_result_id")
             path = _check_path(layout, result_id)
