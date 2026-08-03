@@ -397,8 +397,7 @@ python -m venv .venv
 On macOS or Linux, use `.venv/bin/python` instead. Then run:
 
 ```console
-ruff check .
-pyright
+python -m tools.quality_gate
 pytest
 python -m build
 forge --help

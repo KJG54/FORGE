@@ -8,8 +8,7 @@ work, and keep each contribution within an accepted milestone.
 Use Python 3.12 or newer and install `.[dev]`. Before submitting a change, run:
 
 ```console
-ruff check .
-pyright
+python -m tools.quality_gate
 pytest
 python -m build
 ```
@@ -32,4 +31,3 @@ or claims that exceed the documented security model.
 By contributing, you agree that your contribution is licensed under Apache-2.0. Follow the
 [Code of Conduct](CODE_OF_CONDUCT.md) and report vulnerabilities through the private process in
 [SECURITY.md](SECURITY.md), not a public issue.
-

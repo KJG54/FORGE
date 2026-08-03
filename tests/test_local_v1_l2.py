@@ -58,7 +58,7 @@ def test_protocol_is_exact_and_covers_the_l2_bootstrap_contract() -> None:
     protocol = load_agent_protocol()
     text = protocol.content.decode("utf-8")
 
-    assert protocol.filename == "agent-protocol-1.0.0.md"
+    assert protocol.filename == "agent-protocol-1.1.0.md"
     assert protocol.digest == AGENT_PROTOCOL_DIGEST == sha256_digest(protocol.content)
     assert len(CONTRACT_MODELS) == 51
     for required in (

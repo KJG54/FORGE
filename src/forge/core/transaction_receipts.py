@@ -13,6 +13,7 @@ from pydantic import ValidationError
 from forge.contracts.events import AuditEvent
 from forge.contracts.initiatives import InitiativeReference
 from forge.contracts.state import IntegrityState
+from forge.core.owner_ceremony import owner_action_presentation
 from forge.core.status import StatusReport, inspect_status
 from forge.errors import ForgeError, IntegrityError
 from forge.storage.idempotency import load_completed_idempotent_transaction
@@ -149,6 +150,16 @@ def _event_fact(event: AuditEvent) -> str:
         details.append(
             "actor=" + json.dumps(_compact_text(event.actor.display_label), ensure_ascii=True)
         )
+        operator_type = _safe_value(event.metadata.get("operator_type"))
+        if operator_type is not None:
+            details.append(f"operator_type={operator_type}")
+            details.append("operator_attribution=caller-declared-not-authentication")
+        operator_session = _safe_value(event.metadata.get("operator_session_reference"))
+        if operator_session is not None:
+            details.append(
+                "operator_session_reference="
+                + json.dumps(operator_session, ensure_ascii=True)
+            )
     predecessors = _predecessor_ids(event)
     if predecessors:
         details.append("predecessors=" + ",".join(str(item) for item in predecessors))
@@ -189,6 +200,21 @@ def _meaning(report: StatusReport) -> str:
     )
     parts.append(f"blockers={blockers}")
     parts.append(f"legal_actions={actions}")
+    owner_actions = tuple(
+        presentation
+        for action in report.next_actions
+        if (presentation := owner_action_presentation(action)) is not None
+    )
+    for presentation in owner_actions:
+        parts.append(
+            "owner_command=" + json.dumps(presentation.command, ensure_ascii=True)
+        )
+        parts.append(
+            "owner_consequence="
+            + json.dumps(_compact_text(presentation.consequence), ensure_ascii=True)
+        )
+    if owner_actions:
+        parts.append("owner_ceremony=caller-attribution-is-not-authentication")
     return "; ".join(parts)
 
 

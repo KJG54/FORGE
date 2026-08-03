@@ -8,9 +8,9 @@ from importlib.resources import files
 from forge.errors import IntegrityError
 from forge.storage.objects import sha256_digest
 
-AGENT_PROTOCOL_VERSION = "1.0.0"
+AGENT_PROTOCOL_VERSION = "1.1.0"
 AGENT_PROTOCOL_FILENAME = f"agent-protocol-{AGENT_PROTOCOL_VERSION}.md"
-AGENT_PROTOCOL_DIGEST = "sha256:36002c81ed99a71b192f05a76e15d8043bbeb9007c85b20ed6119b6230207b04"
+AGENT_PROTOCOL_DIGEST = "sha256:d9cf7047a4180c3dd869d4dd9da23a2aa1372f9ded76255116f55e4241ac3bdc"
 
 
 @dataclass(frozen=True)
@@ -39,9 +39,11 @@ def load_agent_protocol() -> AgentProtocol:
         "## First contact and state detection",
         "## Document-first interview",
         "## Exact owner confirmation before bootstrap",
+        "## Exact owner-gate command templates",
         "## Bootstrap next action",
         "## Git, delegation, and threat model",
         "For an ordinary gap, run `forge recap`.",
+        "Caller attribution is not authentication",
     )
     missing = tuple(fragment for fragment in required_fragments if fragment not in decoded)
     if missing:

@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pydantic import Field, model_validator
 
-from forge.contracts.actors import Actor
+from forge.contracts.actors import Actor, OperatorType
 from forge.contracts.base import (
     GovernanceRecord,
     NonEmptyString,
@@ -41,6 +41,24 @@ class Claim(GovernanceRecord):
     claimed_artifact_revision_ids: tuple[UUID, ...] = ()
     limitations: tuple[NonEmptyString, ...] = ()
     actor: Actor
+    operator_type: OperatorType | None = None
+    operator_session_reference: NonEmptyString | None = None
+
+    @model_validator(mode="after")
+    def validate_operator_attribution(self) -> "Claim":
+        if self.operator_session_reference is not None and self.operator_type is None:
+            raise ValueError("operator session reference requires an operator type")
+        return self
+
+
+def claim_digest_payload(claim: Claim) -> dict[str, object]:
+    """Preserve legacy claim digests while binding provenance on new claims."""
+
+    payload = claim.model_dump(mode="json")
+    if claim.operator_type is None:
+        payload.pop("operator_type", None)
+        payload.pop("operator_session_reference", None)
+    return payload
 
 
 class CheckResult(GovernanceRecord):

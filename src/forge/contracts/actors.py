@@ -25,6 +25,17 @@ class ActorType(StrEnum):
     RECOVERY = "recovery"
 
 
+class OperatorType(StrEnum):
+    """Caller-declared local operator attribution; never authentication."""
+
+    OWNER_SHELL = "owner-shell"
+    DIRECT_CODEX = "direct-codex"
+    DIRECT_CLAUDE = "direct-claude"
+    MANUAL_CONTRIBUTOR = "manual-contributor"
+    REGISTERED_ADAPTER = "registered-adapter"
+    SERVICE = "service"
+
+
 class OwnerIdentity(VersionedModel):
     """Governance identity; this record does not provide authentication."""
 
