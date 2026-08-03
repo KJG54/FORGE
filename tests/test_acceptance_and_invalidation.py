@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 import pytest
 
 from forge.contracts.actors import Actor, ActorType
-from forge.contracts.state import IntegrityState, StepState
+from forge.contracts.state import IntegrityState, RunState, StepState
 from forge.contracts.verification import CheckOutcome
 from forge.core.acceptance import (
     list_acceptances,
@@ -17,6 +17,7 @@ from forge.core.artifacts import add_artifact, list_artifacts, revise_artifact
 from forge.core.authorization import owner_actor
 from forge.core.decisions import list_decisions, record_decision
 from forge.core.lifecycle import begin_manual_run, create_initiative, load_active_initiative
+from forge.core.runs import list_runs, show_run
 from forge.core.status import inspect_status
 from forge.core.verification import complete_step, record_check, record_evidence, verify_step
 from forge.errors import AuthorizationError, IntegrityError
@@ -224,6 +225,44 @@ def test_artifact_revision_stales_acceptance_and_all_dependency_records(
     assert active.state.step_states["plan"] is StepState.PENDING
     assert expected.issubset(active.state.stale_record_ids)
     assert decision.decision.id not in active.state.open_decision_ids
+
+
+def test_artifact_revision_keeps_invalidated_run_inspectable(
+    tmp_path: Path,
+) -> None:
+    initialized, actor, revisions, *_ = _awaiting_acceptance(tmp_path)
+    record_acceptance(
+        initialized.layout,
+        step_id="discover",
+        accepted_scope="Discovery",
+        actor=actor,
+    )
+    plan_run = begin_manual_run(initialized.layout, step_id="plan", actor=actor)
+    objective = next(
+        item
+        for item in list_artifacts(initialized.layout)
+        if item.current_revision.id == revisions[0]
+    )
+    (tmp_path / "objective.md").write_text("Revised objective", encoding="utf-8")
+    revised = revise_artifact(
+        initialized.layout,
+        artifact_id=objective.artifact.id,
+        path="objective.md",
+        actor=actor,
+    )
+
+    invalidated = show_run(initialized.layout, plan_run.run.id)
+    assert invalidated.status is RunState.CANCELLED
+    assert invalidated.cancellation is None
+    assert invalidated.cancellation_details is None
+    assert invalidated.invalidation_details == (
+        f"Invalidated by artifact-revised event {revised.event.id}; "
+        "no formal run-cancellation record was created"
+    )
+    assert invalidated in list_runs(initialized.layout)
+
+    rework = begin_manual_run(initialized.layout, step_id="discover", actor=actor)
+    assert show_run(initialized.layout, rework.run.id).status is RunState.RUNNING
 
 
 def test_decision_supersession_preserves_history_and_replaces_open_decision(

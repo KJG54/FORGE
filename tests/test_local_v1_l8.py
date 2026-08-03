@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import tarfile
+import tomllib
 import zipfile
 from io import BytesIO
 from pathlib import Path
@@ -62,8 +63,22 @@ def test_tracked_candidate_identity_is_internally_consistent() -> None:
     assert manifest["status"] == "unpublished-local-candidate"
     assert manifest["publication"] == {"authorized": False, "tag_created": False}
     validation = cast("dict[str, object]", manifest["validation"])
-    assert validation["complete_phase"] == "L8 candidate integration"
-    assert validation["next_phase"] == "L9 candidate validation"
+    assert validation["complete_phase"] == "L9 automated candidate validation"
+    assert validation["next_phase"] == "owner-observed native-app and extended testing"
+
+
+def test_post_build_validation_evidence_is_outside_the_sdist_identity() -> None:
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    exclusions = set(project["tool"]["hatch"]["build"]["targets"]["sdist"]["exclude"])
+
+    assert {
+        "/docs/milestones/local-v1-l9.md",
+        "/release/local-production-v1/candidate-manifest.json",
+        "/release/local-production-v1/extended-testing-plan.md",
+        "/release/local-production-v1/friction-report.md",
+        "/release/local-production-v1/SHA256SUMS",
+        "/release/local-production-v1/validation-report.md",
+    } <= exclusions
 
 
 def test_owner_guide_covers_every_required_local_journey() -> None:

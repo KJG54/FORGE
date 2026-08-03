@@ -3,6 +3,10 @@
 Use this guide only with the exact wheel named and hashed in `candidate-manifest.json`. L9 records
 candidate readiness for extended use; it does not manufacture final owner acceptance.
 
+Automated L9 rehearsals cover every lifecycle mechanism below, but they do not establish that a
+native application presented the interaction clearly or that the owner found it usable. Record the
+Codex and Claude Code native-app smoke separately before beginning the longer real-project campaign.
+
 ## Before testing
 
 1. Preserve `dist/local-production-v1/` in access-controlled local storage.
@@ -55,6 +59,21 @@ risk change. Never place secrets or raw sensitive captures in Git or governed re
 Exercise both native Codex and Claude Code applications across the campaign. Where automation
 cannot independently observe a native UI action or human judgment, label the result
 `owner-observed`; do not translate observation into programmatic proof.
+
+## Minimum native-app smoke
+
+In one disposable project per application, ask a fresh native Codex and Claude Code task to read
+the installed FORGE protocol, inspect repository state, and identify the next legal action. Then
+exercise one routine agent-operated mutation and one consequential owner gate. Record whether:
+
+- the application preserved owner-authored `AGENTS.md` or `CLAUDE.md` bytes;
+- the agent quoted `Recorded` and `Means` without presenting its own `Read` or `Next` as fact;
+- the routine mutation named honest `direct-codex` or `direct-claude` provenance;
+- the owner gate showed the exact command and consequence before execution; and
+- no owner-only action occurred until the owner explicitly directed it.
+
+CLI version probes and adapter diagnostics are environment evidence only. They cannot substitute
+for these native UI observations.
 
 ## Friction review
 

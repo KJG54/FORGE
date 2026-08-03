@@ -23,5 +23,9 @@ the source appears unchanged. If either artifact is missing or its digest differ
 to L8 integration rather than silently creating a substitute.
 
 Read the [known limitations](known-limitations.md), [residual risks](residual-risks.md), and
-[owner test guide](owner-test-guide.md) before using the candidate. The historical public-M7 scope
-and ADRs remain evidence of an abandoned initiative, not current instructions.
+[owner test guide](owner-test-guide.md) before using the candidate. L9's exact automated results are
+recorded in the [validation report](validation-report.md), observed workflow friction is separated
+in the [friction report](friction-report.md), and the remaining owner campaign is bounded by the
+[extended-testing plan](extended-testing-plan.md). These post-build records are excluded from the
+sdist identity because they describe the already-built bytes. The historical public-M7 scope and
+ADRs remain evidence of an abandoned initiative, not current instructions.
