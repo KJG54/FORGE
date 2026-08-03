@@ -172,6 +172,8 @@
     "scope amend",
     "scope show",
     "status",
+    "successor",
+    "successor brief",
     "verify"
   ],
   "semantic_version_guarantees": {

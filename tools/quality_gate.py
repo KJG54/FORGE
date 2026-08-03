@@ -57,6 +57,12 @@ def main() -> int:
         label="Pyright",
         required_output="0 errors",
     )
+    _run(
+        (python, "-m", "tools.version_consistency"),
+        cwd=root,
+        label="Version consistency",
+        required_output='"status": "passed"',
+    )
     print("FORGE fast quality gate: passed")
     return 0
 

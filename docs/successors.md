@@ -3,6 +3,30 @@
 A successor continues work without reopening or rewriting a closed or abandoned initiative. It is
 a new governed initiative with explicit lineage, not a resumed predecessor.
 
+## Review a milestone transition brief
+
+Before proposing or creating a successor, derive a disposable Markdown view from one validated
+terminal archive:
+
+```console
+forge successor brief --archive <archived-initiative-id>
+```
+
+The brief separates three kinds of information:
+
+- governed predecessor facts, including terminal outcome, effective scope, lineage, archive digest,
+  accepted support, limitations, residual risks, and accepted lessons;
+- exact terminal artifact revisions that may be explicitly reused, including their archive record,
+  preserved-object path, digest, size, and acceptance label; and
+- freshly observed repository facts such as the installed FORGE version, active initiative,
+  current Git branch, commit, and worktree state.
+
+The command is read-only and writes no handoff or governance record. It never includes local
+scratchpad text. Its Markdown is not a source of truth: a receiving agent must rerun the displayed
+archive, history, brief, and Git validation commands. A successor remains a separate configured-owner
+action, and explicit artifact reuse transfers exact bytes and provenance only—not progress, checks,
+evidence, decisions, acceptance, or authority.
+
 ## Create a successor
 
 With no active initiative and at least one archive:
