@@ -10,13 +10,32 @@ import zipfile
 from collections.abc import Sequence
 from email.parser import Parser
 from pathlib import Path
-from typing import NoReturn, cast
+from typing import Literal, NoReturn, TypedDict, cast
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION_CONTRACT = ROOT / "release" / "version-contract.json"
 DEFAULT_ARTIFACT_DIRECTORY = ROOT / "dist" / "local-production-v1"
 DEFAULT_MANIFEST = ROOT / "release" / "local-production-v1" / "candidate-manifest.json"
 DEFAULT_HASHES = ROOT / "release" / "local-production-v1" / "SHA256SUMS"
+
+ArtifactType = Literal["wheel", "sdist"]
+
+
+class CandidateArtifact(TypedDict):
+    """Exact identity of one local candidate distribution artifact."""
+
+    type: ArtifactType
+    filename: str
+    sha256: str
+    size_bytes: int
+
+
+class CandidateInspection(TypedDict):
+    """Validated identity of the exact local candidate artifact pair."""
+
+    distribution: str
+    version: str
+    artifacts: list[CandidateArtifact]
 
 
 class CandidateError(RuntimeError):
@@ -100,13 +119,15 @@ def _sdist_identity(path: Path) -> tuple[str, str]:
     return _metadata_fields(text, "source distribution")
 
 
-def inspect_candidate(artifact_directory: Path = DEFAULT_ARTIFACT_DIRECTORY) -> dict[str, object]:
+def inspect_candidate(
+    artifact_directory: Path = DEFAULT_ARTIFACT_DIRECTORY,
+) -> CandidateInspection:
     """Return exact artifact identity after validating names and embedded metadata."""
     contract = _load_json(VERSION_CONTRACT, "version contract")
     distribution = _object(contract.get("distribution"), "distribution contract")
     expected_name = _text(distribution.get("name"), "distribution name")
     expected_version = _text(distribution.get("version"), "distribution version")
-    expected = (
+    expected: tuple[tuple[ArtifactType, str], ...] = (
         ("wheel", _text(distribution.get("wheel_filename"), "wheel filename")),
         ("sdist", _text(distribution.get("sdist_filename"), "sdist filename")),
     )
@@ -121,7 +142,7 @@ def inspect_candidate(artifact_directory: Path = DEFAULT_ARTIFACT_DIRECTORY) -> 
     if actual_names != expected_names:
         _fail(f"Expected only {expected_names!r}; found {actual_names!r}")
 
-    artifacts: list[dict[str, object]] = []
+    artifacts: list[CandidateArtifact] = []
     for artifact_type, filename in expected:
         path = artifact_directory / filename
         identity = _wheel_identity(path) if artifact_type == "wheel" else _sdist_identity(path)
@@ -146,9 +167,12 @@ def inspect_candidate(artifact_directory: Path = DEFAULT_ARTIFACT_DIRECTORY) -> 
 
 
 def _artifact_entries(value: object, label: str) -> tuple[dict[str, object], ...]:
-    if not isinstance(value, list) or len(value) != 2:
+    if not isinstance(value, list):
         _fail(f"{label} must contain exactly two artifact entries")
-    entries = tuple(_object(item, f"{label} entry") for item in value)
+    items = cast("list[object]", value)
+    if len(items) != 2:
+        _fail(f"{label} must contain exactly two artifact entries")
+    entries = tuple(_object(item, f"{label} entry") for item in items)
     if {entry.get("type") for entry in entries} != {"wheel", "sdist"}:
         _fail(f"{label} must contain one wheel and one sdist")
     for entry in entries:

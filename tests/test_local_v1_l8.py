@@ -5,6 +5,7 @@ import tarfile
 import zipfile
 from io import BytesIO
 from pathlib import Path
+from typing import cast
 
 import pytest
 
@@ -40,7 +41,6 @@ def test_candidate_inspection_binds_exact_names_metadata_and_bytes(tmp_path: Pat
     assert report["distribution"] == "forge-governance"
     assert report["version"] == "1.0.0"
     artifacts = report["artifacts"]
-    assert isinstance(artifacts, list)
     assert {entry["type"] for entry in artifacts} == {"wheel", "sdist"}
     for entry in artifacts:
         path = tmp_path / entry["filename"]
@@ -61,8 +61,9 @@ def test_tracked_candidate_identity_is_internally_consistent() -> None:
 
     assert manifest["status"] == "unpublished-local-candidate"
     assert manifest["publication"] == {"authorized": False, "tag_created": False}
-    assert manifest["validation"]["complete_phase"] == "L8 candidate integration"
-    assert manifest["validation"]["next_phase"] == "L9 candidate validation"
+    validation = cast("dict[str, object]", manifest["validation"])
+    assert validation["complete_phase"] == "L8 candidate integration"
+    assert validation["next_phase"] == "L9 candidate validation"
 
 
 def test_owner_guide_covers_every_required_local_journey() -> None:

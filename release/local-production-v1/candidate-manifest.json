@@ -3,7 +3,7 @@
   "status": "unpublished-local-candidate",
   "distribution": "forge-governance",
   "version": "1.0.0",
-  "built_at_utc": "2026-08-03T03:03:58Z",
+  "built_at_utc": "2026-08-03T03:25:54Z",
   "build": {
     "command": "python -m build --no-isolation --outdir dist/local-production-v1",
     "source_baseline_commit": "65ea29d5f61f24c0d429eeb6208228b6862d0b81",
@@ -24,8 +24,8 @@
     {
       "type": "sdist",
       "filename": "forge_governance-1.0.0.tar.gz",
-      "sha256": "9d2854caa8fa7c092ba37a7f24c4a08ab333807b497698f49be66bcf5d7d3997",
-      "size_bytes": 1382533
+      "sha256": "70e392d447f35358a2370dbfda2a7edfd717cc54d3a69c48255736275554662a",
+      "size_bytes": 1382711
     }
   ],
   "downstream_installation": {
