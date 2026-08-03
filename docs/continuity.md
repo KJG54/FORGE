@@ -43,3 +43,9 @@ claims, checks, evidence, verification, gates, or owner acceptance.
 An ordinary terminal or computer shutdown does not require `forge pause`; repository persistence
 already survives process interruption. Pause expresses owner intent and temporarily disables
 normal governed mutation.
+
+Pause/resume and milestone succession solve different problems. Resume continues the same active
+initiative from its canonical records. After terminal closure or abandonment, use `forge successor
+brief --archive <initiative-id>` to prepare a fresh-task transition, then create a distinct
+successor. Neither the long-gap summary nor a successor brief imports authority, progress, or
+acceptance, and neither should depend on prior chat history.

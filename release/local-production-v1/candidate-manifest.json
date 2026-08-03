@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "status": "unpublished-local-candidate",
+  "distribution": "forge-governance",
+  "version": "1.0.0",
+  "built_at_utc": "2026-08-03T03:03:58Z",
+  "build": {
+    "command": "python -m build --no-isolation --outdir dist/local-production-v1",
+    "source_baseline_commit": "65ea29d5f61f24c0d429eeb6208228b6862d0b81",
+    "source_state": "staged L8 integration tree; tracked manifest and checksum records excluded from sdist",
+    "python": "3.14.4",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "build_frontend": "build 1.5.1",
+    "build_backend": "hatchling 1.31.0",
+    "wheel_built_from_sdist": true
+  },
+  "artifacts": [
+    {
+      "type": "wheel",
+      "filename": "forge_governance-1.0.0-py3-none-any.whl",
+      "sha256": "8ee47fbc483fb4d2da294385cd5f5ef4ac07c2ce5460594780b62fb91e5abd92",
+      "size_bytes": 299192
+    },
+    {
+      "type": "sdist",
+      "filename": "forge_governance-1.0.0.tar.gz",
+      "sha256": "9d2854caa8fa7c092ba37a7f24c4a08ab333807b497698f49be66bcf5d7d3997",
+      "size_bytes": 1382533
+    }
+  ],
+  "downstream_installation": {
+    "artifact_type": "wheel",
+    "filename": "forge_governance-1.0.0-py3-none-any.whl",
+    "sha256": "8ee47fbc483fb4d2da294385cd5f5ef4ac07c2ce5460594780b62fb91e5abd92"
+  },
+  "publication": {
+    "authorized": false,
+    "tag_created": false
+  },
+  "validation": {
+    "complete_phase": "L8 candidate integration",
+    "next_phase": "L9 candidate validation",
+    "final_owner_acceptance": false
+  }
+}

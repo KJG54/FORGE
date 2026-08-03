@@ -2,13 +2,17 @@
 
 FORGE Governance freezes the compatibility boundary for the unpublished
 `forge-governance==1.0.0` candidate. A development commit or local artifact reporting `1.0.0` is
-not a public release; only the separately owner-approved immutable `v1.0.0` tag and matching public
-artifacts establish publication.
+not a public release or final local-v1 acceptance. Public tagging and publication belong to the
+abandoned M7 plan and are not part of the current v1 definition. Any future public release would
+require a new explicit owner decision and must preserve or deliberately revise this compatibility
+contract.
 
 The complete reader-facing promise is
 [`release/production-v1/compatibility-statement.md`](../release/production-v1/compatibility-statement.md),
 and [`release/version-contract.json`](../release/version-contract.json) is its machine-readable
-consistency source.
+consistency source. The statement is preserved output from the abandoned public-M7 initiative;
+the current delivery boundary is the
+[Local Production-v1 candidate](../release/local-production-v1/README.md).
 
 ## Semantic-version guarantee
 

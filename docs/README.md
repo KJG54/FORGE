@@ -34,6 +34,8 @@ remain the canonical detail; the guides connect them without redefining contract
   [successor initiative](successors.md).
 - Diagnose integrity separately from lifecycle state, then select the exact
   [recovery procedure](recovery.md).
+- Verify and exercise the exact unpublished
+  [Local Production-v1 candidate](../release/local-production-v1/README.md).
 
 ## Governance model
 
@@ -70,8 +72,10 @@ The [performance budget guide](performance.md) defines the maintained release-ca
 workloads and interpretation.
 The [self-dogfooding guide](dogfooding.md) explains how this repository's tracked framework-change
 initiative governs the remaining M6 release work without manufacturing owner acceptance.
-The [release-candidate closeout guide](release-candidate-closeout.md) defines the one-wheel matrix,
-operational rehearsals, governed evidence sequence, and final M6 evidence requirements.
+The historical [M6 release-candidate closeout guide](release-candidate-closeout.md) defines its
+one-wheel matrix and evidence requirements. The current
+[Local Production-v1 candidate](../release/local-production-v1/README.md) records the L8 artifact
+identity, limitations, risks, and L9 owner test campaign without authorizing public publication.
 
 ## Documentation authority and maintenance
 

@@ -13,6 +13,11 @@
 The current pre-alpha classifier may remain during implementation. Candidate metadata is reviewed
 in L8; no classifier, filename, local build, or completed test may imply public release.
 
+L8 records the exact artifact names, sizes, and SHA-256 digests in
+`release/local-production-v1/candidate-manifest.json` and `SHA256SUMS`. The ignored binary files
+remain under `dist/local-production-v1/`. L9 must verify and install the recorded wheel without
+rebuilding it; a missing or mismatched artifact returns the work to L8 for a new explicit identity.
+
 ## Conversational contracts
 
 ### First-project and successor interviews
@@ -124,6 +129,9 @@ Each increment runs focused lint, typing, and tests. Before candidate handoff, v
   interruption, abandonment, closure, archive, and successor checks;
 - both bundled packs where their workflows apply; and
 - owner-observed Codex and Claude Code journeys on the primary Windows environment.
+
+L8 performs only the integration, exact build, manifest verification, and focused checks needed to
+freeze the candidate inputs. The complete suite and owner-observed journeys above belong to L9.
 
 No existing gate is weakened solely to obtain a passing result. Automated evidence and
 owner-observed evidence are labeled separately.

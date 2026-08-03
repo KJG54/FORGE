@@ -9,12 +9,24 @@ claimed, checked, evidenced, accepted, paused, recovered, closed, or abandoned.
 FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted project manager,
 or a same-user security sandbox.
 
-> **Pre-alpha foundation:** The name, distribution name, public marks, contracts, and CLI remain
-> provisional. Milestones 1 through 6 are complete and owner-accepted. Milestone 6 produced a
-> verified release candidate; Production v1 publication remains separate M7 work. This is not a
-> public production release.
+> **Unpublished local candidate:** Milestones 1 through 6 are complete and owner-accepted. Local
+> Production-v1 increments L1 through L7 are integrated, and L8 records one exact local wheel and
+> source distribution for the final validation increment. The candidate is for extended owner
+> testing; it is not tagged, publicly distributed, or finally accepted as Production v1.
+
+The current v1 definition is the
+[Local Production-v1 candidate](release/local-production-v1/README.md): a personal, local-first
+workflow for direct Codex and Claude Code workspace use. The abandoned public-M7 plan remains
+historical evidence and creates no current publication requirement or authority.
 
 ## Current capabilities
+
+Local Production-v1 L1-L7 add a repository-independent conversational protocol, concise canonical
+transaction receipts, a safe local scratchpad and warm recap, deterministic plan-change guidance,
+additive Mentored explanations, explicit configured-authority/operator ceremony, and
+archive-derived milestone successor briefs. L8 integrates those capabilities into the exact local
+candidate contract, documentation, limitations, risks, and owner test campaign. Complete candidate
+validation remains L9 work.
 
 M1 Increments 1 through 8 provide strict versioned data contracts, deterministic JSON Schema export,
 project configuration validation, owner identity bootstrap, repository discovery, safe path
@@ -429,6 +441,11 @@ forge --help
 - [Local Production-v1 L2 protocol boundary](docs/milestones/local-v1-l2.md)
 - [Local Production-v1 L3 receipt boundary](docs/milestones/local-v1-l3.md)
 - [Local Production-v1 L4 scratchpad and recap boundary](docs/milestones/local-v1-l4.md)
+- [Local Production-v1 L5 mentoring boundary](docs/milestones/local-v1-l5.md)
+- [Local Production-v1 L6 provenance and owner-ceremony boundary](docs/milestones/local-v1-l6.md)
+- [Local Production-v1 L7 successor-brief boundary](docs/milestones/local-v1-l7.md)
+- [Local Production-v1 L8 candidate-integration boundary](docs/milestones/local-v1-l8.md)
+- [Local Production-v1 candidate identity and test campaign](release/local-production-v1/README.md)
 - [Neutral agent adapters and manual fallback](docs/adapters.md)
 - [Trusted local validator declarations](docs/validators.md)
 - [Repository initialization](docs/user-guide/initialization.md)

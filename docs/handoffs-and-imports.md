@@ -95,3 +95,15 @@ For an adapter run, apply the returned manifest with `forge import-result ... --
 `forge complete <step> --run-id <run-id> --assertion ...`. The explicit run reference attributes the
 claim to the immutable adapter worker. It does not give that worker owner authority and does not
 turn provider stdout, process exit, or returned claims into verification evidence.
+
+## Worker handoff versus milestone successor brief
+
+`forge handoff <step>` assigns current active-step work and defines an untrusted return bundle.
+`forge successor brief --archive <initiative-id>` instead derives a disposable transition view
+from a validated terminal archive. The successor brief separates governed outcome, scope,
+decisions, evidence, limitations, risks, lessons, and exact reusable revisions from fresh Git and
+repository observations. It returns no worker result and grants no authority.
+
+A new Codex or Claude task can use the brief without prior-chat memory, but must still validate the
+archive and current repository. `forge create --predecessor ...` remains a separate owner action
+and creates fresh workflow state; it imports no claims, checks, evidence, progress, or acceptance.
