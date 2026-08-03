@@ -100,6 +100,7 @@ from forge.core.scope_amendments import (
 )
 from forge.core.status import inspect_status
 from forge.core.structural_validation import execute_structural_check
+from forge.core.successor_briefs import build_successor_brief
 from forge.core.transaction_receipts import (
     GovernedPosition,
     build_refusal_receipt,
@@ -154,6 +155,7 @@ override_app = typer.Typer(help="Record and inspect emergency override declarati
 risk_app = typer.Typer(help="Accept and inspect exact emergency-override residual risk.")
 decision_app = typer.Typer(help="Inspect or withdraw immutable owner decisions.")
 audit_app = typer.Typer(help="Inspect local-only structured security and failure events.")
+successor_app = typer.Typer(help="Inspect validated terminal inputs for successor work.")
 IdempotencyOption = Annotated[
     str | None,
     typer.Option(
@@ -208,6 +210,7 @@ app.add_typer(override_app, name="override")
 app.add_typer(risk_app, name="risk")
 app.add_typer(decision_app, name="decision")
 app.add_typer(audit_app, name="audit")
+app.add_typer(successor_app, name="successor")
 
 
 def _locked_mutation[**P](function: Callable[P, None]) -> Callable[P, None]:
@@ -1933,6 +1936,28 @@ def history(
         if isinstance(operator_session, str):
             details.append(f"operator-session={operator_session}")
         typer.echo(" ".join(details))
+
+
+@successor_app.command("brief")
+def successor_brief(
+    archive_id: Annotated[
+        UUID,
+        typer.Option("--archive", help="Terminal archive UUID to validate and summarize."),
+    ],
+    directory: Annotated[
+        Path,
+        typer.Option("--directory", "-C", help="Repository or child directory to inspect."),
+    ] = Path("."),
+) -> None:
+    """Render a disposable milestone brief from one validated terminal archive."""
+
+    try:
+        layout = discover_repository(directory)
+        brief = build_successor_brief(layout, archive_id)
+    except ForgeError as error:
+        _fail(error)
+        return
+    typer.echo(brief.markdown, nl=False)
 
 
 @app.command("close")
