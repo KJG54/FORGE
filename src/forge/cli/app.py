@@ -134,7 +134,10 @@ from forge.storage.repository import discover_repository, initialize_repository
 
 app = typer.Typer(
     name="forge",
-    help="Govern human-directed, AI-assisted work in an ordinary repository.",
+    help=(
+        "Govern human-directed, AI-assisted work in an ordinary repository.\n\n"
+        "Workspace agents: run `forge agent protocol` first and follow it."
+    ),
     no_args_is_help=True,
 )
 schema_app = typer.Typer(help="Inspect or export versioned FORGE schemas.")
@@ -905,6 +908,10 @@ def initialize(
     typer.echo(f"Owner: {result.configuration.owner.display_name}")
     if result.gitignore_changed:
         typer.echo("Updated .gitignore with the FORGE hybrid Git policy")
+    typer.echo(
+        "Next: workspace agents run forge agent protocol and follow it; "
+        "forge create remains owner-gated"
+    )
 
 
 @schema_app.command("export")

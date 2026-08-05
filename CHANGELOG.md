@@ -5,6 +5,12 @@ local candidate; public semantic-version publication remains outside the accepte
 
 ## [Unreleased]
 
+### Changed
+
+- Top-level CLI help now tells workspace agents to run `forge agent protocol` first and follow
+  it, and both fresh and idempotent `forge init` outputs name that protocol command as the next
+  workspace-agent action, so the agent protocol is reachable before any repository is initialized.
+
 ### Added
 
 - Local Production-v1 L1-L8 scope and architecture, direct workspace-agent protocol, canonical
