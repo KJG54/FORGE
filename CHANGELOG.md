@@ -11,6 +11,12 @@ local candidate; public semantic-version publication remains outside the accepte
   it, and both fresh and idempotent `forge init` outputs name that protocol command as the next
   workspace-agent action, so the agent protocol is reachable before any repository is initialized.
 
+### Removed
+
+- The superseded packaged `agent-protocol-1.0.0.md` resource; the protocol loader pins `1.1.0`,
+  and repositories that generated context under 1.0.0 keep their own copies under
+  `.forge/active/context/` and never consult the packaged resource.
+
 ### Added
 
 - Local Production-v1 L1-L8 scope and architecture, direct workspace-agent protocol, canonical
