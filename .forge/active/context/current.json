@@ -1,44 +1,28 @@
 {
   "active_step": {
     "context_selection_rules": [
-      "accepted-scope",
-      "release-requirements"
+      "initiative-objective"
     ],
-    "id": "implement",
-    "instructions": "Change only what the accepted scope authorizes and preserve governed compatibility boundaries.",
-    "purpose": "Produce the bounded framework change.",
-    "required_inputs": [
-      {
-        "content_digest": "sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102",
-        "media_type": "text/markdown",
-        "path": "release/local-production-v1/change-scope.md",
-        "role": "change-scope"
-      },
-      {
-        "content_digest": "sha256:4346c90eba0856ece1bc524c7a3097ab54c2d3098a0d7033a2665e7c24b3d94c",
-        "media_type": "text/markdown",
-        "path": "release/local-production-v1/release-requirements.md",
-        "role": "release-requirements"
-      }
-    ],
-    "state": "in_progress"
+    "id": "scope",
+    "instructions": "Register the exact scope and release requirements before implementation authority is accepted.",
+    "purpose": "Define the framework change, constraints, compatibility impact, and acceptance criteria.",
+    "required_inputs": [],
+    "state": "awaiting_acceptance"
   },
   "approved_scope": "Design, implement, document, package, and validate the local FORGE 1.0.0 candidate: document-first conversational bootstrap, canonical transaction receipts, a safe local scratchpad and warm recap, per-step mentoring, honest authority/operator provenance, explicit owner-only command ceremony, rejection and plan-change handling, and archive-derived successor briefs. Preserve existing compatibility, security, recovery, exact-byte, replay, idempotency, and archive invariants. Build and test one exact local wheel and sdist, then stop at extended owner testing. Exclude public naming clearance, tags, PyPI/TestPyPI, GitHub Releases, public support channels, publication automation, hosted or multi-user operation, and final owner acceptance.",
   "expected_evidence": [
     "Worker claim requirement: outputs-produced",
-    "Check requirement after import: implementation-validated",
+    "Check requirement after import: scope-reviewed",
     "Workflow evidence class after import: check-evidence",
     "Owner-only acceptance requirement: owner-acceptance",
     "Returned files require staged import before registration",
     "Worker claims never constitute checks, evidence, or owner acceptance"
   ],
-  "known_blockers": [],
-  "objective": "Deliver and validate a feature-complete personal/local FORGE Production-v1 candidate with an intuitive conversational layer for direct Codex and Claude Code workspace agents, ready for extended owner testing without public publication",
-  "permitted_actions": [
-    "Create only declared returned files within the approved scope",
-    "Report worker claims, tool metadata, and limitations without governance approval",
-    "Use only the selected required-input paths listed in the active step"
+  "known_blockers": [
+    "Active step is awaiting configured-owner acceptance"
   ],
+  "objective": "Deliver and validate a feature-complete personal/local FORGE Production-v1 candidate with an intuitive conversational layer for direct Codex and Claude Code workspace agents, ready for extended owner testing without public publication",
+  "permitted_actions": [],
   "prohibited_actions": [
     "Record or imply owner decisions, acceptance, checks, or evidence",
     "Modify FORGE-managed paths or undeclared project files",
@@ -46,20 +30,12 @@
     "Execute external or irreversible side effects without separate authorization"
   ],
   "relevant_constraints": [
-    "Context selection rule: accepted-scope",
-    "Context selection rule: release-requirements"
+    "Context selection rule: initiative-objective"
   ],
-  "relevant_decisions": [
-    {
-      "chosen_outcome": "Deliver a personal local 1.0.0 candidate with the approved conversational contracts, preserve existing integrity boundaries, and stop at extended owner testing without public publication",
-      "decision_type": "local-production-v1-conversational-contract",
-      "id": "0b29f759-667c-492d-a45b-a0526f84eaa2",
-      "question": "What outcome, channels, interaction contracts, compatibility boundary, and stop point govern local Production v1?",
-      "rationale": "Owner testing established that daily conversational usability is mandatory and public release ceremony is not the current objective; the local candidate preserves engineering rigor without falsifying the abandoned public workflow"
-    }
-  ],
+  "relevant_decisions": [],
   "required_outputs": [
-    "framework-changes"
+    "change-scope",
+    "release-requirements"
   ],
   "return_contract": {
     "contract": "agent-result",
