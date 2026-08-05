@@ -1,0 +1,46 @@
+{
+  "acceptance_event_id": "3b4dd3bd-a296-4f8a-8c59-cc83a595b24e",
+  "accepted_artifact_revision_ids": [
+    "5a7ebeec-483f-4352-af15-79c69fd96567",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768"
+  ],
+  "accepted_check_result_ids": [
+    "ad01dfb0-a95b-4147-97b0-85e361c4bc57"
+  ],
+  "accepted_evidence_ids": [
+    "78fa0cf7-5c6f-4605-a194-7c6cf155e464"
+  ],
+  "accepted_scope": "Revised L1 local Production-v1 scope and conversational contracts exactly as bound to change-scope revision cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768, release-requirements revision 5a7ebeec-483f-4352-af15-79c69fd96567, scope claim 756f7826-ba83-48b1-8fec-6e97ec0b0d61, passed check ad01dfb0-a95b-4147-97b0-85e361c4bc57, and evidence packet 78fa0cf7-5c6f-4605-a194-7c6cf155e464; this accepts implementation authority for the reworked L2-L9 boundary but does not accept implementation, candidate readiness, publication, or final Production-v1 status",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:624f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8",
+    "sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102",
+    "sha256:37e47df74f35ba204e432225ea582228995ef6615664717148560bbe3e73d7ea",
+    "sha256:d684bcc6a52e84c3452d54caafd7dd3c6f5d5a3f9a7659ddf67ce65039a2c513"
+  ],
+  "affected_record_ids": [
+    "5a7ebeec-483f-4352-af15-79c69fd96567",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768",
+    "ad01dfb0-a95b-4147-97b0-85e361c4bc57",
+    "78fa0cf7-5c6f-4605-a194-7c6cf155e464"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 21,
+  "id": "95b7c272-2909-4a77-9ce0-b03a02568dee",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "known_limitations": [],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-05T18:27:54.864628Z",
+  "residual_risks": [],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}
