@@ -19,6 +19,15 @@ The current v1 definition is the
 workflow for direct Codex and Claude Code workspace use. The abandoned public-M7 plan remains
 historical evidence and creates no current publication requirement or authority.
 
+## Workspace agents start here
+
+If you are an AI workspace agent (Claude Code, Codex, or similar) helping an owner work with
+FORGE, run `forge agent protocol` first — before `forge init`, `forge create`, or any project
+work — read it in full, and follow it. It requires no initialized repository. Begin with first
+contact and state detection, then conduct the document-first interview with the six coverage
+headings. Do not run `forge init`, `forge pack trust`, or `forge create` until the owner has
+confirmed your coverage playback; those and the other owner-gate commands belong to the owner.
+
 ## Current capabilities
 
 Local Production-v1 L1-L7 add a repository-independent conversational protocol, concise canonical
