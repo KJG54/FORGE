@@ -19,9 +19,18 @@ local candidate; public semantic-version publication remains outside the accepte
 
 ### Added
 
+- A beginner-facing start-to-finish quickstart, `docs/quickstart.md`, covering durable project
+  homes, the document-first interview, owner gates, receipts, warm resume, and closure.
 - Workspace-agent bootstrap discoverability: protocol signposts in the top-level help, both
   `forge init` receipt paths, and the README, plus managed `CLAUDE.md`/`AGENTS.md` vendor context
   applied to this repository so workspace sessions load the protocol pointer at session start.
+
+### Changed
+
+- Rewrote the README beginner-first and moved the development record — ADRs, milestone and
+  increment reports, and session handoffs — under `docs/history/` without editing historical
+  content. `docs/milestones/m6-report.md` keeps its original path because the immutable M6
+  archive records it for a registered artifact revision.
 - Local Production-v1 L1-L8 scope and architecture, direct workspace-agent protocol, canonical
   transaction receipts, local scratchpad and warm recap, deterministic plan-change guidance,
   Mentored explanations, authority/operator ceremony, archive-derived successor briefs, and one

@@ -113,7 +113,7 @@ evidence, or acceptance exist.
 - Same-user processes are outside FORGE's isolation claim.
 
 See [the constitution](constitution.md), [security](security.md), and the accepted
-[ADRs](adr/README.md) for decisions behind these boundaries.
+[ADRs](history/adr/README.md) for decisions behind these boundaries.
 
 ## Compatibility and extension
 

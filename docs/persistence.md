@@ -33,7 +33,7 @@ snapshot.
 Git cannot preserve empty directories. After a terminal initiative is fully archived, a clean
 checkout may therefore omit the empty `.forge/active/` marker and every empty or ignored
 `.forge/local/` runtime directory. Under
-[ADR-0058](adr/ADR-0058-git-portable-empty-runtime-directories.md), missing active state is healthy
+[ADR-0058](history/adr/ADR-0058-git-portable-empty-runtime-directories.md), missing active state is healthy
 only when every archive validates and no archive-staging or retired-active marker exists.
 
 Status and diagnostics remain read-only and do not manufacture directories. A later governed
@@ -52,7 +52,7 @@ Increment 3.
 ## M2 Increment 1 integrity chain
 
 New journals use the canonical serialization and SHA-256 chain defined by
-[ADR-0012](adr/ADR-0012-canonical-event-hash-chain.md). Every read validates event content hashes,
+[ADR-0012](history/adr/ADR-0012-canonical-event-hash-chain.md). Every read validates event content hashes,
 previous-hash links, sequence and initiative identity, and complete-record termination. Replay
 binds `state.json` to the exact journal-head sequence and hash.
 
@@ -64,7 +64,7 @@ operation that never changes the journal.
 ## M2 Increment 2 mutation locking
 
 Supported governed mutations acquire the repository-wide lock defined by
-[ADR-0013](adr/ADR-0013-cross-process-mutation-lock.md). Exclusive creation prevents overlapping
+[ADR-0013](history/adr/ADR-0013-cross-process-mutation-lock.md). Exclusive creation prevents overlapping
 processes, ownership metadata makes contention inspectable, and token verification prevents one
 owner from releasing another owner's lock. Stale status is diagnostic only: this increment never
 silently removes a lock.
@@ -72,7 +72,7 @@ silently removes a lock.
 ## M2 Increment 3 idempotency
 
 Supported governed CLI mutations use the journal-bound protocol in
-[ADR-0014](adr/ADR-0014-journal-bound-command-idempotency.md). Reserved metadata is applied before
+[ADR-0014](history/adr/ADR-0014-journal-bound-command-idempotency.md). Reserved metadata is applied before
 event hash sealing. On successful command completion, `.forge/idempotency/` stores one validated
 receipt binding the request to every exact committed event hash. The key namespace spans active
 and archived initiatives, so successful closure remains safely replayable after active-state
@@ -86,7 +86,7 @@ complete command pattern and its exact active-state effects.
 ## M2 Increment 4 active-snapshot recovery
 
 The owner may run `forge recover --reason "..."` when the active `state.json` is missing, invalid,
-or disagrees with deterministic replay. [ADR-0015](adr/ADR-0015-explicit-active-snapshot-recovery.md)
+or disagrees with deterministic replay. [ADR-0015](history/adr/ADR-0015-explicit-active-snapshot-recovery.md)
 requires the entire journal to validate as one complete canonical hash chain before any recovery
 write. FORGE also validates all governed records and content-addressed objects referenced by that
 history.
@@ -104,7 +104,7 @@ repair journal bytes, resolve unrelated incomplete commands, retire archives, or
 ## M2 Increment 14 explicit stale-lock remediation
 
 The owner-only `forge remediate-lock` operation implements the explicit diagnostic remediation
-required by [ADR-0025](adr/ADR-0025-explicit-stale-lock-remediation.md). It runs outside the ordinary
+required by [ADR-0025](history/adr/ADR-0025-explicit-stale-lock-remediation.md). It runs outside the ordinary
 mutation wrapper, proves a strictly valid mutation lock belongs to a dead same-host PID, and uses a
 second exclusive guard that ordinary mutations check both before and after lock acquisition.
 
@@ -117,7 +117,7 @@ appends an initiative event or changes a journal, snapshot, receipt, archive, or
 ## M2 Increment 5 pause and resume
 
 The owner-only lifecycle events defined by
-[ADR-0016](adr/ADR-0016-explicit-pause-and-resume.md) preserve workflow position without copying or
+[ADR-0016](history/adr/ADR-0016-explicit-pause-and-resume.md) preserve workflow position without copying or
 rewriting state. `initiative-paused` binds the complete pre-pause materialized-state digest,
 current step, and legal next actions. Replay retains the step, artifact, decision, evidence, and
 acceptance projections while changing lifecycle state to `paused` and limiting the next action to
@@ -160,7 +160,7 @@ closure IDs, so this path cannot be confused with successful closure.
 
 ## M2 Increment 10 schema migration framework
 
-The registered framework in [ADR-0021](adr/ADR-0021-explicit-schema-migration-framework.md) selects
+The registered framework in [ADR-0021](history/adr/ADR-0021-explicit-schema-migration-framework.md) selects
 only explicit directed source/target edges. Its first edge preserves a valid legacy M1 journal
 byte-for-byte, records its digest and owner authorization, deterministically seals the existing
 events, and adds one `schema-migrated` event attributed to the stable migration service.

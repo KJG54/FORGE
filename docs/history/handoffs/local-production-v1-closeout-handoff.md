@@ -2,6 +2,9 @@
 
 **Prepared:** 2026-08-05
 
+**Path update (2026-08-06):** the development record moved under `docs/history/`. Operative paths
+in this handoff were updated to match; historical documents it cites were moved without edits.
+
 **Status:** L9 automated validation is merged; native-app owner observation and governed
 candidate-readiness closeout remain pending
 
@@ -179,7 +182,7 @@ The repeatable mechanics for each remaining step are:
 ### Implement
 
 - Begin/rework `implement` only after renewed scope acceptance.
-- Register `docs/milestones/local-v1-l9.md` as role `framework-changes`, title
+- Register `docs/history/milestones/local-v1-l9.md` as role `framework-changes`, title
   `Local Production-v1 L9 framework changes`, media type `text/markdown`.
 - Claim only the merged L1-L9 implementation and exact candidate corrections.
 - Record check ID `implementation-validated` and cite the merged PR, focused regressions, complete
@@ -264,8 +267,8 @@ the owner wants them governed as a new initiative.
 Before mutating governed state, read:
 
 - this handoff completely;
-- `docs/handoffs/local-production-v1-conversational-completion-handoff.md`;
-- `docs/milestones/local-v1-l9.md`;
+- `docs/history/handoffs/local-production-v1-conversational-completion-handoff.md`;
+- `docs/history/milestones/local-v1-l9.md`;
 - `release/local-production-v1/candidate-manifest.json` and `SHA256SUMS`;
 - `release/local-production-v1/validation-report.md`;
 - `release/local-production-v1/friction-report.md`;
@@ -296,7 +299,7 @@ Before mutating governed state, read:
 ## Suggested opening prompt
 
 > Continue FORGE Local Production-v1 closeout from
-> `docs/handoffs/local-production-v1-closeout-handoff.md`. Verify merged `main`, the exact local
+> `docs/history/handoffs/local-production-v1-closeout-handoff.md`. Verify merged `main`, the exact local
 > candidate hashes, and live governed state before mutation. First present the renewed `scope`
 > acceptance command and wait for explicit owner direction. Then coordinate the minimum native
 > Codex and Claude Code owner-observed smoke. If both pass without a candidate blocker, govern the
