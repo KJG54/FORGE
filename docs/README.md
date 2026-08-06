@@ -16,7 +16,7 @@ remain the canonical detail; the guides connect them without redefining contract
 | Repository owner or contributor | [User guide](user-guide/README.md) | [Examples](../examples/README.md), [troubleshooting](troubleshooting.md) |
 | Pack author | [Pack-author guide](pack-author-guide.md) | [Workflows](workflows.md), [validators](validators.md) |
 | Adapter contributor | [Adapter-author guide](adapter-author-guide.md) | [Adapters](adapters.md), [agent context](agent-context.md) |
-| Architect or maintainer | [Architecture](architecture.md) | [Contracts](contracts.md), [persistence](persistence.md), [ADRs](history/adr/README.md) |
+| Architect or maintainer | [Architecture](architecture.md) | [Contracts](contracts.md), [persistence](persistence.md), [dependency rationale](dependencies.md), [ADRs](history/adr/README.md) |
 | Security reviewer or operator | [Security guide](security.md) | [Security policy](../SECURITY.md), [Git policy](git-policy.md) |
 | Operator handling a failure | [Troubleshooting](troubleshooting.md) | [Recovery](recovery.md), [migrations](migrations.md) |
 

@@ -3,8 +3,8 @@
 
 FORGE's installed direct workspace-agent protocol is available at:
 
-- `.forge/active/context/agent-protocol-1.1.0.md` (`sha256:d9cf7047a4180c3dd869d4dd9da23a2aa1372f9ded76255116f55e4241ac3bdc`)
-- Protocol version: `1.1.0`
+- `.forge/active/context/agent-protocol-1.2.0.md` (`sha256:0e9d1cf6d4078bb2165f30ca58a68cb482f9be49f24d1a9217ce0245a264064c`)
+- Protocol version: `1.2.0`
 
 FORGE's provider-neutral generated context is available at:
 

@@ -19,6 +19,10 @@ local candidate; public semantic-version publication remains outside the accepte
 
 ### Added
 
+- Workspace-agent protocol 1.2.0: first contact now detects whether the working environment is
+  durable, and the bootstrap proposal must name the project's durable home (owner-machine
+  directory, private remote, or explicit owner-declared throwaway) before any governed journal can
+  exist only in an ephemeral container. Supersedes and removes the packaged 1.1.0 resource.
 - A beginner-facing start-to-finish quickstart, `docs/quickstart.md`, covering durable project
   homes, the document-first interview, owner gates, receipts, warm resume, and closure.
 - Workspace-agent bootstrap discoverability: protocol signposts in the top-level help, both

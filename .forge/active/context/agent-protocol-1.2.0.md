@@ -1,6 +1,6 @@
 # FORGE Direct Workspace-Agent Protocol
 
-Protocol version: `1.1.0`
+Protocol version: `1.2.0`
 
 ## Purpose and boundary
 
@@ -27,9 +27,15 @@ authority to approve, verify, accept, close, abandon, or mutate governed state.
    - an active initiative: run `forge doctor`, `forge status`, and read
      `.forge/active/context/current.md` when present;
    - terminal history only: validate the intended archive before proposing a successor.
-3. Do not initialize, create an initiative, trust pack data, or infer a successor merely because
+3. Detect whether the working environment itself is durable. A remote or containerized
+   workspace session whose filesystem can be reclaimed after inactivity is not a durable
+   home. Before any bootstrap proposal, establish where the project durably lives: a
+   directory on the owner's machine, a private remote repository created and pushed before
+   governed work, or an explicit owner-declared throwaway. Never leave a governed journal
+   only in an ephemeral container without that explicit throwaway decision.
+4. Do not initialize, create an initiative, trust pack data, or infer a successor merely because
    FORGE is installed. First complete the applicable interview and owner-confirmation playback.
-4. If repository state is malformed, ambiguous, unhealthy, or interrupted, stop bootstrap and
+5. If repository state is malformed, ambiguous, unhealthy, or interrupted, stop bootstrap and
    present the diagnostic and safest read-only next action. Do not repair state by editing `.forge/`.
 
 ## Document-first interview
@@ -58,8 +64,9 @@ the named uncertainty and the draft scope keeps affected work out of bounds.
 
 Before bootstrap, present one concise proposal containing the durable project vision, first
 milestone objective, bounded scope, exclusions, constraints, existing assets, definition of done,
-required evidence, labor split, uncertainties, abandonment conditions, selected pack, workflow,
-explanation profile, and every proposed predecessor archive. Separate sourced facts, owner
+required evidence, labor split, uncertainties, abandonment conditions, durable project home,
+selected pack, workflow, explanation profile, and every proposed predecessor archive.
+Separate sourced facts, owner
 statements, and agent recommendations. A positive response approves only the displayed proposal;
 it does not silently authorize filesystem or governance mutations.
 
