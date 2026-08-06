@@ -1,6 +1,7 @@
 # Local Production-v1 L9 Friction Report
 
-Status: **automated findings resolved or classified; owner-observed friction pending**
+Status: **automated findings resolved or classified; owner-observed cloud findings recorded;
+native-app owner-observed friction pending**
 
 | ID | Observation | Classification | Resolution or follow-up |
 |---|---|---|---|
@@ -16,3 +17,17 @@ Status: **automated findings resolved or classified; owner-observed friction pen
 The two candidate blockers changed shipped bytes, so L9 returned to the L8 identity boundary,
 rebuilt once after the complete correction set, discarded superseded install evidence, and repeated
 all exact-wheel validation. No gate or scanner was weakened merely to obtain a pass.
+
+## Bootstrap and cloud-workspace findings (2026-08-05 to 2026-08-06, owner-observed)
+
+These findings come from owner-observed cloud workspace sessions (claude.ai/code on the FORGE
+repository) during extended testing. Cloud observations supplement but do not satisfy the
+native-app smoke boundary in L9-F08.
+
+| ID | Observation | Classification | Resolution or follow-up |
+|---|---|---|---|
+| B-F01 | Cold workspace agents never discovered the agent protocol. In two owner-observed runs the agent read the README, installed the CLI, and proceeded to objective/scope questions — one run executed `forge init` unprompted before any interview — because no reachable surface named `forge agent protocol` before the first command. | Candidate-blocking bootstrap defect | Added protocol signposts to `forge --help`, both `forge init` receipt paths, and the README, and applied managed `CLAUDE.md`/`AGENTS.md` vendor context to this repository so sessions load the pointer at start. An owner-observed cloud retest on the fixed branch produced protocol-first contact, a document-first interview, coverage playback, displayed owner gates, and verbatim canonical receipts. Output changes retire the L9 candidate identity; rebuild and exact-wheel revalidation are scheduled. |
+| B-F02 | A governed project built in an ephemeral cloud container with no Git remote (repository, journal, and initiative) was destroyed when the container was reclaimed. | Environment friction and documentation gap | The quickstart now states the durable-home rule: a local folder, a private remote for cloud sessions, or an explicitly declared throwaway. A protocol 1.2.0 addition detecting non-durable environments at first contact is proposed but not yet implemented. |
+| B-F03 | The cloud execution container pre-seeded a remote-tracking ref for the session's assigned branch that did not exist on GitHub, so the session misreported which branch it had built from. | Cloud-environment hazard, not a FORGE defect | Ground truth is `git ls-remote --heads origin`; the workaround is documented in the session handoff that discovered it. Affects the validity of cloud test evidence; verify the actual checked-out commit before trusting any cloud run as evidence. |
+| B-F04 | A phone-driven remote owner cannot execute owner-shell ceremony commands; owner gates were executed by the agent on explicit chat direction instead. | Ceremony observation within the accepted model | The protocol already permits explicit owner direction. The accepted remote mode is display-first, explicit direction in chat, and honest `direct-claude`/`direct-codex` operator provenance on agent-authored records. Not authentication, and not claimed as such. |
+| B-F05 | The cloud container's default Python (3.11) is below FORGE's >=3.12 floor, and its venvs ship without pip. | Provider-environment friction | Agents detected the floor and built a 3.13 venv (using `uv pip` where pip was absent). Documented; no FORGE change required. |
