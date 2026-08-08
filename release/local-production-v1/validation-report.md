@@ -11,8 +11,8 @@ Local Production-v1 acceptance.
 
 | Artifact | Size | SHA-256 |
 |---|---:|---|
-| `forge_governance-1.0.0-py3-none-any.whl` | 287,012 bytes | `9d12b62096d099d0669d8fbcedfc77ff93a31c6918667ccdf443644fb4820b18` |
-| `forge_governance-1.0.0.tar.gz` | 741,536 bytes | `8b2ff9c795be463d1733bbc1a19d1dcc68b555608e5aceecf24a175933c2f66d` |
+| `forge_governance-1.0.0-py3-none-any.whl` | 288,251 bytes | `f047d25365534beafba29cf01ed6f7e82a9a72a8a90de9f85ca8172b3f8b682a` |
+| `forge_governance-1.0.0.tar.gz` | 742,834 bytes | `882ddeecee77750dc2aec931d2e52df2e414f6449bc7bd68866ad4782786f9bc` |
 
 The wheel was built from the sdist on Windows 11 with CPython 3.14.4, build 1.5.1, and Hatchling
 1.31.0. `tools.local_candidate verify` passed after the final build.
@@ -24,7 +24,7 @@ The wheel was built from the sdist on Windows 11 with CPython 3.14.4, build 1.5.
 | Ruff | passed |
 | Strict Pyright 1.1.411 | 0 errors, 0 warnings, 0 information messages |
 | Version consistency | passed; schema `1.0`, 51 public models, 94 CLI commands |
-| Complete pytest suite | 409 passed, 9 skipped in 505.83 seconds |
+| Complete pytest suite | 409 passed, 9 skipped in 526.02 seconds |
 | Candidate manifest, names, sizes, metadata, and hashes | passed |
 | Distribution inventory | passed; 617 sdist entries and no `.agents`, `.claude`, `.codex`, or `.forge/local` content |
 
@@ -75,14 +75,14 @@ wheel.
 
 | Case | p95 | Budget |
 |---|---:|---:|
-| startup | 65.843 ms | 750 ms |
-| active status | 1184.885 ms | 1500 ms |
-| 1,000-event journal replay | 47.508 ms | 200 ms |
-| context generation | 768.240 ms | 1500 ms |
-| archive access | 764.471 ms | 1500 ms |
+| startup | 68.200 ms | 750 ms |
+| active status | 1242.035 ms | 1500 ms |
+| 1,000-event journal replay | 46.227 ms | 200 ms |
+| context generation | 818.329 ms | 1500 ms |
+| archive access | 764.207 ms | 1500 ms |
 
 The report digest is
-`sha256:f4800a6ea41f0ce84f3066f4b59976c3afb5e0e455168085aa533917f21cc21a`.
+`sha256:e8ac8d6b12487cfd9481fcc888f92d357945c13ad83f5315ce3544d9dbd82936`.
 
 ## Security and supply chain
 

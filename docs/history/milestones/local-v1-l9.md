@@ -24,10 +24,15 @@ entries from local `.claude/worktrees` state. Build exclusions and regression co
 `.agents`, `.claude`, `.codex`, and `.forge/local` out of distributions; the final sdist contains
 617 entries and none from those paths.
 
+The root README now gives a direct fit test, role comparison, concrete software and research
+examples, and a prominent same-user isolation boundary. Because README content is packaged into
+distribution metadata, that documentation correction received a new exact candidate identity and
+the complete automated validation was repeated.
+
 ## Automated evidence
 
-- candidate wheel: `9d12b62096d099d0669d8fbcedfc77ff93a31c6918667ccdf443644fb4820b18`;
-- candidate sdist: `8b2ff9c795be463d1733bbc1a19d1dcc68b555608e5aceecf24a175933c2f66d`;
+- candidate wheel: `f047d25365534beafba29cf01ed6f7e82a9a72a8a90de9f85ca8172b3f8b682a`;
+- candidate sdist: `882ddeecee77750dc2aec931d2e52df2e414f6449bc7bd68866ad4782786f9bc`;
 - 409 tests passed and 9 Windows privilege-dependent symbolic-link cases skipped;
 - Ruff, strict Pyright, version consistency, and exact candidate verification passed;
 - fresh `venv` and isolated `pipx` installation passed on Windows/CPython 3.14.4;
