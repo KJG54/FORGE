@@ -67,7 +67,7 @@ only after every archive validates and no staging or retired-active marker exist
 unexpected active content, symbolic path, or non-directory path remains an interrupted or unsafe
 state. Read-only inspection does not recreate the directory; successor creation does so only after
 the archive and marker checks pass. See
-[ADR-0058](adr/ADR-0058-git-portable-empty-runtime-directories.md).
+[ADR-0058](history/adr/ADR-0058-git-portable-empty-runtime-directories.md).
 
 ## Archive contents and inspection
 

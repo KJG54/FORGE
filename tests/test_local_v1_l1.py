@@ -17,6 +17,7 @@ def test_local_v1_contract_supersedes_public_execution_without_rewriting_history
     adr = (
         ROOT
         / "docs"
+        / "history"
         / "adr"
         / "ADR-0061-local-production-v1-conversational-candidate.md"
     ).read_text(encoding="utf-8")
