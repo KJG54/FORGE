@@ -9,12 +9,11 @@ claimed, checked, evidenced, accepted, paused, recovered, closed, or abandoned.
 FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted project manager,
 or a same-user security sandbox.
 
-> **Unpublished local candidate:** Milestones 1 through 6 are complete and owner-accepted. Local
-> Production-v1 L1-L9 previously completed automated candidate validation, but the subsequent
-> workspace-agent bootstrap and protocol 1.2.0 changes altered shipped bytes and retired that exact
-> candidate identity. Rebuild and exact-wheel revalidation are pending. Native-app owner
-> observations and extended owner testing remain separate. No candidate is tagged, publicly
-> distributed, or finally accepted as Production v1.
+> **Unpublished local candidate:** Milestones 1 through 6 are complete and owner-accepted. The
+> replacement Local Production-v1 candidate includes workspace-agent bootstrap and protocol 1.2.0;
+> its exact wheel and sdist passed automated clean-install, lifecycle, security, and performance
+> validation. Native-app owner observations and extended owner testing remain separate. No
+> candidate is tagged, publicly distributed, or finally accepted as Production v1.
 
 The current v1 definition is the
 [Local Production-v1 candidate](release/local-production-v1/README.md): a personal, local-first
@@ -47,6 +46,58 @@ worker claim -> check -> evidence -> FORGE verification -> owner acceptance
 
 These stay distinct facts. Green tests never become acceptance by implication, and nothing the
 agent does speaks with your authority.
+
+## When FORGE is a good fit
+
+Use FORGE when AI-assisted work is important enough that you want durable answers to questions
+such as: What did we agree to build? Which exact revision was checked? What evidence supported it?
+What did the owner actually accept? Where can a new agent resume without trusting old chat?
+
+Good fits include:
+
+- a software project that will span many agent sessions, revisions, and release decisions;
+- research where claims must remain tied to exact sources, limitations, and review;
+- a migration, recovery, or other consequential change that needs explicit authorization and an
+  auditable outcome; and
+- any project where interruption, rejection, scope change, or handoff must preserve an honest
+  history instead of rewriting the past.
+
+FORGE is usually unnecessary for a disposable one-step task where ordinary conversation and Git
+history are sufficient. It is also not a substitute for a code-execution sandbox, multi-user
+authentication, a hosted collaboration service, or an autonomous worker.
+
+## How FORGE relates to the other tools
+
+| Tool or role | Primary job | What it does not establish |
+|---|---|---|
+| Workspace agent | Performs project work and explains it conversationally | Owner authority or acceptance |
+| FORGE | Governs scope, authority, exact revisions, checks, evidence, acceptance, and continuity | The project work itself or human identity authentication |
+| Git | Versions and transports project files | FORGE acceptance or semantic correctness |
+| Conventional project manager | Coordinates people, priorities, and communication | A local, hash-chained governance record by itself |
+| VM, container, or restricted account | Isolates untrusted execution | Project scope, evidence, or acceptance |
+
+Codex, Claude Code, validators, and other local processes normally run with the same filesystem
+permissions as the owner. FORGE's command previews, owner gates, and provenance records reduce
+accidental action; they cannot stop a malicious same-user process or prove which human typed a
+command. Run code you do not trust inside an external boundary such as a virtual machine,
+container, or restricted operating-system account, and keep credentials outside the governed
+repository. See the [security model](docs/security.md) for the complete boundary.
+
+## Concrete examples
+
+- **Family recipe manager:** the owner and agent agree on a small first milestone, lock the scope,
+  implement it over several sessions, preserve test evidence, reject or revise unsatisfactory
+  work, and accept only the exact revision that is ready. The
+  [first-project guide](docs/quickstart.md) walks through this scenario.
+- **Release-note formatter:** a software workflow moves from discovery through planning,
+  implementation, verification, review, and closure while keeping each output and decision
+  inspectable. See the [software example](examples/software-project/README.md).
+- **Volunteer-update research:** a research workflow separates sources, bounded claims,
+  limitations, synthesis, and owner review instead of treating generated prose as evidence. See
+  the [research example](examples/research-project/README.md).
+
+In each case, the agent can do routine work, but consequential owner gates remain explicit and the
+repository retains enough validated context for a fresh agent to continue without prior chat.
 
 ## Install
 
