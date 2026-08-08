@@ -25,9 +25,10 @@ These limitations apply to the exact candidate recorded in `candidate-manifest.j
   content. The owner or agent must open the exact registered working files when content is needed.
 - Provider CLI and native-application behavior can change independently of FORGE. Manual fallback
   remains the portable baseline when an adapter is unavailable or incompatible.
-- The installed Codex CLI `0.139.0` is outside FORGE's supported managed-adapter range and therefore
-  falls back safely to manual handoff. This does not block direct native Codex workspace use, which
-  is the primary local-v1 surface; Claude Code CLI `2.1.207` passed the bounded adapter diagnostic.
+- Provider CLI discovery, compatibility, and authentication can change independently of the
+  candidate. Bounded diagnostics fail safely to manual handoff, and direct native workspace use
+  remains the primary local-v1 surface. Record exact provider versions and diagnostic results as
+  post-build validation evidence rather than treating them as candidate identity.
 - Nine symbolic-link tests are skipped on this Windows account because it lacks symbolic-link
   creation privilege. The remaining complete suite passes, and path-refusal coverage that does not
   require that privilege remains active.
