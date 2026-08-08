@@ -81,6 +81,13 @@ def test_post_build_validation_evidence_is_outside_the_sdist_identity() -> None:
     } <= exclusions
 
 
+def test_local_agent_tool_state_is_excluded_from_distributions() -> None:
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    exclusions = set(project["tool"]["hatch"]["build"]["exclude"])
+
+    assert {"/.agents/**", "/.claude/**", "/.codex/**"} <= exclusions
+
+
 def test_owner_guide_covers_every_required_local_journey() -> None:
     guide = (
         ROOT / "release" / "local-production-v1" / "owner-test-guide.md"
