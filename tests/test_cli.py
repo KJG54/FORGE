@@ -13,6 +13,7 @@ def test_help_runs() -> None:
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
     assert "govern" in result.stdout.lower()
+    assert "forge agent protocol" in result.stdout
 
 
 def test_version_runs() -> None:
@@ -33,6 +34,12 @@ def test_init_and_config_commands(tmp_path: Path) -> None:
     result = runner.invoke(app, ["init", str(tmp_path), "--owner-name", "Repository Owner"])
     assert result.exit_code == 0, result.stdout
     assert "Initialized FORGE repository" in result.stdout
+    assert "Next: workspace agents run forge agent protocol and follow it" in result.stdout
+
+    rerun = runner.invoke(app, ["init", str(tmp_path), "--owner-name", "Repository Owner"])
+    assert rerun.exit_code == 0, rerun.stdout
+    assert "Already initialized FORGE repository" in rerun.stdout
+    assert "Next: workspace agents run forge agent protocol and follow it" in rerun.stdout
 
     validated = runner.invoke(app, ["config", "validate", "-C", str(tmp_path)])
     assert validated.exit_code == 0, validated.stdout

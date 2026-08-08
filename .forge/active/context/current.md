@@ -15,7 +15,7 @@ Deliver and validate a feature-complete personal/local FORGE Production-v1 candi
 ### Selected required inputs
 
 - `change-scope`: `release/local-production-v1/change-scope.md` (sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102, text/markdown)
-- `release-requirements`: `release/local-production-v1/release-requirements.md` (sha256:4346c90eba0856ece1bc524c7a3097ab54c2d3098a0d7033a2665e7c24b3d94c, text/markdown)
+- `release-requirements`: `release/local-production-v1/release-requirements.md` (sha256:624f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8, text/markdown)
 
 ## Approved scope
 
@@ -28,9 +28,7 @@ Design, implement, document, package, and validate the local FORGE 1.0.0 candida
 
 ## Relevant decisions
 
-- `0b29f759-667c-492d-a45b-a0526f84eaa2` (local-production-v1-conversational-contract): Deliver a personal local 1.0.0 candidate with the approved conversational contracts, preserve existing integrity boundaries, and stop at extended owner testing without public publication
-  - Question: What outcome, channels, interaction contracts, compatibility boundary, and stop point govern local Production v1?
-  - Rationale: Owner testing established that daily conversational usability is mandatory and public release ceremony is not the current objective; the local candidate preserves engineering rigor without falsifying the abandoned public workflow
+- None
 
 ## Permitted actions
 

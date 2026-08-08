@@ -97,6 +97,7 @@ def test_increment_1_contract_records_approved_identity_and_stop_point() -> None
     adr = (
         ROOT
         / "docs"
+        / "history"
         / "adr"
         / "ADR-0059-production-v1-identity-version-and-publication-channels.md"
     ).read_text(encoding="utf-8")

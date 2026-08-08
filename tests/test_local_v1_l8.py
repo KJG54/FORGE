@@ -72,7 +72,7 @@ def test_post_build_validation_evidence_is_outside_the_sdist_identity() -> None:
     exclusions = set(project["tool"]["hatch"]["build"]["targets"]["sdist"]["exclude"])
 
     assert {
-        "/docs/milestones/local-v1-l9.md",
+        "/docs/history/milestones/local-v1-l9.md",
         "/release/local-production-v1/candidate-manifest.json",
         "/release/local-production-v1/extended-testing-plan.md",
         "/release/local-production-v1/friction-report.md",

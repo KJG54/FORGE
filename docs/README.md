@@ -12,15 +12,18 @@ remain the canonical detail; the guides connect them without redefining contract
 
 | Audience | Start here | Continue with |
 |---|---|---|
+| New user starting a project | [Your first FORGE project](quickstart.md) | [User guide](user-guide/README.md), [glossary](glossary.md) |
 | Repository owner or contributor | [User guide](user-guide/README.md) | [Examples](../examples/README.md), [troubleshooting](troubleshooting.md) |
 | Pack author | [Pack-author guide](pack-author-guide.md) | [Workflows](workflows.md), [validators](validators.md) |
 | Adapter contributor | [Adapter-author guide](adapter-author-guide.md) | [Adapters](adapters.md), [agent context](agent-context.md) |
-| Architect or maintainer | [Architecture](architecture.md) | [Contracts](contracts.md), [persistence](persistence.md), [ADRs](adr/README.md) |
+| Architect or maintainer | [Architecture](architecture.md) | [Contracts](contracts.md), [persistence](persistence.md), [dependency rationale](dependencies.md), [ADRs](history/adr/README.md) |
 | Security reviewer or operator | [Security guide](security.md) | [Security policy](../SECURITY.md), [Git policy](git-policy.md) |
 | Operator handling a failure | [Troubleshooting](troubleshooting.md) | [Recovery](recovery.md), [migrations](migrations.md) |
 
 ## Core journeys
 
+- Start a first governed project end to end with the
+  [quickstart](quickstart.md).
 - Install a built distribution using an
   [ordinary virtual environment or `pipx`](installation.md).
 - [Initialize a repository](user-guide/initialization.md), create an initiative, and complete the
@@ -92,3 +95,9 @@ Guides summarize supported behavior and link to the lower-level source. They do 
 commands, compatibility promises, authority, or recovery procedures. When behavior changes,
 update the canonical feature reference, the applicable guide and index, and an ADR whenever the
 change affects architecture, trust, persistence, compatibility, authority, or public semantics.
+
+## Development record
+
+FORGE's own development history — ADRs, milestone and increment evidence, and session handoffs —
+is preserved unrewritten under [docs/history/](history/README.md). It documents how FORGE was
+built; nothing in it is required for using FORGE.

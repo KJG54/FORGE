@@ -39,7 +39,7 @@ original machine. Their absence is not missing governed content: read-only comma
 archives and terminal-transaction markers without recreating them, while the next mutation safely
 creates only the required lock and active directories. Irregular or symbolic replacements remain
 refused. This boundary is recorded in
-[ADR-0058](adr/ADR-0058-git-portable-empty-runtime-directories.md).
+[ADR-0058](history/adr/ADR-0058-git-portable-empty-runtime-directories.md).
 
 M3 managed `AGENTS.md` and `CLAUDE.md` references are ordinary derived root documents rather than
 governed `.forge/` state. FORGE creates or updates one only after a read-only preview and explicit
