@@ -19,11 +19,16 @@ that invalidation ended the run, and never invents a formal cancellation record.
 Both findings changed candidate inputs. The superseded artifacts and their install evidence were
 discarded, one final candidate was rebuilt, and every exact-wheel check was repeated.
 
+The replacement build also corrected distribution hygiene. The superseded sdist had captured 519
+entries from local `.claude/worktrees` state. Build exclusions and regression coverage now keep
+`.agents`, `.claude`, `.codex`, and `.forge/local` out of distributions; the final sdist contains
+617 entries and none from those paths.
+
 ## Automated evidence
 
-- candidate wheel: `f1a082aab295e5e616cd81c4dedd028b3504c8c520ef1a8489d2dc69c72b2017`;
-- candidate sdist: `9304a6e51ac5aff4de3749cca82e289a7e787ac5e00b0445c92724704de7f9a0`;
-- 408 tests passed and 9 Windows privilege-dependent symbolic-link cases skipped;
+- candidate wheel: `9d12b62096d099d0669d8fbcedfc77ff93a31c6918667ccdf443644fb4820b18`;
+- candidate sdist: `8b2ff9c795be463d1733bbc1a19d1dcc68b555608e5aceecf24a175933c2f66d`;
+- 409 tests passed and 9 Windows privilege-dependent symbolic-link cases skipped;
 - Ruff, strict Pyright, version consistency, and exact candidate verification passed;
 - fresh `venv` and isolated `pipx` installation passed on Windows/CPython 3.14.4;
 - both bundled examples closed successfully with healthy archives;

@@ -3,7 +3,7 @@
 Status: **ready to begin; final acceptance prohibited until owner evidence is sufficient**
 
 Use only the candidate whose wheel digest is
-`f1a082aab295e5e616cd81c4dedd028b3504c8c520ef1a8489d2dc69c72b2017`. Verify the manifest before
+`9d12b62096d099d0669d8fbcedfc77ff93a31c6918667ccdf443644fb4820b18`. Verify the manifest before
 each new installation. A missing or mismatched artifact stops the campaign; do not rebuild it
 silently.
 
