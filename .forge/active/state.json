@@ -9,13 +9,13 @@
   "current_step_id": "implement",
   "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
   "integrity_state": "healthy",
-  "journal_head_hash": "sha256:96b8a65bbc193151239e4770fc893997b010e81b36f9526e15f2083b5a66b029",
-  "journal_head_sequence": 26,
+  "journal_head_hash": "sha256:1af1f0e2f9dec84af43096f8671b772dd28a2d8ef864cddd1da142722e05a1e7",
+  "journal_head_sequence": 29,
   "lifecycle_state": "active",
   "open_decision_ids": [],
   "open_gate_ids": [],
   "permitted_next_actions": [
-    "verify:implement"
+    "acceptance-record:implement"
   ],
   "repository_state": "initialized",
   "schema_version": "1.0",
@@ -29,7 +29,7 @@
   ],
   "step_states": {
     "closeout": "pending",
-    "implement": "awaiting_verification",
+    "implement": "awaiting_acceptance",
     "review-risk": "pending",
     "scope": "completed",
     "verify-release": "pending"
