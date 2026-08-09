@@ -1,0 +1,39 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:d34aa1be12b458a5e90983a4dcaf1d7ecf36120485da20aabab09e0e4b12bdfe"
+  ],
+  "affected_record_ids": [
+    "766ba30f-2977-4318-8033-f39dcbc2907e"
+  ],
+  "artifact_id": "766ba30f-2977-4318-8033-f39dcbc2907e",
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "byte_size": 16863,
+  "content_digest": "sha256:d34aa1be12b458a5e90983a4dcaf1d7ecf36120485da20aabab09e0e4b12bdfe",
+  "correlation_id": null,
+  "event_sequence": 86,
+  "id": "d60d46b7-cc69-44fd-b2ae-d7509619804e",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "media_type": "text/markdown",
+  "path": "release/local-production-v1/friction-report.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/d3/4aa1be12b458a5e90983a4dcaf1d7ecf36120485da20aabab09e0e4b12bdfe",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "35dc8f41-b70f-4688-9f30-19df5baee8ad",
+    "metadata": {},
+    "recorded_at": "2026-08-09T17:32:26.197949Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "release/local-production-v1/friction-report.md",
+    "source_type": "local-file"
+  },
+  "recorded_at": "2026-08-09T17:32:26.197949Z",
+  "registration_event_id": "8db8ed94-f265-4daf-aaa2-170ae863de8b",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "1.0.0"
+}

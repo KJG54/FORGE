@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:cef99c7b87e5699999b86e78e1bba361bd4fffc0acad45f9dac41765993d55e9"
+  ],
+  "affected_record_ids": [
+    "d60d46b7-cc69-44fd-b2ae-d7509619804e",
+    "7b4a300e-d6ef-4a63-8859-123c363d0957",
+    "eb004b62-e46f-4218-9ff0-2928d2a2e4b7",
+    "2c7dceee-b8f1-421e-afe4-6e39f188313b"
+  ],
+  "artifact_revision_ids": [
+    "d60d46b7-cc69-44fd-b2ae-d7509619804e",
+    "7b4a300e-d6ef-4a63-8859-123c363d0957"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "eb004b62-e46f-4218-9ff0-2928d2a2e4b7"
+  ],
+  "claim_ids": [
+    "2c7dceee-b8f1-421e-afe4-6e39f188313b"
+  ],
+  "correlation_id": null,
+  "event_sequence": 91,
+  "id": "f0d4ac8f-d453-46bd-a5a7-51cadf369083",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "The packet establishes risk-review completeness for the current written evidence only; final acceptance remains blocked on the named closeout and native-app work"
+  ],
+  "packet_digest": "sha256:cef99c7b87e5699999b86e78e1bba361bd4fffc0acad45f9dac41765993d55e9",
+  "purpose": "Bind the current friction and residual-risk reports to the bounded risk-review consistency check and direct Codex worker claim without implying completion of deferred closeout validation",
+  "recorded_at": "2026-08-09T17:33:31.824268Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,15 @@
+{
+  "command": "artifact_add",
+  "completed_at": "2026-08-09T17:32:26.354302Z",
+  "events": [
+    {
+      "event_hash": "sha256:aa3064f6dd780d6041973d64c5c2055a438db0dea33320c7bfe80ad9cf1d0dfe",
+      "event_id": "8db8ed94-f265-4daf-aaa2-170ae863de8b",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 86
+    }
+  ],
+  "key": "local-v1-risk-friction-register-20260809",
+  "request_digest": "sha256:3ac39760d208cc0738a3630bcb8149a1832fa3588af1a49c64c67877eeb7c403",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,15 @@
+{
+  "command": "begin",
+  "completed_at": "2026-08-09T17:29:53.537707Z",
+  "events": [
+    {
+      "event_hash": "sha256:60069b08ff45fa5d7d9b91d016257d2ecb2ecd393e679c635780eda25a2b6bd6",
+      "event_id": "20b30bbf-8401-495c-b199-cf32b3fcb9ba",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 85
+    }
+  ],
+  "key": "local-v1-risk-review-begin-20260809",
+  "request_digest": "sha256:e67ca2915c67808536bc052b0be5887c1bab7730ee3d6564de9a02df1b3d0f2b",
+  "schema_version": "1.0"
+}

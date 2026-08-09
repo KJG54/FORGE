@@ -1,0 +1,47 @@
+{
+  "acceptance_event_id": "9876fb4e-f958-40ef-971f-9f49649d807f",
+  "accepted_artifact_revision_ids": [
+    "438eebe8-39e4-460d-94dd-bd3fba0ef469"
+  ],
+  "accepted_check_result_ids": [
+    "890b9bbd-f73a-470f-8f25-c4ce8016f20b"
+  ],
+  "accepted_evidence_ids": [
+    "128bd922-d798-4e9d-8b52-49bc6dd86be6"
+  ],
+  "accepted_scope": "Accept the bounded verification result exactly as represented by verification-report revision 438eebe8-39e4-460d-94dd-bd3fba0ef469, worker claim 7f0167d3-e7d0-493e-84da-ea7bd4bc8872, passing release check 890b9bbd-f73a-470f-8f25-c4ce8016f20b, and evidence packet 128bd922-d798-4e9d-8b52-49bc6dd86be6 for exact wheel a9c010a92d146300de7f59852d8c7181039a3c45246f615d8f7666072c672349 and sdist 3907c86f25b3ad36c650c6888074ed1e8148451cd861ef42ddee1af26cf12b88; candidate identity and all five maintained performance budgets passed on Windows CPython 3.14, while full current-wheel clean venv and pipx installation, procedures, example workflows, security, broad suite, CI, and native-app repetition remain deferred to closeout or external validation",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:31e7c025fce7c7208ca4e03c48bb0e60c8ee646d69e86910b1614346646dc7ad",
+    "sha256:6ed47ce712007ddde083cf1cd89fedae1203532f953b94951ce17920dea3786f",
+    "sha256:1251396d88587b96a241f43b9ec8dfc7fa30071c0f659a027532dd89dc0ae020"
+  ],
+  "affected_record_ids": [
+    "438eebe8-39e4-460d-94dd-bd3fba0ef469",
+    "890b9bbd-f73a-470f-8f25-c4ce8016f20b",
+    "128bd922-d798-4e9d-8b52-49bc6dd86be6"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 83,
+  "id": "b5260e0d-9a58-4949-b28f-9a8f85e5336f",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "known_limitations": [
+    "Current-candidate validation is intentionally bounded; predecessor evidence is labeled separately and the deferred closeout matrix has not been claimed as current-wheel evidence"
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-09T17:28:57.293776Z",
+  "residual_risks": [
+    "Host-specific performance may vary, GitHub CI and native Codex and Claude behavior remain external evidence, and final Local Production-v1 acceptance is not granted"
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

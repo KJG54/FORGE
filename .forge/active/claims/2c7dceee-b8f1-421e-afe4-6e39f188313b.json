@@ -1,0 +1,38 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:1641ffee5c283420177929d9d6a278d22870fa4ce6eb78d48effff2ac264abfb",
+    "sha256:d34aa1be12b458a5e90983a4dcaf1d7ecf36120485da20aabab09e0e4b12bdfe"
+  ],
+  "affected_record_ids": [
+    "7b4a300e-d6ef-4a63-8859-123c363d0957",
+    "d60d46b7-cc69-44fd-b2ae-d7509619804e"
+  ],
+  "assertion": "The current friction report and residual-risk report identify the exact candidate boundary, resolved blockers, deferred current-wheel validation, native-app retest requirement, context-freshness risk, platform and adapter limitations, same-user authority boundary, local artifact preservation requirement, and excluded public-release work without claiming final acceptance",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "7b4a300e-d6ef-4a63-8859-123c363d0957",
+    "d60d46b7-cc69-44fd-b2ae-d7509619804e"
+  ],
+  "correlation_id": null,
+  "event_sequence": 88,
+  "id": "2c7dceee-b8f1-421e-afe4-6e39f188313b",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "This risk review is document- and evidence-based; deferred closeout tests, GitHub check confirmation, and current-wheel owner-observed native journeys were intentionally not performed or claimed"
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-09T17:32:53.481308Z",
+  "run_id": "9a445116-85f4-4e22-ab9f-39caf90b1f04",
+  "schema_version": "1.0",
+  "step_id": "review-risk",
+  "tool_version": "1.0.0"
+}

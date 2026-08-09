@@ -1,0 +1,15 @@
+{
+  "command": "artifact_add",
+  "completed_at": "2026-08-09T17:32:39.217964Z",
+  "events": [
+    {
+      "event_hash": "sha256:c338c6b0d2c67ff0656e19a5299eb20c83e959a45ffc094dfe99263df91e0851",
+      "event_id": "25ef480a-96a4-49da-baed-4c48149e5e66",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 87
+    }
+  ],
+  "key": "local-v1-residual-risk-register-20260809",
+  "request_digest": "sha256:91fcc206a65c55e171eaaa77ccc2564a5271b0c328fc4485c829e0ba88e2cfad",
+  "schema_version": "1.0"
+}
