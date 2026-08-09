@@ -1,0 +1,15 @@
+{
+  "command": "acceptance_revoke",
+  "completed_at": "2026-08-09T07:54:13.529209Z",
+  "events": [
+    {
+      "event_hash": "sha256:882841a0a4aeceac42b5d4f2ab085382c0c60a916904509f07c5228d4d899190",
+      "event_id": "39b98569-d751-4a75-bc63-78a63a78a242",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 52
+    }
+  ],
+  "key": "local-v1-readiness-rework-revoke-20260809",
+  "request_digest": "sha256:f5ff799ebabf6f0fcd0d5571022188eb7d53e804c1f4663f6e5361f0d9b74658",
+  "schema_version": "1.0"
+}

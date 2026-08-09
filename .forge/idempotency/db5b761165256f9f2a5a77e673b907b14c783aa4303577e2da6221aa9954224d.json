@@ -1,0 +1,15 @@
+{
+  "command": "check_record",
+  "completed_at": "2026-08-09T17:05:50.566316Z",
+  "events": [
+    {
+      "event_hash": "sha256:b07904324c0cadd2f379aa290c67ade76296311e2b88bfbf5eb922bc6f3b5d0a",
+      "event_id": "c9b1a260-5b9d-40cf-99b0-2001cc5b398f",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 80
+    }
+  ],
+  "key": "local-v1-performance-release-check-record-20260809",
+  "request_digest": "sha256:0052f87200a81fd2ff15256008829806de0a9afc75a69eab44dc96839cd177f0",
+  "schema_version": "1.0"
+}

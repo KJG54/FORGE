@@ -89,9 +89,7 @@ def test_create_locks_pack_and_workflow_and_reloads_from_disk(tmp_path: Path) ->
     assert result.active.layout.pack_lock_file.is_file()
     assert result.active.layout.pack_trust_file.is_file()
     assert result.active.layout.workflow_lock_file.is_file()
-    assert read_journal(result.active.layout.event_journal_file) == (
-        result.creation_event,
-    )
+    assert read_journal(result.active.layout.event_journal_file) == (result.creation_event,)
 
     restarted = load_active_initiative(initialized.layout)
     assert restarted.initiative == result.active.initiative
@@ -111,6 +109,36 @@ def test_create_locks_pack_and_workflow_and_reloads_from_disk(tmp_path: Path) ->
         )
 
 
+def test_status_skips_absent_optional_record_families(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initialized, _ = _create(tmp_path)
+
+    def unexpected_read(*_args: object, **_kwargs: object) -> None:
+        pytest.fail("absent optional record family was read")
+
+    monkeypatch.setattr("forge.core.artifacts.list_artifacts", unexpected_read)
+    monkeypatch.setattr(
+        "forge.core.deviations.open_workflow_deviations",
+        unexpected_read,
+    )
+    monkeypatch.setattr(
+        "forge.core.overrides.list_emergency_overrides",
+        unexpected_read,
+    )
+    monkeypatch.setattr(
+        "forge.core.risk_acceptances.list_risk_acceptances",
+        unexpected_read,
+    )
+
+    report = inspect_status(initialized.layout)
+
+    assert report.integrity_state is IntegrityState.HEALTHY
+    assert report.next_actions == ("begin:discover",)
+    assert report.blockers == ()
+
+
 def test_manual_begin_enforces_readiness_actor_rules_and_restart(tmp_path: Path) -> None:
     initialized, actor = _create(tmp_path)
     with pytest.raises(TransitionError, match="durable run record"):
@@ -126,9 +154,7 @@ def test_manual_begin_enforces_readiness_actor_rules_and_restart(tmp_path: Path)
         begin_manual_run(
             initialized.layout,
             step_id="discover",
-            actor=_agent_actor().model_copy(
-                update={"actor_type": ActorType.EXTERNAL_TOOL}
-            ),
+            actor=_agent_actor().model_copy(update={"actor_type": ActorType.EXTERNAL_TOOL}),
         )
     assert not initialized.layout.governed_run_directory.exists()
 

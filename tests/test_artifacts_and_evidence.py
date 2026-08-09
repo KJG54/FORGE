@@ -158,6 +158,10 @@ def test_claim_check_evidence_and_verify_remain_separate(tmp_path: Path) -> None
     assert completed.transition.state.step_states["discover"] is StepState.AWAITING_VERIFICATION
     assert completed.transition.state.active_run_ids == ()
     assert list_claims(initialized.layout) == (completed.claim,)
+    report = inspect_status(initialized.layout)
+    assert report.next_actions == ("verify:discover",)
+    assert report.executable_actions == ("check-record:discover:outputs-present",)
+    assert "required checks pass for current artifact revisions" in report.blockers[-1]
 
     with pytest.raises(ConflictError, match="no passing result"):
         verify_step(initialized.layout, step_id="discover")
@@ -173,6 +177,10 @@ def test_claim_check_evidence_and_verify_remain_separate(tmp_path: Path) -> None
         exit_status=0,
         limitations=("Presence only; semantic quality not established",),
     )
+    report = inspect_status(initialized.layout)
+    assert report.next_actions == ("verify:discover",)
+    assert report.executable_actions == ("evidence-add:discover",)
+    assert "evidence binds current artifacts, passing checks, and claim" in report.blockers[-1]
     with pytest.raises(ConflictError, match="No evidence packet"):
         verify_step(initialized.layout, step_id="discover")
 
@@ -188,6 +196,10 @@ def test_claim_check_evidence_and_verify_remain_separate(tmp_path: Path) -> None
     )
     assert list_checks(initialized.layout) == (check.check,)
     assert list_evidence(initialized.layout) == (evidence.evidence,)
+    report = inspect_status(initialized.layout)
+    assert report.next_actions == ("verify:discover",)
+    assert report.executable_actions == ("verify:discover",)
+    assert report.blockers == ()
     for revision_id in revision_ids:
         assert set(dependency_references(initialized.layout, revision_id)) == {
             completed.claim.id,
@@ -230,6 +242,8 @@ def test_failed_check_and_new_revision_cannot_satisfy_verification(tmp_path: Pat
         check_result_ids=(failed.check.id,),
         claim_ids=(completed.claim.id,),
     )
+    report = inspect_status(initialized.layout)
+    assert report.executable_actions == ("check-record:discover:outputs-present",)
     with pytest.raises(ConflictError, match="no passing result"):
         verify_step(initialized.layout, step_id="discover")
 
@@ -277,6 +291,9 @@ def test_failed_check_and_new_revision_cannot_satisfy_verification(tmp_path: Pat
         actor=actor,
         exit_status=0,
     )
+    report = inspect_status(initialized.layout)
+    assert report.executable_actions == ("evidence-add:discover",)
+    assert "evidence binds current artifacts, passing checks, and claim" in report.blockers[-1]
     record_evidence(
         initialized.layout,
         step_id="discover",
@@ -286,6 +303,8 @@ def test_failed_check_and_new_revision_cannot_satisfy_verification(tmp_path: Pat
         check_result_ids=(passing.check.id,),
         claim_ids=(revised_claim.claim.id,),
     )
+    report = inspect_status(initialized.layout)
+    assert report.executable_actions == ("verify:discover",)
     verified = verify_step(initialized.layout, step_id="discover")
     assert verified.state.step_states["discover"] is StepState.AWAITING_ACCEPTANCE
 

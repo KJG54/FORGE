@@ -1,0 +1,35 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:f8ea8ccb134a5a9dc47e0c14b94c7a4aa09b0975442f6c48b14c3a5e13573d8c"
+  ],
+  "affected_record_ids": [
+    "8dbb84aa-e84c-45a0-8f9f-c3a6faecfdd5"
+  ],
+  "assertion": "Awaiting-verification status now shares the verifier current-record prerequisite resolver, withholds verify until current claims, required exact-revision passing checks, and binding evidence exist, and surfaces exact check and evidence actions consistently in receipts, status, next, and recap; the repository fast quality gate and 30 focused regression and candidate-contract tests pass",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "8dbb84aa-e84c-45a0-8f9f-c3a6faecfdd5"
+  ],
+  "correlation_id": null,
+  "event_sequence": 57,
+  "id": "2548bbf4-4c19-4d8e-9619-0c5207a2a574",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "The source-changing correction supersedes the prior wheel and sdist; a clean source commit, rebuild, and repeated artifact-bound validation remain required before CI or native-app retest"
+  ],
+  "operator_session_reference": "codex-readiness-rework-20260809",
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-09T08:10:44.764302Z",
+  "run_id": "680e5214-0ee0-43d3-9d83-7ad8704279d8",
+  "schema_version": "1.0",
+  "step_id": "implement",
+  "tool_version": "1.0.0"
+}

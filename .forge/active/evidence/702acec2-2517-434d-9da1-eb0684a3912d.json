@@ -1,0 +1,41 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:9631ea152ed94ea0fdd5d1f87b39a5d34e3f87b68200cfa935193d930e2801b0"
+  ],
+  "affected_record_ids": [
+    "8dbb84aa-e84c-45a0-8f9f-c3a6faecfdd5",
+    "fbf601a2-3d1f-45fe-97f5-604e4e04957f",
+    "2548bbf4-4c19-4d8e-9619-0c5207a2a574"
+  ],
+  "artifact_revision_ids": [
+    "8dbb84aa-e84c-45a0-8f9f-c3a6faecfdd5"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "fbf601a2-3d1f-45fe-97f5-604e4e04957f"
+  ],
+  "claim_ids": [
+    "2548bbf4-4c19-4d8e-9619-0c5207a2a574"
+  ],
+  "correlation_id": null,
+  "event_sequence": 60,
+  "id": "702acec2-2517-434d-9da1-eb0684a3912d",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "This evidence validates corrected source behavior and reporting; it does not validate a rebuilt wheel or sdist identity"
+  ],
+  "packet_digest": "sha256:9631ea152ed94ea0fdd5d1f87b39a5d34e3f87b68200cfa935193d930e2801b0",
+  "purpose": "Bind the current framework-change revision and direct-Codex implementation claim to the passing readiness-correction quality and regression check",
+  "recorded_at": "2026-08-09T08:11:57.794339Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

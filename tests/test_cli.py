@@ -159,11 +159,7 @@ def test_pack_create_status_next_and_begin_commands(tmp_path: Path) -> None:
 
 def _line_value(output: str, prefix: str) -> str:
     legacy = next(
-        (
-            line.removeprefix(prefix)
-            for line in output.splitlines()
-            if line.startswith(prefix)
-        ),
+        (line.removeprefix(prefix) for line in output.splitlines() if line.startswith(prefix)),
         None,
     )
     if legacy is not None:
@@ -181,22 +177,28 @@ def _line_value(output: str, prefix: str) -> str:
 
 
 def test_artifact_claim_check_evidence_and_verify_commands(tmp_path: Path) -> None:
-    assert runner.invoke(
-        app,
-        ["init", str(tmp_path), "--owner-name", "Repository Owner"],
-    ).exit_code == 0
-    assert runner.invoke(
-        app,
-        [
-            "create",
-            "Objective",
-            "--scope",
-            "Bounded scope",
-            "--trust-pack-data",
-            "-C",
-            str(tmp_path),
-        ],
-    ).exit_code == 0
+    assert (
+        runner.invoke(
+            app,
+            ["init", str(tmp_path), "--owner-name", "Repository Owner"],
+        ).exit_code
+        == 0
+    )
+    assert (
+        runner.invoke(
+            app,
+            [
+                "create",
+                "Objective",
+                "--scope",
+                "Bounded scope",
+                "--trust-pack-data",
+                "-C",
+                str(tmp_path),
+            ],
+        ).exit_code
+        == 0
+    )
     assert runner.invoke(app, ["begin", "discover", "-C", str(tmp_path)]).exit_code == 0
     (tmp_path / "objective.md").write_text("Objective", encoding="utf-8")
     (tmp_path / "requirements.md").write_text("Requirements", encoding="utf-8")
@@ -256,7 +258,20 @@ def test_artifact_claim_check_evidence_and_verify_commands(tmp_path: Path) -> No
         ],
     )
     assert completed.exit_code == 0, completed.stdout
+    assert "legal_actions=verify:discover" in completed.stdout
+    assert "ready_actions=check-record:discover:outputs-present" in completed.stdout
+    assert "required checks pass for current artifact revisions" in completed.stdout
     claim_id = _line_value(completed.stdout, "Recorded claim ")
+
+    status = runner.invoke(app, ["status", "-C", str(tmp_path)])
+    next_result = runner.invoke(app, ["next", "-C", str(tmp_path)])
+    recap = runner.invoke(app, ["recap", "-C", str(tmp_path)])
+    assert "Legal next: verify:discover" in status.stdout
+    assert "Ready now: check-record:discover:outputs-present" in status.stdout
+    assert "check-record:discover:outputs-present" in next_result.stdout
+    assert "Legal after prerequisites: verify:discover" in next_result.stdout
+    assert "Executable now:\n- check-record:discover:outputs-present" in recap.stdout
+    assert "Legal next actions:\n- verify:discover" in recap.stdout
 
     checked = runner.invoke(
         app,
@@ -276,6 +291,9 @@ def test_artifact_claim_check_evidence_and_verify_commands(tmp_path: Path) -> No
         ],
     )
     assert checked.exit_code == 0, checked.stdout
+    assert "legal_actions=verify:discover" in checked.stdout
+    assert "ready_actions=evidence-add:discover" in checked.stdout
+    assert "evidence binds current artifacts, passing checks, and claim" in checked.stdout
     check_id = _line_value(checked.stdout, "Recorded check result ").split(":", 1)[0]
 
     evidenced = runner.invoke(
@@ -302,6 +320,8 @@ def test_artifact_claim_check_evidence_and_verify_commands(tmp_path: Path) -> No
     )
     assert evidenced.exit_code == 0, evidenced.stdout
     assert "Recorded -> evidence-registered" in evidenced.stdout
+    assert "legal_actions=verify:discover" in evidenced.stdout
+    assert "ready_actions=verify:discover" in evidenced.stdout
 
     verified = runner.invoke(app, ["verify", "discover", "-C", str(tmp_path)])
     assert verified.exit_code == 0, verified.stdout
@@ -327,9 +347,7 @@ def test_artifact_claim_check_evidence_and_verify_commands(tmp_path: Path) -> No
     assert "acceptance-recorded" in accepted.stdout
     assert "step=plan:ready" in accepted.stdout
 
-    shown = runner.invoke(
-        app, ["acceptance", "show", acceptance_id, "-C", str(tmp_path)]
-    )
+    shown = runner.invoke(app, ["acceptance", "show", acceptance_id, "-C", str(tmp_path)])
     assert shown.exit_code == 0, shown.stdout
     assert "status=current" in shown.stdout
 

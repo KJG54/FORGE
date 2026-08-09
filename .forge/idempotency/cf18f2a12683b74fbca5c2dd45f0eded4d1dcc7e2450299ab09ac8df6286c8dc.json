@@ -1,0 +1,15 @@
+{
+  "command": "begin",
+  "completed_at": "2026-08-09T16:44:31.367130Z",
+  "events": [
+    {
+      "event_hash": "sha256:2235667bf669df1ac61f352810879da7a99be17f6a3cd3fa7c5272aec1a2320c",
+      "event_id": "39a239f2-e385-416e-8875-c144845fe858",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 66
+    }
+  ],
+  "key": "local-v1-performance-rework-begin-20260809",
+  "request_digest": "sha256:282962a7769eebf558cb0a3884c4d36a678e9478345284b74149265c37745a7d",
+  "schema_version": "1.0"
+}

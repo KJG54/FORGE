@@ -64,6 +64,17 @@ class EvidenceRecordingResult:
     event: AuditEvent
 
 
+@dataclass(frozen=True)
+class VerificationPrerequisites:
+    """Current, verifier-equivalent support for an awaiting-verification step."""
+
+    artifact_revision_ids: tuple[UUID, ...]
+    claims: tuple[Claim, ...]
+    passing_checks: tuple[CheckResult, ...]
+    missing_check_ids: tuple[str, ...]
+    evidence: EvidencePacket | None
+
+
 def _require_text(label: str, value: str) -> str:
     normalized = value.strip()
     if not normalized:
@@ -650,22 +661,25 @@ def record_evidence(
     return EvidenceRecordingResult(evidence, event)
 
 
-def verify_step(layout: RepositoryLayout, *, step_id: str) -> TransitionResult:
-    active = load_active_initiative(layout)
-    step = _step(active, step_id)
-    if active.state.step_states.get(step_id) is not StepState.AWAITING_VERIFICATION:
-        raise ConflictError(f"Step {step_id} is not awaiting verification")
+def inspect_verification_prerequisites(
+    layout: RepositoryLayout,
+    *,
+    active: ActiveInitiative,
+    step: StepDefinition,
+) -> VerificationPrerequisites:
+    """Resolve the exact current records that would allow ``verify_step`` to run."""
+
     revisions = current_revisions_for_roles(active, step.required_outputs)
-    current_ids = {revision.id for revision in revisions}
+    revision_ids = tuple(revision.id for revision in revisions)
+    current_ids = set(revision_ids)
     claims = tuple(
         claim
         for claim in list_claims(layout)
-        if claim.step_id == step_id and set(claim.claimed_artifact_revision_ids) == current_ids
+        if claim.step_id == step.id and set(claim.claimed_artifact_revision_ids) == current_ids
     )
-    if not claims:
-        raise ConflictError("No current worker claim covers the required artifact revisions")
     checks = list_checks(layout)
     passing: list[CheckResult] = []
+    missing_check_ids: list[str] = []
     for required_check_id in step.check_requirements:
         candidates = [
             result
@@ -675,9 +689,8 @@ def verify_step(layout: RepositoryLayout, *, step_id: str) -> TransitionResult:
             and set(result.target_artifact_revision_ids) == current_ids
         ]
         if not candidates:
-            raise ConflictError(
-                f"Required check {required_check_id!r} has no passing result for current revisions"
-            )
+            missing_check_ids.append(required_check_id)
+            continue
         passing.append(max(candidates, key=lambda item: (item.recorded_at, str(item.id))))
     passing_ids = {result.id for result in passing}
     evidence_packets = [
@@ -687,11 +700,42 @@ def verify_step(layout: RepositoryLayout, *, step_id: str) -> TransitionResult:
         and passing_ids.issubset(packet.check_result_ids)
         and any(claim.id in packet.claim_ids for claim in claims)
     ]
-    if not evidence_packets:
+    evidence = (
+        max(evidence_packets, key=lambda item: (item.recorded_at, str(item.id)))
+        if evidence_packets
+        else None
+    )
+    return VerificationPrerequisites(
+        artifact_revision_ids=revision_ids,
+        claims=claims,
+        passing_checks=tuple(passing),
+        missing_check_ids=tuple(missing_check_ids),
+        evidence=evidence,
+    )
+
+
+def verify_step(layout: RepositoryLayout, *, step_id: str) -> TransitionResult:
+    active = load_active_initiative(layout)
+    step = _step(active, step_id)
+    if active.state.step_states.get(step_id) is not StepState.AWAITING_VERIFICATION:
+        raise ConflictError(f"Step {step_id} is not awaiting verification")
+    prerequisites = inspect_verification_prerequisites(
+        layout,
+        active=active,
+        step=step,
+    )
+    if not prerequisites.claims:
+        raise ConflictError("No current worker claim covers the required artifact revisions")
+    if prerequisites.missing_check_ids:
+        required_check_id = prerequisites.missing_check_ids[0]
+        raise ConflictError(
+            f"Required check {required_check_id!r} has no passing result for current revisions"
+        )
+    if prerequisites.evidence is None:
         raise ConflictError(
             "No evidence packet binds the current artifact revisions, passing checks, and claim"
         )
-    evidence = max(evidence_packets, key=lambda item: (item.recorded_at, str(item.id)))
+    evidence = prerequisites.evidence
     transition = next(
         (
             item
@@ -704,7 +748,10 @@ def verify_step(layout: RepositoryLayout, *, step_id: str) -> TransitionResult:
     )
     if transition is None:
         raise IntegrityError(f"Workflow step {step_id} has no verification transition")
-    check_support = tuple(result.id for result in passing) + tuple(current_ids)
+    check_support = (
+        tuple(result.id for result in prerequisites.passing_checks)
+        + prerequisites.artifact_revision_ids
+    )
     evidence_support = (evidence.id, *evidence.artifact_revision_ids, *evidence.check_result_ids)
     return apply_record_backed_transition(
         active,
@@ -712,7 +759,7 @@ def verify_step(layout: RepositoryLayout, *, step_id: str) -> TransitionResult:
         transition_id=transition.id,
         actor=forge_cli_actor(),
         affected_record_ids=(
-            *(claim.id for claim in claims),
+            *(claim.id for claim in prerequisites.claims),
             *check_support,
             *evidence_support,
         ),

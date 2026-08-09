@@ -1,0 +1,35 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e648e28e1fb8bc06c7cbeccad160163f1dd1deac9b32808ddca050b7d366ab31"
+  ],
+  "affected_record_ids": [
+    "e78151b6-39c6-4d75-8fee-5365e08b3d96"
+  ],
+  "assertion": "Status inspection now skips absent optional record-family readers only after the active initiative has been validated, while non-empty artifact, deviation, override, and risk-acceptance families retain their full validation paths; the fast quality gate, three focused regressions, and all five maintained source performance cases pass, with active-status p95 reduced to 800.274 ms against the 1500 ms budget",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "e78151b6-39c6-4d75-8fee-5365e08b3d96"
+  ],
+  "correlation_id": null,
+  "event_sequence": 69,
+  "id": "a2aef7f0-bbc3-4952-ae87-eafcc86c01da",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "A new clean source commit and exact wheel and sdist rebuild remain required; broad closeout suites and reviews were intentionally deferred per owner direction"
+  ],
+  "operator_session_reference": "codex-performance-rework-20260809",
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-09T16:47:59.162475Z",
+  "run_id": "60d071f0-3374-4d9a-b30b-7e3ee7249b09",
+  "schema_version": "1.0",
+  "step_id": "implement",
+  "tool_version": "1.0.0"
+}

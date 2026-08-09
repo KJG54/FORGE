@@ -1,0 +1,15 @@
+{
+  "command": "begin",
+  "completed_at": "2026-08-09T07:54:30.179275Z",
+  "events": [
+    {
+      "event_hash": "sha256:5bd8539c17b3f88cc0984fd3b59eeb7441e9b17829447a971b13c2c169fa73e4",
+      "event_id": "6b5c9145-a961-4087-a6a7-d6cf52f1f0e3",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 53
+    }
+  ],
+  "key": "local-v1-readiness-rework-begin-20260809",
+  "request_digest": "sha256:282962a7769eebf558cb0a3884c4d36a678e9478345284b74149265c37745a7d",
+  "schema_version": "1.0"
+}

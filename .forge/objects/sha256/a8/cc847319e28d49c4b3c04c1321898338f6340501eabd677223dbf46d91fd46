@@ -1,0 +1,145 @@
+# Local Production-v1 L9 Validation Report
+
+Status: **replacement source, build, and automated exact-wheel validation passed; actionable
+verification-readiness reporting is candidate-blocked; CI, native-app retest, and final acceptance
+remain pending**
+
+This report describes the exact unpublished candidate in `candidate-manifest.json`. It is
+post-build evidence and is excluded from the sdist identity. Current results establish the exact
+artifact's automated behavior, but a newly observed readiness-reporting defect blocks candidate
+handoff to the bounded native replacement smoke. They do not authorize extended testing,
+publication, or final Local Production-v1 acceptance.
+
+## Exact candidate
+
+| Artifact | Size | SHA-256 |
+|---|---:|---|
+| `forge_governance-1.0.0-py3-none-any.whl` | 290,619 bytes | `ee87d97fbd805c57edd4b4a0fb45659300bbdb4511c4a160611d426e99813b9b` |
+| `forge_governance-1.0.0.tar.gz` | 769,803 bytes | `44302017f96071d9f7ded4a325158478de464346c104f247b529be203b902c2b` |
+
+The wheel was built from the sdist at clean committed source
+`ce6efa999d7ed421ead1d99bb526f4828db53a31` on Windows 11 with CPython 3.14.4, build 1.5.1, and
+Hatchling 1.31.0. `tools.local_candidate verify` passed after the final build.
+
+## Complete source validation
+
+| Boundary | Result |
+|---|---|
+| Ruff | passed |
+| Strict Pyright 1.1.411 | 0 errors, 0 warnings, 0 information messages |
+| Version consistency | passed; schema `1.0`, 51 public models, 94 CLI commands |
+| Complete pytest suite | 412 passed, 9 skipped in 526.54 seconds |
+| Candidate manifest, names, sizes, metadata, and hashes | passed |
+| Distribution inventory | passed; 660 sdist entries and no `.agents`, `.claude`, `.codex`, or `.forge/local` content |
+
+All nine skips require Windows symbolic-link creation privilege unavailable to this user account.
+They cover explicit symbolic-path rejection cases; the skip reason is visible for every case.
+
+## Exact-wheel installation
+
+Both clean installation modes used the wheel digest above on Windows with CPython 3.14.4.
+
+| Mode | Result | Installed contract |
+|---|---|---|
+| fresh `venv` | passed | `forge==1.0.0`, both packs valid, healthy repository, 51 schemas |
+| isolated `pipx` 1.16.4 | passed | `forge==1.0.0`, both packs valid, healthy repository, 51 schemas |
+
+The resolved runtime inventory was annotated-doc 0.0.5, annotated-types 0.8.0, colorama 0.4.6,
+markdown-it-py 4.2.0, mdurl 0.1.2, pydantic 2.13.4, pydantic-core 2.46.4, Pygments 2.20.0,
+PyYAML 6.0.3, rich 15.0.0, shellingham 1.5.4, typer 0.27.1, typing-extensions 4.16.0, and
+typing-inspection 0.4.2. Dependency resolution remains point-in-time evidence.
+
+## Lifecycle and pack journeys
+
+| Journey | Evidence type | Result |
+|---|---|---|
+| New empty software repository and installation bootstrap | exact-wheel smoke plus complete suite | passed |
+| Existing document discovery and non-destructive initialization | complete suite | passed |
+| Research workflow | exact installed executable; 7 steps and healthy archive | passed |
+| Software workflow | exact installed executable; 6 steps and healthy archive | passed |
+| Warm recap and scratchpad reconciliation | complete suite | passed |
+| Formal pause/resume and drift | complete suite | passed |
+| Claim rejection, revision, staleness, and rework | complete suite plus live dogfood correction | passed |
+| Mid-plan revision classification | protocol/conformance suite | passed |
+| Definition-of-Done scope amendment | complete suite | passed |
+| Interruption and snapshot recovery | procedure rehearsal plus complete suite | passed |
+| Abandonment and immutable non-success archive | procedure rehearsal plus complete suite | passed |
+| Successful closure and archive access | both example workflows plus procedure rehearsal | passed |
+| Fresh-agent successor derivation | procedure rehearsal plus successor suite | passed |
+| Complete backup and restore | procedure rehearsal | passed |
+
+The exact rebuilt-wheel procedure report passed backup, restore, migration, snapshot recovery,
+abandonment, archive access, and successor scenarios. Its deterministic digest is
+`sha256:5562c1589ac7720a36aae8906762f6d53763c271152e3d57d52d06d1d5b93c66`.
+The exact rebuilt wheel also completed the research example's seven steps and the software
+example's six steps with healthy archives. CI release-scenario cells remain pending.
+
+## Performance
+
+All maintained performance tests passed against the exact rebuilt-wheel executable on the primary
+Windows/CPython 3.14 environment.
+
+| Case | p95 | Budget |
+|---|---:|---:|
+| startup | 62.684 ms | 750 ms |
+| active status | 1148.801 ms | 1500 ms |
+| 1,000-event journal replay | 41.797 ms | 200 ms |
+| context generation | 769.941 ms | 1500 ms |
+| archive access | 736.829 ms | 1500 ms |
+
+The report digest is
+`sha256:98c575a2e4ee7c9382cfc5bb21c791542952644afad620597cf5245177941bb5`.
+
+## Security and supply chain
+
+The current review passed all 26 installed dependency-license records, audited 14 runtime packages
+with pip-audit 2.10.1 and found no known vulnerabilities, passed Gitleaks 8.30.1 against complete
+Git history, and passed the 665-file candidate snapshot. One exact historical
+synthetic exception remains. The policy digest is
+`sha256:1002399372c68656663d5905bf68596d6706b5dde24df23450c807ad4f4fd6ec`;
+the final report digest is
+`sha256:e29d12e32133c7094f5a5eee8a892cc0285f5e2209e8cb75244e3ee31821442c`.
+The replacement changes add no dependency or executable capability. The advisory result remains
+point-in-time evidence and the secret scans remain heuristic rather than proof of absence.
+
+## Provider diagnostics and observation boundary
+
+- Codex Desktop exposes its bundled executable through the Windows application package. FORGE's
+  bounded version probe did not complete on this host, so diagnostics failed closed to the manual
+  adapter. Direct native Codex workspace use remains the primary surface and does not depend on
+  managed adapter execution.
+- Claude Code CLI 2.1.207 passed availability and compatibility diagnostics but was not
+  authenticated in the validation shell, so diagnostics also selected the manual adapter.
+- This Codex Desktop task is agent-observed evidence that direct workspace work can inspect and
+  mutate the repository while preserving FORGE receipts and owner gates. It is not labeled
+  owner-observed without the owner's explicit confirmation.
+- Fresh native Codex and Claude Code smoke repositories used the superseded wheel
+  `f047d25365534beafba29cf01ed6f7e82a9a72a8a90de9f85ca8172b3f8b682a`, remained healthy, stopped
+  at `discover:awaiting_verification`, and recorded claims with `direct-codex` and `direct-claude`
+  operator provenance respectively.
+- Refusals for a duplicate governed path, a missing required artifact role, and an active-run scope
+  amendment prerequisite appended no governed events and preserved healthy state.
+- Native smoke exposed candidate-blocking gaps in actionable next-state reporting and the absence
+  of supported pre-initialization pack inspection. The rebuilt wheel passes clean installation,
+  bundled-pack validation, both maintained example workflows, and complete source regression
+  coverage for those fixes. Exact native-app behavior retest remains pending. Details and
+  lower-severity findings are in `friction-report.md`.
+- Both providers added owner-supplied sentinels outside their managed vendor blocks, captured the
+  exact unmanaged bytes, stopped when their first consequence presentations were incomplete or
+  internally inconsistent, corrected those presentations, and executed once after explicit owner
+  authorization. Both sentinels and all unmanaged bytes survived unchanged. Independent history
+  checks confirmed 10 of 10 events and the original sequence-10 journal head hash in each
+  repository. The bounded vendor-file preservation and owner-ceremony test therefore passed in
+  both native applications. The sentinel ceremony has not yet been repeated against the replacement
+  wheel.
+
+## Conclusion
+
+The replacement source, complete suite, build identity, clean `venv` and `pipx` installations,
+example workflows, procedure rehearsal, performance review, and security review passed. The
+candidate is not ready for CI or the two bounded native-app replacement smoke tests because status
+currently reports `verify:verify-release` as ready despite the absence of the required current
+`release-checks-passed` result and binding evidence packet. Read-only inspection confirms the
+verification command would refuse; it was not executed. Correct readiness derivation, regression
+coverage, and a new exact candidate identity are required before the successful vendor-file and
+owner-ceremony observations are repeated.

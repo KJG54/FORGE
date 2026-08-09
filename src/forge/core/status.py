@@ -64,11 +64,7 @@ def inspect_status(
         archived_ids = tuple(summary.initiative_id for summary in archive_summaries)
         if archive_id is not None:
             archived = next(
-                (
-                    archive
-                    for archive in archives
-                    if archive.active.initiative.id == archive_id
-                ),
+                (archive for archive in archives if archive.active.initiative.id == archive_id),
                 None,
             )
             if archived is None:
@@ -113,9 +109,7 @@ def inspect_status(
             initiative=None,
             state=None,
             next_actions=(),
-            blockers=(
-                f"Local FORGE path is irregular or symbolic: {layout.local_directory}",
-            ),
+            blockers=(f"Local FORGE path is irregular or symbolic: {layout.local_directory}",),
             archived_initiative_ids=archived_ids,
             archive_summaries=archive_summaries,
         )
@@ -138,9 +132,7 @@ def inspect_status(
             initiative=None,
             state=None,
             next_actions=(),
-            blockers=(
-                f"Active FORGE path is irregular or symbolic: {layout.active_directory}",
-            ),
+            blockers=(f"Active FORGE path is irregular or symbolic: {layout.active_directory}",),
             archived_initiative_ids=archived_ids,
             archive_summaries=archive_summaries,
         )
@@ -241,9 +233,7 @@ def inspect_status(
     if active.pack_trust.trust_state is PackTrustState.UNTRUSTED:
         from forge.core.scope_amendments import effective_scope_summary
 
-        run_actions = tuple(
-            f"run-cancel:{run_id}" for run_id in active.state.active_run_ids
-        )
+        run_actions = tuple(f"run-cancel:{run_id}" for run_id in active.state.active_run_ids)
         terminal_actions = () if run_actions else ("abandon",)
         return StatusReport(
             repository_state=RepositoryState.INITIALIZED,
@@ -264,16 +254,31 @@ def inspect_status(
             pack_trust_state=active.pack_trust.trust_state,
             effective_scope_summary=effective_scope_summary(active),
         )
-    from forge.core.artifacts import list_artifacts
-    from forge.core.deviations import open_workflow_deviations
-    from forge.core.overrides import list_emergency_overrides
-    from forge.core.risk_acceptances import list_risk_acceptances
+    if active.state.current_artifact_revisions:
+        from forge.core.artifacts import list_artifacts
 
-    artifact_views = list_artifacts(layout)
+        artifact_views = list_artifacts(layout)
+    else:
+        artifact_views = ()
     drifted = tuple(view for view in artifact_views if not view.working_copy_matches)
-    open_deviations = open_workflow_deviations(layout)
-    emergency_overrides = list_emergency_overrides(layout)
-    risk_acceptances = list_risk_acceptances(layout)
+    if layout.workflow_deviation_directory.exists():
+        from forge.core.deviations import open_workflow_deviations
+
+        open_deviations = open_workflow_deviations(layout)
+    else:
+        open_deviations = ()
+    if layout.emergency_override_directory.exists():
+        from forge.core.overrides import list_emergency_overrides
+
+        emergency_overrides = list_emergency_overrides(layout)
+    else:
+        emergency_overrides = ()
+    if layout.risk_acceptance_directory.exists():
+        from forge.core.risk_acceptances import list_risk_acceptances
+
+        risk_acceptances = list_risk_acceptances(layout)
+    else:
+        risk_acceptances = ()
     effective_overrides = tuple(
         override
         for override in emergency_overrides
@@ -293,9 +298,7 @@ def inspect_status(
             )
         accepted_override_ids.add(view.override.id)
     unresolved_overrides = tuple(
-        override
-        for override in effective_overrides
-        if override.id not in accepted_override_ids
+        override for override in effective_overrides if override.id not in accepted_override_ids
     )
     blockers = (
         *(
@@ -309,38 +312,25 @@ def inspect_status(
             for override in unresolved_overrides
         ),
         *(
-        f"Working copy changed for artifact {view.artifact.id}; register an explicit revision"
-        for view in drifted
+            f"Working copy changed for artifact {view.artifact.id}; register an explicit revision"
+            for view in drifted
         ),
     )
     next_actions = (
         *active.state.permitted_next_actions,
-        *(
-            "deviation-review:"
-            f"{view.deviation.id}"
-            for view in open_deviations
-        ),
-        *(
-            f"risk-accept:{override.id}"
-            for override in unresolved_overrides
-        ),
+        *(f"deviation-review:{view.deviation.id}" for view in open_deviations),
+        *(f"risk-accept:{override.id}" for override in unresolved_overrides),
     )
     ready_actions = next_actions
     current_step_id = active.state.current_step_id
     current_step_state = (
-        active.state.step_states.get(current_step_id)
-        if current_step_id is not None
-        else None
+        active.state.step_states.get(current_step_id) if current_step_id is not None else None
     )
     if current_step_id is not None and current_step_state is StepState.IN_PROGRESS:
-        current_step = next(
-            step for step in active.workflow.steps if step.id == current_step_id
-        )
+        current_step = next(step for step in active.workflow.steps if step.id == current_step_id)
         registered_roles = {view.artifact.role for view in artifact_views}
         missing_roles = tuple(
-            role
-            for role in current_step.required_outputs
-            if role not in registered_roles
+            role for role in current_step.required_outputs if role not in registered_roles
         )
         if missing_roles:
             blockers = (
@@ -353,6 +343,46 @@ def inspect_status(
                 *(action for action in next_actions if action != blocked_completion),
                 *(f"artifact-add:{role}" for role in missing_roles),
             )
+    elif current_step_id is not None and current_step_state is StepState.AWAITING_VERIFICATION:
+        from forge.core.verification import inspect_verification_prerequisites
+
+        current_step = next(step for step in active.workflow.steps if step.id == current_step_id)
+        prerequisites = inspect_verification_prerequisites(
+            layout,
+            active=active,
+            step=current_step,
+        )
+        blocked_verification = f"verify:{current_step_id}"
+        other_ready_actions = tuple(
+            action for action in next_actions if action != blocked_verification
+        )
+        if not prerequisites.claims:
+            blockers = (
+                *blockers,
+                f"Step {current_step_id} cannot verify until a current worker claim covers "
+                "the required artifact revisions",
+            )
+            ready_actions = other_ready_actions
+        elif prerequisites.missing_check_ids:
+            blockers = (
+                *blockers,
+                f"Step {current_step_id} cannot verify until required checks pass for current "
+                f"artifact revisions: {list(prerequisites.missing_check_ids)}",
+            )
+            ready_actions = (
+                *other_ready_actions,
+                *(
+                    f"check-record:{current_step_id}:{check_id}"
+                    for check_id in prerequisites.missing_check_ids
+                ),
+            )
+        elif prerequisites.evidence is None:
+            blockers = (
+                *blockers,
+                f"Step {current_step_id} cannot verify until evidence binds current "
+                "artifacts, passing checks, and claim",
+            )
+            ready_actions = (*other_ready_actions, f"evidence-add:{current_step_id}")
     resumption_summary = None
     if active.state.lifecycle_state is InitiativeLifecycleState.PAUSED:
         from forge.core.continuity import build_resumption_summary
@@ -393,12 +423,8 @@ def inspect_status(
         archive_summaries=archive_summaries,
         pack_trust_state=active.pack_trust.trust_state,
         effective_scope_summary=effective_scope_summary(active),
-        open_workflow_deviation_ids=tuple(
-            item.deviation.id for item in open_deviations
-        ),
+        open_workflow_deviation_ids=tuple(item.deviation.id for item in open_deviations),
         emergency_override_ids=tuple(item.id for item in emergency_overrides),
-        risk_acceptance_ids=tuple(
-            item.acceptance.id for item in risk_acceptances
-        ),
+        risk_acceptance_ids=tuple(item.acceptance.id for item in risk_acceptances),
         resumption_summary=resumption_summary,
     )
