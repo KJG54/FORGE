@@ -6,16 +6,16 @@ Deliver and validate a feature-complete personal/local FORGE Production-v1 candi
 
 ## Active step
 
-- ID: `implement`
-- State: `awaiting_acceptance`
-- Purpose: Produce the bounded framework change.
-- Instructions: Change only what the accepted scope authorizes and preserve governed compatibility boundaries.
-- Context selection rules: accepted-scope, release-requirements
+- ID: `verify-release`
+- State: `in_progress`
+- Purpose: Validate the exact candidate change against its release requirements.
+- Instructions: Preserve check and evidence results without treating process success as owner acceptance.
+- Context selection rules: release-requirements, framework-changes
 
 ### Selected required inputs
 
-- `change-scope`: `release/local-production-v1/change-scope.md` (sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102, text/markdown)
 - `release-requirements`: `release/local-production-v1/release-requirements.md` (sha256:624f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8, text/markdown)
+- `framework-changes`: `release/local-production-v1/framework-changes.md` (sha256:e53c92db76272bf9ae857de38fcd4850c834f976fcbed647d1e046d2e2f19eef, text/markdown)
 
 ## Approved scope
 
@@ -23,8 +23,8 @@ Design, implement, document, package, and validate the local FORGE 1.0.0 candida
 
 ## Relevant constraints
 
-- Context selection rule: accepted-scope
 - Context selection rule: release-requirements
+- Context selection rule: framework-changes
 
 ## Relevant decisions
 
@@ -32,7 +32,9 @@ Design, implement, document, package, and validate the local FORGE 1.0.0 candida
 
 ## Permitted actions
 
-- No worker action is currently permitted
+- Create only declared returned files within the approved scope
+- Report worker claims, tool metadata, and limitations without governance approval
+- Use only the selected required-input paths listed in the active step
 
 ## Prohibited actions
 
@@ -43,12 +45,12 @@ Design, implement, document, package, and validate the local FORGE 1.0.0 candida
 
 ## Required outputs
 
-- framework-changes
+- verification-report
 
 ## Expected evidence
 
 - Worker claim requirement: outputs-produced
-- Check requirement after import: implementation-validated
+- Check requirement after import: release-checks-passed
 - Workflow evidence class after import: check-evidence
 - Owner-only acceptance requirement: owner-acceptance
 - Returned files require staged import before registration
@@ -65,4 +67,4 @@ Design, implement, document, package, and validate the local FORGE 1.0.0 candida
 
 ## Known blockers
 
-- Active step is awaiting configured-owner acceptance
+- None
