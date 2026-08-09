@@ -22,9 +22,10 @@ secrets, fix the defect, and establish a new candidate identity before continuin
 The 2026-08-08 Codex and Claude Code smoke runs exercised exact-wheel installation, safe refusal,
 scope amendment, rework, artifact revision, direct-agent claim provenance, and the stop before
 verification. They exposed candidate-blocking actionable-next-state and pre-initialization pack
-inspection defects recorded in `friction-report.md`. Phase 2 is paused until those defects are
-fixed, a replacement exact candidate is validated, and the remaining vendor-file preservation and
-owner-ceremony observations pass against that replacement.
+inspection defects recorded in `friction-report.md`. The bounded vendor-file preservation and
+owner-ceremony observations passed in both applications. Phase 2 is paused until the blockers are
+fixed, a replacement exact candidate is validated, and those successful observations are repeated
+against that replacement.
 
 ## Phase 2 - Representative real-project campaign
 

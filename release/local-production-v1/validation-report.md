@@ -114,16 +114,18 @@ the final report digest is
 - Native smoke exposed candidate-blocking gaps in actionable next-state reporting and the absence
   of supported pre-initialization pack inspection. Details and lower-severity findings are in
   `friction-report.md`.
-- Both providers added owner-supplied sentinels outside their managed vendor blocks and captured
-  the exact unmanaged bytes, then correctly stopped before apply. Their first consequence
-  presentations were incomplete or internally inconsistent about the three generated
-  `.forge/active/context/` files, so authorization, byte-preservation comparison, and the owner's
-  direct ceremony observation remain incomplete. Extended real-work testing is paused under
-  `extended-testing-plan.md`.
+- Both providers added owner-supplied sentinels outside their managed vendor blocks, captured the
+  exact unmanaged bytes, stopped when their first consequence presentations were incomplete or
+  internally inconsistent, corrected those presentations, and executed once after explicit owner
+  authorization. Both sentinels and all unmanaged bytes survived unchanged. Independent history
+  checks confirmed 10 of 10 events and the original sequence-10 journal head hash in each
+  repository. The bounded vendor-file preservation and owner-ceremony test therefore passed in
+  both native applications. Extended real-work testing remains paused under
+  `extended-testing-plan.md` because of the separate candidate blockers.
 
 ## Conclusion
 
 The automated evidence remains valid for the exact candidate, but the candidate is not ready for
 extended testing or final acceptance. Native smoke exposed two candidate blockers that require a
-new implementation and exact candidate identity. The remaining vendor-file and owner-ceremony
+new implementation and exact candidate identity. The successful vendor-file and owner-ceremony
 observations must then be repeated against the replacement candidate.

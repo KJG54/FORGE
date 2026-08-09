@@ -51,10 +51,11 @@ The detailed point-in-time evidence is in
 Fresh native Codex and Claude Code runs used the exact candidate and successfully recorded healthy
 direct-agent discover claims while preserving the stop before verification and acceptance. The
 owner-observed campaign exposed candidate-blocking gaps in actionable next-state reporting and the
-absence of supported pre-initialization pack inspection. Pre-existing vendor-file preservation and direct
-owner ceremony confirmation also remain incomplete. Extended real-project use is paused until the
-blockers are fixed, a replacement exact candidate is validated, and the bounded native smoke is
-repeated. Final Local Production-v1 acceptance remains pending.
+absence of supported pre-initialization pack inspection. Pre-existing vendor-file bytes were
+preserved in both providers after corrected consequence presentation and explicit owner
+authorization, with unchanged governed journal heads. Extended real-project use is paused until
+the blockers are fixed, a replacement exact candidate is validated, and the bounded native smoke
+is repeated. Final Local Production-v1 acceptance remains pending.
 
 The governed requirements revision intentionally invalidated earlier scope support. Current scope
 rework is verified and awaiting a renewed exact configured-owner acceptance. Subsequent implement,
