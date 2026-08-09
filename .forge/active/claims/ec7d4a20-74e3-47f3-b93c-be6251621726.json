@@ -1,0 +1,36 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:97a6b96771f375d21f74aebe875eb720334ca49cb8bef26f9669e19e021728b0"
+  ],
+  "affected_record_ids": [
+    "b5e79103-3340-401d-b586-a9ed8a0036e3"
+  ],
+  "assertion": "Framework changes revision b5e79103-3340-401d-b586-a9ed8a0036e3 truthfully documents the Local Production-v1 implementation, corrects the packaged candidate protocol description to 1.3.0, adds indexed conversational owner-agent walkthroughs, and is supported by the passing fast quality gate, focused protocol/documentation tests, and complete regression suite",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "b5e79103-3340-401d-b586-a9ed8a0036e3"
+  ],
+  "correlation_id": null,
+  "event_sequence": 38,
+  "id": "ec7d4a20-74e3-47f3-b93c-be6251621726",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "The exact wheel and sdist have not yet been rebuilt from the new clean source baseline",
+    "Independent release verification, native-app retesting of the rebuilt wheel, risk review, and owner acceptance remain pending"
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-09T07:02:14.398032Z",
+  "run_id": "c926f84c-7fc7-429d-ac4a-3029e2924b8b",
+  "schema_version": "1.0",
+  "step_id": "implement",
+  "tool_version": "1.0.0"
+}

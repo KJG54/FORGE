@@ -1,0 +1,33 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e53c92db76272bf9ae857de38fcd4850c834f976fcbed647d1e046d2e2f19eef",
+    "sha256:53e0d96a9e1bb660a87b1b8a77ffe5198c8f1676558241d97ba99258f2069248",
+    "sha256:06f32df393961a6362f07e7016a27d8b1c4fb972261f1639b5bbce3dc7860f02"
+  ],
+  "affected_record_ids": [
+    "64dc2984-a966-4eac-931d-fdeb1a555ca4",
+    "64dc2984-a966-4eac-931d-fdeb1a555ca4",
+    "6dafefb5-da08-43be-95aa-1bba43b61d4d",
+    "b6098d49-362d-420c-b516-b6de165dc9cc",
+    "df6c1ae9-9cb8-46a3-b73f-1b4484451eb3"
+  ],
+  "approval_id": "64dc2984-a966-4eac-931d-fdeb1a555ca4",
+  "authorization_basis": "configured owner revoked prior acceptance and invalidated dependent progression",
+  "correlation_id": null,
+  "event_sequence": 34,
+  "id": "b2ee7a26-07f3-4eaf-91ec-d9ed393915f4",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "reason": "Release verification found inaccurate packaged README protocol metadata; the owner authorized implementation rework to correct it and add conversational walkthroughs before rebuilding the exact candidate",
+  "recorded_at": "2026-08-09T06:36:28.160936Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

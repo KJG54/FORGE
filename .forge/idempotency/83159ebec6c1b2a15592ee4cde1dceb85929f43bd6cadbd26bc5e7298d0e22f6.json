@@ -1,0 +1,21 @@
+{
+  "command": "complete",
+  "completed_at": "2026-08-09T07:02:14.828211Z",
+  "events": [
+    {
+      "event_hash": "sha256:70b37cf67be739d57c6e9d8cdcf475ae0b3cd773abb1784f89b23e172bbcc4dc",
+      "event_id": "cdf78d60-2df2-41d2-8e51-aa0d07733be0",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 38
+    },
+    {
+      "event_hash": "sha256:12a6d747e6349b1b1920b0ad6f7812fce9a4eabbbbea2c901aedaf0e5db0dbb7",
+      "event_id": "7cfaf83e-fa5f-4112-95c1-e459889fe5ed",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 39
+    }
+  ],
+  "key": "local-v1-readme-walkthrough-rework-complete-20260809",
+  "request_digest": "sha256:3587c6fd009b970f9bccbcc444f99e8f07d1c223da2bc60fb915841fc9277a49",
+  "schema_version": "1.0"
+}

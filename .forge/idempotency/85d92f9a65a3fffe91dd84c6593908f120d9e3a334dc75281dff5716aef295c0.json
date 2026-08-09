@@ -1,0 +1,15 @@
+{
+  "command": "check_record",
+  "completed_at": "2026-08-09T07:03:11.033059Z",
+  "events": [
+    {
+      "event_hash": "sha256:23fcf7dcb96f01855c2f11ceeaf773fce3966c398ff664b54ebd1da13e35e74b",
+      "event_id": "3e83376e-7155-41ac-afd4-e83cfacc99e7",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 40
+    }
+  ],
+  "key": "local-v1-readme-walkthrough-rework-check-20260809",
+  "request_digest": "sha256:3f2d0a3490f11c9ae3eb66a98186f75f829897a9089fb014d30bece669e15f9f",
+  "schema_version": "1.0"
+}

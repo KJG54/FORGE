@@ -11,6 +11,7 @@ from typing import cast
 
 import pytest
 
+from forge.core.agent_protocol import AGENT_PROTOCOL_VERSION
 from tools.local_candidate import (
     CandidateError,
     inspect_candidate,
@@ -147,3 +148,24 @@ def test_current_candidate_docs_do_not_authorize_publication() -> None:
     assert "unpublished local" in combined
     assert "does not define or authorize a public release" in combined
     assert "extended owner testing" in combined
+
+
+def test_candidate_readme_and_walkthroughs_track_the_installed_protocol() -> None:
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    walkthroughs = (ROOT / "docs" / "conversational-walkthroughs.md").read_text(
+        encoding="utf-8"
+    )
+
+    assert project["project"]["readme"] == "README.md"
+    normalized_readme = readme.replace("\n> ", " ")
+    assert re.search(
+        rf"protocol\s+{re.escape(AGENT_PROTOCOL_VERSION)}", normalized_readme
+    )
+    assert "protocol 1.2.0" not in readme
+    assert "[conversational walkthroughs](docs/conversational-walkthroughs.md)" in readme
+    assert "## Walkthrough 1: Start a new project" in walkthroughs
+    assert "## Walkthrough 2: Resume and complete routine work" in walkthroughs
+    assert "## Walkthrough 3: Recover from a refusal or scope change" in walkthroughs
+    assert "**Owner:**" in walkthroughs
+    assert "**Agent:**" in walkthroughs

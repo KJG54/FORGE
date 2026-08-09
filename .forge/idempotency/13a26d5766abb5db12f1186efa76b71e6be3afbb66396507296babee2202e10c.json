@@ -1,0 +1,15 @@
+{
+  "command": "evidence_add",
+  "completed_at": "2026-08-09T07:03:24.842336Z",
+  "events": [
+    {
+      "event_hash": "sha256:774de04e2f1074e4959753f82a3a8ad008b17e6d71a70e66ba2c0bee8563ae3e",
+      "event_id": "96e2ddda-1b66-42ec-8c23-c9cf400a2d31",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 41
+    }
+  ],
+  "key": "local-v1-readme-walkthrough-rework-evidence-20260809",
+  "request_digest": "sha256:187a33b24339b598fcaaf392717dcca158d0b57c0cebd266ae8d3ce1830f7129",
+  "schema_version": "1.0"
+}

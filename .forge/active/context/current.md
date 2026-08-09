@@ -7,7 +7,7 @@ Deliver and validate a feature-complete personal/local FORGE Production-v1 candi
 ## Active step
 
 - ID: `verify-release`
-- State: `in_progress`
+- State: `ready`
 - Purpose: Validate the exact candidate change against its release requirements.
 - Instructions: Preserve check and evidence results without treating process success as owner acceptance.
 - Context selection rules: release-requirements, framework-changes
@@ -15,7 +15,7 @@ Deliver and validate a feature-complete personal/local FORGE Production-v1 candi
 ### Selected required inputs
 
 - `release-requirements`: `release/local-production-v1/release-requirements.md` (sha256:624f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8, text/markdown)
-- `framework-changes`: `release/local-production-v1/framework-changes.md` (sha256:e53c92db76272bf9ae857de38fcd4850c834f976fcbed647d1e046d2e2f19eef, text/markdown)
+- `framework-changes`: `release/local-production-v1/framework-changes.md` (sha256:97a6b96771f375d21f74aebe875eb720334ca49cb8bef26f9669e19e021728b0, text/markdown)
 
 ## Approved scope
 

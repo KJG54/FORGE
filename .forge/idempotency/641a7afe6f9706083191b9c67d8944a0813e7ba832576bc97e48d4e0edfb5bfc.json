@@ -1,0 +1,15 @@
+{
+  "command": "artifact_revise",
+  "completed_at": "2026-08-09T07:01:22.372389Z",
+  "events": [
+    {
+      "event_hash": "sha256:ae57669d8c652b7b63daee5045bdf53d74d46af239d253407733f7b9fa3ea4b4",
+      "event_id": "afb2c600-37cc-473c-85d4-b60ce4276470",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 36
+    }
+  ],
+  "key": "local-v1-readme-walkthrough-rework-artifact-20260809",
+  "request_digest": "sha256:1dbc320aab8cf7cdb27216fe8e0ba03466ada4f8486b707e1625c9fa310d108f",
+  "schema_version": "1.0"
+}

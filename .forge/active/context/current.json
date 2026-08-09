@@ -15,13 +15,13 @@
         "role": "release-requirements"
       },
       {
-        "content_digest": "sha256:e53c92db76272bf9ae857de38fcd4850c834f976fcbed647d1e046d2e2f19eef",
+        "content_digest": "sha256:97a6b96771f375d21f74aebe875eb720334ca49cb8bef26f9669e19e021728b0",
         "media_type": "text/markdown",
         "path": "release/local-production-v1/framework-changes.md",
         "role": "framework-changes"
       }
     ],
-    "state": "in_progress"
+    "state": "ready"
   },
   "approved_scope": "Design, implement, document, package, and validate the local FORGE 1.0.0 candidate: document-first conversational bootstrap, canonical transaction receipts, a safe local scratchpad and warm recap, per-step mentoring, honest authority/operator provenance, explicit owner-only command ceremony, rejection and plan-change handling, and archive-derived successor briefs. Preserve existing compatibility, security, recovery, exact-byte, replay, idempotency, and archive invariants. Build and test one exact local wheel and sdist, then stop at extended owner testing. Exclude public naming clearance, tags, PyPI/TestPyPI, GitHub Releases, public support channels, publication automation, hosted or multi-user operation, and final owner acceptance.",
   "expected_evidence": [

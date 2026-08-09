@@ -10,10 +10,11 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Unpublished local candidate:** Milestones 1 through 6 are complete and owner-accepted. The
-> replacement Local Production-v1 candidate includes workspace-agent bootstrap and protocol 1.2.0;
-> its exact wheel and sdist passed automated clean-install, lifecycle, security, and performance
-> validation. Native-app owner observations and extended owner testing remain separate. No
-> candidate is tagged, publicly distributed, or finally accepted as Production v1.
+> current replacement Local Production-v1 source includes workspace-agent bootstrap and protocol
+> 1.3.0. Exact artifact identity and validation status are recorded in the
+> [candidate release evidence](release/local-production-v1/README.md). Native-app owner
+> observations and extended owner testing remain separate. No candidate is tagged, publicly
+> distributed, or finally accepted as Production v1.
 
 The current v1 definition is the
 [Local Production-v1 candidate](release/local-production-v1/README.md): a personal, local-first
@@ -46,6 +47,14 @@ worker claim -> check -> evidence -> FORGE verification -> owner acceptance
 
 These stay distinct facts. Green tests never become acceptance by implication, and nothing the
 agent does speaks with your authority.
+
+### Conversational walkthroughs
+
+You do not need to translate your project into FORGE commands before asking an agent for help.
+The [conversational walkthroughs](docs/conversational-walkthroughs.md) show what an ordinary
+owner-agent exchange can look like when starting a project, resuming normal work, or changing
+scope after FORGE refuses an unsafe shortcut. The examples explain where the agent keeps working,
+where it pauses for you, and why a displayed owner command is different from routine agent work.
 
 ## When FORGE is a good fit
 
@@ -148,6 +157,7 @@ The complete capability record, with per-increment evidence, lives in the
 Start at the [documentation index](docs/README.md), which routes by audience. Frequently used:
 
 - [Your first FORGE project](docs/quickstart.md)
+- [Conversational walkthroughs](docs/conversational-walkthroughs.md)
 - [User guide](docs/user-guide/README.md)
 - [Canonical glossary](docs/glossary.md)
 - [Constitution](docs/constitution.md)
