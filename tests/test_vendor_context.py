@@ -264,6 +264,14 @@ def test_vendor_cli_previews_then_requires_apply(tmp_path: Path) -> None:
     )
     assert preview.exit_code == 0
     assert "Action: create" in preview.stdout
+    assert "Apply may persistently write or replace these derived files:" in preview.stdout
+    assert str(tmp_path / "AGENTS.md") in preview.stdout
+    assert str(tmp_path / ".forge" / "active" / "context" / "current.json") in preview.stdout
+    assert "agent-protocol-1.3.0.md" in preview.stdout
+    assert "mutation.lock" in preview.stdout
+    assert "every byte outside the FORGE managed markers" in preview.stdout
+    assert "Governed journal effect: none" in preview.stdout
+    assert "owner-directed derived-file mutation" in preview.stdout
     assert "Preview only" in preview.stdout
     assert not (tmp_path / "AGENTS.md").exists()
 

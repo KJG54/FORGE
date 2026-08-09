@@ -59,6 +59,28 @@ def test_init_reports_conflict_without_traceback(tmp_path: Path) -> None:
     assert "Traceback" not in result.stderr
 
 
+def test_bundled_pack_inspection_works_before_initialization(tmp_path: Path) -> None:
+    listed = runner.invoke(app, ["pack", "list", "-C", str(tmp_path)])
+
+    assert listed.exit_code == 0, listed.stdout
+    assert "Repository: uninitialized" in listed.stdout
+    assert "software-basic 0.5.0 (bundled" in listed.stdout
+
+    inspected = runner.invoke(
+        app,
+        ["pack", "inspect", "software-basic", "-C", str(tmp_path)],
+    )
+
+    assert inspected.exit_code == 0, inspected.stdout
+    assert "Pack: software-basic@0.5.0 (bundled" in inspected.stdout
+    assert "- discover: required_inputs=none" in inspected.stdout
+    assert "required_outputs=objective-and-constraints, requirements" in inspected.stdout
+    assert "Valid scope-amendment requirement IDs:" in inspected.stdout
+    assert "  - requirements" in inspected.stdout
+    assert not (tmp_path / "forge.yaml").exists()
+    assert not (tmp_path / ".forge").exists()
+
+
 def test_pack_create_status_next_and_begin_commands(tmp_path: Path) -> None:
     initialized = runner.invoke(
         app,
@@ -129,7 +151,10 @@ def test_pack_create_status_next_and_begin_commands(tmp_path: Path) -> None:
     assert "Integrity: healthy" in status.stdout
     assert "Step discover: in_progress" in status.stdout
     assert "Active run:" in status.stdout
-    assert "Next: complete:discover" in status.stdout
+    assert "Legal next: complete:discover" in status.stdout
+    assert "Ready now: artifact-add:objective-and-constraints" in status.stdout
+    assert "Ready now: artifact-add:requirements" in status.stdout
+    assert "cannot complete until required artifact roles" in status.stdout
 
 
 def _line_value(output: str, prefix: str) -> str:

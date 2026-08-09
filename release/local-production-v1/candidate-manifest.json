@@ -3,10 +3,10 @@
   "status": "unpublished-local-candidate",
   "distribution": "forge-governance",
   "version": "1.0.0",
-  "built_at_utc": "2026-08-08T19:38:59Z",
+  "built_at_utc": "2026-08-09T03:50:37Z",
   "build": {
     "command": "python -m build --no-isolation --outdir dist/local-production-v1",
-    "source_baseline_commit": "f167b26852041bccc3b686845bda29dc70eaec54",
+    "source_baseline_commit": "882ebbcbc2fa68229a518da8fc6622b5bb581330",
     "source_state": "clean committed candidate source; tracked manifest, checksum, and post-build evidence records excluded from sdist",
     "python": "3.14.4",
     "platform": "Windows-11-10.0.26200-SP0",
@@ -18,28 +18,28 @@
     {
       "type": "wheel",
       "filename": "forge_governance-1.0.0-py3-none-any.whl",
-      "sha256": "f047d25365534beafba29cf01ed6f7e82a9a72a8a90de9f85ca8172b3f8b682a",
-      "size_bytes": 288251
+      "sha256": "407b7ae06012f045852313d7e2fc9f3f7282e262e3c78f0aa39f0205508041de",
+      "size_bytes": 290435
     },
     {
       "type": "sdist",
       "filename": "forge_governance-1.0.0.tar.gz",
-      "sha256": "882ddeecee77750dc2aec931d2e52df2e414f6449bc7bd68866ad4782786f9bc",
-      "size_bytes": 742834
+      "sha256": "034a396aa17b74fab09bfe9e48de71173211e3bf867954f884f7f3544110ee47",
+      "size_bytes": 750467
     }
   ],
   "downstream_installation": {
     "artifact_type": "wheel",
     "filename": "forge_governance-1.0.0-py3-none-any.whl",
-    "sha256": "f047d25365534beafba29cf01ed6f7e82a9a72a8a90de9f85ca8172b3f8b682a"
+    "sha256": "407b7ae06012f045852313d7e2fc9f3f7282e262e3c78f0aa39f0205508041de"
   },
   "publication": {
     "authorized": false,
     "tag_created": false
   },
   "validation": {
-    "complete_phase": "L9 automated candidate validation",
-    "next_phase": "owner-observed native-app and extended testing",
+    "complete_phase": "replacement candidate source, build, and installation validation",
+    "next_phase": "CI matrix and replacement-wheel owner-observed native-app retest",
     "final_owner_acceptance": false
   }
 }

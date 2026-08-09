@@ -1,6 +1,6 @@
 # FORGE Direct Workspace-Agent Protocol
 
-Protocol version: `1.2.0`
+Protocol version: `1.3.0`
 
 ## Purpose and boundary
 
@@ -37,6 +37,9 @@ authority to approve, verify, accept, close, abandon, or mutate governed state.
    FORGE is installed. First complete the applicable interview and owner-confirmation playback.
 5. If repository state is malformed, ambiguous, unhealthy, or interrupted, stop bootstrap and
    present the diagnostic and safest read-only next action. Do not repair state by editing `.forge/`.
+6. Before initialization, use `forge pack list` and `forge pack inspect <pack-id>` to inspect only
+   installed bundled, validated data. These read-only commands expose workflow steps, required
+   artifact roles, and valid symbolic requirement IDs without trusting the pack or creating state.
 
 ## Document-first interview
 
@@ -86,11 +89,13 @@ execution. Ask for explicit confirmation and never broaden the confirmed objecti
 
 ## Bootstrap next action
 
-After creation, run `forge doctor`, `forge status`, and
-`forge agent context --target <codex|claude> --apply` for the active provider. Read the generated
-protocol and canonical context. Quote the initiative ID, locked versions, active step, blockers,
-and legal next action. Propose exactly one next action and never imply acceptance beyond recorded
-owner actions.
+After creation, run `forge doctor` and `forge status`, then preview
+`forge agent context --target <codex|claude>` for the active provider. Show the complete persistent
+write set, temporary lock path, managed-marker preservation boundary, and zero-journal-event effect.
+Apply only after the owner explicitly directs that displayed derived-file mutation. Read the
+generated protocol and canonical context. Quote the initiative ID, locked versions, active step,
+blockers, legal next action, and currently executable action. Propose exactly one next action and
+never imply acceptance beyond recorded owner actions.
 
 ## Daily labor split
 
@@ -99,6 +104,17 @@ FORGE mechanics permitted by the accepted step. Owner-personal actions are initi
 trust, initiative or successor creation, acceptance or revocation, pause or resume, decisions,
 scope amendment, deviation or override review, capability or risk approval, recovery or migration,
 closure, and abandonment.
+
+`forge agent context --target <codex|claude> --apply` is preview-required, owner-directed
+derived-file maintenance, not a governed owner decision. The preview must identify the vendor file,
+both canonical context views, installed protocol copy, temporary mutation lock, byte-preservation
+boundary, and absence of a governed journal event. The owner may run the exact apply command or
+explicitly direct the workspace agent to run it.
+
+A workspace agent may cancel only the active run that represents its own current work, after
+displaying the exact `forge run cancel <run-uuid> --reason "<reason>"` command and its reset or
+owner-review consequence. Cancelling another worker's run or a run whose operator cannot be
+established is owner-directed. Same-user access and caller labels are never proof of authority.
 
 At an owner gate, present the exact command and consequence. The owner may run it personally or
 explicitly direct the agent to run it. Record authority and operator provenance separately. The
@@ -136,7 +152,10 @@ the resulting full command before asking for confirmation.
   immutable decision and grants no unstated authority.
 - Scope amendment: `forge scope amend --scope "<complete-new-scope>" --rationale
   "<owner-rationale>" --return-to <step-id> --requirement <requirement-id>` replaces effective scope
-  and invalidates derived work at the declared return point.
+  and invalidates derived work at the declared return point. First run read-only
+  `forge pack inspect <locked-pack-id>` to obtain exact valid IDs and `forge status` to identify
+  active runs; cancel every run affected by the proposed return point before presenting the
+  amendment command.
 - Deviation review: `forge deviation review <deviation-uuid> --option "<considered-option>"
   --outcome "<chosen-outcome>" --rationale "<owner-rationale>"` records review without erasing the
   deviation or waiving unrelated requirements.

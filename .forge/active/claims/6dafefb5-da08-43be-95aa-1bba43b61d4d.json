@@ -1,0 +1,37 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e53c92db76272bf9ae857de38fcd4850c834f976fcbed647d1e046d2e2f19eef"
+  ],
+  "affected_record_ids": [
+    "abeeeb69-83eb-4466-8afc-e9c7940421eb"
+  ],
+  "assertion": "The Local Production-v1 implementation and native-smoke correction set are present in the registered framework-changes revision and preserve the accepted compatibility, safety, authority, and packaging boundaries.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "abeeeb69-83eb-4466-8afc-e9c7940421eb"
+  ],
+  "correlation_id": null,
+  "event_sequence": 25,
+  "id": "6dafefb5-da08-43be-95aa-1bba43b61d4d",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "Independent verify-release checks, evidence registration, verification, risk review, and owner acceptance remain pending.",
+    "The exact replacement candidate must be built from the clean committed source and retested in native Codex and Claude applications.",
+    "Nine Windows symbolic-link rejection fixtures remain skipped because this user account lacks symbolic-link creation privilege."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-09T03:46:51.896519Z",
+  "run_id": "1db61c9a-adc1-43a3-84e6-0580a2205794",
+  "schema_version": "1.0",
+  "step_id": "implement",
+  "tool_version": "1.0.0"
+}

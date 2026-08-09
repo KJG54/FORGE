@@ -82,7 +82,8 @@ def test_pause_and_resume_survive_restart_with_durable_summary(tmp_path: Path) -
     status = runner.invoke(app, ["status", "-C", str(tmp_path)])
     assert status.exit_code == 0, status.output
     assert "Lifecycle: paused" in status.stdout
-    assert "Next: resume" in status.stdout
+    assert "Legal next: resume" in status.stdout
+    assert "Ready now: resume" in status.stdout
     assert "Blocker: Initiative paused: Waiting for owner review" in status.stdout
     history = runner.invoke(app, ["history", "-C", str(tmp_path)])
     assert history.exit_code == 0, history.output

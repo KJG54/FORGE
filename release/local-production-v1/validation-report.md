@@ -1,22 +1,23 @@
 # Local Production-v1 L9 Validation Report
 
-Status: **automated candidate validation passed; native-app smoke exposed candidate blockers;
-final acceptance prohibited**
+Status: **replacement source, build, and installation validation passed; CI matrix, native-app
+replacement retest, and final acceptance remain pending**
 
 This report describes the exact unpublished candidate in `candidate-manifest.json`. It is
-post-build evidence and is excluded from the sdist identity. Passing results establish readiness
-for owner-observed and extended testing; they do not authorize publication or establish final
-Local Production-v1 acceptance.
+post-build evidence and is excluded from the sdist identity. Current results establish readiness
+for CI and the bounded native replacement smoke; they do not yet authorize extended testing,
+publication, or final Local Production-v1 acceptance.
 
 ## Exact candidate
 
 | Artifact | Size | SHA-256 |
 |---|---:|---|
-| `forge_governance-1.0.0-py3-none-any.whl` | 288,251 bytes | `f047d25365534beafba29cf01ed6f7e82a9a72a8a90de9f85ca8172b3f8b682a` |
-| `forge_governance-1.0.0.tar.gz` | 742,834 bytes | `882ddeecee77750dc2aec931d2e52df2e414f6449bc7bd68866ad4782786f9bc` |
+| `forge_governance-1.0.0-py3-none-any.whl` | 290,435 bytes | `407b7ae06012f045852313d7e2fc9f3f7282e262e3c78f0aa39f0205508041de` |
+| `forge_governance-1.0.0.tar.gz` | 750,467 bytes | `034a396aa17b74fab09bfe9e48de71173211e3bf867954f884f7f3544110ee47` |
 
-The wheel was built from the sdist on Windows 11 with CPython 3.14.4, build 1.5.1, and Hatchling
-1.31.0. `tools.local_candidate verify` passed after the final build.
+The wheel was built from the sdist at clean committed source
+`882ebbcbc2fa68229a518da8fc6622b5bb581330` on Windows 11 with CPython 3.14.4, build 1.5.1, and
+Hatchling 1.31.0. `tools.local_candidate verify` passed after the final build.
 
 ## Complete source validation
 
@@ -25,9 +26,9 @@ The wheel was built from the sdist on Windows 11 with CPython 3.14.4, build 1.5.
 | Ruff | passed |
 | Strict Pyright 1.1.411 | 0 errors, 0 warnings, 0 information messages |
 | Version consistency | passed; schema `1.0`, 51 public models, 94 CLI commands |
-| Complete pytest suite | 409 passed, 9 skipped in 526.02 seconds |
+| Complete pytest suite | 410 passed, 9 skipped in 510.21 seconds |
 | Candidate manifest, names, sizes, metadata, and hashes | passed |
-| Distribution inventory | passed; 617 sdist entries and no `.agents`, `.claude`, `.codex`, or `.forge/local` content |
+| Distribution inventory | passed; 624 sdist entries and no `.agents`, `.claude`, `.codex`, or `.forge/local` content |
 
 All nine skips require Windows symbolic-link creation privilege unavailable to this user account.
 They cover explicit symbolic-path rejection cases; the skip reason is visible for every case.
@@ -65,14 +66,17 @@ typing-inspection 0.4.2. Dependency resolution remains point-in-time evidence.
 | Fresh-agent successor derivation | procedure rehearsal plus successor suite | passed |
 | Complete backup and restore | procedure rehearsal | passed |
 
-The maintained procedure report passed backup, restore, migration, snapshot recovery,
-abandonment, archive access, and successor scenarios. Its digest is
+The predecessor candidate's maintained procedure report passed backup, restore, migration,
+snapshot recovery, abandonment, archive access, and successor scenarios. Its digest is
 `sha256:5562c1589ac7720a36aae8906762f6d53763c271152e3d57d52d06d1d5b93c66`.
+The complete replacement-source suite passed the corresponding maintained tests; exact replacement
+wheel procedure rehearsal and CI release-scenario cells remain pending.
 
 ## Performance
 
-All cases passed the maintained Windows budgets in an isolated run against the exact installed
-wheel.
+The table below is the superseded candidate's exact-wheel baseline. All maintained performance
+tests passed for the replacement source in the complete suite; a new exact-wheel performance report
+remains pending before verification.
 
 | Case | p95 | Budget |
 |---|---:|---:|
@@ -87,13 +91,15 @@ The report digest is
 
 ## Security and supply chain
 
-The final review passed all 26 installed dependency-license records, audited 14 runtime packages
-with pip-audit 2.10.1 and found no known vulnerabilities, passed Gitleaks 8.30.1 against complete
-Git history, and passed the 622-file candidate snapshot. One exact historical synthetic exception
-remains. The policy digest is
+The predecessor candidate review passed all 26 installed dependency-license records, audited 14
+runtime packages with pip-audit 2.10.1 and found no known vulnerabilities, passed Gitleaks 8.30.1
+against complete Git history, and passed the 622-file candidate snapshot. One exact historical
+synthetic exception remains. The policy digest is
 `sha256:1002399372c68656663d5905bf68596d6706b5dde24df23450c807ad4f4fd6ec`;
 the final report digest is
 `sha256:4dba754a30e0b6096cb489d093aa628defc53cde3748f0ab75de7d3db7371631`.
+The replacement changes add no dependency or executable capability. The exact replacement snapshot
+and current Git history still require the release security-review rerun before verification.
 
 ## Provider diagnostics and observation boundary
 
@@ -106,26 +112,29 @@ the final report digest is
 - This Codex Desktop task is agent-observed evidence that direct workspace work can inspect and
   mutate the repository while preserving FORGE receipts and owner gates. It is not labeled
   owner-observed without the owner's explicit confirmation.
-- Fresh native Codex and Claude Code smoke repositories both used the exact recorded wheel, remained
-  healthy, stopped at `discover:awaiting_verification`, and recorded claims with `direct-codex` and
-  `direct-claude` operator provenance respectively.
+- Fresh native Codex and Claude Code smoke repositories used the superseded wheel
+  `f047d25365534beafba29cf01ed6f7e82a9a72a8a90de9f85ca8172b3f8b682a`, remained healthy, stopped
+  at `discover:awaiting_verification`, and recorded claims with `direct-codex` and `direct-claude`
+  operator provenance respectively.
 - Refusals for a duplicate governed path, a missing required artifact role, and an active-run scope
   amendment prerequisite appended no governed events and preserved healthy state.
 - Native smoke exposed candidate-blocking gaps in actionable next-state reporting and the absence
-  of supported pre-initialization pack inspection. Details and lower-severity findings are in
-  `friction-report.md`.
+  of supported pre-initialization pack inspection. The exact replacement wheel now passes a bounded
+  CLI behavior smoke for both fixes and the complete context-apply consequence preview. Details and
+  lower-severity findings are in `friction-report.md`.
 - Both providers added owner-supplied sentinels outside their managed vendor blocks, captured the
   exact unmanaged bytes, stopped when their first consequence presentations were incomplete or
   internally inconsistent, corrected those presentations, and executed once after explicit owner
   authorization. Both sentinels and all unmanaged bytes survived unchanged. Independent history
   checks confirmed 10 of 10 events and the original sequence-10 journal head hash in each
   repository. The bounded vendor-file preservation and owner-ceremony test therefore passed in
-  both native applications. Extended real-work testing remains paused under
-  `extended-testing-plan.md` because of the separate candidate blockers.
+  both native applications. The sentinel ceremony has not yet been repeated against the replacement
+  wheel.
 
 ## Conclusion
 
-The automated evidence remains valid for the exact candidate, but the candidate is not ready for
-extended testing or final acceptance. Native smoke exposed two candidate blockers that require a
-new implementation and exact candidate identity. The successful vendor-file and owner-ceremony
-observations must then be repeated against the replacement candidate.
+The replacement source, complete suite, build identity, clean `venv` and `pipx` installations, and
+bounded installed-wheel behavior smoke passed. The candidate is ready for CI and the two bounded
+native-app replacement smoke tests, but it is not ready for final acceptance. Exact-wheel procedure,
+performance, and security evidence must be refreshed before FORGE verification; the successful
+vendor-file and owner-ceremony observations must be repeated against the replacement wheel.

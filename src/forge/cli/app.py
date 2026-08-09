@@ -95,6 +95,7 @@ from forge.core.risk_acceptances import (
 from forge.core.runs import cancel_run, list_runs, show_run
 from forge.core.scope_amendments import (
     amend_scope,
+    known_workflow_requirement_ids,
     list_scope_amendments,
     show_scope_amendment,
 )
@@ -122,8 +123,8 @@ from forge.core.verification import (
     verify_step,
 )
 from forge.errors import ConfigurationError, ConflictError, ForgeError
-from forge.packs.loader import available_packs, find_pack
-from forge.packs.validation import PackResource, PackResourceKind
+from forge.packs.loader import available_packs, bundled_packs, find_pack
+from forge.packs.validation import PackResource, PackResourceKind, ValidatedPack
 from forge.schemas import export_schema_bundle
 from forge.storage.configuration import load_configuration, render_configuration
 from forge.storage.idempotency import idempotent_mutation, normalize_idempotency_key
@@ -566,10 +567,35 @@ def agent_context(
         typer.echo(f"Neutral context digest: {preview.context_digest}")
         typer.echo(f"Protocol version: {preview.protocol_version}")
         typer.echo(f"Protocol digest: {preview.protocol_digest}")
+        typer.echo("Apply may persistently write or replace these derived files:")
+        for path in (
+            preview.path,
+            layout.current_agent_context_json_file,
+            layout.current_agent_context_markdown_file,
+            layout.agent_context_directory
+            / f"agent-protocol-{preview.protocol_version}.md",
+        ):
+            typer.echo(f"- {path}")
+        typer.echo(
+            "Temporary coordination file during apply: "
+            f"{layout.lock_directory / 'mutation.lock'} (removed after a normal exit)"
+        )
+        typer.echo(
+            "Preservation boundary: every byte outside the FORGE managed markers in the "
+            "vendor file must remain unchanged"
+        )
+        typer.echo("Governed journal effect: none; derived context does not record acceptance")
+        typer.echo(
+            "Authority: preview-required, owner-directed derived-file mutation; the owner may "
+            "run it or explicitly direct the workspace agent to run it"
+        )
         typer.echo("Managed block preview:")
         typer.echo(preview.managed_block.decode("utf-8"), nl=False)
         if not apply_changes:
-            typer.echo("Preview only; rerun with --apply to confirm this vendor-file change")
+            typer.echo(
+                "Preview only; rerun with --apply only after the owner directs the complete "
+                "displayed change"
+            )
             return
         applied = apply_vendor_context(
             layout,
@@ -978,19 +1004,71 @@ def list_packs(
         typer.Option("--directory", "-C", help="Repository or child directory to inspect."),
     ] = Path("."),
 ) -> None:
-    """List safe-YAML packs after full conformance and digest validation."""
+    """List validated packs; before initialization, list installed bundled packs."""
     try:
-        layout = discover_repository(directory)
-        configuration = load_configuration(layout.configuration_file)
-        packs = available_packs(layout, configuration)
+        packs, initialized = _packs_for_inspection(directory)
     except ForgeError as error:
         _fail(error)
         return
+    if not initialized:
+        typer.echo("Repository: uninitialized; showing installed bundled packs only")
     for pack in packs:
         source = "bundled" if pack.bundled else "local"
         typer.echo(
             f"{pack.manifest.id} {pack.manifest.version} ({source}, untrusted until owner use)"
         )
+
+
+def _packs_for_inspection(
+    directory: Path,
+) -> tuple[tuple[ValidatedPack, ...], bool]:
+    try:
+        layout = discover_repository(directory)
+    except ConfigurationError as error:
+        if "No initialized FORGE repository found" not in str(error):
+            raise
+        return bundled_packs(), False
+    configuration = load_configuration(layout.configuration_file)
+    return available_packs(layout, configuration), True
+
+
+def _find_inspectable_pack(directory: Path, pack_id: str) -> tuple[ValidatedPack, bool]:
+    packs, initialized = _packs_for_inspection(directory)
+    matches = [pack for pack in packs if pack.manifest.id == pack_id.strip()]
+    if not matches:
+        raise ConfigurationError(f"No validated pack named {pack_id!r} is available")
+    if len(matches) > 1:
+        versions = [pack.manifest.version for pack in matches]
+        raise ConflictError(f"Pack {pack_id!r} is ambiguous across versions: {versions}")
+    return matches[0], initialized
+
+
+def _echo_pack_definition(
+    pack: ValidatedPack,
+    *,
+    source_label: str | None = None,
+) -> None:
+    source = source_label or ("bundled" if pack.bundled else "local")
+    typer.echo(
+        f"Pack: {pack.manifest.id}@{pack.manifest.version} "
+        f"({source}, {pack.manifest.integrity_digest})"
+    )
+    typer.echo("Workflows:")
+    for workflow in pack.workflows:
+        typer.echo(f"- {workflow.id}@{workflow.version}: {workflow.description}")
+        typer.echo("  Steps:")
+        for step in workflow.steps:
+            inputs = ", ".join(step.required_inputs) or "none"
+            outputs = ", ".join(step.required_outputs) or "none"
+            typer.echo(
+                f"  - {step.id}: required_inputs={inputs}; required_outputs={outputs}"
+            )
+        requirement_ids = sorted(known_workflow_requirement_ids(workflow))
+        typer.echo("  Valid scope-amendment requirement IDs:")
+        if not requirement_ids:
+            typer.echo("  - none")
+        for requirement_id in requirement_ids:
+            typer.echo(f"  - {requirement_id}")
 
 
 @pack_app.command("validate")
@@ -1003,9 +1081,7 @@ def validate_pack_command(
 ) -> None:
     """Validate one pack as data without trusting or executing it."""
     try:
-        layout = discover_repository(directory)
-        configuration = load_configuration(layout.configuration_file)
-        pack = find_pack(layout, configuration, pack_id)
+        pack, initialized = _find_inspectable_pack(directory, pack_id)
     except ForgeError as error:
         _fail(error)
         return
@@ -1013,13 +1089,24 @@ def validate_pack_command(
         f"Valid data pack {pack.manifest.id} {pack.manifest.version} "
         f"({pack.manifest.integrity_digest})"
     )
+    if not initialized:
+        typer.echo("Repository: uninitialized; validated installed bundled data only")
 
 
 def _select_pack_resources(
     directory: Path,
     pack_id: str,
 ) -> tuple[tuple[PackResource, ...], str]:
-    layout = discover_repository(directory)
+    try:
+        layout = discover_repository(directory)
+    except ConfigurationError as error:
+        if "No initialized FORGE repository found" not in str(error):
+            raise
+        available, _initialized = _find_inspectable_pack(directory, pack_id)
+        return available.resources, (
+            f"bundled {available.manifest.id}@{available.manifest.version} "
+            "(repository uninitialized)"
+        )
     if layout.initiative_file.exists():
         active = load_active_initiative(
             layout,
@@ -1181,16 +1268,25 @@ def inspect_pack_command(
         typer.Option("--directory", "-C", help="Repository or child directory to inspect."),
     ] = Path("."),
 ) -> None:
-    """Inspect validated pack data and immutable active-initiative trust history."""
+    """Inspect pack workflows and IDs, plus active trust history when initialized."""
     try:
-        layout = discover_repository(directory)
+        try:
+            layout = discover_repository(directory)
+        except ConfigurationError as error:
+            if "No initialized FORGE repository found" not in str(error):
+                raise
+            available, _initialized = _find_inspectable_pack(directory, pack_id)
+            _echo_pack_definition(available)
+            typer.echo("Repository: uninitialized; showing installed bundled data only")
+            typer.echo("Active trust history: none; no active initiative")
+            return
         if not layout.initiative_file.exists():
-            configuration = load_configuration(layout.configuration_file)
-            available = find_pack(layout, configuration, pack_id)
-            typer.echo(
-                f"Available pack: {available.manifest.id}@{available.manifest.version} "
-                f"({available.manifest.integrity_digest})"
+            available = find_pack(
+                layout,
+                load_configuration(layout.configuration_file),
+                pack_id,
             )
+            _echo_pack_definition(available)
             typer.echo("Active trust history: none; no active initiative")
             return
         active = load_active_initiative(
@@ -1199,17 +1295,24 @@ def inspect_pack_command(
             allow_untrusted_pack=True,
         )
         if active.pack_manifest.id != pack_id.strip():
-            configuration = load_configuration(layout.configuration_file)
-            available = find_pack(layout, configuration, pack_id)
-            typer.echo(
-                f"Available pack: {available.manifest.id}@{available.manifest.version} "
-                f"({available.manifest.integrity_digest})"
+            available = find_pack(
+                layout,
+                load_configuration(layout.configuration_file),
+                pack_id,
             )
+            _echo_pack_definition(available)
             typer.echo(
                 f"Active initiative locks different pack: {active.pack_manifest.id}@"
                 f"{active.pack_manifest.version}"
             )
             return
+        locked = ValidatedPack(
+            source_path=layout.active_directory,
+            manifest=active.pack_manifest,
+            workflows=(active.workflow,),
+            resources=active.pack_resources,
+        )
+        _echo_pack_definition(locked, source_label="locked")
         events = read_journal(layout.event_journal_file)
         initial = load_record(layout.pack_trust_file, PackTrustDecision)
         history = pack_trust_history(layout, initial, events)
@@ -1535,7 +1638,9 @@ def status(
     if report.resumption_summary is not None:
         typer.echo(f"Resumption summary: {report.resumption_summary}")
     for action in report.next_actions:
-        typer.echo(f"Next: {action}")
+        typer.echo(f"Legal next: {action}")
+    for action in report.executable_actions:
+        typer.echo(f"Ready now: {action}")
     for blocker in report.blockers:
         typer.echo(f"Blocker: {blocker}")
 
@@ -1606,6 +1711,12 @@ def recap(
             typer.echo(f"- {action}")
     else:
         typer.echo("Legal next actions: none")
+    if status_report.executable_actions:
+        typer.echo("Executable now:")
+        for action in status_report.executable_actions:
+            typer.echo(f"- {action}")
+    else:
+        typer.echo("Executable now: none")
 
     typer.echo("")
     typer.echo("Local scratchpad (mutable, ungoverned, advisory; never authority or evidence)")
@@ -2054,15 +2165,15 @@ def next_actions(
         typer.Option("--directory", "-C", help="Repository or child directory to inspect."),
     ] = Path("."),
 ) -> None:
-    """Display legal next actions and blockers without mutation."""
+    """Display executable actions, legal transitions, and blockers without mutation."""
     try:
         layout = discover_repository(directory)
         report = inspect_status(layout)
     except ForgeError as error:
         _fail(error)
         return
-    if report.next_actions:
-        for action in report.next_actions:
+    if report.executable_actions:
+        for action in report.executable_actions:
             presentation = owner_action_presentation(action)
             if presentation is None:
                 typer.echo(action)
@@ -2075,7 +2186,10 @@ def next_actions(
                 "caller attribution is not authentication."
             )
     else:
-        typer.echo("No legal next actions")
+        typer.echo("No actions are executable now")
+    if report.executable_actions != report.next_actions:
+        for action in report.next_actions:
+            typer.echo(f"Legal after prerequisites: {action}")
     for blocker in report.blockers:
         typer.echo(f"Blocker: {blocker}")
 

@@ -13,6 +13,7 @@ from forge.contracts.state import (
     IntegrityState,
     MaterializedState,
     RepositoryState,
+    StepState,
 )
 from forge.core.archival import ArchiveSummary
 from forge.core.lifecycle import load_active_initiative
@@ -29,6 +30,7 @@ class StatusReport:
     state: MaterializedState | None
     next_actions: tuple[str, ...]
     blockers: tuple[str, ...] = ()
+    ready_actions: tuple[str, ...] | None = None
     archived_initiative_ids: tuple[UUID, ...] = ()
     selected_archive_id: UUID | None = None
     archive_manifest: ArchiveManifest | None = None
@@ -41,6 +43,12 @@ class StatusReport:
     emergency_override_ids: tuple[UUID, ...] = ()
     risk_acceptance_ids: tuple[UUID, ...] = ()
     resumption_summary: str | None = None
+
+    @property
+    def executable_actions(self) -> tuple[str, ...]:
+        """Actions executable now; absent overrides mean every legal action is ready."""
+
+        return self.next_actions if self.ready_actions is None else self.ready_actions
 
 
 def inspect_status(
@@ -261,7 +269,8 @@ def inspect_status(
     from forge.core.overrides import list_emergency_overrides
     from forge.core.risk_acceptances import list_risk_acceptances
 
-    drifted = tuple(view for view in list_artifacts(layout) if not view.working_copy_matches)
+    artifact_views = list_artifacts(layout)
+    drifted = tuple(view for view in artifact_views if not view.working_copy_matches)
     open_deviations = open_workflow_deviations(layout)
     emergency_overrides = list_emergency_overrides(layout)
     risk_acceptances = list_risk_acceptances(layout)
@@ -316,6 +325,34 @@ def inspect_status(
             for override in unresolved_overrides
         ),
     )
+    ready_actions = next_actions
+    current_step_id = active.state.current_step_id
+    current_step_state = (
+        active.state.step_states.get(current_step_id)
+        if current_step_id is not None
+        else None
+    )
+    if current_step_id is not None and current_step_state is StepState.IN_PROGRESS:
+        current_step = next(
+            step for step in active.workflow.steps if step.id == current_step_id
+        )
+        registered_roles = {view.artifact.role for view in artifact_views}
+        missing_roles = tuple(
+            role
+            for role in current_step.required_outputs
+            if role not in registered_roles
+        )
+        if missing_roles:
+            blockers = (
+                *blockers,
+                f"Step {current_step_id} cannot complete until required artifact roles are "
+                f"registered: {list(missing_roles)}",
+            )
+            blocked_completion = f"complete:{current_step_id}"
+            ready_actions = (
+                *(action for action in next_actions if action != blocked_completion),
+                *(f"artifact-add:{role}" for role in missing_roles),
+            )
     resumption_summary = None
     if active.state.lifecycle_state is InitiativeLifecycleState.PAUSED:
         from forge.core.continuity import build_resumption_summary
@@ -330,15 +367,18 @@ def inspect_status(
             raise IntegrityError("Paused initiative lacks a valid governing pause reason")
         blockers = (f"Initiative paused: {reason}", *blockers)
         next_actions = ("resume",)
+        ready_actions = next_actions
         resumption_summary = build_resumption_summary(layout)
     elif drifted:
         next_actions = tuple(f"artifact-revise:{view.artifact.id}" for view in drifted)
+        ready_actions = next_actions
     if active.state.journal_head_hash is None:
         blockers = (
             "Legacy M1 journal is read-only; preview and apply its registered migration",
             *blockers,
         )
         next_actions = ("migrate",)
+        ready_actions = next_actions
     from forge.core.scope_amendments import effective_scope_summary
 
     return StatusReport(
@@ -348,6 +388,7 @@ def inspect_status(
         state=active.state,
         next_actions=next_actions,
         blockers=blockers,
+        ready_actions=ready_actions,
         archived_initiative_ids=archived_ids,
         archive_summaries=archive_summaries,
         pack_trust_state=active.pack_trust.trust_state,
