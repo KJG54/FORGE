@@ -19,11 +19,21 @@ that invalidation ended the run, and never invents a formal cancellation record.
 Both findings changed candidate inputs. The superseded artifacts and their install evidence were
 discarded, one final candidate was rebuilt, and every exact-wheel check was repeated.
 
+The replacement build also corrected distribution hygiene. The superseded sdist had captured 519
+entries from local `.claude/worktrees` state. Build exclusions and regression coverage now keep
+`.agents`, `.claude`, `.codex`, and `.forge/local` out of distributions; the final sdist contains
+617 entries and none from those paths.
+
+The root README now gives a direct fit test, role comparison, concrete software and research
+examples, and a prominent same-user isolation boundary. Because README content is packaged into
+distribution metadata, that documentation correction received a new exact candidate identity and
+the complete automated validation was repeated.
+
 ## Automated evidence
 
-- candidate wheel: `f1a082aab295e5e616cd81c4dedd028b3504c8c520ef1a8489d2dc69c72b2017`;
-- candidate sdist: `9304a6e51ac5aff4de3749cca82e289a7e787ac5e00b0445c92724704de7f9a0`;
-- 408 tests passed and 9 Windows privilege-dependent symbolic-link cases skipped;
+- candidate wheel: `f047d25365534beafba29cf01ed6f7e82a9a72a8a90de9f85ca8172b3f8b682a`;
+- candidate sdist: `882ddeecee77750dc2aec931d2e52df2e414f6449bc7bd68866ad4782786f9bc`;
+- 409 tests passed and 9 Windows privilege-dependent symbolic-link cases skipped;
 - Ruff, strict Pyright, version consistency, and exact candidate verification passed;
 - fresh `venv` and isolated `pipx` installation passed on Windows/CPython 3.14.4;
 - both bundled examples closed successfully with healthy archives;

@@ -11,8 +11,8 @@ Local Production-v1 acceptance.
 
 | Artifact | Size | SHA-256 |
 |---|---:|---|
-| `forge_governance-1.0.0-py3-none-any.whl` | 299,387 bytes | `f1a082aab295e5e616cd81c4dedd028b3504c8c520ef1a8489d2dc69c72b2017` |
-| `forge_governance-1.0.0.tar.gz` | 1,389,645 bytes | `9304a6e51ac5aff4de3749cca82e289a7e787ac5e00b0445c92724704de7f9a0` |
+| `forge_governance-1.0.0-py3-none-any.whl` | 288,251 bytes | `f047d25365534beafba29cf01ed6f7e82a9a72a8a90de9f85ca8172b3f8b682a` |
+| `forge_governance-1.0.0.tar.gz` | 742,834 bytes | `882ddeecee77750dc2aec931d2e52df2e414f6449bc7bd68866ad4782786f9bc` |
 
 The wheel was built from the sdist on Windows 11 with CPython 3.14.4, build 1.5.1, and Hatchling
 1.31.0. `tools.local_candidate verify` passed after the final build.
@@ -24,8 +24,9 @@ The wheel was built from the sdist on Windows 11 with CPython 3.14.4, build 1.5.
 | Ruff | passed |
 | Strict Pyright 1.1.411 | 0 errors, 0 warnings, 0 information messages |
 | Version consistency | passed; schema `1.0`, 51 public models, 94 CLI commands |
-| Complete pytest suite | 408 passed, 9 skipped in 546.23 seconds |
+| Complete pytest suite | 409 passed, 9 skipped in 526.02 seconds |
 | Candidate manifest, names, sizes, metadata, and hashes | passed |
+| Distribution inventory | passed; 617 sdist entries and no `.agents`, `.claude`, `.codex`, or `.forge/local` content |
 
 All nine skips require Windows symbolic-link creation privilege unavailable to this user account.
 They cover explicit symbolic-path rejection cases; the skip reason is visible for every case.
@@ -41,7 +42,7 @@ Both clean installation modes used the wheel digest above on Windows with CPytho
 
 The resolved runtime inventory was annotated-doc 0.0.5, annotated-types 0.8.0, colorama 0.4.6,
 markdown-it-py 4.2.0, mdurl 0.1.2, pydantic 2.13.4, pydantic-core 2.46.4, Pygments 2.20.0,
-PyYAML 6.0.3, rich 15.0.0, shellingham 1.5.4, typer 0.27.0, typing-extensions 4.16.0, and
+PyYAML 6.0.3, rich 15.0.0, shellingham 1.5.4, typer 0.27.1, typing-extensions 4.16.0, and
 typing-inspection 0.4.2. Dependency resolution remains point-in-time evidence.
 
 ## Lifecycle and pack journeys
@@ -74,31 +75,33 @@ wheel.
 
 | Case | p95 | Budget |
 |---|---:|---:|
-| startup | 69.892 ms | 750 ms |
-| active status | 1321.196 ms | 1500 ms |
-| 1,000-event journal replay | 42.576 ms | 200 ms |
-| context generation | 825.576 ms | 1500 ms |
-| archive access | 927.929 ms | 1500 ms |
+| startup | 68.200 ms | 750 ms |
+| active status | 1242.035 ms | 1500 ms |
+| 1,000-event journal replay | 46.227 ms | 200 ms |
+| context generation | 818.329 ms | 1500 ms |
+| archive access | 764.207 ms | 1500 ms |
 
 The report digest is
-`sha256:89ebe79d74e8c8fe62275d1ab794fbe1d7685e733f4b0fb7501097405c206b1d`.
+`sha256:e8ac8d6b12487cfd9481fcc888f92d357945c13ad83f5315ce3544d9dbd82936`.
 
 ## Security and supply chain
 
 The final review passed all 26 installed dependency-license records, audited 14 runtime packages
 with pip-audit 2.10.1 and found no known vulnerabilities, passed Gitleaks 8.30.1 against complete
-Git history, and passed the 613-file candidate snapshot. One exact historical synthetic exception
+Git history, and passed the 622-file candidate snapshot. One exact historical synthetic exception
 remains. The policy digest is
 `sha256:1002399372c68656663d5905bf68596d6706b5dde24df23450c807ad4f4fd6ec`;
 the final report digest is
-`sha256:9d0dbb26b8f77aaa4b061a93cb492bcb23ad1298c0b471a2c98d017660453877`.
+`sha256:4dba754a30e0b6096cb489d093aa628defc53cde3748f0ab75de7d3db7371631`.
 
 ## Provider diagnostics and observation boundary
 
-- Codex CLI 0.139.0 is installed. It is outside the managed-adapter compatibility range, so FORGE
-  failed closed to the compatible manual adapter. Direct native Codex workspace use remains the
-  primary surface and does not depend on managed adapter execution.
-- Claude Code CLI 2.1.207 passed availability, compatibility, and authentication diagnostics.
+- Codex Desktop exposes its bundled executable through the Windows application package. FORGE's
+  bounded version probe did not complete on this host, so diagnostics failed closed to the manual
+  adapter. Direct native Codex workspace use remains the primary surface and does not depend on
+  managed adapter execution.
+- Claude Code CLI 2.1.207 passed availability and compatibility diagnostics but was not
+  authenticated in the validation shell, so diagnostics also selected the manual adapter.
 - This Codex Desktop task is agent-observed evidence that direct workspace work can inspect and
   mutate the repository while preserving FORGE receipts and owner gates. It is not labeled
   owner-observed without the owner's explicit confirmation.

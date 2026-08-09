@@ -57,7 +57,12 @@ def test_distribution_build_prunes_local_runtime_state_before_traversal() -> Non
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     build = project["tool"]["hatch"]["build"]
 
-    assert build["exclude"] == ["/.forge/local/**"]
+    assert build["exclude"] == [
+        "/.agents/**",
+        "/.claude/**",
+        "/.codex/**",
+        "/.forge/local/**",
+    ]
     assert build["skip-excluded-dirs"] is True
 
 
