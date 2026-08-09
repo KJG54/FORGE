@@ -1,0 +1,54 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e53c92db76272bf9ae857de38fcd4850c834f976fcbed647d1e046d2e2f19eef"
+  ],
+  "affected_record_ids": [
+    "abeeeb69-83eb-4466-8afc-e9c7940421eb"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "implementation-validated",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-09T05:10:15.195311Z",
+  "event_sequence": 27,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "df6c1ae9-9cb8-46a3-b73f-1b4484451eb3",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "GitHub Actions CI run 31295711203 at commit 2aa21edb4d02f9c1f68af60385b497a07b5f9a87: quality, build, nine cross-platform full-suite jobs, eighteen venv/pipx installation jobs, and nine release-scenario jobs; plus local tools.quality_gate, focused manifest-alignment test, and exact candidate verification",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "Owner-observed replacement-wheel native Codex and Claude smoke tests remain pending and are not implied by automated validation",
+    "Nine Windows symbolic-link fixtures remain privilege-dependent on this local account"
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-09T05:10:15.195370Z",
+  "result_digest": "sha256:53e0d96a9e1bb660a87b1b8a77ffe5198c8f1676558241d97ba99258f2069248",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-09T05:10:15.195309Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "abeeeb69-83eb-4466-8afc-e9c7940421eb"
+  ],
+  "tool_version": "1.0.0"
+}
