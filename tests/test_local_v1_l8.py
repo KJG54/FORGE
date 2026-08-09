@@ -63,8 +63,14 @@ def test_tracked_candidate_identity_is_internally_consistent() -> None:
     assert manifest["status"] == "unpublished-local-candidate"
     assert manifest["publication"] == {"authorized": False, "tag_created": False}
     validation = cast("dict[str, object]", manifest["validation"])
-    assert validation["complete_phase"] == "L9 automated candidate validation"
-    assert validation["next_phase"] == "owner-observed native-app and extended testing"
+    assert (
+        validation["complete_phase"]
+        == "replacement candidate source, build, and installation validation"
+    )
+    assert (
+        validation["next_phase"]
+        == "CI matrix and replacement-wheel owner-observed native-app retest"
+    )
 
 
 def test_post_build_validation_evidence_is_outside_the_sdist_identity() -> None:
