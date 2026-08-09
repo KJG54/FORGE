@@ -114,8 +114,12 @@ the final report digest is
 - Native smoke exposed candidate-blocking gaps in actionable next-state reporting and the absence
   of supported pre-initialization pack inspection. Details and lower-severity findings are in
   `friction-report.md`.
-- Pre-existing vendor-file byte preservation and the owner's direct ceremony observation remain
-  incomplete. Extended real-work testing is paused under `extended-testing-plan.md`.
+- Both providers added owner-supplied sentinels outside their managed vendor blocks and captured
+  the exact unmanaged bytes, then correctly stopped before apply. Their first consequence
+  presentations were incomplete or internally inconsistent about the three generated
+  `.forge/active/context/` files, so authorization, byte-preservation comparison, and the owner's
+  direct ceremony observation remain incomplete. Extended real-work testing is paused under
+  `extended-testing-plan.md`.
 
 ## Conclusion
 
