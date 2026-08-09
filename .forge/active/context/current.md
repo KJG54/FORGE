@@ -7,7 +7,7 @@ Deliver and validate a feature-complete personal/local FORGE Production-v1 candi
 ## Active step
 
 - ID: `implement`
-- State: `in_progress`
+- State: `awaiting_acceptance`
 - Purpose: Produce the bounded framework change.
 - Instructions: Change only what the accepted scope authorizes and preserve governed compatibility boundaries.
 - Context selection rules: accepted-scope, release-requirements
@@ -32,9 +32,7 @@ Design, implement, document, package, and validate the local FORGE 1.0.0 candida
 
 ## Permitted actions
 
-- Create only declared returned files within the approved scope
-- Report worker claims, tool metadata, and limitations without governance approval
-- Use only the selected required-input paths listed in the active step
+- No worker action is currently permitted
 
 ## Prohibited actions
 
@@ -67,4 +65,4 @@ Design, implement, document, package, and validate the local FORGE 1.0.0 candida
 
 ## Known blockers
 
-- None
+- Active step is awaiting configured-owner acceptance
