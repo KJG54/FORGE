@@ -1,0 +1,75 @@
+{
+  "accepted_artifact_revision_ids": [
+    "0aec45c0-f027-4bd8-b16b-21e5575a5047",
+    "438eebe8-39e4-460d-94dd-bd3fba0ef469",
+    "5a7ebeec-483f-4352-af15-79c69fd96567",
+    "6c98ae53-3224-40b3-8e68-e660a2ac73c8",
+    "7b4a300e-d6ef-4a63-8859-123c363d0957",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768",
+    "d60d46b7-cc69-44fd-b2ae-d7509619804e",
+    "e78151b6-39c6-4d75-8fee-5365e08b3d96"
+  ],
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:7399923abbb0f9929eb7af523b02f180a03a9fe4802a6408cfaf62b9ace3d509",
+    "sha256:31e7c025fce7c7208ca4e03c48bb0e60c8ee646d69e86910b1614346646dc7ad",
+    "sha256:624f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8",
+    "sha256:0ee96483561ab19709e0fe7561bec87f0f07505bc0840636a2ec38668b1d1581",
+    "sha256:1641ffee5c283420177929d9d6a278d22870fa4ce6eb78d48effff2ac264abfb",
+    "sha256:ea7cdca17591cc8ac0a8075faf149271ea42a6849bca6e6a356d359632c5b102",
+    "sha256:d34aa1be12b458a5e90983a4dcaf1d7ecf36120485da20aabab09e0e4b12bdfe",
+    "sha256:e648e28e1fb8bc06c7cbeccad160163f1dd1deac9b32808ddca050b7d366ab31"
+  ],
+  "affected_record_ids": [
+    "95b7c272-2909-4a77-9ce0-b03a02568dee",
+    "bc89fef2-d54d-40bb-ad1e-7a5e18ffa433",
+    "b5260e0d-9a58-4949-b28f-9a8f85e5336f",
+    "98352c82-9b54-43bb-b2dc-d82852585b1c",
+    "665afb61-bae1-4207-9801-82a7ff630545",
+    "0aec45c0-f027-4bd8-b16b-21e5575a5047",
+    "438eebe8-39e4-460d-94dd-bd3fba0ef469",
+    "5a7ebeec-483f-4352-af15-79c69fd96567",
+    "6c98ae53-3224-40b3-8e68-e660a2ac73c8",
+    "7b4a300e-d6ef-4a63-8859-123c363d0957",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768",
+    "d60d46b7-cc69-44fd-b2ae-d7509619804e",
+    "e78151b6-39c6-4d75-8fee-5365e08b3d96"
+  ],
+  "archive_reference": ".forge/archive/26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "authorization_basis": "configured owner closed fully accepted work for atomic M2 archival",
+  "closing_summary": "Close initiative 26c0c628-cc77-478c-b77b-0c1d703891ac as completed: the exact unpublished Local Production-v1 candidate identified by wheel SHA-256 a9c010a92d146300de7f59852d8c7181039a3c45246f615d8f7666072c672349 and sdist SHA-256 3907c86f25b3ad36c650c6888074ed1e8148451cd861ef42ddee1af26cf12b88 is accepted as ready for bounded extended personal/local owner testing with the recorded limitations and residual risks; this closure grants no public-release, hosted-operation, hostile multi-user, signing, tagging, package-publication, or support authority",
+  "closure_event_id": "a8583210-6162-4464-bc08-0d8d4cb051ec",
+  "correlation_id": null,
+  "current_artifact_revision_ids": [
+    "0aec45c0-f027-4bd8-b16b-21e5575a5047",
+    "438eebe8-39e4-460d-94dd-bd3fba0ef469",
+    "5a7ebeec-483f-4352-af15-79c69fd96567",
+    "6c98ae53-3224-40b3-8e68-e660a2ac73c8",
+    "7b4a300e-d6ef-4a63-8859-123c363d0957",
+    "cf3f5d12-38ce-4e8b-85b4-b5adf2ff6768",
+    "d60d46b7-cc69-44fd-b2ae-d7509619804e",
+    "e78151b6-39c6-4d75-8fee-5365e08b3d96"
+  ],
+  "event_sequence": 105,
+  "final_acceptance_ids": [
+    "95b7c272-2909-4a77-9ce0-b03a02568dee",
+    "bc89fef2-d54d-40bb-ad1e-7a5e18ffa433",
+    "b5260e0d-9a58-4949-b28f-9a8f85e5336f",
+    "98352c82-9b54-43bb-b2dc-d82852585b1c",
+    "665afb61-bae1-4207-9801-82a7ff630545"
+  ],
+  "id": "809abb00-4377-4b58-8585-d0326bc66fa6",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-09T21:53:33.531176Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "terminal_state": "closed",
+  "tool_version": "1.0.0"
+}
