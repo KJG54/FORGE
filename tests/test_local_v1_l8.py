@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 import tarfile
 import tomllib
 import zipfile
@@ -71,6 +72,19 @@ def test_tracked_candidate_identity_is_internally_consistent() -> None:
         validation["next_phase"]
         == "CI matrix and replacement-wheel owner-observed native-app retest"
     )
+
+
+def test_extended_testing_plan_names_the_tracked_candidate_wheel() -> None:
+    manifest = validate_manifest_contract()
+    artifacts = cast("list[dict[str, object]]", manifest["artifacts"])
+    wheel = next(artifact for artifact in artifacts if artifact["type"] == "wheel")
+    plan = (ROOT / "release" / "local-production-v1" / "extended-testing-plan.md").read_text(
+        encoding="utf-8"
+    )
+    match = re.search(r"Use only the candidate whose wheel digest is\s+`([0-9a-f]{64})`", plan)
+
+    assert match is not None
+    assert match.group(1) == wheel["sha256"]
 
 
 def test_post_build_validation_evidence_is_outside_the_sdist_identity() -> None:
