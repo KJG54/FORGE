@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:1641ffee5c283420177929d9d6a278d22870fa4ce6eb78d48effff2ac264abfb"
+  ],
+  "affected_record_ids": [
+    "7b4a300e-d6ef-4a63-8859-123c363d0957"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 87,
+  "id": "369dad7b-94a0-4146-9b32-cf62750dfa1c",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "recorded_at": "2026-08-09T17:32:39.067696Z",
+  "role": "residual-risk-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Local Production-v1 Residual Risk Report",
+  "tool_version": "1.0.0"
+}

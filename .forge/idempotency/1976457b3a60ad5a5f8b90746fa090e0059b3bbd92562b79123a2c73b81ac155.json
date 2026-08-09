@@ -1,0 +1,15 @@
+{
+  "command": "evidence_add",
+  "completed_at": "2026-08-09T17:33:31.937323Z",
+  "events": [
+    {
+      "event_hash": "sha256:0ce16f1e6b6dcbe3376b8c79587c9dc5f5a07c8f570fecc06619083d6a47013d",
+      "event_id": "896972b9-5fa8-4d59-b87d-a989ffef1fe4",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 91
+    }
+  ],
+  "key": "local-v1-risk-review-evidence-20260809",
+  "request_digest": "sha256:0e117fd19013f4346bc1b6c61447b49b325ddfd32079e2b1a476f101aaf118ea",
+  "schema_version": "1.0"
+}

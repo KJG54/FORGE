@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:d34aa1be12b458a5e90983a4dcaf1d7ecf36120485da20aabab09e0e4b12bdfe"
+  ],
+  "affected_record_ids": [
+    "d60d46b7-cc69-44fd-b2ae-d7509619804e"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 86,
+  "id": "766ba30f-2977-4318-8033-f39dcbc2907e",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "recorded_at": "2026-08-09T17:32:26.197949Z",
+  "role": "friction-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Local Production-v1 Friction Report",
+  "tool_version": "1.0.0"
+}

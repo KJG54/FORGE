@@ -1,0 +1,21 @@
+{
+  "command": "complete",
+  "completed_at": "2026-08-09T17:32:53.864026Z",
+  "events": [
+    {
+      "event_hash": "sha256:6d12bcce43cc5072fa7f3548bd67b18e92977fab05875e15d1267b1e602ae601",
+      "event_id": "5139747e-34b0-4a82-8818-5bb8c50b0247",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 88
+    },
+    {
+      "event_hash": "sha256:571e56446b9a07a6f5e78ef133be03a1e54567ffd20baea5b4cb997a66175823",
+      "event_id": "d61f9c66-b18b-4622-9c42-8994fde39078",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 89
+    }
+  ],
+  "key": "local-v1-risk-review-complete-20260809",
+  "request_digest": "sha256:f44c4de87efbcac6b54bda4143d62607ba533fc1e4517b8a716670ac1b38d48f",
+  "schema_version": "1.0"
+}
