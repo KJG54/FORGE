@@ -1,0 +1,39 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:0ee96483561ab19709e0fe7561bec87f0f07505bc0840636a2ec38668b1d1581"
+  ],
+  "affected_record_ids": [
+    "3aab60ac-f6d8-4dfb-878d-3b188ddf178b"
+  ],
+  "artifact_id": "3aab60ac-f6d8-4dfb-878d-3b188ddf178b",
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "byte_size": 8256,
+  "content_digest": "sha256:0ee96483561ab19709e0fe7561bec87f0f07505bc0840636a2ec38668b1d1581",
+  "correlation_id": null,
+  "event_sequence": 96,
+  "id": "6c98ae53-3224-40b3-8e68-e660a2ac73c8",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "media_type": "text/markdown",
+  "path": "release/local-production-v1/release-readiness-record.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/0e/e96483561ab19709e0fe7561bec87f0f07505bc0840636a2ec38668b1d1581",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "97020609-c84d-4ba5-b7c7-af7a78b9ba19",
+    "metadata": {},
+    "recorded_at": "2026-08-09T19:44:23.481548Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "release/local-production-v1/release-readiness-record.md",
+    "source_type": "local-file"
+  },
+  "recorded_at": "2026-08-09T19:44:23.481548Z",
+  "registration_event_id": "e3d36dd7-c45a-48ba-8f79-0f71975cb0bf",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "1.0.0"
+}

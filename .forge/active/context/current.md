@@ -6,16 +6,16 @@ Deliver and validate a feature-complete personal/local FORGE Production-v1 candi
 
 ## Active step
 
-- ID: `verify-release`
-- State: `ready`
-- Purpose: Validate the exact candidate change against its release requirements.
-- Instructions: Preserve check and evidence results without treating process success as owner acceptance.
-- Context selection rules: release-requirements, framework-changes
+- ID: `closeout`
+- State: `in_progress`
+- Purpose: Record release-candidate readiness and lessons without publishing Production v1.
+- Instructions: Bind the readiness record to accepted verification and risk-review outputs.
+- Context selection rules: accepted-risk-review
 
 ### Selected required inputs
 
-- `release-requirements`: `release/local-production-v1/release-requirements.md` (sha256:624f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8, text/markdown)
-- `framework-changes`: `release/local-production-v1/framework-changes.md` (sha256:97a6b96771f375d21f74aebe875eb720334ca49cb8bef26f9669e19e021728b0, text/markdown)
+- `friction-report`: `release/local-production-v1/friction-report.md` (sha256:d34aa1be12b458a5e90983a4dcaf1d7ecf36120485da20aabab09e0e4b12bdfe, text/markdown)
+- `residual-risk-report`: `release/local-production-v1/residual-risk-report.md` (sha256:1641ffee5c283420177929d9d6a278d22870fa4ce6eb78d48effff2ac264abfb, text/markdown)
 
 ## Approved scope
 
@@ -23,8 +23,7 @@ Design, implement, document, package, and validate the local FORGE 1.0.0 candida
 
 ## Relevant constraints
 
-- Context selection rule: release-requirements
-- Context selection rule: framework-changes
+- Context selection rule: accepted-risk-review
 
 ## Relevant decisions
 
@@ -45,12 +44,13 @@ Design, implement, document, package, and validate the local FORGE 1.0.0 candida
 
 ## Required outputs
 
-- verification-report
+- release-readiness-record
+- lessons
 
 ## Expected evidence
 
 - Worker claim requirement: outputs-produced
-- Check requirement after import: release-checks-passed
+- Check requirement after import: closeout-ready
 - Workflow evidence class after import: check-evidence
 - Owner-only acceptance requirement: owner-acceptance
 - Returned files require staged import before registration

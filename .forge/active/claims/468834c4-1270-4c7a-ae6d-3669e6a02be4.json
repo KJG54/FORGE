@@ -1,0 +1,42 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:7399923abbb0f9929eb7af523b02f180a03a9fe4802a6408cfaf62b9ace3d509",
+    "sha256:0ee96483561ab19709e0fe7561bec87f0f07505bc0840636a2ec38668b1d1581"
+  ],
+  "affected_record_ids": [
+    "0aec45c0-f027-4bd8-b16b-21e5575a5047",
+    "6c98ae53-3224-40b3-8e68-e660a2ac73c8"
+  ],
+  "assertion": "The registered release-readiness record and lessons accurately bind the exact unpublished Local Production-v1 candidate to the accepted verification and risk-review chain, the completed current-wheel closeout matrix, and the owner-supplied Codex and Claude native smoke reports while preserving all stated exclusions and residual limitations",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "0aec45c0-f027-4bd8-b16b-21e5575a5047",
+    "6c98ae53-3224-40b3-8e68-e660a2ac73c8"
+  ],
+  "correlation_id": null,
+  "event_sequence": 98,
+  "id": "468834c4-1270-4c7a-ae6d-3669e6a02be4",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "The current native sentinel reapply exercised the no-change path rather than a changed managed-block rewrite",
+    "Nine privileged Windows symbolic-link fixtures remain skipped on this host",
+    "Direct-agent labels, session references, and owner-supplied task reports are same-user attribution, not authenticated identity",
+    "Generated context does not refresh automatically after governed transitions",
+    "This claim grants neither final owner acceptance nor public-release authority"
+  ],
+  "operator_session_reference": "codex-local-v1-closeout-20260809",
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-09T19:45:02.799212Z",
+  "run_id": "ac68e3c8-9709-4c1f-b79b-a9fce565f235",
+  "schema_version": "1.0",
+  "step_id": "closeout",
+  "tool_version": "1.0.0"
+}

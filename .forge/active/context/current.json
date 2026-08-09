@@ -1,32 +1,31 @@
 {
   "active_step": {
     "context_selection_rules": [
-      "release-requirements",
-      "framework-changes"
+      "accepted-risk-review"
     ],
-    "id": "verify-release",
-    "instructions": "Preserve check and evidence results without treating process success as owner acceptance.",
-    "purpose": "Validate the exact candidate change against its release requirements.",
+    "id": "closeout",
+    "instructions": "Bind the readiness record to accepted verification and risk-review outputs.",
+    "purpose": "Record release-candidate readiness and lessons without publishing Production v1.",
     "required_inputs": [
       {
-        "content_digest": "sha256:624f02aa9fc5cbc9f871c7761810450698a5e51ac57c977f9951ad76666bf3b8",
+        "content_digest": "sha256:d34aa1be12b458a5e90983a4dcaf1d7ecf36120485da20aabab09e0e4b12bdfe",
         "media_type": "text/markdown",
-        "path": "release/local-production-v1/release-requirements.md",
-        "role": "release-requirements"
+        "path": "release/local-production-v1/friction-report.md",
+        "role": "friction-report"
       },
       {
-        "content_digest": "sha256:97a6b96771f375d21f74aebe875eb720334ca49cb8bef26f9669e19e021728b0",
+        "content_digest": "sha256:1641ffee5c283420177929d9d6a278d22870fa4ce6eb78d48effff2ac264abfb",
         "media_type": "text/markdown",
-        "path": "release/local-production-v1/framework-changes.md",
-        "role": "framework-changes"
+        "path": "release/local-production-v1/residual-risk-report.md",
+        "role": "residual-risk-report"
       }
     ],
-    "state": "ready"
+    "state": "in_progress"
   },
   "approved_scope": "Design, implement, document, package, and validate the local FORGE 1.0.0 candidate: document-first conversational bootstrap, canonical transaction receipts, a safe local scratchpad and warm recap, per-step mentoring, honest authority/operator provenance, explicit owner-only command ceremony, rejection and plan-change handling, and archive-derived successor briefs. Preserve existing compatibility, security, recovery, exact-byte, replay, idempotency, and archive invariants. Build and test one exact local wheel and sdist, then stop at extended owner testing. Exclude public naming clearance, tags, PyPI/TestPyPI, GitHub Releases, public support channels, publication automation, hosted or multi-user operation, and final owner acceptance.",
   "expected_evidence": [
     "Worker claim requirement: outputs-produced",
-    "Check requirement after import: release-checks-passed",
+    "Check requirement after import: closeout-ready",
     "Workflow evidence class after import: check-evidence",
     "Owner-only acceptance requirement: owner-acceptance",
     "Returned files require staged import before registration",
@@ -46,12 +45,12 @@
     "Execute external or irreversible side effects without separate authorization"
   ],
   "relevant_constraints": [
-    "Context selection rule: release-requirements",
-    "Context selection rule: framework-changes"
+    "Context selection rule: accepted-risk-review"
   ],
   "relevant_decisions": [],
   "required_outputs": [
-    "verification-report"
+    "release-readiness-record",
+    "lessons"
   ],
   "return_contract": {
     "contract": "agent-result",

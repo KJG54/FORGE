@@ -1,0 +1,46 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:fe602753fb2cb209cbf282dc2915b841751f951cd7d4926b2cf310b5fb2b00fd"
+  ],
+  "affected_record_ids": [
+    "6c98ae53-3224-40b3-8e68-e660a2ac73c8",
+    "0aec45c0-f027-4bd8-b16b-21e5575a5047",
+    "067f586f-5140-41aa-8bb3-f44ac4c770af",
+    "468834c4-1270-4c7a-ae6d-3669e6a02be4"
+  ],
+  "artifact_revision_ids": [
+    "6c98ae53-3224-40b3-8e68-e660a2ac73c8",
+    "0aec45c0-f027-4bd8-b16b-21e5575a5047"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "067f586f-5140-41aa-8bb3-f44ac4c770af"
+  ],
+  "claim_ids": [
+    "468834c4-1270-4c7a-ae6d-3669e6a02be4"
+  ],
+  "correlation_id": null,
+  "event_sequence": 101,
+  "id": "11beb56d-1113-4f9f-9b9d-ad8ce0c91798",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "Native reports are owner-supplied same-user task evidence rather than authenticated identity attestations",
+    "Current native sentinel reapply covered the no-change path rather than a forced managed-block rewrite",
+    "Nine privileged Windows symbolic-link fixtures remain skipped",
+    "The evidence authorizes neither final owner acceptance nor public release"
+  ],
+  "packet_digest": "sha256:fe602753fb2cb209cbf282dc2915b841751f951cd7d4926b2cf310b5fb2b00fd",
+  "purpose": "Bind the exact current release-readiness and lessons revisions to the direct-Codex closeout claim and passing closeout-ready check for the unpublished Local Production-v1 candidate",
+  "recorded_at": "2026-08-09T19:46:33.934264Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}
