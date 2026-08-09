@@ -171,7 +171,8 @@ def test_cli_previews_exact_data_only_boundary_and_records_history(tmp_path: Pat
     status = runner.invoke(app, ["status", "-C", str(tmp_path)])
     assert status.exit_code == 0, status.stderr
     assert "Pack data trust: untrusted" in status.stdout
-    assert "Next: pack-trust:software-basic" in status.stdout
+    assert "Legal next: pack-trust:software-basic" in status.stdout
+    assert "Ready now: pack-trust:software-basic" in status.stdout
 
 
 def test_pack_trust_history_is_tamper_evident(tmp_path: Path) -> None:

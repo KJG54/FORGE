@@ -11,7 +11,7 @@ forge agent context --target neutral
 
 FORGE validates the active initiative and writes deterministic views to:
 
-- `.forge/active/context/agent-protocol-1.2.0.md`;
+- `.forge/active/context/agent-protocol-1.3.0.md`;
 - `.forge/active/context/current.json`;
 - `.forge/active/context/current.md`.
 
@@ -88,9 +88,12 @@ forge agent context --target claude --apply
 
 The first command is always a read-only preview. It reports whether FORGE would create, append,
 replace, or leave the target unchanged, displays exact current/proposed/context/protocol digests,
-and shows only the managed reference block. It never echoes existing user content. `--apply`
-explicitly confirms the displayed plan, regenerates the installed protocol copy plus neutral
-`current.json` and `current.md`, and updates `AGENTS.md` or `CLAUDE.md` atomically.
+enumerates every persistent derived-file write and the temporary mutation lock, states the
+zero-journal-event effect and owner-directed authority boundary, and shows only the managed
+reference block. It never echoes existing user content. After that complete preview, the owner may
+run `--apply` or explicitly direct the workspace agent to run it. Apply regenerates the installed
+protocol copy plus neutral `current.json` and `current.md`, and updates `AGENTS.md` or `CLAUDE.md`
+atomically.
 
 FORGE owns only the span between these standalone markers:
 

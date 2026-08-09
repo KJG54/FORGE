@@ -8,9 +8,9 @@ from importlib.resources import files
 from forge.errors import IntegrityError
 from forge.storage.objects import sha256_digest
 
-AGENT_PROTOCOL_VERSION = "1.2.0"
+AGENT_PROTOCOL_VERSION = "1.3.0"
 AGENT_PROTOCOL_FILENAME = f"agent-protocol-{AGENT_PROTOCOL_VERSION}.md"
-AGENT_PROTOCOL_DIGEST = "sha256:0e9d1cf6d4078bb2165f30ca58a68cb482f9be49f24d1a9217ce0245a264064c"
+AGENT_PROTOCOL_DIGEST = "sha256:34ee8ddcda6ae147f87caf5863aa4e7ca20c34310807e441b065d8d8553eaa00"
 
 
 @dataclass(frozen=True)

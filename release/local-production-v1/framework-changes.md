@@ -1,0 +1,63 @@
+# Local Production-v1 Framework Changes
+
+Status: **implementation complete; independent verification and owner acceptance remain pending**
+
+## Implemented candidate boundary
+
+The Local Production-v1 implementation provides the document-first direct-agent protocol,
+canonical mutation receipts, safe local recap and scratchpad behavior, per-step mentoring,
+operator/authority distinction, explicit owner ceremony, append-only plan-change handling,
+archive-derived successor briefs, candidate packaging hygiene, and practical README guidance
+described by `change-scope.md` and `release-requirements.md`.
+
+The native Codex and Claude smoke campaign then identified two candidate blockers and related
+clarity defects. This replacement-source correction set makes the following changes:
+
+- preserves state-machine transition eligibility as `legal_actions` while separately deriving
+  `ready_actions` from current command prerequisites;
+- reports missing required artifact roles as blockers and recommends the exact `artifact-add`
+  actions that are executable before `complete`;
+- exposes the distinction in transaction receipts, `forge status`, `forge next`, and
+  `forge recap`;
+- makes `forge pack list`, `forge pack validate`, `forge pack inspect`, and declared pack-resource
+  inspection work before initialization for installed bundled data only;
+- extends pack inspection with workflow steps, required input/output roles, and exact valid
+  scope-amendment requirement identifiers;
+- preserves immutable locked-pack inspection for active initiatives, independent of later
+  available-pack drift;
+- makes the vendor-context preview enumerate the vendor file, canonical JSON and Markdown views,
+  installed protocol copy, temporary mutation lock, byte-preservation boundary, zero-journal-event
+  effect, and owner-directed authority rule; and
+- updates the direct workspace-agent protocol to `1.3.0`, explicitly classifying context apply and
+  current-agent versus other-worker run cancellation.
+
+No agent or vendor branding is added to project authorship, Git identity, metadata, or release
+claims. Direct-agent names appear only where operator provenance or provider-specific behavior is
+the subject of the governed product contract.
+
+## Preserved invariants
+
+- Legal workflow transitions are not redefined as command readiness.
+- Missing prerequisites still refuse safely and append no governed events.
+- Pre-initialization inspection loads only packaged, validated, declarative bundled data; it grants
+  no pack trust, initiative authority, or executable capability.
+- Repository-local packs remain available only through an initialized repository configuration.
+- Vendor apply remains previewed, compare-and-swap protected, mutation-locked, byte-preserving
+  outside managed markers, and derived rather than governed acceptance.
+- Caller labels and same-user filesystem access remain attribution, not authentication.
+- The public model count, schema version, CLI command-path set, journal formats, migrations, and
+  distribution version remain compatible with the unpublished `1.0.0` candidate contract.
+
+## Implementation validation performed
+
+- `python -m tools.quality_gate`: passed; Ruff clean, strict Pyright 0 errors/0 warnings, version
+  consistency passed, 51 public models, 94 CLI command paths.
+- Focused native-fix suite: 54 passed, 2 Windows symlink-fixture skips.
+- Complete suite: 410 passed, 9 Windows symlink-fixture skips in 510.21 seconds.
+- Clean source distribution and wheel build: passed.
+- Built wheel inventory contains `forge/resources/agent-protocol-1.3.0.md` and no superseded
+  protocol resource.
+
+The build used for implementation inspection is not the frozen replacement candidate because it
+preceded the clean source commit. Exact candidate build identity, clean-wheel installation, native
+retest, independent verification, risk review, and owner acceptance remain later workflow work.

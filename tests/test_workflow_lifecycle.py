@@ -144,7 +144,13 @@ def test_manual_begin_enforces_readiness_actor_rules_and_restart(tmp_path: Path)
 
     restarted = load_active_initiative(initialized.layout)
     assert restarted.state == result.transition.state
-    assert inspect_status(initialized.layout).next_actions == ("complete:discover",)
+    report = inspect_status(initialized.layout)
+    assert report.next_actions == ("complete:discover",)
+    assert report.executable_actions == (
+        "artifact-add:objective-and-constraints",
+        "artifact-add:requirements",
+    )
+    assert "cannot complete until required artifact roles" in report.blockers[-1]
 
 
 def test_transition_conditions_cannot_be_asserted_by_omission(tmp_path: Path) -> None:

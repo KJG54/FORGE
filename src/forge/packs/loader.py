@@ -325,11 +325,19 @@ def _bundled_pack_directories() -> tuple[Path, ...]:
     return tuple(sorted(path for path in root.iterdir() if path.is_dir()))
 
 
+def bundled_packs() -> tuple[ValidatedPack, ...]:
+    """Load installed, data-only bundled packs without requiring a repository."""
+
+    return tuple(
+        load_pack(path, bundled=True) for path in _bundled_pack_directories()
+    )
+
+
 def available_packs(
     layout: RepositoryLayout,
     configuration: ProjectConfiguration,
 ) -> tuple[ValidatedPack, ...]:
-    packs = [load_pack(path, bundled=True) for path in _bundled_pack_directories()]
+    packs = list(bundled_packs())
     for relative in configuration.packs.local_paths:
         local = resolve_repository_path(layout.root, relative, must_exist=True)
         packs.append(load_pack(local))

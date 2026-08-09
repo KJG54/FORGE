@@ -198,8 +198,14 @@ def _meaning(report: StatusReport) -> str:
         if report.next_actions
         else "none"
     )
+    ready_actions = (
+        ", ".join(_compact_text(item) for item in report.executable_actions)
+        if report.executable_actions
+        else "none"
+    )
     parts.append(f"blockers={blockers}")
     parts.append(f"legal_actions={actions}")
+    parts.append(f"ready_actions={ready_actions}")
     owner_actions = tuple(
         presentation
         for action in report.next_actions
