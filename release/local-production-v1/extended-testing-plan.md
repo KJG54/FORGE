@@ -1,6 +1,6 @@
 # Local Production-v1 Extended Testing Plan
 
-Status: **ready to begin; final acceptance prohibited until owner evidence is sufficient**
+Status: **paused after native-app smoke exposed candidate blockers; final acceptance prohibited**
 
 Use only the candidate whose wheel digest is
 `f047d25365534beafba29cf01ed6f7e82a9a72a8a90de9f85ca8172b3f8b682a`. Verify the manifest before
@@ -18,6 +18,13 @@ waited for explicit direction.
 Any incorrect mutation, misleading authority attribution, overwritten owner context, unsafe path,
 missing refusal, or unrecoverable state is candidate-blocking. Stop, preserve the evidence without
 secrets, fix the defect, and establish a new candidate identity before continuing.
+
+The 2026-08-08 Codex and Claude Code smoke runs exercised exact-wheel installation, safe refusal,
+scope amendment, rework, artifact revision, direct-agent claim provenance, and the stop before
+verification. They exposed candidate-blocking actionable-next-state and pre-initialization pack
+inspection defects recorded in `friction-report.md`. Phase 2 is paused until those defects are
+fixed, a replacement exact candidate is validated, and the remaining vendor-file preservation and
+owner-ceremony observations pass against that replacement.
 
 ## Phase 2 - Representative real-project campaign
 

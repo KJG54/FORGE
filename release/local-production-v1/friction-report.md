@@ -1,7 +1,7 @@
 # Local Production-v1 L9 Friction Report
 
-Status: **automated findings resolved or classified; owner-observed cloud findings recorded;
-native-app owner-observed friction pending**
+Status: **automated and cloud findings recorded; native-app smoke mechanics exercised;
+candidate blockers and remaining owner confirmations recorded**
 
 | ID | Observation | Classification | Resolution or follow-up |
 |---|---|---|---|
@@ -33,3 +33,25 @@ native-app smoke boundary in L9-F08.
 | B-F05 | The cloud container's default Python (3.11) is below FORGE's >=3.12 floor, and its venvs ship without pip. | Provider-environment friction | Agents detected the floor and built a 3.13 venv (using `uv pip` where pip was absent). Documented; no FORGE change required. |
 | B-F06 | The superseded sdist captured 519 entries from local `.claude/worktrees` tool state, including a nested checkout. | Candidate-blocking packaging hygiene defect | Added build exclusions and regression coverage for `.agents`, `.claude`, `.codex`, and `.forge/local`. The replacement sdist contains 617 entries and none from those paths. |
 | B-F07 | The root README described FORGE's mechanisms but did not give a concise fit test, role comparison, or concrete examples, and its candidate-status notice still said rebuild was pending. | Documentation clarity defect | Updated the status and added use cases, non-use cases, a FORGE/Git/agent/isolation comparison, concrete software and research examples, and a prominent same-user isolation boundary. Because the README is packaged metadata, the exact candidate was rebuilt and fully revalidated. |
+
+## Native-app smoke findings (2026-08-08, owner-supplied task evidence)
+
+Fresh native Codex and Claude Code tasks used separate disposable repositories. Installed-wheel
+metadata in both environments binds installation to wheel digest
+`f047d25365534beafba29cf01ed6f7e82a9a72a8a90de9f85ca8172b3f8b682a`. Read-only validation found
+both repositories healthy with ten journal events, one stale superseded artifact revision, and the
+`discover` step at `awaiting_verification`. The current claims record `direct-codex` and
+`direct-claude` operator provenance. Neither repository recorded checks, evidence, verification,
+acceptance, or closure.
+
+| ID | Observation | Classification | Resolution or follow-up |
+|---|---|---|---|
+| N-F01 | The original smoke fixture required exactly one Markdown document, while `software-basic` discover requires distinct `objective-and-constraints` and `requirements` artifacts and correctly refuses one path under two logical artifacts. | Smoke-fixture defect, not a FORGE defect | The owner explicitly amended each disposable scope to two documents. Preserve the safe refusals and use pack-compatible future smoke fixtures. |
+| N-F02 | `Means` and `forge status` reported `blockers=none; legal_actions=complete:discover` while a known required artifact role was missing. A scope amendment was likewise presented before the known active-run cancellation prerequisite was surfaced. Both commands then refused without mutation. | Candidate-blocking conversational state defect | Derived guidance must expose currently knowable command prerequisites and recommend an actually executable next action. Preserve refusal safety; do not redefine transition eligibility as command readiness. |
+| N-F03 | `forge pack list` refuses before repository initialization even though the protocol requires the pre-initialization coverage playback to propose a selected pack and workflow. Claude inspected installed package data to compensate. | Candidate-blocking bootstrap inspection defect | Provide a supported read-only pre-initialization route for bundled pack/workflow inspection, or revise the bootstrap contract so the owner never approves a pack choice that the agent could not inspect. Pack trust and initiative creation must remain separately owner-gated. |
+| N-F04 | `forge scope amend --requirement` says values come from the locked workflow, but the valid identifiers and their inspection route were not obvious during the owner gate. | CLI and documentation friction | Display the affected requirement identifiers in the relevant pack/workflow inspection and point to that command from help and protocol guidance. |
+| N-F05 | The protocol does not explicitly classify `forge run cancel` or mandatory post-creation `forge agent context --apply` as routine, preview-required, or owner-personal. | Authority-boundary documentation defect | State the authority rule and preview expectations for both commands. Distinguish cancellation of the current agent's own run from interruption of another worker's run. |
+| N-F06 | Routine begin, artifact registration, revision, and cancellation events identify configured owner authority only; direct operator provenance is visible on the agent-authored claim. | Expected narrow provenance model with documentation friction | Keep the successful claim distinction. Clarify that the current additive operator field applies to new claims, not every routine mutation, unless a later accepted design expands the public contract. |
+| N-F07 | Initiative creation, begin, artifact mutation, scope amendment, and completion emit canonical receipts, while initialization and run cancellation retain older plain output. | Known receipt-coverage inconsistency | The agent correctly avoided inventing `Recorded` lines. Consider migrating these owner-facing mutations in a separately tested compatibility change. |
+| N-F08 | Claude read installed `.venv` pack data despite the canonical context boundary, proceeded with unresolved owner questions, and removed a superseded working file based on its own scoped judgment. | Provider protocol-conformance and same-user risk observation | Require supported pack inspection, reinforce stop-or-ask behavior for unresolved coverage, and preview destructive working-file cleanup. The preserved artifact revision made this deletion recoverable but did not authorize it. |
+| N-F09 | Neither fresh run meaningfully exercised preservation of pre-existing owner-authored `AGENTS.md` or `CLAUDE.md` bytes, and exact owner observation of command/consequence presentation has not yet been recorded. | Native-smoke completion gap | Perform the bounded vendor-file reapply check and record the owner's direct ceremony observation before calling either application smoke complete. |

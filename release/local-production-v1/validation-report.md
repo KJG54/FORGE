@@ -1,6 +1,7 @@
 # Local Production-v1 L9 Validation Report
 
-Status: **automated candidate validation passed; native-app owner observation and final acceptance pending**
+Status: **automated candidate validation passed; native-app smoke exposed candidate blockers;
+final acceptance prohibited**
 
 This report describes the exact unpublished candidate in `candidate-manifest.json`. It is
 post-build evidence and is excluded from the sdist identity. Passing results establish readiness
@@ -105,11 +106,20 @@ the final report digest is
 - This Codex Desktop task is agent-observed evidence that direct workspace work can inspect and
   mutate the repository while preserving FORGE receipts and owner gates. It is not labeled
   owner-observed without the owner's explicit confirmation.
-- Native Codex and Claude Code UI smoke, conversational usability judgment, and extended real-work
-  results remain pending under `extended-testing-plan.md`.
+- Fresh native Codex and Claude Code smoke repositories both used the exact recorded wheel, remained
+  healthy, stopped at `discover:awaiting_verification`, and recorded claims with `direct-codex` and
+  `direct-claude` operator provenance respectively.
+- Refusals for a duplicate governed path, a missing required artifact role, and an active-run scope
+  amendment prerequisite appended no governed events and preserved healthy state.
+- Native smoke exposed candidate-blocking gaps in actionable next-state reporting and the absence
+  of supported pre-initialization pack inspection. Details and lower-severity findings are in
+  `friction-report.md`.
+- Pre-existing vendor-file byte preservation and the owner's direct ceremony observation remain
+  incomplete. Extended real-work testing is paused under `extended-testing-plan.md`.
 
 ## Conclusion
 
-No known automated candidate blocker remains. The exact candidate is ready for native-app
-owner-observed smoke and extended testing. Final Local Production-v1 acceptance remains a later,
-explicit owner decision based on that campaign.
+The automated evidence remains valid for the exact candidate, but the candidate is not ready for
+extended testing or final acceptance. Native smoke exposed two candidate blockers that require a
+new implementation and exact candidate identity. The remaining vendor-file and owner-ceremony
+observations must then be repeated against the replacement candidate.
