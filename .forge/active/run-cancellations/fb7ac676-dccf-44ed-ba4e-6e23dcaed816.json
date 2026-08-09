@@ -1,0 +1,33 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:bbfd8932d607767f94f0205b6ec83e004448336e28b86f62a5fcaf0a4d5e83ce"
+  ],
+  "affected_record_ids": [
+    "39838505-9053-4884-a004-36740268ca01"
+  ],
+  "authorization_basis": "authorized run worker or configured owner formally cancelled active work; managed execution was terminal when applicable",
+  "cancellation_behavior": "return_to_ready",
+  "correlation_id": null,
+  "destination_state": "ready",
+  "event_sequence": 46,
+  "id": "fb7ac676-dccf-44ed-ba4e-6e23dcaed816",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "reason": "Return verify-release to ready before freezing a clean source baseline because the sdist includes tracked FORGE active state and the derived context must remain truthful",
+  "recorded_at": "2026-08-09T07:31:16.291199Z",
+  "run_id": "39838505-9053-4884-a004-36740268ca01",
+  "schema_version": "1.0",
+  "side_effect_class": "repository_write",
+  "source_state": "in_progress",
+  "step_id": "verify-release",
+  "terminal_execution_event_hash": null,
+  "terminal_execution_event_id": null,
+  "tool_version": "1.0.0"
+}
