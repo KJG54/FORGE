@@ -3,13 +3,13 @@
 
 FORGE's installed direct workspace-agent protocol is available at:
 
-- `.forge/active/context/agent-protocol-1.2.0.md` (`sha256:0e9d1cf6d4078bb2165f30ca58a68cb482f9be49f24d1a9217ce0245a264064c`)
-- Protocol version: `1.2.0`
+- `.forge/active/context/agent-protocol-1.3.0.md` (`sha256:34ee8ddcda6ae147f87caf5863aa4e7ca20c34310807e441b065d8d8553eaa00`)
+- Protocol version: `1.3.0`
 
 FORGE's provider-neutral generated context is available at:
 
 - `.forge/active/context/current.md`
-- `.forge/active/context/current.json` (`sha256:ce7cff4e3cb1312a974c18f5dcc0e49037dba53fde9d4393d4df3277f0458250`)
+- `.forge/active/context/current.json` (`sha256:0bf67ab29c3c543267cd8961573e1ca0f8a983a65f6d407c82e2dbca2eae3a5c`)
 
 Read the protocol first, then the Markdown context before work. Use only the context's
 selected inputs and permitted actions.
