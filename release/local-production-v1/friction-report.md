@@ -16,7 +16,7 @@ candidate blockers and replacement retest recorded**
 | L9-F09 | Release verification found that the packaged root README still named protocol 1.2.0 while the wheel shipped protocol 1.3.0; the same stale statement appeared in wheel metadata and the sdist README. | Candidate-blocking packaged-documentation defect | Revoked implementation acceptance, returned through an append-only rework, corrected the README, added indexed conversational walkthroughs and a version-binding regression test, then rebuilt and revalidated the exact candidate. |
 | L9-F10 | The sdist intentionally includes tracked `.forge/active` history, so beginning verification before freezing the build baseline made the source tree dirty and left tracked derived context at the prior ready state. | Release-process ordering friction | Cancelled only the agent's current run without claiming success, confirmed context generation was `no-change` at `verify-release:ready`, committed that exact clean baseline, and built before starting the evidence run. |
 | L9-F11 | At `verify-release:awaiting_verification`, no current `release-checks-passed` result or binding evidence packet existed, but `forge status` reported `blockers=none` and `ready_actions=verify:verify-release`. Read-only inspection confirmed `verify_step` would refuse until both records exist. | Candidate-blocking actionable-readiness defect | Revoked implementation acceptance and returned through append-only rework. Status and verification now share one current-record prerequisite resolver; missing checks and evidence block readiness and surface exact `check-record`/`evidence-add` actions across receipts, `status`, `next`, and `recap`. The fast quality gate and 21 focused regressions pass. A newly built exact candidate and artifact-bound validation remain required before native retest. |
-| L9-F12 | The exact rebuilt wheel passed candidate identity, clean `venv`, `pipx`, procedure, and example-workflow checks, but the maintained active-status performance case failed twice: p95 1759.444 ms under concurrent validation load and 1594.005 ms in an isolated rerun, against a 1500 ms budget. | Candidate-blocking performance regression | Preserve both reports and do not weaken the budget. Profiling the maintained empty-active fixture showed repeated full active/archive validation through optional empty artifact, deviation, override, and risk-acceptance readers. Return implementation through append-only rework, safely short-circuit absent optional record families after the initial validated active load, add regression coverage, rebuild, and repeat exact-artifact validation before push or native retest. |
+| L9-F12 | The exact rebuilt wheel passed candidate identity, clean `venv`, `pipx`, procedure, and example-workflow checks, but the maintained active-status performance case failed twice: p95 1759.444 ms under concurrent validation load and 1594.005 ms in an isolated rerun, against a 1500 ms budget. | Resolved candidate-blocking performance regression | Preserved both failing reports and retained the budget. The accepted correction skips only provably absent optional record families after validated active-state loading; non-empty families retain full validation. Three focused regressions and the source review passed, then exact rebuilt wheel `a9c010a9...` passed all five maintained cases with active-status p95 817.346 ms. |
 
 The two candidate blockers changed shipped bytes, so L9 returned to the L8 identity boundary,
 rebuilt once after the complete correction set, discarded superseded install evidence, and repeated
@@ -49,11 +49,10 @@ both repositories healthy with ten journal events, one stale superseded artifact
 acceptance, or closure.
 
 The current replacement wheel is
-`5d4532d0a55aae6d872a64db81c937feb4ed6b8275e8fde5fbcac025ad38ee0e`, built from clean accepted
-source commit `6290c366ccd4944711630ac87e11c4f52dd9d990`. Source regression coverage confirms pre-init pack
-inspection, missing-role and verification-prerequisite readiness, separate legal/executable
-presentation, and the complete context preview. Artifact-bound validation of this exact identity is
-required before native-app retest.
+`a9c010a92d146300de7f59852d8c7181039a3c45246f615d8f7666072c672349`, built from clean accepted
+source commit `6e222985c57a9f6e74b33cf5146cb51c80e42744`. Candidate identity verification and all five
+maintained exact-wheel performance cases pass. Broader exact-wheel closeout checks remain deferred;
+CI and native-app replacement smoke are the next external validation surfaces.
 
 | ID | Observation | Classification | Resolution or follow-up |
 |---|---|---|---|

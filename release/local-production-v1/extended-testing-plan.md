@@ -3,7 +3,7 @@
 Status: **replacement candidate ready for Phase 1 native-app retest; Phase 2 and final acceptance remain paused**
 
 Use only the candidate whose wheel digest is
-`5d4532d0a55aae6d872a64db81c937feb4ed6b8275e8fde5fbcac025ad38ee0e`. Verify the manifest before
+`a9c010a92d146300de7f59852d8c7181039a3c45246f615d8f7666072c672349`. Verify the manifest before
 each new installation. A missing or mismatched artifact stops the campaign; do not rebuild it
 silently.
 

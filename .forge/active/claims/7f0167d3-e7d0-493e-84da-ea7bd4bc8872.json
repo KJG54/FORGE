@@ -1,0 +1,35 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:31e7c025fce7c7208ca4e03c48bb0e60c8ee646d69e86910b1614346646dc7ad"
+  ],
+  "affected_record_ids": [
+    "438eebe8-39e4-460d-94dd-bd3fba0ef469"
+  ],
+  "assertion": "Exact candidate manifest verification and the maintained exact-wheel performance review passed for wheel a9c010a92d146300de7f59852d8c7181039a3c45246f615d8f7666072c672349, and verification-report revision 438eebe8-39e4-460d-94dd-bd3fba0ef469 accurately distinguishes current-candidate results from carried-forward predecessor evidence",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "438eebe8-39e4-460d-94dd-bd3fba0ef469"
+  ],
+  "correlation_id": null,
+  "event_sequence": 78,
+  "id": "7f0167d3-e7d0-493e-84da-ea7bd4bc8872",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "Full current-wheel clean venv and pipx installation, procedure, example-workflow, security, broad suite, CI, and native-app repetition remain deferred to closeout or external validation by owner direction"
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-09T17:05:19.739473Z",
+  "run_id": "9bc2d756-8410-4efb-a565-3ce0d4ded27c",
+  "schema_version": "1.0",
+  "step_id": "verify-release",
+  "tool_version": "1.0.0"
+}

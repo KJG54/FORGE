@@ -1,0 +1,15 @@
+{
+  "command": "begin",
+  "completed_at": "2026-08-09T17:04:40.002583Z",
+  "events": [
+    {
+      "event_hash": "sha256:4727546f93d3554793da75364b309acaec594406d183bb4555ef386c2839058e",
+      "event_id": "a17db349-344d-4584-a5c0-92d3967eae26",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 76
+    }
+  ],
+  "key": "local-v1-performance-verify-release-begin-20260809",
+  "request_digest": "sha256:55a801df151d43c938493a0a55bb2e9de7e0061750a2a204679ba0be88716611",
+  "schema_version": "1.0"
+}

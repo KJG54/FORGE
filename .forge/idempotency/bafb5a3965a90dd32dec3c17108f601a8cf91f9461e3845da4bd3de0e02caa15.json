@@ -1,0 +1,15 @@
+{
+  "command": "artifact_revise",
+  "completed_at": "2026-08-09T17:04:58.785457Z",
+  "events": [
+    {
+      "event_hash": "sha256:06e2be3a6e840ed00817acc2cfbc53ed3c27033ea997dae31360481a2c660398",
+      "event_id": "a038fa7b-8954-4046-a7f9-10686b2a78c9",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 77
+    }
+  ],
+  "key": "local-v1-performance-verification-report-revise-20260809",
+  "request_digest": "sha256:984a6249b7970b0a8c12ad5033a1039440c090d84a80e4628940e7a1fdf7c3b2",
+  "schema_version": "1.0"
+}
