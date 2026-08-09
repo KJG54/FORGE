@@ -1,0 +1,15 @@
+{
+  "command": "begin",
+  "completed_at": "2026-08-09T07:01:58.824456Z",
+  "events": [
+    {
+      "event_hash": "sha256:d6c2de51b9f7e05d9bf67b68af23a1c485ce6918a1a54101c0af33eab4e38b73",
+      "event_id": "e71ab406-b4dc-4135-8086-2165e233e89b",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 37
+    }
+  ],
+  "key": "local-v1-readme-walkthrough-rework-begin-final-20260809",
+  "request_digest": "sha256:282962a7769eebf558cb0a3884c4d36a678e9478345284b74149265c37745a7d",
+  "schema_version": "1.0"
+}

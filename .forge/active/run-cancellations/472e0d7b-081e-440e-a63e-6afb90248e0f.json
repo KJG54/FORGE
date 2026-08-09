@@ -1,0 +1,33 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:881c6e44c32b5f10b4f2b0eaffc3f0f38aa9acd0e8bccf84f5246ba7178724d1"
+  ],
+  "affected_record_ids": [
+    "bcd39088-4890-4fbc-8175-3112db9b3bc2"
+  ],
+  "authorization_basis": "authorized run worker or configured owner formally cancelled active work; managed execution was terminal when applicable",
+  "cancellation_behavior": "return_to_ready",
+  "correlation_id": null,
+  "destination_state": "ready",
+  "event_sequence": 33,
+  "id": "472e0d7b-081e-440e-a63e-6afb90248e0f",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "reason": "Release verification discovered inaccurate packaged README protocol metadata and owner-authorized conversational walkthrough rework; return verify-release to ready without implying completion or acceptance",
+  "recorded_at": "2026-08-09T06:31:40.868295Z",
+  "run_id": "bcd39088-4890-4fbc-8175-3112db9b3bc2",
+  "schema_version": "1.0",
+  "side_effect_class": "repository_write",
+  "source_state": "in_progress",
+  "step_id": "verify-release",
+  "terminal_execution_event_hash": null,
+  "terminal_execution_event_id": null,
+  "tool_version": "1.0.0"
+}

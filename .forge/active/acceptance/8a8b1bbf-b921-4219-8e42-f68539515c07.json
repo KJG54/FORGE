@@ -1,0 +1,48 @@
+{
+  "acceptance_event_id": "8fbeeade-2ca7-40db-b1b7-9a04cbac46da",
+  "accepted_artifact_revision_ids": [
+    "b5e79103-3340-401d-b586-a9ed8a0036e3"
+  ],
+  "accepted_check_result_ids": [
+    "59a37892-45ca-449e-a6ee-ff492197101b"
+  ],
+  "accepted_evidence_ids": [
+    "fe792fe6-d8f6-4515-9781-0c1a6d6116b2"
+  ],
+  "accepted_scope": "Accept only framework-changes revision b5e79103-3340-401d-b586-a9ed8a0036e3, claim ec7d4a20-74e3-47f3-b93c-be6251621726, check result 59a37892-45ca-449e-a6ee-ff492197101b, and evidence packet fe792fe6-d8f6-4515-9781-0c1a6d6116b2 covering the protocol 1.3.0 documentation correction, indexed conversational walkthroughs, and regression contract",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:97a6b96771f375d21f74aebe875eb720334ca49cb8bef26f9669e19e021728b0",
+    "sha256:6c002f5d57cdc7e8a514d7a09ef986a47af460c81e62c0f81c2a05c867393b65",
+    "sha256:8b906297600027b2209e8d52226821b9715e41a1ed4e199a0e43fa43fe0b616e"
+  ],
+  "affected_record_ids": [
+    "b5e79103-3340-401d-b586-a9ed8a0036e3",
+    "59a37892-45ca-449e-a6ee-ff492197101b",
+    "fe792fe6-d8f6-4515-9781-0c1a6d6116b2"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 43,
+  "id": "8a8b1bbf-b921-4219-8e42-f68539515c07",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "known_limitations": [
+    "The exact wheel and sdist have not yet been rebuilt from the new clean source baseline",
+    "Nine Windows symlink security fixtures were skipped because this host lacks symbolic-link creation privilege"
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-09T07:06:20.640526Z",
+  "residual_risks": [
+    "Native Codex and Claude Code retesting and extended owner usability judgment remain pending"
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

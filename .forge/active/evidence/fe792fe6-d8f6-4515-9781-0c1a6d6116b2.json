@@ -1,0 +1,42 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8b906297600027b2209e8d52226821b9715e41a1ed4e199a0e43fa43fe0b616e"
+  ],
+  "affected_record_ids": [
+    "b5e79103-3340-401d-b586-a9ed8a0036e3",
+    "59a37892-45ca-449e-a6ee-ff492197101b",
+    "ec7d4a20-74e3-47f3-b93c-be6251621726"
+  ],
+  "artifact_revision_ids": [
+    "b5e79103-3340-401d-b586-a9ed8a0036e3"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "59a37892-45ca-449e-a6ee-ff492197101b"
+  ],
+  "claim_ids": [
+    "ec7d4a20-74e3-47f3-b93c-be6251621726"
+  ],
+  "correlation_id": null,
+  "event_sequence": 41,
+  "id": "fe792fe6-d8f6-4515-9781-0c1a6d6116b2",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "Exact rebuilt distribution identity, clean-install behavior, and native-app retesting remain pending in verify-release",
+    "Nine Windows symlink security fixtures were skipped because symbolic-link creation privilege is unavailable on this host"
+  ],
+  "packet_digest": "sha256:8b906297600027b2209e8d52226821b9715e41a1ed4e199a0e43fa43fe0b616e",
+  "purpose": "Bind the revised Local Production-v1 framework-change description and conversational documentation contract to the exact implementation claim and passing source validation",
+  "recorded_at": "2026-08-09T07:03:24.741218Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}
