@@ -1,0 +1,15 @@
+{
+  "command": "check_record",
+  "completed_at": "2026-08-09T08:11:21.915054Z",
+  "events": [
+    {
+      "event_hash": "sha256:272a6b4ffbbc9fa92665e13940b7f00200e8dac8d17c6235df1a98f09deb12c2",
+      "event_id": "f7844d85-e69a-4004-af7a-80f8091dfbb0",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 59
+    }
+  ],
+  "key": "local-v1-readiness-implementation-check-20260809",
+  "request_digest": "sha256:5fc31b5f8d3216c7e09b5ba99ab00b72c792933f7c42d9100c1fff3d5513c925",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,15 @@
+{
+  "command": "evidence_add",
+  "completed_at": "2026-08-09T08:11:58.096930Z",
+  "events": [
+    {
+      "event_hash": "sha256:d3673b5b3e08d4319e0500917b526f2099e67804fc2cd2c7c9af3bdb79d8cfec",
+      "event_id": "b6debc81-6431-47a9-a252-a332c83f3205",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 60
+    }
+  ],
+  "key": "local-v1-readiness-implementation-evidence-20260809",
+  "request_digest": "sha256:4465a89b3e0358cc0bfc4a385415050eb69d4b11ed279a4284deead0f3ac82d3",
+  "schema_version": "1.0"
+}

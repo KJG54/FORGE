@@ -1,0 +1,53 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:f8ea8ccb134a5a9dc47e0c14b94c7a4aa09b0975442f6c48b14c3a5e13573d8c"
+  ],
+  "affected_record_ids": [
+    "8dbb84aa-e84c-45a0-8f9f-c3a6faecfdd5"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "implementation-validated",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-09T08:11:21.623060Z",
+  "event_sequence": 59,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "fbf601a2-3d1f-45fe-97f5-604e4e04957f",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "python -m tools.quality_gate; pytest readiness artifact lifecycle CLI and candidate-contract suites",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "The prior exact wheel and sdist are superseded; this check validates corrected source and governed reports, not a rebuilt distribution artifact"
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-09T08:11:21.623224Z",
+  "result_digest": "sha256:6d11e8e4e0a3b04bdc1ce5d1eec663684d171b2cedba1ef71ba6171562c8ddfb",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-09T08:11:21.623055Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "8dbb84aa-e84c-45a0-8f9f-c3a6faecfdd5"
+  ],
+  "tool_version": "1.0.0"
+}

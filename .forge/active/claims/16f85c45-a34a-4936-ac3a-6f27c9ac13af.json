@@ -1,0 +1,38 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:fd5e39ed07dca0357f46cd921a78f8a15fb99a2c781c4b920edbb56c25643690"
+  ],
+  "affected_record_ids": [
+    "ffcd8714-b6e6-4dc2-a58b-5e022badfadc"
+  ],
+  "assertion": "Verification report revision ffcd8714-b6e6-4dc2-a58b-5e022badfadc truthfully binds source baseline ce6efa999d7ed421ead1d99bb526f4828db53a31, wheel ee87d97fbd805c57edd4b4a0fb45659300bbdb4511c4a160611d426e99813b9b, sdist 44302017f96071d9f7ded4a325158478de464346c104f247b529be203b902c2b, passing exact-byte verification, clean venv and pipx installations, both example workflows, procedure rehearsal, maintained performance budgets, current security review, quality gate, candidate-contract tests, and the previously completed 412-pass source regression suite",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "ffcd8714-b6e6-4dc2-a58b-5e022badfadc"
+  ],
+  "correlation_id": null,
+  "event_sequence": 49,
+  "id": "16f85c45-a34a-4936-ac3a-6f27c9ac13af",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "limitations": [
+    "GitHub CI for the rebuilt candidate evidence branch has not run",
+    "Nine Windows symbolic-link security fixtures remain skipped because this host lacks symbolic-link creation privilege",
+    "Owner-observed native Codex and Claude Code retests against wheel ee87d97fbd805c57edd4b4a0fb45659300bbdb4511c4a160611d426e99813b9b remain pending",
+    "Extended real-project usability and final Local Production-v1 acceptance remain owner judgments"
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-09T07:47:02.774434Z",
+  "run_id": "d364cb49-c08a-4d15-849c-c935522726bc",
+  "schema_version": "1.0",
+  "step_id": "verify-release",
+  "tool_version": "1.0.0"
+}

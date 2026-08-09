@@ -1,0 +1,31 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:fd5e39ed07dca0357f46cd921a78f8a15fb99a2c781c4b920edbb56c25643690",
+    "sha256:a8cc847319e28d49c4b3c04c1321898338f6340501eabd677223dbf46d91fd46"
+  ],
+  "affected_record_ids": [
+    "ffcd8714-b6e6-4dc2-a58b-5e022badfadc",
+    "8edc9e21-578b-4cd5-8cc8-d969b9fd0fee",
+    "16f85c45-a34a-4936-ac3a-6f27c9ac13af"
+  ],
+  "authorization_basis": "participant registered a new immutable artifact revision and FORGE propagated dependency staleness",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 2,
+  "event_sequence": 51,
+  "id": "68ab9cfe-cce8-47ea-94bb-03ad94b252d7",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "recorded_at": "2026-08-09T07:49:54.127949Z",
+  "role": "verification-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Local Production-v1 rebuilt candidate validation report",
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,47 @@
+{
+  "acceptance_event_id": "fb8f7dcd-d412-4d20-901f-0e7ad1f9ca8f",
+  "accepted_artifact_revision_ids": [
+    "8dbb84aa-e84c-45a0-8f9f-c3a6faecfdd5"
+  ],
+  "accepted_check_result_ids": [
+    "fbf601a2-3d1f-45fe-97f5-604e4e04957f"
+  ],
+  "accepted_evidence_ids": [
+    "702acec2-2517-434d-9da1-eb0684a3912d"
+  ],
+  "accepted_scope": "Accept the awaiting-verification readiness correction that shares verifier-equivalent current claim, check, and evidence prerequisites across verify execution, canonical receipts, status, next, and recap, together with its current framework-change revision and passing source validation",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:f8ea8ccb134a5a9dc47e0c14b94c7a4aa09b0975442f6c48b14c3a5e13573d8c",
+    "sha256:6d11e8e4e0a3b04bdc1ce5d1eec663684d171b2cedba1ef71ba6171562c8ddfb",
+    "sha256:9631ea152ed94ea0fdd5d1f87b39a5d34e3f87b68200cfa935193d930e2801b0"
+  ],
+  "affected_record_ids": [
+    "8dbb84aa-e84c-45a0-8f9f-c3a6faecfdd5",
+    "fbf601a2-3d1f-45fe-97f5-604e4e04957f",
+    "702acec2-2517-434d-9da1-eb0684a3912d"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 62,
+  "id": "e1805efa-bd0f-4746-88f5-dc300fbcf8bb",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "known_limitations": [
+    "The prior wheel and sdist are superseded; a clean source commit, new artifact build, and repeated artifact-bound validation remain required before CI or native-app retest"
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-09T08:24:40.288078Z",
+  "residual_risks": [
+    "The focused regression suite and static checks cannot replace validation of the newly rebuilt distribution in clean installations and native applications"
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

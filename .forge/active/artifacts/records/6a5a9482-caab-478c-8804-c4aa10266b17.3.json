@@ -1,0 +1,39 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:97a6b96771f375d21f74aebe875eb720334ca49cb8bef26f9669e19e021728b0",
+    "sha256:f8ea8ccb134a5a9dc47e0c14b94c7a4aa09b0975442f6c48b14c3a5e13573d8c"
+  ],
+  "affected_record_ids": [
+    "b5e79103-3340-401d-b586-a9ed8a0036e3",
+    "8dbb84aa-e84c-45a0-8f9f-c3a6faecfdd5",
+    "16f85c45-a34a-4936-ac3a-6f27c9ac13af",
+    "59a37892-45ca-449e-a6ee-ff492197101b",
+    "64dc2984-a966-4eac-931d-fdeb1a555ca4",
+    "6dafefb5-da08-43be-95aa-1bba43b61d4d",
+    "8a8b1bbf-b921-4219-8e42-f68539515c07",
+    "b6098d49-362d-420c-b516-b6de165dc9cc",
+    "df6c1ae9-9cb8-46a3-b73f-1b4484451eb3",
+    "ec7d4a20-74e3-47f3-b93c-be6251621726",
+    "fe792fe6-d8f6-4515-9781-0c1a6d6116b2"
+  ],
+  "authorization_basis": "participant registered a new immutable artifact revision and FORGE propagated dependency staleness",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 3,
+  "event_sequence": 54,
+  "id": "6a5a9482-caab-478c-8804-c4aa10266b17",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "recorded_at": "2026-08-09T08:09:18.166721Z",
+  "role": "framework-changes",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Local Production-v1 Framework Changes",
+  "tool_version": "1.0.0"
+}

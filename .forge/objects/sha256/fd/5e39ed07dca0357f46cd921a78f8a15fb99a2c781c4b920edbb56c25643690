@@ -1,15 +1,12 @@
 # Local Production-v1 L9 Validation Report
 
-Status: **actionable verification-readiness correction implemented and source-validated; the prior
-exact build is superseded; rebuild, artifact-bound validation, CI, native-app retest, and final
-acceptance remain pending**
+Status: **replacement source, build, and installation validation passed; CI matrix, native-app
+replacement retest, and final acceptance remain pending**
 
 This report describes the exact unpublished candidate in `candidate-manifest.json`. It is
-post-build evidence and is excluded from the sdist identity. Current results establish the exact
-artifact's automated behavior before the readiness correction. The corrected source has passed its
-fast quality gate and focused regressions, but its new distribution identity has not yet been built
-or validated. These results do not authorize extended testing, publication, or final Local
-Production-v1 acceptance.
+post-build evidence and is excluded from the sdist identity. Current results establish readiness
+for CI and the bounded native replacement smoke; they do not yet authorize extended testing,
+publication, or final Local Production-v1 acceptance.
 
 ## Exact candidate
 
@@ -29,8 +26,7 @@ Hatchling 1.31.0. `tools.local_candidate verify` passed after the final build.
 | Ruff | passed |
 | Strict Pyright 1.1.411 | 0 errors, 0 warnings, 0 information messages |
 | Version consistency | passed; schema `1.0`, 51 public models, 94 CLI commands |
-| Complete pytest suite before readiness correction | 412 passed, 9 skipped in 526.54 seconds |
-| Readiness-focused source regression after correction | 21 passed |
+| Complete pytest suite | 412 passed, 9 skipped in 526.54 seconds |
 | Candidate manifest, names, sizes, metadata, and hashes | passed |
 | Distribution inventory | passed; 660 sdist entries and no `.agents`, `.claude`, `.codex`, or `.forge/local` content |
 
@@ -137,13 +133,8 @@ point-in-time evidence and the secret scans remain heuristic rather than proof o
 
 ## Conclusion
 
-The actionable-readiness defect is corrected in source. `verify` remains a legal transition but is
-not executable until the shared verifier-equivalent resolver finds a current claim, every required
-passing check against the exact current revisions, and a binding evidence packet. Missing checks
-and evidence are exposed as blockers and exact `check-record`/`evidence-add` actions in canonical
-receipts, `status`, `next`, and `recap`. The repository fast quality gate passed with strict Pyright
-at 0 errors and 0 warnings, and 21 focused artifact, lifecycle, and CLI regressions passed,
-including failed-check and stale-revision cases. Because this correction changes shipped source,
-the prior `ee87d97f...` wheel is superseded. A clean source commit, new wheel/sdist identity, and
-repeated artifact-bound validation are required before CI and the two native-app replacement smoke
-tests.
+The replacement source, complete suite, build identity, clean `venv` and `pipx` installations,
+example workflows, procedure rehearsal, performance review, and security review passed. The
+candidate is ready for CI and the two bounded native-app replacement smoke tests, but it is not
+ready for final acceptance. The successful vendor-file and owner-ceremony observations must be
+repeated against this exact rebuilt wheel.

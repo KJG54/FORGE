@@ -1,0 +1,38 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:97a6b96771f375d21f74aebe875eb720334ca49cb8bef26f9669e19e021728b0",
+    "sha256:6c002f5d57cdc7e8a514d7a09ef986a47af460c81e62c0f81c2a05c867393b65",
+    "sha256:8b906297600027b2209e8d52226821b9715e41a1ed4e199a0e43fa43fe0b616e"
+  ],
+  "affected_record_ids": [
+    "8a8b1bbf-b921-4219-8e42-f68539515c07",
+    "16f85c45-a34a-4936-ac3a-6f27c9ac13af",
+    "59a37892-45ca-449e-a6ee-ff492197101b",
+    "64dc2984-a966-4eac-931d-fdeb1a555ca4",
+    "6dafefb5-da08-43be-95aa-1bba43b61d4d",
+    "8a8b1bbf-b921-4219-8e42-f68539515c07",
+    "b6098d49-362d-420c-b516-b6de165dc9cc",
+    "df6c1ae9-9cb8-46a3-b73f-1b4484451eb3",
+    "ec7d4a20-74e3-47f3-b93c-be6251621726",
+    "fe792fe6-d8f6-4515-9781-0c1a6d6116b2"
+  ],
+  "approval_id": "8a8b1bbf-b921-4219-8e42-f68539515c07",
+  "authorization_basis": "configured owner revoked prior acceptance and invalidated dependent progression",
+  "correlation_id": null,
+  "event_sequence": 52,
+  "id": "cd691006-fcce-410a-9945-ff0054d5f90d",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "reason": "Release verification discovered that awaiting-verification readiness reports verify as executable before required current checks and binding evidence exist; return implementation to rework so status, next, recap, and receipts surface exact check and evidence prerequisites",
+  "recorded_at": "2026-08-09T07:54:13.358011Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}
