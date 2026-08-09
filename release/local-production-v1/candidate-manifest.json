@@ -3,10 +3,10 @@
   "status": "unpublished-local-candidate",
   "distribution": "forge-governance",
   "version": "1.0.0",
-  "built_at_utc": "2026-08-09T07:32:16Z",
+  "built_at_utc": "2026-08-09T08:26:35Z",
   "build": {
     "command": "python -m build --no-isolation --outdir dist/local-production-v1",
-    "source_baseline_commit": "ce6efa999d7ed421ead1d99bb526f4828db53a31",
+    "source_baseline_commit": "6290c366ccd4944711630ac87e11c4f52dd9d990",
     "source_state": "clean committed candidate source; tracked manifest, checksum, and post-build evidence records excluded from sdist",
     "python": "3.14.4",
     "platform": "Windows-11-10.0.26200-SP0",
@@ -18,20 +18,20 @@
     {
       "type": "wheel",
       "filename": "forge_governance-1.0.0-py3-none-any.whl",
-      "sha256": "ee87d97fbd805c57edd4b4a0fb45659300bbdb4511c4a160611d426e99813b9b",
-      "size_bytes": 290619
+      "sha256": "5d4532d0a55aae6d872a64db81c937feb4ed6b8275e8fde5fbcac025ad38ee0e",
+      "size_bytes": 291221
     },
     {
       "type": "sdist",
       "filename": "forge_governance-1.0.0.tar.gz",
-      "sha256": "44302017f96071d9f7ded4a325158478de464346c104f247b529be203b902c2b",
-      "size_bytes": 769803
+      "sha256": "050b9e8627c9d57a60849ea82d3d0f05b20f7f344cedd58407968be27711c2fa",
+      "size_bytes": 791313
     }
   ],
   "downstream_installation": {
     "artifact_type": "wheel",
     "filename": "forge_governance-1.0.0-py3-none-any.whl",
-    "sha256": "ee87d97fbd805c57edd4b4a0fb45659300bbdb4511c4a160611d426e99813b9b"
+    "sha256": "5d4532d0a55aae6d872a64db81c937feb4ed6b8275e8fde5fbcac025ad38ee0e"
   },
   "publication": {
     "authorized": false,

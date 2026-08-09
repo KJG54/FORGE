@@ -1,0 +1,15 @@
+{
+  "command": "evidence_add",
+  "completed_at": "2026-08-09T16:48:19.433240Z",
+  "events": [
+    {
+      "event_hash": "sha256:9aeca3078cc19183496017ce14f1c04be2a623ece96b2329c9d1f76bbba4d414",
+      "event_id": "fa963250-6a4b-4ac0-a3da-4caf3df60718",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 72
+    }
+  ],
+  "key": "local-v1-performance-implementation-evidence-20260809",
+  "request_digest": "sha256:4a181185c44fb41870dd6df89937b78d0583abbebc5e1252f2e3f5f8faf605eb",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,47 @@
+{
+  "acceptance_event_id": "162ef7c7-6d0d-4516-aa99-782c71a5edd9",
+  "accepted_artifact_revision_ids": [
+    "e78151b6-39c6-4d75-8fee-5365e08b3d96"
+  ],
+  "accepted_check_result_ids": [
+    "5d789ad1-7579-468b-b2cd-f47fe0bbcf74"
+  ],
+  "accepted_evidence_ids": [
+    "74b01883-64c1-4634-ba4e-b7a12cff3792"
+  ],
+  "accepted_scope": "Accept the bounded status-performance correction exactly as represented by framework-change revision e78151b6-39c6-4d75-8fee-5365e08b3d96, worker claim a2aef7f0-bbc3-4952-ae87-eafcc86c01da, passing implementation check 5d789ad1-7579-468b-b2cd-f47fe0bbcf74, and evidence packet 74b01883-64c1-4634-ba4e-b7a12cff3792; absent optional record families are skipped only after validated active-state loading, while non-empty families retain full validation",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e648e28e1fb8bc06c7cbeccad160163f1dd1deac9b32808ddca050b7d366ab31",
+    "sha256:0bfb766615689d015fdccd5412ca1d1bc4a2aefef72f6a60bf8b17b5f15b9ec3",
+    "sha256:ca84f257d8f791abe7d3c7a68e5257151be38b6f95111cbbe12da758b8510b83"
+  ],
+  "affected_record_ids": [
+    "e78151b6-39c6-4d75-8fee-5365e08b3d96",
+    "5d789ad1-7579-468b-b2cd-f47fe0bbcf74",
+    "74b01883-64c1-4634-ba4e-b7a12cff3792"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 74,
+  "id": "bc89fef2-d54d-40bb-ad1e-7a5e18ffa433",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "known_limitations": [
+    "A new clean source commit and exact wheel and sdist rebuild remain required; broad closeout tests and reviews were intentionally deferred"
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-09T16:56:30.671671Z",
+  "residual_risks": [
+    "The passing performance result establishes this local source environment; the rebuilt exact wheel must repeat the maintained performance review before push"
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

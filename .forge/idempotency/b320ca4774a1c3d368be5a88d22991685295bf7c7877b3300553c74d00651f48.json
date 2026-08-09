@@ -1,0 +1,15 @@
+{
+  "command": "artifact_revise",
+  "completed_at": "2026-08-09T16:44:23.692910Z",
+  "events": [
+    {
+      "event_hash": "sha256:7f14da146d35deddf1513761073caf7d3e20b90fc10c74feb678b757f2ba9c7c",
+      "event_id": "9a3780f1-c254-4113-bb0c-f25ce2b584c6",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 65
+    }
+  ],
+  "key": "local-v1-performance-finding-validation-revise-20260809",
+  "request_digest": "sha256:984a6249b7970b0a8c12ad5033a1039440c090d84a80e4628940e7a1fdf7c3b2",
+  "schema_version": "1.0"
+}

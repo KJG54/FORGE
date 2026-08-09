@@ -254,16 +254,31 @@ def inspect_status(
             pack_trust_state=active.pack_trust.trust_state,
             effective_scope_summary=effective_scope_summary(active),
         )
-    from forge.core.artifacts import list_artifacts
-    from forge.core.deviations import open_workflow_deviations
-    from forge.core.overrides import list_emergency_overrides
-    from forge.core.risk_acceptances import list_risk_acceptances
+    if active.state.current_artifact_revisions:
+        from forge.core.artifacts import list_artifacts
 
-    artifact_views = list_artifacts(layout)
+        artifact_views = list_artifacts(layout)
+    else:
+        artifact_views = ()
     drifted = tuple(view for view in artifact_views if not view.working_copy_matches)
-    open_deviations = open_workflow_deviations(layout)
-    emergency_overrides = list_emergency_overrides(layout)
-    risk_acceptances = list_risk_acceptances(layout)
+    if layout.workflow_deviation_directory.exists():
+        from forge.core.deviations import open_workflow_deviations
+
+        open_deviations = open_workflow_deviations(layout)
+    else:
+        open_deviations = ()
+    if layout.emergency_override_directory.exists():
+        from forge.core.overrides import list_emergency_overrides
+
+        emergency_overrides = list_emergency_overrides(layout)
+    else:
+        emergency_overrides = ()
+    if layout.risk_acceptance_directory.exists():
+        from forge.core.risk_acceptances import list_risk_acceptances
+
+        risk_acceptances = list_risk_acceptances(layout)
+    else:
+        risk_acceptances = ()
     effective_overrides = tuple(
         override
         for override in emergency_overrides

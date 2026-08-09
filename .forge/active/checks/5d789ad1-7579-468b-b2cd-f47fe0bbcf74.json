@@ -1,0 +1,53 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e648e28e1fb8bc06c7cbeccad160163f1dd1deac9b32808ddca050b7d366ab31"
+  ],
+  "affected_record_ids": [
+    "e78151b6-39c6-4d75-8fee-5365e08b3d96"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "implementation-validated",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-09T16:48:08.712211Z",
+  "event_sequence": 71,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "5d789ad1-7579-468b-b2cd-f47fe0bbcf74",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "python -m tools.quality_gate; three focused status and readiness regressions; maintained source performance review",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "A new exact distribution identity has not yet been built; broad closeout tests and reviews were intentionally deferred per owner direction"
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-09T16:48:08.712262Z",
+  "result_digest": "sha256:0bfb766615689d015fdccd5412ca1d1bc4a2aefef72f6a60bf8b17b5f15b9ec3",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-09T16:48:08.712209Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "e78151b6-39c6-4d75-8fee-5365e08b3d96"
+  ],
+  "tool_version": "1.0.0"
+}
