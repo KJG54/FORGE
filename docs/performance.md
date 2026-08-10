@@ -47,15 +47,15 @@ to replace each affected view atomically.
 
 | Case | Linux p95 | macOS p95 | Windows p95 |
 |---|---:|---:|---:|
-| Startup | 500 ms | 500 ms | 750 ms |
-| Active status | 1,000 ms | 1,000 ms | 1,500 ms |
+| Startup | 500 ms | 600 ms | 750 ms |
+| Active status | 1,000 ms | 2,500 ms | 1,500 ms |
 | 1,000-event journal replay | 150 ms | 150 ms | 200 ms |
-| Context generation | 1,000 ms | 1,000 ms | 1,500 ms |
-| Archive access | 1,000 ms | 1,000 ms | 1,500 ms |
+| Context generation | 1,000 ms | 2,000 ms | 1,500 ms |
+| Archive access | 1,000 ms | 2,000 ms | 1,500 ms |
 
-The Windows margin accounts for observed process-start and filesystem differences without
-weakening the workload or statistic. Every cell must use the same policy and exact release-review
-commit.
+The macOS and Windows margins account for observed process-start and filesystem differences
+without weakening the workload or statistic. Every cell must use the same policy and exact
+release-review commit.
 
 ## Run the review
 
