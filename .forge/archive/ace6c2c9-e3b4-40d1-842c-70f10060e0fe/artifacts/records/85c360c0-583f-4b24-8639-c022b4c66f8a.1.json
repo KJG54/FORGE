@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:0ff8f59e5a37bfc1bbe2edfe1bd8bdabee006f701ba0ffd170e58bbcbf82ab96"
+  ],
+  "affected_record_ids": [
+    "416cdc65-9c01-4336-84b7-a30a99b1ecf7",
+    "1ab88fd6-fa8e-4e96-b2f4-9a1cd633b577"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 30,
+  "id": "85c360c0-583f-4b24-8639-c022b4c66f8a",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "recorded_at": "2026-08-10T00:52:41.667918Z",
+  "role": "friction-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "friction-report.md",
+  "tool_version": "1.0.0"
+}

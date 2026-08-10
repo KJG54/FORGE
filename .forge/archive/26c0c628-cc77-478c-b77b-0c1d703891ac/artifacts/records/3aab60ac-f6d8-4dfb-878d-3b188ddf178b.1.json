@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:0ee96483561ab19709e0fe7561bec87f0f07505bc0840636a2ec38668b1d1581"
+  ],
+  "affected_record_ids": [
+    "6c98ae53-3224-40b3-8e68-e660a2ac73c8"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 96,
+  "id": "3aab60ac-f6d8-4dfb-878d-3b188ddf178b",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "recorded_at": "2026-08-09T19:44:23.481548Z",
+  "role": "release-readiness-record",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Local Production-v1 Release-Readiness Record",
+  "tool_version": "1.0.0"
+}

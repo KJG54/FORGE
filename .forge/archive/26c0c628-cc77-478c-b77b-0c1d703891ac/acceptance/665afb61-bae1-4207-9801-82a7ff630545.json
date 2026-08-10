@@ -1,0 +1,57 @@
+{
+  "acceptance_event_id": "44158d1d-8049-4522-a8f2-5a37b363ca48",
+  "accepted_artifact_revision_ids": [
+    "0aec45c0-f027-4bd8-b16b-21e5575a5047",
+    "6c98ae53-3224-40b3-8e68-e660a2ac73c8"
+  ],
+  "accepted_check_result_ids": [
+    "067f586f-5140-41aa-8bb3-f44ac4c770af"
+  ],
+  "accepted_evidence_ids": [
+    "11beb56d-1113-4f9f-9b9d-ad8ce0c91798"
+  ],
+  "accepted_scope": "Accept the Local Production-v1 closeout exactly as represented by release-readiness-record revision 6c98ae53-3224-40b3-8e68-e660a2ac73c8, lessons revision 0aec45c0-f027-4bd8-b16b-21e5575a5047, worker claim 468834c4-1270-4c7a-ae6d-3669e6a02be4, passing closeout-ready check 067f586f-5140-41aa-8bb3-f44ac4c770af, and evidence packet 11beb56d-1113-4f9f-9b9d-ad8ce0c91798 for wheel a9c010a92d146300de7f59852d8c7181039a3c45246f615d8f7666072c672349 and sdist 3907c86f25b3ad36c650c6888074ed1e8148451cd861ef42ddee1af26cf12b88; authorize completion of the closeout workflow step and progression to final initiative closure only, without granting public-release, hosted-operation, or hostile multi-user authority",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:7399923abbb0f9929eb7af523b02f180a03a9fe4802a6408cfaf62b9ace3d509",
+    "sha256:0ee96483561ab19709e0fe7561bec87f0f07505bc0840636a2ec38668b1d1581",
+    "sha256:67665fc034c8c0fd06b895ef37b4bfd9d6f7ab1655d702ee31f262bc41d22dee",
+    "sha256:fe602753fb2cb209cbf282dc2915b841751f951cd7d4926b2cf310b5fb2b00fd"
+  ],
+  "affected_record_ids": [
+    "0aec45c0-f027-4bd8-b16b-21e5575a5047",
+    "6c98ae53-3224-40b3-8e68-e660a2ac73c8",
+    "067f586f-5140-41aa-8bb3-f44ac4c770af",
+    "11beb56d-1113-4f9f-9b9d-ad8ce0c91798"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 103,
+  "id": "665afb61-bae1-4207-9801-82a7ff630545",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "known_limitations": [
+    "The current native sentinel reapply exercised the no-change path rather than a forced managed-block rewrite",
+    "Nine privileged Windows symbolic-link fixtures remain skipped on this host",
+    "GitHub CI and native task reports are directly observed or owner-supplied evidence, not authenticated external attestations"
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-09T21:43:52.448563Z",
+  "residual_risks": [
+    "Automatic generated-context freshness remains future work; governed status remains authoritative",
+    "Managed Codex Desktop and Claude Code adapter compatibility remains unestablished despite passing direct-agent operation",
+    "Same-user authority and operator labels provide attribution, not authentication",
+    "The exact ignored local candidate binaries must be preserved and hash-checked; rebuilding invalidates this evidence",
+    "Performance evidence covers this Windows CPython 3.14 host and is not a real-time or cross-platform guarantee",
+    "Public naming, signing, tags, package publication, GitHub Releases, hosted operation, and support readiness remain excluded"
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

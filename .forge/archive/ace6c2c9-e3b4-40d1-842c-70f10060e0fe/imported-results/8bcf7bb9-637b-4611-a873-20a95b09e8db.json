@@ -1,0 +1,33 @@
+{
+  "declared_limitations": [
+    "The full Windows, Ubuntu, and macOS GitHub Actions matrix has not been rerun.",
+    "The readiness record does not itself authorize Git operations, establish remote CI success, close the initiative, or constitute owner acceptance."
+  ],
+  "id": "8bcf7bb9-637b-4611-a873-20a95b09e8db",
+  "returned_files": [
+    {
+      "declared_digest": "sha256:3cacd89b204c085de7c69884fe4bd617a444993ee7eff1a689da2f0bc8d286c7",
+      "media_type": "text/markdown",
+      "proposed_target_path": "release/ci-repair-pr-44/release-readiness-record.md",
+      "schema_version": "1.0",
+      "source_path": "release-readiness-record.md"
+    },
+    {
+      "declared_digest": "sha256:7b7ed7943424ec81bc73ee234c2c427f49c0d2023d1f067d79a651e534f71478",
+      "media_type": "text/markdown",
+      "proposed_target_path": "release/ci-repair-pr-44/lessons.md",
+      "schema_version": "1.0",
+      "source_path": "lessons.md"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_run_or_handoff_id": "dce7e79c-9293-40ad-ad1d-ddeb1f1b596b",
+  "tool_metadata": {
+    "handoff_id": "dce7e79c-9293-40ad-ad1d-ddeb1f1b596b",
+    "operator": "direct-codex",
+    "run_id": "51c0e60c-6faa-41f4-9d76-fc759e8a4204"
+  },
+  "worker_claims": [
+    "Produced the release-readiness record and lessons for the exact accepted local CI repair, distinguishing readiness for authorized publication from unverified remote matrix success."
+  ]
+}

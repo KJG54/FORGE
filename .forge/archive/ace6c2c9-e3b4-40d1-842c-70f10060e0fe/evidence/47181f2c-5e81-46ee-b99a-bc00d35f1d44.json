@@ -1,0 +1,41 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:f0241b9fede60c09eea890ce2ebd29ecf4bc453b51faf5dc1daeb33ea3b342ca"
+  ],
+  "affected_record_ids": [
+    "59cb924a-dfda-489c-ac56-712aadd98612",
+    "49cbd30c-06f1-483d-8091-933a979c493b",
+    "0b99956a-0560-4c54-8fcb-16818db0ebd9"
+  ],
+  "artifact_revision_ids": [
+    "59cb924a-dfda-489c-ac56-712aadd98612"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "49cbd30c-06f1-483d-8091-933a979c493b"
+  ],
+  "claim_ids": [
+    "0b99956a-0560-4c54-8fcb-16818db0ebd9"
+  ],
+  "correlation_id": null,
+  "event_sequence": 16,
+  "id": "47181f2c-5e81-46ee-b99a-bc00d35f1d44",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "limitations": [
+    "The focused test passed with 2 tests in 0.94s, but the full Windows, Ubuntu, and macOS CI matrix has not yet been rerun."
+  ],
+  "packet_digest": "sha256:f0241b9fede60c09eea890ce2ebd29ecf4bc453b51faf5dc1daeb33ea3b342ca",
+  "purpose": "Bind the exact test revision, passing focused implementation check, and direct-codex worker claim for verification of the bounded PR 44 CI repair.",
+  "recorded_at": "2026-08-10T00:37:22.718962Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

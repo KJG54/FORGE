@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:7b7ed7943424ec81bc73ee234c2c427f49c0d2023d1f067d79a651e534f71478"
+  ],
+  "affected_record_ids": [
+    "fda1b6a2-7323-4bd4-b050-d76cc030ba73",
+    "8bcf7bb9-637b-4611-a873-20a95b09e8db"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 39,
+  "id": "11435d69-a026-4bd9-9181-39da8ee1fd64",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "recorded_at": "2026-08-10T01:00:59.790521Z",
+  "role": "lessons",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "lessons.md",
+  "tool_version": "1.0.0"
+}

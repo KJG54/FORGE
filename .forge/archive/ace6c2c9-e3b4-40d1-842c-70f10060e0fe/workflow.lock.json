@@ -1,0 +1,301 @@
+{
+  "compatibility_constraints": [
+    "forge-contracts-1"
+  ],
+  "description": "Govern a bounded change to FORGE through release review and owner acceptance.",
+  "explanation_content": {
+    "guided": "FORGE identifies each required release artifact, check, evidence packet, blocker, and owner decision while preserving the same governance.",
+    "mentored": "FORGE explains why framework scope, compatibility, verification, friction, residual risk, and release readiness remain separately reviewable facts under owner authority.",
+    "minimal": "Follow the declared framework-change steps; checks, evidence, and owner acceptance remain separate.",
+    "standard": "Scope, implement, verify, review risk, and close out the framework change without merging worker claims with owner acceptance."
+  },
+  "id": "framework-change",
+  "name": "FORGE Framework Change",
+  "pack_id": "forge-framework-change",
+  "required_artifact_classes": [
+    "change-scope",
+    "release-requirements",
+    "framework-changes",
+    "verification-report",
+    "friction-report",
+    "residual-risk-report",
+    "release-readiness-record",
+    "lessons"
+  ],
+  "required_evidence_classes": [
+    "check-evidence"
+  ],
+  "required_gates": [],
+  "schema_version": "1.0",
+  "steps": [
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "return_to_ready",
+      "check_requirements": [
+        "scope-reviewed"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "initiative-objective"
+      ],
+      "explanation_content": {},
+      "id": "scope",
+      "instructions": "Register the exact scope and release requirements before implementation authority is accepted.",
+      "prerequisites": [],
+      "purpose": "Define the framework change, constraints, compatibility impact, and acceptance criteria.",
+      "required_inputs": [],
+      "required_outputs": [
+        "change-scope",
+        "release-requirements"
+      ],
+      "schema_version": "1.0"
+    },
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "block_for_owner_review",
+      "check_requirements": [
+        "implementation-validated"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "accepted-scope",
+        "release-requirements"
+      ],
+      "explanation_content": {},
+      "id": "implement",
+      "instructions": "Change only what the accepted scope authorizes and preserve governed compatibility boundaries.",
+      "prerequisites": [
+        "scope"
+      ],
+      "purpose": "Produce the bounded framework change.",
+      "required_inputs": [
+        "change-scope",
+        "release-requirements"
+      ],
+      "required_outputs": [
+        "framework-changes"
+      ],
+      "schema_version": "1.0"
+    },
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "return_to_ready",
+      "check_requirements": [
+        "release-checks-passed"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "release-requirements",
+        "framework-changes"
+      ],
+      "explanation_content": {},
+      "id": "verify-release",
+      "instructions": "Preserve check and evidence results without treating process success as owner acceptance.",
+      "prerequisites": [
+        "implement"
+      ],
+      "purpose": "Validate the exact candidate change against its release requirements.",
+      "required_inputs": [
+        "release-requirements",
+        "framework-changes"
+      ],
+      "required_outputs": [
+        "verification-report"
+      ],
+      "schema_version": "1.0"
+    },
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "return_to_ready",
+      "check_requirements": [
+        "risk-review-complete"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "verification-report"
+      ],
+      "explanation_content": {},
+      "id": "review-risk",
+      "instructions": "Classify every finding and leave release-blocking decisions to the owner.",
+      "prerequisites": [
+        "verify-release"
+      ],
+      "purpose": "Review observed friction, limitations, and residual release risk.",
+      "required_inputs": [
+        "verification-report"
+      ],
+      "required_outputs": [
+        "friction-report",
+        "residual-risk-report"
+      ],
+      "schema_version": "1.0"
+    },
+    {
+      "acceptance_requirements": [
+        "owner-acceptance"
+      ],
+      "allowed_actors": [
+        "owner",
+        "human_contributor",
+        "agent_adapter"
+      ],
+      "allowed_transitions": [
+        "begin",
+        "rework",
+        "submit",
+        "verify",
+        "accept"
+      ],
+      "cancellation_behavior": "return_to_ready",
+      "check_requirements": [
+        "closeout-ready"
+      ],
+      "claim_requirements": [
+        "outputs-produced"
+      ],
+      "context_selection_rules": [
+        "accepted-risk-review"
+      ],
+      "explanation_content": {},
+      "id": "closeout",
+      "instructions": "Bind the readiness record to accepted verification and risk-review outputs.",
+      "prerequisites": [
+        "review-risk"
+      ],
+      "purpose": "Record release-candidate readiness and lessons without publishing Production v1.",
+      "required_inputs": [
+        "friction-report",
+        "residual-risk-report"
+      ],
+      "required_outputs": [
+        "release-readiness-record",
+        "lessons"
+      ],
+      "schema_version": "1.0"
+    }
+  ],
+  "transitions": [
+    {
+      "authority_requirement": "participant",
+      "conditions": [],
+      "destination_state": "in_progress",
+      "event_type": "step-transitioned",
+      "id": "begin",
+      "invalidation_effects": [],
+      "schema_version": "1.0",
+      "source_state": "ready"
+    },
+    {
+      "authority_requirement": "participant",
+      "conditions": [
+        "claim-recorded"
+      ],
+      "destination_state": "awaiting_verification",
+      "event_type": "step-transitioned",
+      "id": "submit",
+      "invalidation_effects": [],
+      "schema_version": "1.0",
+      "source_state": "in_progress"
+    },
+    {
+      "authority_requirement": "participant",
+      "conditions": [],
+      "destination_state": "in_progress",
+      "event_type": "step-transitioned",
+      "id": "rework",
+      "invalidation_effects": [],
+      "schema_version": "1.0",
+      "source_state": "invalidated"
+    },
+    {
+      "authority_requirement": "forge-cli",
+      "conditions": [
+        "required-checks-passed",
+        "required-evidence-registered"
+      ],
+      "destination_state": "awaiting_acceptance",
+      "event_type": "step-transitioned",
+      "id": "verify",
+      "invalidation_effects": [],
+      "schema_version": "1.0",
+      "source_state": "awaiting_verification"
+    },
+    {
+      "authority_requirement": "owner",
+      "conditions": [
+        "owner-acceptance-recorded"
+      ],
+      "destination_state": "completed",
+      "event_type": "step-transitioned",
+      "id": "accept",
+      "invalidation_effects": [],
+      "schema_version": "1.0",
+      "source_state": "awaiting_acceptance"
+    }
+  ],
+  "version": "0.1.0"
+}

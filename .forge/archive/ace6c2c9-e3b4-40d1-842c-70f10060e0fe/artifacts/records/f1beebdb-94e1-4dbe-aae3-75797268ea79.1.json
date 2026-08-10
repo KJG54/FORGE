@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:89291edaf6abed7965cecda50a561aa809fe8b0efaf879bdbe04ed37a2a21d42"
+  ],
+  "affected_record_ids": [
+    "7cbf4f11-d50e-44ba-a76c-b2e2feb32ea4",
+    "1ab88fd6-fa8e-4e96-b2f4-9a1cd633b577"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 30,
+  "id": "f1beebdb-94e1-4dbe-aae3-75797268ea79",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "recorded_at": "2026-08-10T00:52:41.667918Z",
+  "role": "residual-risk-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "residual-risk-report.md",
+  "tool_version": "1.0.0"
+}

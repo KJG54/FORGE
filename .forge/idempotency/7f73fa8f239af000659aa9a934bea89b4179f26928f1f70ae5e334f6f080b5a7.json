@@ -1,0 +1,21 @@
+{
+  "command": "acceptance_record",
+  "completed_at": "2026-08-09T18:40:24.429824Z",
+  "events": [
+    {
+      "event_hash": "sha256:9c9f54986345eb791eba6428997d6469713a8778dc00c0c1f71f316a662c6d78",
+      "event_id": "407f063c-cea8-4b97-8953-6254852220ec",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 93
+    },
+    {
+      "event_hash": "sha256:682fdad3c59c0338aee483cdc6b2a6cf5e053ef7d23fadb18524c898de1c68ae",
+      "event_id": "5e25b9fb-f778-4bbf-9c5f-648a9a1a0215",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 94
+    }
+  ],
+  "key": "local-v1-risk-review-accept-20260809",
+  "request_digest": "sha256:7704ad672e038f944137acf2ebb50f66eb8c290c829e69583393a2028456f3af",
+  "schema_version": "1.0"
+}

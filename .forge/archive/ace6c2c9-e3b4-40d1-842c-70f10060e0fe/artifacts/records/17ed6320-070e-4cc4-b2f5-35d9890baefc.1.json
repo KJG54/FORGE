@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:3024726e47a726f4e38a2c72cfb57892d44baf9f7a00c9ca613becea7e1cc7ca"
+  ],
+  "affected_record_ids": [
+    "59cb924a-dfda-489c-ac56-712aadd98612",
+    "ebfaf6f4-ae88-4252-864f-fedbe39ccfb2"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 12,
+  "id": "17ed6320-070e-4cc4-b2f5-35d9890baefc",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "recorded_at": "2026-08-10T00:30:37.814139Z",
+  "role": "framework-changes",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "test_local_v1_l1.py",
+  "tool_version": "1.0.0"
+}

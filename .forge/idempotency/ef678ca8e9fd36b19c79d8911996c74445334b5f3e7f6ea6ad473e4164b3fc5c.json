@@ -1,0 +1,15 @@
+{
+  "command": "artifact_add",
+  "completed_at": "2026-08-09T19:44:29.955173Z",
+  "events": [
+    {
+      "event_hash": "sha256:cdbd53a1c68b851b530a9bb5319bf507a619821d3b16d4c5754ce9a5a08b7542",
+      "event_id": "33443a34-b46c-4cf3-90cc-d2947435b36f",
+      "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+      "sequence": 97
+    }
+  ],
+  "key": "local-v1-closeout-lessons-20260809",
+  "request_digest": "sha256:6cb8a3f6fae4c375b98699c0da95dc530a51e520195e3e5d41bfd012e11dc578",
+  "schema_version": "1.0"
+}

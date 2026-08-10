@@ -1,0 +1,39 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8e8c10381810e5a3b8ed76628a9c28c2ee797b70cfd4197d24c8059f3d1c976f",
+    "sha256:24b084b94c7b798f01a43a3efe80b326c366f860d66fb4031477cb405a22864d"
+  ],
+  "affected_record_ids": [
+    "00db66f9-9e81-4726-90ff-fba75a048470",
+    "6a1123b4-6e0a-420c-87cb-d296d12c3ed2"
+  ],
+  "assertion": "Produced and registered the exact change-scope and release-requirements artifacts for the PR 44 CI test-only repair, preserving the archive digest, lifecycle assertions, exclusions, verification command, and publication boundary.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "00db66f9-9e81-4726-90ff-fba75a048470",
+    "6a1123b4-6e0a-420c-87cb-d296d12c3ed2"
+  ],
+  "correlation_id": null,
+  "event_sequence": 4,
+  "id": "4d0b8d7a-0f20-4dc9-ac9c-a1235e48539f",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "limitations": [
+    "No implementation edit or test execution was performed during the scope step.",
+    "Full cross-platform CI verification remains deferred to GitHub Actions after separately authorized publication."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-09T23:44:53.638345Z",
+  "run_id": "418e6734-b068-4a2f-8146-08e87d3c516d",
+  "schema_version": "1.0",
+  "step_id": "scope",
+  "tool_version": "1.0.0"
+}

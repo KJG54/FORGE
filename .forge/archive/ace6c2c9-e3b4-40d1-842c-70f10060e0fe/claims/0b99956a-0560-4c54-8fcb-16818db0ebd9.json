@@ -1,0 +1,35 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:3024726e47a726f4e38a2c72cfb57892d44baf9f7a00c9ca613becea7e1cc7ca"
+  ],
+  "affected_record_ids": [
+    "59cb924a-dfda-489c-ac56-712aadd98612"
+  ],
+  "assertion": "Updated only tests/test_local_v1_l1.py to load the immutable Local Production-v1 archive, inspect local_v1.active, preserve predecessor identities and distinct outcomes, expect Local Production-v1 CLOSED, and assert archive digest sha256:4b3eb9592b58f0325a6e5b5380f681fd9189154d88fc3b06aa58b8de4deccbbf; the focused test completed with 2 passed in 0.94s.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "59cb924a-dfda-489c-ac56-712aadd98612"
+  ],
+  "correlation_id": null,
+  "event_sequence": 13,
+  "id": "0b99956a-0560-4c54-8fcb-16818db0ebd9",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "limitations": [
+    "Full Windows, Ubuntu, and macOS CI matrix verification remains deferred to GitHub Actions after separately authorized publication."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-10T00:31:11.119128Z",
+  "run_id": "1a1a5c93-9235-4ab5-a4e1-35e60dc9428f",
+  "schema_version": "1.0",
+  "step_id": "implement",
+  "tool_version": "1.0.0"
+}

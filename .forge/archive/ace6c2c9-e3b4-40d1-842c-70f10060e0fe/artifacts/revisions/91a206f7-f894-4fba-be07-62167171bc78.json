@@ -1,0 +1,42 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:3cacd89b204c085de7c69884fe4bd617a444993ee7eff1a689da2f0bc8d286c7"
+  ],
+  "affected_record_ids": [
+    "12daca40-7117-4f3a-8919-c5e7bd9cc21e",
+    "8bcf7bb9-637b-4611-a873-20a95b09e8db"
+  ],
+  "artifact_id": "12daca40-7117-4f3a-8919-c5e7bd9cc21e",
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "byte_size": 1878,
+  "content_digest": "sha256:3cacd89b204c085de7c69884fe4bd617a444993ee7eff1a689da2f0bc8d286c7",
+  "correlation_id": null,
+  "event_sequence": 39,
+  "id": "91a206f7-f894-4fba-be07-62167171bc78",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "media_type": "text/markdown",
+  "path": "release/ci-repair-pr-44/release-readiness-record.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/3c/acd89b204c085de7c69884fe4bd617a444993ee7eff1a689da2f0bc8d286c7",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "8dc98812-131c-4c13-ac47-43c60dd15cc8",
+    "metadata": {
+      "untrusted": true
+    },
+    "recorded_at": "2026-08-10T01:00:59.790521Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "result:8bcf7bb9-637b-4611-a873-20a95b09e8db:release-readiness-record.md",
+    "source_type": "import-result"
+  },
+  "recorded_at": "2026-08-10T01:00:59.790521Z",
+  "registration_event_id": "9453addf-a008-47c8-a9ef-db665ac0ee3c",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "1.0.0"
+}

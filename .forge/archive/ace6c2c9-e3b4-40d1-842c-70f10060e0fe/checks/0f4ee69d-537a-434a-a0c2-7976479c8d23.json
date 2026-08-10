@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:0ff8f59e5a37bfc1bbe2edfe1bd8bdabee006f701ba0ffd170e58bbcbf82ab96",
+    "sha256:89291edaf6abed7965cecda50a561aa809fe8b0efaf879bdbe04ed37a2a21d42"
+  ],
+  "affected_record_ids": [
+    "416cdc65-9c01-4336-84b7-a30a99b1ecf7",
+    "7cbf4f11-d50e-44ba-a76c-b2e2feb32ea4"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "risk-review-complete",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-10T00:54:19.670023Z",
+  "event_sequence": 33,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": null,
+  "id": "0f4ee69d-537a-434a-a0c2-7976479c8d23",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Reviewed the friction and residual-risk reports; findings are classified, the unrun cross-platform matrix remains explicit, and blocking, publication, and risk judgments remain reserved for the owner.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "This check does not establish cross-platform CI success or accept the recorded residual risk."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-10T00:54:19.670082Z",
+  "result_digest": "sha256:8aadef3e4a2d5ed544bdbd8964d0981c77c41ab18d613f33f3b3ed8cb668b21d",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-10T00:54:19.670021Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "416cdc65-9c01-4336-84b7-a30a99b1ecf7",
+    "7cbf4f11-d50e-44ba-a76c-b2e2feb32ea4"
+  ],
+  "tool_version": "1.0.0"
+}

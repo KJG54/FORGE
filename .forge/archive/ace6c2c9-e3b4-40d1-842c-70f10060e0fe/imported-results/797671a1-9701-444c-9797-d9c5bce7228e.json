@@ -1,0 +1,26 @@
+{
+  "declared_limitations": [
+    "The full Windows, Ubuntu, and macOS GitHub Actions matrix has not been rerun.",
+    "Publication to PR 44 remains separately owner-authorized."
+  ],
+  "id": "797671a1-9701-444c-9797-d9c5bce7228e",
+  "returned_files": [
+    {
+      "declared_digest": "sha256:c8b86b1d74060011ad37d09739ddaa3b192caa9802b7c43b5fbfba17dba0a3d5",
+      "media_type": "text/markdown",
+      "proposed_target_path": "release/ci-repair-pr-44/verification-report.md",
+      "schema_version": "1.0",
+      "source_path": "verification-report.md"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_run_or_handoff_id": "901dca9b-cdf5-439a-b3e8-a1181f42226b",
+  "tool_metadata": {
+    "handoff_id": "901dca9b-cdf5-439a-b3e8-a1181f42226b",
+    "operator": "direct-codex",
+    "run_id": "b4607168-8233-40fb-97ba-aa5d28d3eae2"
+  },
+  "worker_claims": [
+    "Produced the verification report for the exact test revision, documenting satisfaction of the bounded requirements and the focused result of 2 passed in 0.94s."
+  ]
+}

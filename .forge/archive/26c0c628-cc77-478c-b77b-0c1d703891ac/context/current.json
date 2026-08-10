@@ -1,0 +1,66 @@
+{
+  "active_step": {
+    "context_selection_rules": [
+      "accepted-risk-review"
+    ],
+    "id": "closeout",
+    "instructions": "Bind the readiness record to accepted verification and risk-review outputs.",
+    "purpose": "Record release-candidate readiness and lessons without publishing Production v1.",
+    "required_inputs": [
+      {
+        "content_digest": "sha256:d34aa1be12b458a5e90983a4dcaf1d7ecf36120485da20aabab09e0e4b12bdfe",
+        "media_type": "text/markdown",
+        "path": "release/local-production-v1/friction-report.md",
+        "role": "friction-report"
+      },
+      {
+        "content_digest": "sha256:1641ffee5c283420177929d9d6a278d22870fa4ce6eb78d48effff2ac264abfb",
+        "media_type": "text/markdown",
+        "path": "release/local-production-v1/residual-risk-report.md",
+        "role": "residual-risk-report"
+      }
+    ],
+    "state": "in_progress"
+  },
+  "approved_scope": "Design, implement, document, package, and validate the local FORGE 1.0.0 candidate: document-first conversational bootstrap, canonical transaction receipts, a safe local scratchpad and warm recap, per-step mentoring, honest authority/operator provenance, explicit owner-only command ceremony, rejection and plan-change handling, and archive-derived successor briefs. Preserve existing compatibility, security, recovery, exact-byte, replay, idempotency, and archive invariants. Build and test one exact local wheel and sdist, then stop at extended owner testing. Exclude public naming clearance, tags, PyPI/TestPyPI, GitHub Releases, public support channels, publication automation, hosted or multi-user operation, and final owner acceptance.",
+  "expected_evidence": [
+    "Worker claim requirement: outputs-produced",
+    "Check requirement after import: closeout-ready",
+    "Workflow evidence class after import: check-evidence",
+    "Owner-only acceptance requirement: owner-acceptance",
+    "Returned files require staged import before registration",
+    "Worker claims never constitute checks, evidence, or owner acceptance"
+  ],
+  "known_blockers": [],
+  "objective": "Deliver and validate a feature-complete personal/local FORGE Production-v1 candidate with an intuitive conversational layer for direct Codex and Claude Code workspace agents, ready for extended owner testing without public publication",
+  "permitted_actions": [
+    "Create only declared returned files within the approved scope",
+    "Report worker claims, tool metadata, and limitations without governance approval",
+    "Use only the selected required-input paths listed in the active step"
+  ],
+  "prohibited_actions": [
+    "Record or imply owner decisions, acceptance, checks, or evidence",
+    "Modify FORGE-managed paths or undeclared project files",
+    "Read unrelated repository, archive, ignored, environment, or local-secret content",
+    "Execute external or irreversible side effects without separate authorization"
+  ],
+  "relevant_constraints": [
+    "Context selection rule: accepted-risk-review"
+  ],
+  "relevant_decisions": [],
+  "required_outputs": [
+    "release-readiness-record",
+    "lessons"
+  ],
+  "return_contract": {
+    "contract": "agent-result",
+    "manifest_filename": "result.json",
+    "requirements": [
+      "Bind source_run_or_handoff_id to the identifier supplied by FORGE",
+      "Declare every returned file, worker claim, limitation, and tool metadata item",
+      "Treat every returned file and claim as untrusted until staged import succeeds"
+    ],
+    "schema_filename": "agent-result.schema.json"
+  },
+  "schema_version": "1.0"
+}

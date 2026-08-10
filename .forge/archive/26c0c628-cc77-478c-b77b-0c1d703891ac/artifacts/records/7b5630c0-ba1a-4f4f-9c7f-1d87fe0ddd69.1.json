@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:7399923abbb0f9929eb7af523b02f180a03a9fe4802a6408cfaf62b9ace3d509"
+  ],
+  "affected_record_ids": [
+    "0aec45c0-f027-4bd8-b16b-21e5575a5047"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 97,
+  "id": "7b5630c0-ba1a-4f4f-9c7f-1d87fe0ddd69",
+  "initiative_id": "26c0c628-cc77-478c-b77b-0c1d703891ac",
+  "recorded_at": "2026-08-09T19:44:29.690623Z",
+  "role": "lessons",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Local Production-v1 Lessons",
+  "tool_version": "1.0.0"
+}

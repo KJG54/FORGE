@@ -1,0 +1,26 @@
+{
+  "declared_limitations": [
+    "The focused test has not yet been run against the imported working copy.",
+    "Full cross-platform CI verification remains deferred to GitHub Actions after separately authorized publication."
+  ],
+  "id": "ebfaf6f4-ae88-4252-864f-fedbe39ccfb2",
+  "returned_files": [
+    {
+      "declared_digest": "sha256:3024726e47a726f4e38a2c72cfb57892d44baf9f7a00c9ca613becea7e1cc7ca",
+      "media_type": "text/x-python",
+      "proposed_target_path": "tests/test_local_v1_l1.py",
+      "schema_version": "1.0",
+      "source_path": "test_local_v1_l1.py"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_run_or_handoff_id": "d21d007e-cd5e-4171-8756-6b299ac92f74",
+  "tool_metadata": {
+    "handoff_id": "d21d007e-cd5e-4171-8756-6b299ac92f74",
+    "operator": "direct-codex",
+    "run_id": "1a1a5c93-9235-4ab5-a4e1-35e60dc9428f"
+  },
+  "worker_claims": [
+    "Produced the bounded tests/test_local_v1_l1.py revision that validates the closed Local Production-v1 archive, preserves distinct predecessor assertions, and adds the exact archive digest without changing production code."
+  ]
+}

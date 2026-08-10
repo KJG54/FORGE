@@ -1,0 +1,75 @@
+{
+  "accepted_artifact_revision_ids": [
+    "00db66f9-9e81-4726-90ff-fba75a048470",
+    "416cdc65-9c01-4336-84b7-a30a99b1ecf7",
+    "59cb924a-dfda-489c-ac56-712aadd98612",
+    "6a1123b4-6e0a-420c-87cb-d296d12c3ed2",
+    "7cbf4f11-d50e-44ba-a76c-b2e2feb32ea4",
+    "91a206f7-f894-4fba-be07-62167171bc78",
+    "936881c6-fe59-4732-ad36-6f0de2da145e",
+    "fda1b6a2-7323-4bd4-b050-d76cc030ba73"
+  ],
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8e8c10381810e5a3b8ed76628a9c28c2ee797b70cfd4197d24c8059f3d1c976f",
+    "sha256:0ff8f59e5a37bfc1bbe2edfe1bd8bdabee006f701ba0ffd170e58bbcbf82ab96",
+    "sha256:3024726e47a726f4e38a2c72cfb57892d44baf9f7a00c9ca613becea7e1cc7ca",
+    "sha256:24b084b94c7b798f01a43a3efe80b326c366f860d66fb4031477cb405a22864d",
+    "sha256:89291edaf6abed7965cecda50a561aa809fe8b0efaf879bdbe04ed37a2a21d42",
+    "sha256:3cacd89b204c085de7c69884fe4bd617a444993ee7eff1a689da2f0bc8d286c7",
+    "sha256:c8b86b1d74060011ad37d09739ddaa3b192caa9802b7c43b5fbfba17dba0a3d5",
+    "sha256:7b7ed7943424ec81bc73ee234c2c427f49c0d2023d1f067d79a651e534f71478"
+  ],
+  "affected_record_ids": [
+    "8dd9f92b-0ae4-40c5-ae1e-54831c1c63a0",
+    "78c1f959-a8dd-4fcb-942b-c5d5b50c1c0f",
+    "80015a41-bbc3-4c82-8155-61ba5ced7c79",
+    "c1466a2f-3ee8-4992-a820-3586fe0be9a1",
+    "5c93b7f3-01a0-4714-9901-6a9240f92aa1",
+    "00db66f9-9e81-4726-90ff-fba75a048470",
+    "416cdc65-9c01-4336-84b7-a30a99b1ecf7",
+    "59cb924a-dfda-489c-ac56-712aadd98612",
+    "6a1123b4-6e0a-420c-87cb-d296d12c3ed2",
+    "7cbf4f11-d50e-44ba-a76c-b2e2feb32ea4",
+    "91a206f7-f894-4fba-be07-62167171bc78",
+    "936881c6-fe59-4732-ad36-6f0de2da145e",
+    "fda1b6a2-7323-4bd4-b050-d76cc030ba73"
+  ],
+  "archive_reference": ".forge/archive/ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "authorization_basis": "configured owner closed fully accepted work for atomic M2 archival",
+  "closing_summary": "Close initiative ace6c2c9-e3b4-40d1-842c-70f10060e0fe as completed: the exact test revision 59cb924a-dfda-489c-ac56-712aadd98612 with SHA-256 3024726e47a726f4e38a2c72cfb57892d44baf9f7a00c9ca613becea7e1cc7ca is accepted as ready for the separately authorized commit and publication to PR 44; the focused test passed with 2 tests in 0.94s; this closure does not claim that the Windows, Ubuntu, or macOS GitHub Actions matrix has rerun or passed.",
+  "closure_event_id": "a438f46b-cf4a-45c3-99c6-212e7f0cda63",
+  "correlation_id": null,
+  "current_artifact_revision_ids": [
+    "00db66f9-9e81-4726-90ff-fba75a048470",
+    "416cdc65-9c01-4336-84b7-a30a99b1ecf7",
+    "59cb924a-dfda-489c-ac56-712aadd98612",
+    "6a1123b4-6e0a-420c-87cb-d296d12c3ed2",
+    "7cbf4f11-d50e-44ba-a76c-b2e2feb32ea4",
+    "91a206f7-f894-4fba-be07-62167171bc78",
+    "936881c6-fe59-4732-ad36-6f0de2da145e",
+    "fda1b6a2-7323-4bd4-b050-d76cc030ba73"
+  ],
+  "event_sequence": 47,
+  "final_acceptance_ids": [
+    "8dd9f92b-0ae4-40c5-ae1e-54831c1c63a0",
+    "78c1f959-a8dd-4fcb-942b-c5d5b50c1c0f",
+    "80015a41-bbc3-4c82-8155-61ba5ced7c79",
+    "c1466a2f-3ee8-4992-a820-3586fe0be9a1",
+    "5c93b7f3-01a0-4714-9901-6a9240f92aa1"
+  ],
+  "id": "685c179b-15cb-491d-8136-6d60d734b02f",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-10T01:13:55.198796Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "terminal_state": "closed",
+  "tool_version": "1.0.0"
+}
