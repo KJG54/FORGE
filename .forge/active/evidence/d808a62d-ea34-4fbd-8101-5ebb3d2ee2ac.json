@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:1275eafa212be2da780b1fe8f478807e3e27b3fe9714d1662c3fe48237d538aa"
+  ],
+  "affected_record_ids": [
+    "416cdc65-9c01-4336-84b7-a30a99b1ecf7",
+    "7cbf4f11-d50e-44ba-a76c-b2e2feb32ea4",
+    "0f4ee69d-537a-434a-a0c2-7976479c8d23",
+    "07c52da5-00a7-41bf-8086-e17567f285f3"
+  ],
+  "artifact_revision_ids": [
+    "416cdc65-9c01-4336-84b7-a30a99b1ecf7",
+    "7cbf4f11-d50e-44ba-a76c-b2e2feb32ea4"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "0f4ee69d-537a-434a-a0c2-7976479c8d23"
+  ],
+  "claim_ids": [
+    "07c52da5-00a7-41bf-8086-e17567f285f3"
+  ],
+  "correlation_id": null,
+  "event_sequence": 34,
+  "id": "d808a62d-ea34-4fbd-8101-5ebb3d2ee2ac",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "limitations": [
+    "The full cross-platform CI matrix remains unrun; this evidence does not accept that residual risk or make a publication decision."
+  ],
+  "packet_digest": "sha256:1275eafa212be2da780b1fe8f478807e3e27b3fe9714d1662c3fe48237d538aa",
+  "purpose": "Bind the exact friction and residual-risk reports, passing risk-review-complete check, and direct-codex claim for the bounded PR 44 repair.",
+  "recorded_at": "2026-08-10T00:55:52.606265Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

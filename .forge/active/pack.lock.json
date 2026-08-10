@@ -1,0 +1,16 @@
+{
+  "data_resource_paths": [],
+  "declared_capability_ids": [],
+  "explanation_paths": [],
+  "id": "forge-framework-change",
+  "integrity_digest": "sha256:6e9ab5f0cdc8e67757b3fcd8cc710936149ca8f4df3a6c81d3fc0be29e3b68f4",
+  "provided_workflow_ids": [
+    "framework-change"
+  ],
+  "schema_compatibility": [
+    "forge-contracts-1"
+  ],
+  "schema_version": "1.0",
+  "template_paths": [],
+  "version": "0.1.0"
+}

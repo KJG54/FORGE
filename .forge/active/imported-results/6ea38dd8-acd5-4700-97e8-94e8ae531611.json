@@ -1,0 +1,33 @@
+{
+  "declared_limitations": [
+    "No implementation edit or test execution was performed during the scope step.",
+    "Full cross-platform CI verification remains deferred to GitHub Actions after separately authorized publication."
+  ],
+  "id": "6ea38dd8-acd5-4700-97e8-94e8ae531611",
+  "returned_files": [
+    {
+      "declared_digest": "sha256:8e8c10381810e5a3b8ed76628a9c28c2ee797b70cfd4197d24c8059f3d1c976f",
+      "media_type": "text/markdown",
+      "proposed_target_path": "release/ci-repair-pr-44/change-scope.md",
+      "schema_version": "1.0",
+      "source_path": "change-scope.md"
+    },
+    {
+      "declared_digest": "sha256:24b084b94c7b798f01a43a3efe80b326c366f860d66fb4031477cb405a22864d",
+      "media_type": "text/markdown",
+      "proposed_target_path": "release/ci-repair-pr-44/release-requirements.md",
+      "schema_version": "1.0",
+      "source_path": "release-requirements.md"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_run_or_handoff_id": "f52b6129-9fa2-49e1-a730-2dec2d6e4f72",
+  "tool_metadata": {
+    "handoff_id": "f52b6129-9fa2-49e1-a730-2dec2d6e4f72",
+    "operator": "direct-codex",
+    "run_id": "418e6734-b068-4a2f-8146-08e87d3c516d"
+  },
+  "worker_claims": [
+    "Produced the declared change-scope and release-requirements outputs for the bounded PR 44 CI test repair without editing tests or production code."
+  ]
+}

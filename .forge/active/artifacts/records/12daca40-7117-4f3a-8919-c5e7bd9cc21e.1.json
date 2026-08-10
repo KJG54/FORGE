@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:3cacd89b204c085de7c69884fe4bd617a444993ee7eff1a689da2f0bc8d286c7"
+  ],
+  "affected_record_ids": [
+    "91a206f7-f894-4fba-be07-62167171bc78",
+    "8bcf7bb9-637b-4611-a873-20a95b09e8db"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 39,
+  "id": "12daca40-7117-4f3a-8919-c5e7bd9cc21e",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "recorded_at": "2026-08-10T01:00:59.790521Z",
+  "role": "release-readiness-record",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "release-readiness-record.md",
+  "tool_version": "1.0.0"
+}

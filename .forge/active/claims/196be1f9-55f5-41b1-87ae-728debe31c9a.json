@@ -1,0 +1,36 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:c8b86b1d74060011ad37d09739ddaa3b192caa9802b7c43b5fbfba17dba0a3d5"
+  ],
+  "affected_record_ids": [
+    "936881c6-fe59-4732-ad36-6f0de2da145e"
+  ],
+  "assertion": "Produced and registered a verification report for test revision 59cb924a-dfda-489c-ac56-712aadd98612, mapping every bounded requirement to the exact code and documenting the focused result of 2 passed in 0.94s.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "936881c6-fe59-4732-ad36-6f0de2da145e"
+  ],
+  "correlation_id": null,
+  "event_sequence": 22,
+  "id": "196be1f9-55f5-41b1-87ae-728debe31c9a",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "limitations": [
+    "The full Windows, Ubuntu, and macOS GitHub Actions matrix has not been rerun.",
+    "Publication to PR 44 remains separately owner-authorized."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-10T00:47:31.947734Z",
+  "run_id": "b4607168-8233-40fb-97ba-aa5d28d3eae2",
+  "schema_version": "1.0",
+  "step_id": "verify-release",
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,39 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:0ff8f59e5a37bfc1bbe2edfe1bd8bdabee006f701ba0ffd170e58bbcbf82ab96",
+    "sha256:89291edaf6abed7965cecda50a561aa809fe8b0efaf879bdbe04ed37a2a21d42"
+  ],
+  "affected_record_ids": [
+    "416cdc65-9c01-4336-84b7-a30a99b1ecf7",
+    "7cbf4f11-d50e-44ba-a76c-b2e2feb32ea4"
+  ],
+  "assertion": "Produced and registered separate friction and residual-risk reports derived from the accepted verification report; the only material unresolved uncertainty is the unrun cross-platform GitHub Actions matrix, and no owner blocking or risk-acceptance decision is claimed.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "416cdc65-9c01-4336-84b7-a30a99b1ecf7",
+    "7cbf4f11-d50e-44ba-a76c-b2e2feb32ea4"
+  ],
+  "correlation_id": null,
+  "event_sequence": 31,
+  "id": "07c52da5-00a7-41bf-8086-e17567f285f3",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "limitations": [
+    "The full Windows, Ubuntu, and macOS GitHub Actions matrix has not been rerun.",
+    "Blocking, risk-acceptance, publication, and closeout judgments remain owner decisions."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-10T00:52:51.397143Z",
+  "run_id": "f694dd89-a072-40e1-9b12-f5638a6ebaec",
+  "schema_version": "1.0",
+  "step_id": "review-risk",
+  "tool_version": "1.0.0"
+}

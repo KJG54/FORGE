@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:b37e1a58ba3c7d1be641a49489d2e9fd112b80c6a3499a44570260aba641d2ce"
+  ],
+  "affected_record_ids": [
+    "91a206f7-f894-4fba-be07-62167171bc78",
+    "fda1b6a2-7323-4bd4-b050-d76cc030ba73",
+    "19215e95-79fd-49ff-8a1a-f6dbeb3923eb",
+    "75184395-6ab2-4a57-8666-a86cd8b29a4c"
+  ],
+  "artifact_revision_ids": [
+    "91a206f7-f894-4fba-be07-62167171bc78",
+    "fda1b6a2-7323-4bd4-b050-d76cc030ba73"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "19215e95-79fd-49ff-8a1a-f6dbeb3923eb"
+  ],
+  "claim_ids": [
+    "75184395-6ab2-4a57-8666-a86cd8b29a4c"
+  ],
+  "correlation_id": null,
+  "event_sequence": 43,
+  "id": "763c155a-2fe0-4340-bd49-679329b2ae08",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "limitations": [
+    "The GitHub Actions matrix has not rerun; this evidence does not close the initiative, commit, publish, or establish remote CI success."
+  ],
+  "packet_digest": "sha256:b37e1a58ba3c7d1be641a49489d2e9fd112b80c6a3499a44570260aba641d2ce",
+  "purpose": "Bind the exact release-readiness record, lessons, passing closeout-ready check, and direct-codex claim for the bounded PR 44 CI repair.",
+  "recorded_at": "2026-08-10T01:07:31.295513Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

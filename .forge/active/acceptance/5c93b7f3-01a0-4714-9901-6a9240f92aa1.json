@@ -1,0 +1,46 @@
+{
+  "acceptance_event_id": "50b2e754-b380-400f-813c-2d7c11a46686",
+  "accepted_artifact_revision_ids": [
+    "91a206f7-f894-4fba-be07-62167171bc78",
+    "fda1b6a2-7323-4bd4-b050-d76cc030ba73"
+  ],
+  "accepted_check_result_ids": [
+    "19215e95-79fd-49ff-8a1a-f6dbeb3923eb"
+  ],
+  "accepted_evidence_ids": [
+    "763c155a-2fe0-4340-bd49-679329b2ae08"
+  ],
+  "accepted_scope": "Modify only tests/test_local_v1_l1.py and FORGE-governed records created by the accepted workflow. Replace load_active_initiative(layout) with load_archive(layout, LOCAL_V1_INITIATIVE_ID) and inspect local_v1.active; preserve the predecessor-reference assertions; expect Local Production-v1 CLOSED, M6 CLOSED, and public M7 ABANDONED; assert archive digest sha256:4b3eb9592b58f0325a6e5b5380f681fd9189154d88fc3b06aa58b8de4deccbbf; optionally rename the test to describe archived state; and run .\\.venv\\Scripts\\python.exe -m pytest tests/test_local_v1_l1.py -q. Exclude production-code changes, archive mutation or reopening, Git history rewriting or amending, branch switching, unrelated cleanup, broad local test runs, commits, pushes, and PR publication.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:3cacd89b204c085de7c69884fe4bd617a444993ee7eff1a689da2f0bc8d286c7",
+    "sha256:7b7ed7943424ec81bc73ee234c2c427f49c0d2023d1f067d79a651e534f71478",
+    "sha256:582ae17923c980957c32b5b170b90e6f48ed4131f808788dc5984541e8e2c10f",
+    "sha256:b37e1a58ba3c7d1be641a49489d2e9fd112b80c6a3499a44570260aba641d2ce"
+  ],
+  "affected_record_ids": [
+    "91a206f7-f894-4fba-be07-62167171bc78",
+    "fda1b6a2-7323-4bd4-b050-d76cc030ba73",
+    "19215e95-79fd-49ff-8a1a-f6dbeb3923eb",
+    "763c155a-2fe0-4340-bd49-679329b2ae08"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 45,
+  "id": "5c93b7f3-01a0-4714-9901-6a9240f92aa1",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "known_limitations": [],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-10T01:11:05.057163Z",
+  "residual_risks": [],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

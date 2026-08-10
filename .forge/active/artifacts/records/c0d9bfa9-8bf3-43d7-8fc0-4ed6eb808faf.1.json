@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:c8b86b1d74060011ad37d09739ddaa3b192caa9802b7c43b5fbfba17dba0a3d5"
+  ],
+  "affected_record_ids": [
+    "936881c6-fe59-4732-ad36-6f0de2da145e",
+    "797671a1-9701-444c-9797-d9c5bce7228e"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 21,
+  "id": "c0d9bfa9-8bf3-43d7-8fc0-4ed6eb808faf",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "recorded_at": "2026-08-10T00:47:22.200297Z",
+  "role": "verification-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "verification-report.md",
+  "tool_version": "1.0.0"
+}

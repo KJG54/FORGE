@@ -1,0 +1,43 @@
+{
+  "acceptance_event_id": "e7a76e32-4655-440b-bdb2-11aca7a64170",
+  "accepted_artifact_revision_ids": [
+    "936881c6-fe59-4732-ad36-6f0de2da145e"
+  ],
+  "accepted_check_result_ids": [
+    "82e383e1-bebd-4310-89ad-f808dae82430"
+  ],
+  "accepted_evidence_ids": [
+    "3c4307ab-ba0b-4370-aa78-ccaa939304de"
+  ],
+  "accepted_scope": "Modify only tests/test_local_v1_l1.py and FORGE-governed records created by the accepted workflow. Replace load_active_initiative(layout) with load_archive(layout, LOCAL_V1_INITIATIVE_ID) and inspect local_v1.active; preserve the predecessor-reference assertions; expect Local Production-v1 CLOSED, M6 CLOSED, and public M7 ABANDONED; assert archive digest sha256:4b3eb9592b58f0325a6e5b5380f681fd9189154d88fc3b06aa58b8de4deccbbf; optionally rename the test to describe archived state; and run .\\.venv\\Scripts\\python.exe -m pytest tests/test_local_v1_l1.py -q. Exclude production-code changes, archive mutation or reopening, Git history rewriting or amending, branch switching, unrelated cleanup, broad local test runs, commits, pushes, and PR publication.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:c8b86b1d74060011ad37d09739ddaa3b192caa9802b7c43b5fbfba17dba0a3d5",
+    "sha256:dfc8888e3553215166441a78f7c9c9bd2a69796c6ebdf0a71d7f2795d61b4d21",
+    "sha256:086368602532ae5d153bfb99139587deee2e41ea3e8828025449ab94378a928c"
+  ],
+  "affected_record_ids": [
+    "936881c6-fe59-4732-ad36-6f0de2da145e",
+    "82e383e1-bebd-4310-89ad-f808dae82430",
+    "3c4307ab-ba0b-4370-aa78-ccaa939304de"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 27,
+  "id": "80015a41-bbc3-4c82-8155-61ba5ced7c79",
+  "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+  "known_limitations": [],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-10T00:49:58.510817Z",
+  "residual_risks": [],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}
