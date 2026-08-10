@@ -30,6 +30,10 @@ contact and state detection, then conduct the document-first interview with the 
 headings. Do not run `forge init`, `forge pack trust`, or `forge create` until the owner has
 confirmed your coverage playback; those and the other owner-gate commands belong to the owner.
 
+If you are an owner handing FORGE to a fresh agent that may not know what FORGE is, start with the
+[agent starter prompts](docs/agent-starter-prompts.md). They point the agent to the official source,
+the installed protocol, the document-first interview, phased planning, and owner-only gate rules.
+
 ## What using FORGE looks like
 
 You describe the project to your workspace agent in ordinary language. The agent reads the
