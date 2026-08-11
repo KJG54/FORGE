@@ -1,0 +1,36 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:20ec014962f7b4fc5086df787ada4d9480d9ec69c2fc66224f7f5d1fc84f9b53"
+  ],
+  "affected_record_ids": [
+    "81c7de6c-15e8-4c6f-9ad3-572033eb230e"
+  ],
+  "assertion": "Revised verification report adds the M8 source-skew correction evidence for commit 2e77c3d and rebuilt wheel sha256:90e09d9d4da7244e483816e2016ce8f94d6e6ba8de73b2a953f24c605d918ae9.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "81c7de6c-15e8-4c6f-9ad3-572033eb230e"
+  ],
+  "correlation_id": null,
+  "event_sequence": 33,
+  "id": "854d9e44-5327-4e22-9ac4-a3b823f487d3",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "limitations": [
+    "This re-verification updates M8 only; owner-observed dogfooding criteria O1-O9 remain outstanding for review-risk.",
+    "Full pytest had one environmental Git failure under a long temp path; the exact failing test passed when rerun under a shorter temp path."
+  ],
+  "operator_session_reference": "codex-desktop-m8-reverification",
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-11T18:06:26.058422Z",
+  "run_id": "73114419-c2fb-4a28-a0d7-30d7c3e98362",
+  "schema_version": "1.0",
+  "step_id": "verify-release",
+  "tool_version": "1.0.0"
+}

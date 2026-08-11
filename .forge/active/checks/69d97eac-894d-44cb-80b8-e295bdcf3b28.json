@@ -1,0 +1,55 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:20ec014962f7b4fc5086df787ada4d9480d9ec69c2fc66224f7f5d1fc84f9b53"
+  ],
+  "affected_record_ids": [
+    "81c7de6c-15e8-4c6f-9ad3-572033eb230e"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "release-checks-passed",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-11T18:06:45.946299Z",
+  "event_sequence": 35,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "69d97eac-894d-44cb-80b8-e295bdcf3b28",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "M8 correction re-verification for commit 2e77c3d: rebuilt wheel, ran fast quality gate, focused protocol/guidance/starter tests, affected workflow/CLI tests, full pytest with classified environmental rerun, and installed-wheel doctor source-skew smoke.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "Re-verification updates M8 source-skew behavior; owner-observed dogfooding criteria O1-O9 remain outstanding for review-risk.",
+    "Full pytest had one environmental Git failure under a long temp path; the exact failing test passed when rerun under a shorter temp path.",
+    "Installed-wheel M8 smoke used an isolated target path with the existing .venv interpreter and dependencies, not a fresh dependency installation."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-11T18:06:45.946365Z",
+  "result_digest": "sha256:dc60a61a45092362b5feb13f7a93c39d81737131db3e0bc65f67a9b830b7505a",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-11T18:06:45.946297Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "81c7de6c-15e8-4c6f-9ad3-572033eb230e"
+  ],
+  "tool_version": "1.0.0"
+}
