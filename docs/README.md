@@ -13,6 +13,7 @@ remain the canonical detail; the guides connect them without redefining contract
 | Audience | Start here | Continue with |
 |---|---|---|
 | New user starting a project | [Your first FORGE project](quickstart.md) | [Conversational walkthroughs](conversational-walkthroughs.md), [user guide](user-guide/README.md), [glossary](glossary.md) |
+| Owner handing work to a fresh agent | [Agent starter prompts](agent-starter-prompts.md) | [Your first FORGE project](quickstart.md), [agent context](agent-context.md), [conversational walkthroughs](conversational-walkthroughs.md) |
 | Repository owner or contributor | [User guide](user-guide/README.md) | [Examples](../examples/README.md), [troubleshooting](troubleshooting.md) |
 | Pack author | [Pack-author guide](pack-author-guide.md) | [Workflows](workflows.md), [validators](validators.md) |
 | Adapter contributor | [Adapter-author guide](adapter-author-guide.md) | [Adapters](adapters.md), [agent context](agent-context.md) |
@@ -24,6 +25,9 @@ remain the canonical detail; the guides connect them without redefining contract
 
 - Start a first governed project end to end with the
   [quickstart](quickstart.md).
+- Hand a fresh workspace agent the [starter prompts](agent-starter-prompts.md)
+  so it can identify FORGE, read the installed protocol, and begin with the
+  right interview and owner-gate rules.
 - See how the same work sounds in ordinary owner-agent conversation through the
   [conversational walkthroughs](conversational-walkthroughs.md).
 - Install a built distribution using an
