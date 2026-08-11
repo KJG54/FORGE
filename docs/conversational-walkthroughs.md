@@ -124,6 +124,63 @@ ready for a truthful rework run. Nothing was accepted or closed by that amendmen
 This refusal-and-recovery path is deliberate: FORGE makes the cheapest unsafe shortcut harder than
 preserving an honest account of what changed.
 
+## Walkthrough 4: A beginner starting a phase, in guided mode
+
+This is what a phase opening sounds like when the owner is new to the domain and the initiative
+uses the `guided` profile. The owner opened with something vague.
+
+**Owner:** I want to build a game but I don't know where to start.
+
+**Agent:** That's a fine place to start. Before any FORGE mechanics, two questions.
+
+Who is this for? For example: just you while learning, friends at a party, or people who already
+play a lot of puzzle games. And what would make a first version feel worth playing — even if it's
+one screen and one mechanic?
+
+**Owner:** Just me, learning. Something where you dodge things and get a score.
+
+**Agent:** Good — that bounds it usefully. Here's where we are and what this phase is for.
+
+**Phase: Discover what to build and why.** We're turning "dodge things, get a score" into an
+objective, constraints, and requirements. That gives later planning and verification a stable
+target. Nothing is accepted yet.
+
+| Who | Work in this phase |
+|---|---|
+| You | Decide what "getting hit" and "winning" mean; name what's out of scope for v1 |
+| Me | Turn your answers into a bounded objective and requirements; name open questions |
+| Either | Find two or three games that do the mechanic well, to point at |
+| You alone | Accepting the discovery outputs — an owner-only gate, later |
+
+Concepts worth understanding here, since you're learning: a game loop, input handling, collision
+detection, and game state. You don't need to implement any of them yet. Want me to explain them
+now, point you at a good tutorial, or leave them until we hit each one?
+
+**Owner:** Explain them when we get there. What's out of scope?
+
+**Agent:** My suggestion: no menus, no sound, no saved high scores, no multiple levels. One screen,
+one mechanic, a score that resets. Those exclusions are what make a first milestone finishable.
+
+Two questions must be answered before we can create the initiative — who it's for, and what a
+first useful version does. You've answered both. Everything else can stay open and be recorded as
+accepted uncertainty.
+
+Here's the phase closing, once discovery is written up:
+
+**Agent:** What changed: the objective and requirements now exist as a draft. Still uncertain: how
+hard the game should be, which you said you'd decide by playing it. Evidence: none yet — nothing
+has been checked. What FORGE recorded: nothing. This is still conversation.
+
+Next step is yours: read the draft, and if it matches, I'll show you the exact
+`forge create` command with its consequences before anything is recorded.
+
+Two things worth noticing. The agent gave examples with the open-ended question instead of asking
+"who is your target audience?" cold. And it kept "what FORGE recorded" as a separate line from
+"what changed" — because at that moment the honest answer was *nothing*.
+
+The same phase under `minimal` would be three sentences and no teaching. The governance is
+identical either way.
+
 ## What to say to an agent
 
 You can start without knowing any FORGE commands:

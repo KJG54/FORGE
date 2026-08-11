@@ -68,7 +68,8 @@ Each `workflows/<id>.yaml` document declares:
   cancellation declarations;
 - the shared begin, submit, rework, verify, and accept transition semantics;
 - optional gates and required artifact/evidence classes;
-- inline explanation text; and
+- inline explanation text;
+- optional interview and phase guidance; and
 - compatibility constraints.
 
 Every workflow must provide at least Standard and Guided explanation content. Minimal and Mentored
@@ -77,6 +78,53 @@ profiles must preserve identical actors, permissions, checks, gates, transitions
 
 Use domain-specific role and step names, but preserve the governance sequence. A pack cannot make a
 caller-supplied assertion satisfy a derived transition condition.
+
+## Interview and phase guidance
+
+Both fields are optional and default to empty. They give a conversational agent better questions
+and clearer phase framing; they change no authority. A pack cannot create a gate, waive a check,
+or alter acceptance through guidance.
+
+`interview_guidance` sits at workflow scope and groups the questions worth asking before an
+initiative exists. `must_answer_before_create` names coverage the agent should not leave open at
+the creation gate; each entry is a symbolic ID.
+
+```yaml
+interview_guidance:
+  vision:
+    purpose: Understand the human goal, the intended users, and any learning goals.
+    questions:
+      - What are you trying to build or learn?
+      - "Who is this for? For example: just you while learning, or a class or team."
+    must_answer_before_create:
+      - intended-users
+```
+
+`phase_guidance` sits on a step and describes that step as a human-readable phase.
+`owner_only_gates` restates which authority gates appear during the phase so an agent can name
+them in a task map; it neither creates nor satisfies a gate.
+
+```yaml
+phase_guidance:
+  label: Discover what to build and why
+  owner_tasks:
+    - Decide who this is for and what the first useful version must do.
+  agent_tasks:
+    - Turn the answers into a bounded objective, constraints, and requirements.
+  either_tasks:
+    - Gather examples, screenshots, or comparable projects.
+  owner_only_gates:
+    - Accepting the discovery outputs.
+  done_signal: The objective, constraints, and requirements are written down.
+```
+
+When an owner may be a beginner, give open-ended questions two to four brief examples, as the
+`vision` group above does. Simple yes-or-no and obvious factual questions do not need them.
+
+Guidance participates in the pack digest only when a pack actually supplies it. A pack that omits
+both fields keeps the exact digest it had before the fields existed, so old locks and archives
+continue to validate. Adding, changing, or removing guidance changes pack content and therefore
+requires a version bump: a published version must never denote two different contents.
 
 ## Templates and structural validators
 

@@ -41,6 +41,11 @@ survive, the remote must exist and be pushed to.
 
 ## Step 2 — Tell your agent what you want
 
+If your agent has never heard of FORGE, paste it one of the
+[agent starter prompts](agent-starter-prompts.md) first. They tell it that FORGE is this framework
+rather than some other `forge` command, point it at the installed protocol, and set the interview
+and owner-gate expectations below. The universal prompt works with any capable agent.
+
 Open the agent in the project folder (or cloud repository) and describe the project naturally:
 
 > I want to build a recipe manager for my family, using FORGE. Backtest ideas welcome, but keep
@@ -59,6 +64,11 @@ milestone is and what "done" means; constraints and things explicitly out of sco
 already exists and can be reused; who does what (you, the agent, FORGE); and open questions that
 still need answers. Short answers are fine. "I don't know yet" is a legitimate answer — the agent
 records the uncertainty instead of guessing.
+
+If you chose the guided or mentored profile, the agent also asks what you want to *learn* from the
+project, how you prefer to learn it, and which parts you would rather attempt yourself. Those
+answers change how much the agent explains and what it hands you versus does for you. They change
+nothing about scope, checks, evidence, or acceptance — every profile is governed identically.
 
 ## Step 3 — Confirm the playback, then the two gates
 
