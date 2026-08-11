@@ -9,10 +9,12 @@
   "current_step_id": "implement",
   "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
   "integrity_state": "healthy",
-  "journal_head_hash": "sha256:402fd8304cca6630320b7d987a66be2eda8c81344f206a67dd17d663a77bfab7",
-  "journal_head_sequence": 18,
+  "journal_head_hash": "sha256:501c599e1a925086b5bb57657b1d051eb73856e9b60822f84d2e23402ccb9ed6",
+  "journal_head_sequence": 19,
   "lifecycle_state": "active",
-  "open_decision_ids": [],
+  "open_decision_ids": [
+    "7cef20dd-41d9-47d5-b01c-c5127d08d272"
+  ],
   "open_gate_ids": [],
   "permitted_next_actions": [
     "acceptance-record:implement"
