@@ -24,6 +24,34 @@ from forge.packs.validation import calculate_pack_digest
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# Every (pack, version) identity ever published, with the digest it denotes. A version
+# may never be reused for different content, so entries are append-only: to change a
+# pack's content, add a new version rather than editing an existing row.
+PUBLISHED_PACK_IDENTITIES = {
+    ("software-basic", "0.5.0"): (
+        "sha256:b0975cc901a91a5674eec03c33f6c1ea67ba9cc7e5eed604be71ad6f02bb5ac5"
+    ),
+    ("software-basic", "0.6.0"): (
+        "sha256:7ef57351d571bf78fedbb115466b0f0b351addd4970909ef92e845fbc4aff962"
+    ),
+    ("research-basic", "0.4.0"): (
+        "sha256:11ce1ee84c288a210346a9c1ff61567385ee704b6adb3498ed4e77dfd2cf37e5"
+    ),
+    ("forge-framework-change", "0.1.0"): (
+        "sha256:6e9ab5f0cdc8e67757b3fcd8cc710936149ca8f4df3a6c81d3fc0be29e3b68f4"
+    ),
+    ("forge-production-release", "0.1.0"): (
+        "sha256:fb23e9b8fb7692db9c277168175c18090f940b9f0a425bb27c80a1013afda497"
+    ),
+}
+
+PACK_SOURCES = {
+    "software-basic": "src/forge/packs/bundled/software-basic",
+    "research-basic": "src/forge/packs/bundled/research-basic",
+    "forge-framework-change": "packs/forge-framework-change",
+    "forge-production-release": "packs/forge-production-release",
+}
+
 # Packs that supply no guidance. Their digests must never move.
 FROZEN_PACK_DIGESTS = {
     "src/forge/packs/bundled/research-basic": (
@@ -120,7 +148,8 @@ def _sample_interview_guidance() -> InterviewGuidanceGroup:
 
 
 def test_supplied_guidance_participates_in_the_digest_and_round_trips() -> None:
-    pack = load_pack(ROOT / "src" / "forge" / "packs" / "bundled" / "software-basic")
+    # research-basic supplies no guidance, so it isolates the effect of adding some.
+    pack = load_pack(ROOT / "src" / "forge" / "packs" / "bundled" / "research-basic")
     workflow = pack.workflow()
     baseline = calculate_pack_digest(pack.manifest, pack.workflows, pack.resources)
 
@@ -157,7 +186,7 @@ def test_supplied_guidance_participates_in_the_digest_and_round_trips() -> None:
 
 
 def test_phase_guidance_and_step_guidance_move_the_digest_independently() -> None:
-    pack = load_pack(ROOT / "src" / "forge" / "packs" / "bundled" / "software-basic")
+    pack = load_pack(ROOT / "src" / "forge" / "packs" / "bundled" / "research-basic")
     workflow = pack.workflow()
 
     step_only = workflow.model_copy(
@@ -195,3 +224,71 @@ def test_malformed_guidance_is_rejected() -> None:
 
     with pytest.raises(ValidationError):
         PhaseGuidance(label="Valid label", unexpected_field="x")
+
+
+def test_no_pack_version_is_reused_for_different_content() -> None:
+    for pack_id, source in PACK_SOURCES.items():
+        pack = load_pack(ROOT / source)
+        version = pack.manifest.version
+        identity = (pack_id, version)
+
+        assert identity in PUBLISHED_PACK_IDENTITIES, (
+            f"{pack_id} is now at {version}, which has no recorded identity. Add the new "
+            f"(version, digest) row rather than editing an existing one."
+        )
+
+        calculated = calculate_pack_digest(pack.manifest, pack.workflows, pack.resources)
+
+        assert calculated == PUBLISHED_PACK_IDENTITIES[identity], (
+            f"{pack_id} {version} previously denoted "
+            f"{PUBLISHED_PACK_IDENTITIES[identity]} but now calculates {calculated}. "
+            f"A published version must never denote different content; bump the version."
+        )
+
+
+def test_software_basic_supplies_guidance_for_every_step_and_coverage_area() -> None:
+    pack = load_pack(ROOT / "src" / "forge" / "packs" / "bundled" / "software-basic")
+    workflow = pack.workflow()
+
+    assert set(workflow.interview_guidance) == {
+        "vision",
+        "first_milestone",
+        "risks_and_constraints",
+        "learning_path",
+    }
+    assert workflow.interview_guidance["vision"].must_answer_before_create == (
+        "intended-users",
+        "first-useful-outcome",
+    )
+
+    for step in workflow.steps:
+        guidance = step.phase_guidance
+        assert guidance is not None, f"step {step.id} has no phase guidance"
+        assert guidance.label, step.id
+        assert guidance.done_signal, step.id
+        assert guidance.owner_tasks, step.id
+        assert guidance.agent_tasks, step.id
+        # Every step in this workflow ends in owner acceptance, so each phase must name
+        # at least one owner-only gate or the task map would understate authority.
+        assert guidance.owner_only_gates, step.id
+
+
+def test_guidance_does_not_alter_workflow_authority() -> None:
+    """Guidance is presentation. It must not change any governed step property."""
+    pack = load_pack(ROOT / "src" / "forge" / "packs" / "bundled" / "software-basic")
+    workflow = pack.workflow()
+
+    for step in workflow.steps:
+        assert step.acceptance_requirements == ("owner-acceptance",), step.id
+        assert step.allowed_transitions == (
+            "begin",
+            "rework",
+            "submit",
+            "verify",
+            "accept",
+        ), step.id
+
+    accept = next(item for item in workflow.transitions if item.id == "accept")
+    assert accept.authority_requirement == "owner"
+    verify = next(item for item in workflow.transitions if item.id == "verify")
+    assert verify.authority_requirement == "forge-cli"

@@ -60,7 +60,7 @@
       },
       {
         "id": "software-basic",
-        "version": "0.5.0",
+        "version": "0.6.0",
         "schema_compatibility": "forge-contracts-1"
       }
     ],

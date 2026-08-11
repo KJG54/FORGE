@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from conftest import RESEARCH_BASIC_VERSION, SOFTWARE_BASIC_VERSION
 
 from forge.contracts import CONTRACT_MODELS
 from forge.contracts.actors import ActorType
@@ -91,7 +92,9 @@ def test_bundled_packs_pass_one_shared_conformance_contract(
     workflow = pack.workflow()
 
     assert pack.manifest.id == pack_id
-    expected_version = "0.5.0" if pack_id == "software-basic" else "0.4.0"
+    expected_version = (
+        SOFTWARE_BASIC_VERSION if pack_id == "software-basic" else RESEARCH_BASIC_VERSION
+    )
     assert pack.manifest.version == workflow.version == expected_version
     assert pack.manifest.provided_workflow_ids == (workflow.id,)
     assert pack.manifest.declared_capability_ids == ()

@@ -84,7 +84,9 @@ def test_pre_v1_manifest_covers_every_accepted_public_model() -> None:
     assert manifest["public_pre_v1_releases"] == []
 
     cumulative: set[str] = set()
-    expected_milestones = ["M1", "M2", "M3", "M4", "M5"]
+    # Baselines are labelled by the body of work that changed the public contract.
+    # M6 and M7 are absent because neither added a public model.
+    expected_milestones = ["M1", "M2", "M3", "M4", "M5", "profile-aware-facilitation"]
     baselines = manifest["accepted_baselines"]
     assert [item["milestone"] for item in baselines] == expected_milestones
     for baseline in baselines:

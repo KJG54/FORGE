@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from conftest import SOFTWARE_BASIC_VERSION
 from typer.testing import CliRunner
 
 from forge import __version__
@@ -64,7 +65,7 @@ def test_bundled_pack_inspection_works_before_initialization(tmp_path: Path) -> 
 
     assert listed.exit_code == 0, listed.stdout
     assert "Repository: uninitialized" in listed.stdout
-    assert "software-basic 0.5.0 (bundled" in listed.stdout
+    assert f"software-basic {SOFTWARE_BASIC_VERSION} (bundled" in listed.stdout
 
     inspected = runner.invoke(
         app,
@@ -72,7 +73,7 @@ def test_bundled_pack_inspection_works_before_initialization(tmp_path: Path) -> 
     )
 
     assert inspected.exit_code == 0, inspected.stdout
-    assert "Pack: software-basic@0.5.0 (bundled" in inspected.stdout
+    assert f"Pack: software-basic@{SOFTWARE_BASIC_VERSION} (bundled" in inspected.stdout
     assert "- discover: required_inputs=none" in inspected.stdout
     assert "required_outputs=objective-and-constraints, requirements" in inspected.stdout
     assert "Valid scope-amendment requirement IDs:" in inspected.stdout
@@ -90,7 +91,7 @@ def test_pack_create_status_next_and_begin_commands(tmp_path: Path) -> None:
 
     listed = runner.invoke(app, ["pack", "list", "-C", str(tmp_path)])
     assert listed.exit_code == 0, listed.stdout
-    assert "software-basic 0.5.0" in listed.stdout
+    assert f"software-basic {SOFTWARE_BASIC_VERSION}" in listed.stdout
     validated = runner.invoke(
         app,
         ["pack", "validate", "software-basic", "-C", str(tmp_path)],

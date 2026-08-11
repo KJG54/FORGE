@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from conftest import RESEARCH_BASIC_VERSION, SOFTWARE_BASIC_VERSION
 from typer.testing import CliRunner
 
 from forge.cli.app import app
@@ -33,7 +34,9 @@ def test_bundled_packs_supply_exactly_four_digest_bound_profiles(
     pack = load_pack(BUNDLED_PACK_ROOT / pack_id, bundled=True)
     workflow = pack.workflow()
 
-    expected_version = "0.5.0" if pack_id == "software-basic" else "0.4.0"
+    expected_version = (
+        SOFTWARE_BASIC_VERSION if pack_id == "software-basic" else RESEARCH_BASIC_VERSION
+    )
     assert pack.manifest.version == expected_version
     assert workflow.version == expected_version
     assert set(workflow.explanation_content) == {
@@ -155,11 +158,16 @@ def test_two_profile_pack_remains_valid_and_unavailable_profile_fails_precommit(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     current = load_pack(SOFTWARE_PACK_ROOT, bundled=True)
+    # A legacy pack predates step explanation content and the later guidance fields
+    # alike, so clear all three to keep this fixture meaning what it is named for.
     legacy_workflow = current.workflow().model_copy(
         update={
             "version": "0.3.0",
+            "interview_guidance": {},
             "steps": tuple(
-                step.model_copy(update={"explanation_content": {}})
+                step.model_copy(
+                    update={"explanation_content": {}, "phase_guidance": None}
+                )
                 for step in current.workflow().steps
             ),
             "explanation_content": {

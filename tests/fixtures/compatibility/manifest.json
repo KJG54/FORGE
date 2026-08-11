@@ -85,6 +85,15 @@
       "commit": "57065f0",
       "milestone": "M5",
       "public_model_count": 51
+    },
+    {
+      "added_models": [
+        "interview-guidance-group",
+        "phase-guidance"
+      ],
+      "commit": "1e1ef4d",
+      "milestone": "profile-aware-facilitation",
+      "public_model_count": 53
     }
   ],
   "contract_schema_versions": [
