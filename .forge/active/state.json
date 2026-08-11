@@ -5,25 +5,25 @@
     "0260efa7-0a93-4b53-bc85-a1a4441c00ac": 1,
     "81634484-f41f-47d6-8858-d31aac02a43a": 1
   },
-  "current_step_id": "scope",
+  "current_step_id": "implement",
   "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
   "integrity_state": "healthy",
-  "journal_head_hash": "sha256:2a62ae3abfdb8c50f9b87f3df56b40b96e3406868ace9266e65e88b8f17cd97e",
-  "journal_head_sequence": 9,
+  "journal_head_hash": "sha256:fadde1f4aca3975c235162224fde27dc97971e1b0865b4b0961d3a1a0b245c3d",
+  "journal_head_sequence": 11,
   "lifecycle_state": "active",
   "open_decision_ids": [],
   "open_gate_ids": [],
   "permitted_next_actions": [
-    "acceptance-record:scope"
+    "begin:implement"
   ],
   "repository_state": "initialized",
   "schema_version": "1.0",
   "stale_record_ids": [],
   "step_states": {
     "closeout": "pending",
-    "implement": "pending",
+    "implement": "ready",
     "review-risk": "pending",
-    "scope": "awaiting_acceptance",
+    "scope": "completed",
     "verify-release": "pending"
   },
   "workflow_id": "framework-change",
