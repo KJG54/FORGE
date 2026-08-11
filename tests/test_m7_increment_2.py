@@ -30,7 +30,12 @@ def test_frozen_production_v1_contract_matches_every_current_version_boundary() 
     assert report["status"] == "passed"
     assert report["version"] == __version__ == "1.0.0"
     assert report["contract_schema_version"] == SCHEMA_VERSION == "1.0"
-    assert report["public_model_count"] == len(CONTRACT_MODELS) == 51
+    # 51 -> 53: InterviewGuidanceGroup and PhaseGuidance joined the public contract
+    # surface with the additive profile-aware guidance fields, following the existing
+    # Gate precedent for nested workflow models. The v1.0.0 distribution is still
+    # candidate-unpublished, so this baseline is a candidate pin rather than a shipped
+    # compatibility promise.
+    assert report["public_model_count"] == len(CONTRACT_MODELS) == 53
     assert report["wheel_filename"] == "forge_governance-1.0.0-py3-none-any.whl"
     assert report["sdist_filename"] == "forge_governance-1.0.0.tar.gz"
     assert report["bundled_packs"] == ["research-basic", "software-basic"]

@@ -32,7 +32,7 @@
     "schema_versions": [
       "1.0"
     ],
-    "public_model_count": 51,
+    "public_model_count": 53,
     "pack_schema_compatibility": "forge-contracts-1",
     "journal_formats": [
       {
