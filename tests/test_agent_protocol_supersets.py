@@ -12,7 +12,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from typer.testing import CliRunner
 
+from forge.cli.app import app
 from forge.core.agent_context import generate_agent_context, superseded_protocol_copies
 from forge.core.agent_protocol import (
     AGENT_PROTOCOL_DIGEST,
@@ -24,6 +26,7 @@ from forge.core.agent_protocol import (
 from forge.core.authorization import owner_actor
 from forge.core.diagnostics import inspect_repository_health
 from forge.core.lifecycle import create_initiative
+from forge.errors import IntegrityError
 from forge.storage.objects import sha256_digest
 from forge.storage.repository import InitializationResult, initialize_repository
 
@@ -127,8 +130,12 @@ def test_doctor_reports_no_protocol_skew_before_context_generation(tmp_path: Pat
 
     report = inspect_repository_health(initialized.layout)
 
-    assert f"agent protocol {AGENT_PROTOCOL_VERSION} (no generated context)" in report.checks
-    assert not [warning for warning in report.warnings if "protocol" in warning]
+    assert (
+        f"agent protocol {AGENT_PROTOCOL_VERSION} installed; no repository source or "
+        "generated context"
+        in report.checks
+    )
+    assert not _protocol_context_skew_warnings(report.warnings)
 
 
 def test_doctor_reports_matching_protocol_after_context_generation(tmp_path: Path) -> None:
@@ -138,9 +145,40 @@ def test_doctor_reports_matching_protocol_after_context_generation(tmp_path: Pat
     report = inspect_repository_health(initialized.layout)
 
     assert (
-        f"agent protocol {AGENT_PROTOCOL_VERSION} matches the generated context" in report.checks
+        f"agent protocol {AGENT_PROTOCOL_VERSION} matches generated context" in report.checks
     )
-    assert not [warning for warning in report.warnings if "protocol" in warning]
+    assert not _protocol_context_skew_warnings(report.warnings)
+
+
+def test_doctor_refuses_when_installed_protocol_is_older_than_repository_source(
+    tmp_path: Path,
+) -> None:
+    initialized = initialize_repository(tmp_path, owner_display_name="Repository Owner")
+    source = tmp_path / "src" / "forge" / "core"
+    source.mkdir(parents=True)
+    (source / "agent_protocol.py").write_text(
+        'AGENT_PROTOCOL_VERSION = "9.0.0"\n',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(IntegrityError, match=r"older than repository source protocol 9\.0\.0"):
+        inspect_repository_health(initialized.layout)
+
+
+def test_doctor_cli_reports_source_protocol_skew_as_non_healthy(tmp_path: Path) -> None:
+    initialized = initialize_repository(tmp_path, owner_display_name="Repository Owner")
+    source = tmp_path / "src" / "forge" / "core"
+    source.mkdir(parents=True)
+    (source / "agent_protocol.py").write_text(
+        'AGENT_PROTOCOL_VERSION = "9.0.0"\n',
+        encoding="utf-8",
+    )
+
+    result = CliRunner().invoke(app, ["doctor", "-C", str(initialized.layout.root)])
+
+    assert result.exit_code == 30
+    assert "older than repository source protocol 9.0.0" in result.stderr
+    assert "FORGE repository health: healthy" not in result.stdout
 
 
 def test_doctor_reports_a_distinct_diagnostic_when_the_generated_protocol_is_superseded(
@@ -159,7 +197,7 @@ def test_doctor_reports_a_distinct_diagnostic_when_the_generated_protocol_is_sup
         f"agent protocol {AGENT_PROTOCOL_VERSION} checked against the generated context"
         in report.checks
     )
-    skew = [warning for warning in report.warnings if "protocol" in warning]
+    skew = _protocol_context_skew_warnings(report.warnings)
     assert len(skew) == 1
     assert "0.9.0" in skew[0]
     assert AGENT_PROTOCOL_VERSION in skew[0]
@@ -181,7 +219,7 @@ def test_regeneration_removes_a_superseded_generated_protocol_copy(tmp_path: Pat
     assert (context_directory / AGENT_PROTOCOL_FILENAME).is_file()
     assert superseded_protocol_copies(initialized.layout) == ()
     report = inspect_repository_health(initialized.layout)
-    assert not [warning for warning in report.warnings if "protocol" in warning]
+    assert not _protocol_context_skew_warnings(report.warnings)
 
 
 def _initialized_initiative(tmp_path: Path) -> InitializationResult:
@@ -194,3 +232,11 @@ def _initialized_initiative(tmp_path: Path) -> InitializationResult:
         trust_pack_data=True,
     )
     return initialized
+
+
+def _protocol_context_skew_warnings(warnings: tuple[str, ...]) -> list[str]:
+    return [
+        warning
+        for warning in warnings
+        if warning.startswith("Generated agent context still carries protocol ")
+    ]
