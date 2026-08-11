@@ -222,8 +222,10 @@ def test_malformed_guidance_is_rejected() -> None:
             must_answer_before_create=("Not An Id",),
         )
 
+    # Validated from a mapping so the deliberately unknown key is a runtime concern
+    # rather than a static one; the contract forbids extra fields.
     with pytest.raises(ValidationError):
-        PhaseGuidance(label="Valid label", unexpected_field="x")
+        PhaseGuidance.model_validate({"label": "Valid label", "unexpected_field": "x"})
 
 
 def test_no_pack_version_is_reused_for_different_content() -> None:
