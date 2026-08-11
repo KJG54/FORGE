@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from forge.core.agent_context import generate_agent_context
+from forge.core.agent_context import generate_agent_context, superseded_protocol_copies
 from forge.core.agent_protocol import (
     AGENT_PROTOCOL_DIGEST,
     AGENT_PROTOCOL_FILENAME,
@@ -155,12 +155,33 @@ def test_doctor_reports_a_distinct_diagnostic_when_the_generated_protocol_is_sup
 
     report = inspect_repository_health(initialized.layout)
 
-    assert f"agent protocol {AGENT_PROTOCOL_VERSION} (generated context skew)" in report.checks
+    assert (
+        f"agent protocol {AGENT_PROTOCOL_VERSION} checked against the generated context"
+        in report.checks
+    )
     skew = [warning for warning in report.warnings if "protocol" in warning]
     assert len(skew) == 1
     assert "0.9.0" in skew[0]
     assert AGENT_PROTOCOL_VERSION in skew[0]
     assert "forge agent context" in skew[0]
+
+
+def test_regeneration_removes_a_superseded_generated_protocol_copy(tmp_path: Path) -> None:
+    initialized = _initialized_initiative(tmp_path)
+    generate_agent_context(initialized.layout)
+    context_directory = initialized.layout.agent_context_directory
+    stale = context_directory / "agent-protocol-0.9.0.md"
+    stale.write_text("superseded copy from an earlier build\n", encoding="utf-8")
+
+    assert superseded_protocol_copies(initialized.layout) == (stale,)
+
+    generate_agent_context(initialized.layout)
+
+    assert not stale.exists()
+    assert (context_directory / AGENT_PROTOCOL_FILENAME).is_file()
+    assert superseded_protocol_copies(initialized.layout) == ()
+    report = inspect_repository_health(initialized.layout)
+    assert not [warning for warning in report.warnings if "protocol" in warning]
 
 
 def _initialized_initiative(tmp_path: Path) -> InitializationResult:

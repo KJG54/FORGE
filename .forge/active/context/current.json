@@ -1,18 +1,32 @@
 {
   "active_step": {
     "context_selection_rules": [
-      "initiative-objective"
+      "accepted-scope",
+      "release-requirements"
     ],
-    "id": "scope",
-    "instructions": "Register the exact scope and release requirements before implementation authority is accepted.",
-    "purpose": "Define the framework change, constraints, compatibility impact, and acceptance criteria.",
-    "required_inputs": [],
-    "state": "ready"
+    "id": "implement",
+    "instructions": "Change only what the accepted scope authorizes and preserve governed compatibility boundaries.",
+    "purpose": "Produce the bounded framework change.",
+    "required_inputs": [
+      {
+        "content_digest": "sha256:00f057a196ae55f9fd0f2557938a5ebed77c304101492d853a22d0cd123ae2ee",
+        "media_type": "text/markdown",
+        "path": "release/profile-aware-facilitation/change-scope.md",
+        "role": "change-scope"
+      },
+      {
+        "content_digest": "sha256:ca3ec123632afc7c2939279eea39d12b5c7f60a68ebe98ee9c865e32718345d4",
+        "media_type": "text/markdown",
+        "path": "release/profile-aware-facilitation/release-requirements.md",
+        "role": "release-requirements"
+      }
+    ],
+    "state": "in_progress"
   },
   "approved_scope": "Introduce FORGE agent protocol 1.4.0 as a strict superset of 1.3.0 and regenerate its Codex/Claude managed references for profile-aware collaboration, learning goals, phase playback, and task delegation; add additive, default-empty interview-guidance and phase-guidance fields to the pack workflow contract with a mandatory software-basic minor-version bump, append-only (version, digest) identity, unchanged digests for every pack that supplies no guidance, and a matching release/version-contract.json update; populate that guidance for the bundled software-basic pack only; add profile-differentiated rendering rules for minimal, standard, guided, and mentored; add starter-prompt documentation for universal, short, installed-CLI, GitHub-only, Codex, Claude, manual, beginner, and existing-project cases plus the supporting README and docs-index entries; add a protocol/CLI version-skew check surfaced by forge doctor; and add tests for schema compatibility, pack validation, digest identity, context allowlisting, managed-reference byte preservation, and absence of authority drift.",
   "expected_evidence": [
     "Worker claim requirement: outputs-produced",
-    "Check requirement after import: scope-reviewed",
+    "Check requirement after import: implementation-validated",
     "Workflow evidence class after import: check-evidence",
     "Owner-only acceptance requirement: owner-acceptance",
     "Returned files require staged import before registration",
@@ -32,12 +46,12 @@
     "Execute external or irreversible side effects without separate authorization"
   ],
   "relevant_constraints": [
-    "Context selection rule: initiative-objective"
+    "Context selection rule: accepted-scope",
+    "Context selection rule: release-requirements"
   ],
   "relevant_decisions": [],
   "required_outputs": [
-    "change-scope",
-    "release-requirements"
+    "framework-changes"
   ],
   "return_contract": {
     "contract": "agent-result",

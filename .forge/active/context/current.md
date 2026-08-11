@@ -6,15 +6,16 @@ Deliver a beginner-centered, profile-aware collaboration and learning layer for 
 
 ## Active step
 
-- ID: `scope`
-- State: `ready`
-- Purpose: Define the framework change, constraints, compatibility impact, and acceptance criteria.
-- Instructions: Register the exact scope and release requirements before implementation authority is accepted.
-- Context selection rules: initiative-objective
+- ID: `implement`
+- State: `in_progress`
+- Purpose: Produce the bounded framework change.
+- Instructions: Change only what the accepted scope authorizes and preserve governed compatibility boundaries.
+- Context selection rules: accepted-scope, release-requirements
 
 ### Selected required inputs
 
-- None
+- `change-scope`: `release/profile-aware-facilitation/change-scope.md` (sha256:00f057a196ae55f9fd0f2557938a5ebed77c304101492d853a22d0cd123ae2ee, text/markdown)
+- `release-requirements`: `release/profile-aware-facilitation/release-requirements.md` (sha256:ca3ec123632afc7c2939279eea39d12b5c7f60a68ebe98ee9c865e32718345d4, text/markdown)
 
 ## Approved scope
 
@@ -22,7 +23,8 @@ Introduce FORGE agent protocol 1.4.0 as a strict superset of 1.3.0 and regenerat
 
 ## Relevant constraints
 
-- Context selection rule: initiative-objective
+- Context selection rule: accepted-scope
+- Context selection rule: release-requirements
 
 ## Relevant decisions
 
@@ -43,13 +45,12 @@ Introduce FORGE agent protocol 1.4.0 as a strict superset of 1.3.0 and regenerat
 
 ## Required outputs
 
-- change-scope
-- release-requirements
+- framework-changes
 
 ## Expected evidence
 
 - Worker claim requirement: outputs-produced
-- Check requirement after import: scope-reviewed
+- Check requirement after import: implementation-validated
 - Workflow evidence class after import: check-evidence
 - Owner-only acceptance requirement: owner-acceptance
 - Returned files require staged import before registration

@@ -30,7 +30,11 @@ from forge.core.acceptance import (
     show_acceptance,
 )
 from forge.core.agent_adapters import inspect_agent_adapter, prepare_agent_handoff
-from forge.core.agent_context import AgentContextTarget, generate_agent_context
+from forge.core.agent_context import (
+    AgentContextTarget,
+    generate_agent_context,
+    superseded_protocol_copies,
+)
 from forge.core.agent_protocol import load_agent_protocol
 from forge.core.agent_runs import execute_agent_run
 from forge.core.archival import abandon_initiative, close_initiative
@@ -576,6 +580,11 @@ def agent_context(
             / f"agent-protocol-{preview.protocol_version}.md",
         ):
             typer.echo(f"- {path}")
+        superseded = superseded_protocol_copies(layout)
+        if superseded:
+            typer.echo("Apply will remove these superseded generated protocol copies:")
+            for path in superseded:
+                typer.echo(f"- {path}")
         typer.echo(
             "Temporary coordination file during apply: "
             f"{layout.lock_directory / 'mutation.lock'} (removed after a normal exit)"

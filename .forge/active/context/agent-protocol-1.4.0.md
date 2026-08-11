@@ -1,6 +1,6 @@
 # FORGE Direct Workspace-Agent Protocol
 
-Protocol version: `1.3.0`
+Protocol version: `1.4.0`
 
 ## Purpose and boundary
 
@@ -40,6 +40,13 @@ authority to approve, verify, accept, close, abandon, or mutate governed state.
 6. Before initialization, use `forge pack list` and `forge pack inspect <pack-id>` to inspect only
    installed bundled, validated data. These read-only commands expose workflow steps, required
    artifact roles, and valid symbolic requirement IDs without trusting the pack or creating state.
+7. Identify FORGE itself before acting on it. FORGE is the Framework for Orchestrated Reasoning,
+   Governance, and Execution. Never assume an unrelated `forge` command is this framework. When the
+   CLI is absent, read the owner-supplied FORGE repository documentation before proposing any
+   installation, and propose installation only with the owner's explicit approval.
+8. Compare the protocol version reported by `forge agent protocol` against the version the
+   repository source declares whenever both are observable. A stale installed CLI silently routes
+   the agent to a superseded contract. Report the skew and reconcile it before relying on either.
 
 ## Document-first interview
 
@@ -62,6 +69,67 @@ For every heading, label what is established, cite the supplied source path or o
 and list only uncovered gaps. Ask focused follow-ups for those gaps. Do not force the owner to
 repeat information already covered. A limited start is allowed when the owner explicitly accepts
 the named uncertainty and the draft scope keeps affected work out of bounds.
+
+## Profile-aware collaboration and learning
+
+The locked explanation profile changes collaboration style and learning depth. It never changes
+authority, required inputs, checks, evidence, acceptance, or any owner gate. Governance outcomes
+are identical under every profile.
+
+| Profile | Expected agent behavior |
+|---|---|
+| `minimal` | Optimize for low token use and fast execution. Ask only scope-, safety-, and correctness-critical questions. Keep phase, output, blocker, and next-action reporting terse. |
+| `standard` | Optimize for clear collaboration. Explain what is happening, what the owner should review, who owns each task, and the next action, without turning the work into a lesson. |
+| `guided` | Optimize for better decisions. Explain options, tradeoffs, vocabulary, and the domain concepts that bear on a decision as it arises. |
+| `mentored` | Optimize for learning by building. Maintain a project-specific learning path, identify owner practice tasks, recommend resources, explain concepts, and check understanding when useful. |
+
+Ask questions in small batches sized to the profile rather than as one large form. After each
+batch, summarize what was learned and what remains uncertain, and never make the owner repeat
+information already supplied.
+
+In `guided` and `mentored`, ask what the owner wants to learn about the project domain or craft,
+not only about FORGE. When a learning-support preference is unclear, ask whether the owner wants
+resources, explanations, practice tasks, worked examples, or a mix, rather than guessing. End
+substantial explanations with a brief understanding check when one would help.
+
+For an open-ended question a beginner may not be able to answer cold, include two to four brief
+examples of the kind of answer that would help. Simple yes-or-no and obvious factual questions do
+not need examples. Accept short, partial, and "I do not know yet" answers.
+
+Separate questions that must be answered before the next gate from uncertainties that may remain
+open.
+
+Introduce FORGE terminology when it helps the owner make or review a decision, read a receipt, or
+authorize an owner-only gate, and not before.
+
+Collaboration style is conversational and ungoverned. An owner may ask for more or less teaching
+at any time without a governed change. Only the recorded explanation profile itself is fixed at
+initiative creation.
+
+## Phase presentation and collaboration task map
+
+Present each workflow step as a distinct phase rather than blending it into the previous one.
+
+Open a phase with where the project stands, what the phase is trying to build, learn, or decide,
+what the owner does, what the agent does, and which owner-only gate may appear later.
+
+Close a phase with what changed, what remains uncertain, what evidence or review exists, what
+FORGE did and did not record, and the next collaboration step. In `guided` and `mentored`, also
+state what the owner learned or practiced.
+
+Maintain a collaboration task map separating four distinct kinds of work:
+
+- routine agent work the agent may simply perform;
+- owner tasks that preserve human judgment or teach a project skill;
+- either-party tasks the owner may delegate; and
+- owner-only authority gates requiring an exact displayed command and explicit authorization.
+
+Identify owner learning tasks separately from routine owner review tasks. Under `mentored`, do not
+automatically perform every task the agent could perform: name the tasks worth the owner
+attempting, say why, and offer an explicit delegation option.
+
+A task map is presentation. It never redefines authority, and naming an owner-only gate in a map
+neither creates nor satisfies that gate.
 
 ## Draft and coverage playback
 

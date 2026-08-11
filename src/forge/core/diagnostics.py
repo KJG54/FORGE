@@ -57,12 +57,21 @@ def _protocol_diagnostic(layout: RepositoryLayout) -> tuple[str, str | None]:
         return f"agent protocol {AGENT_PROTOCOL_VERSION} (no generated context)", None
     if generated == (AGENT_PROTOCOL_VERSION,):
         return f"agent protocol {AGENT_PROTOCOL_VERSION} matches the generated context", None
+    superseded = tuple(item for item in generated if item != AGENT_PROTOCOL_VERSION)
+    remedy = (
+        "regenerate it with 'forge agent context --target <codex|claude>', previewing "
+        "before you apply"
+        if AGENT_PROTOCOL_VERSION not in generated
+        else "remove the superseded copy by regenerating with "
+        "'forge agent context --target <codex|claude>', previewing before you apply"
+    )
     return (
-        f"agent protocol {AGENT_PROTOCOL_VERSION} (generated context skew)",
-        f"Generated agent context carries protocol {', '.join(generated)} but the "
-        f"installed CLI provides {AGENT_PROTOCOL_VERSION}; an agent reading the vendor "
-        f"reference follows a superseded contract until you preview and apply "
-        f"'forge agent context --target <codex|claude> --apply'",
+        # The doctor prefixes every check with "OK:", so this line states what ran
+        # rather than passing judgement; the warning carries the problem.
+        f"agent protocol {AGENT_PROTOCOL_VERSION} checked against the generated context",
+        f"Generated agent context still carries protocol {', '.join(superseded)} while the "
+        f"installed CLI provides {AGENT_PROTOCOL_VERSION}; an agent reading the stale copy "
+        f"follows a superseded contract. To fix, {remedy}.",
     )
 
 
