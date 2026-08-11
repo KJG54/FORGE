@@ -7,7 +7,11 @@ from typer.testing import CliRunner
 from forge.cli.app import app
 from forge.contracts import CONTRACT_MODELS
 from forge.core.agent_context import AgentContextTarget, generate_agent_context
-from forge.core.agent_protocol import AGENT_PROTOCOL_DIGEST, load_agent_protocol
+from forge.core.agent_protocol import (
+    AGENT_PROTOCOL_DIGEST,
+    AGENT_PROTOCOL_FILENAME,
+    load_agent_protocol,
+)
 from forge.core.authorization import owner_actor
 from forge.core.lifecycle import create_initiative
 from forge.core.vendor_context import (
@@ -58,9 +62,9 @@ def test_protocol_is_exact_and_covers_the_l2_bootstrap_contract() -> None:
     protocol = load_agent_protocol()
     text = protocol.content.decode("utf-8")
 
-    assert protocol.filename == "agent-protocol-1.3.0.md"
+    assert protocol.filename == AGENT_PROTOCOL_FILENAME
     assert protocol.digest == AGENT_PROTOCOL_DIGEST == sha256_digest(protocol.content)
-    assert len(CONTRACT_MODELS) == 51
+    assert len(CONTRACT_MODELS) == 53
     for required in (
         "forge --version",
         "forge agent protocol",

@@ -8,9 +8,12 @@ from importlib.resources import files
 from forge.errors import IntegrityError
 from forge.storage.objects import sha256_digest
 
-AGENT_PROTOCOL_VERSION = "1.3.0"
+AGENT_PROTOCOL_VERSION = "1.4.0"
 AGENT_PROTOCOL_FILENAME = f"agent-protocol-{AGENT_PROTOCOL_VERSION}.md"
-AGENT_PROTOCOL_DIGEST = "sha256:34ee8ddcda6ae147f87caf5863aa4e7ca20c34310807e441b065d8d8553eaa00"
+AGENT_PROTOCOL_DIGEST = "sha256:d89a51ca82221dab36eeeebfb09e88281906298d4c8e1b828b63b152c09ebc2c"
+
+SUPERSEDED_AGENT_PROTOCOL_VERSIONS = ("1.3.0",)
+"""Protocol resources retained unchanged so superseded references still resolve."""
 
 
 @dataclass(frozen=True)
@@ -45,6 +48,13 @@ def load_agent_protocol() -> AgentProtocol:
         "## Git, delegation, and threat model",
         "For an ordinary gap, run `forge recap`.",
         "Caller attribution is not authentication",
+        "## Profile-aware collaboration and learning",
+        "## Phase presentation and collaboration task map",
+        "Never assume an unrelated `forge` command is this framework",
+        "Report the skew and reconcile it before relying on either",
+        "It never changes\nauthority, required inputs, checks, evidence, acceptance, or any owner "
+        "gate",
+        "A task map is presentation. It never redefines authority",
     )
     missing = tuple(fragment for fragment in required_fragments if fragment not in decoded)
     if missing:

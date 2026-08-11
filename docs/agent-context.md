@@ -11,7 +11,8 @@ forge agent context --target neutral
 
 FORGE validates the active initiative and writes deterministic views to:
 
-- `.forge/active/context/agent-protocol-1.3.0.md`;
+- `.forge/active/context/agent-protocol-<installed-version>.md`, currently
+  `agent-protocol-1.4.0.md`;
 - `.forge/active/context/current.json`;
 - `.forge/active/context/current.md`.
 

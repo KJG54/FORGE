@@ -33,6 +33,8 @@
       "1.0"
     ],
     "public_model_count": 53,
+    "agent_protocol_version": "1.4.0",
+    "agent_protocol_digest": "sha256:d89a51ca82221dab36eeeebfb09e88281906298d4c8e1b828b63b152c09ebc2c",
     "pack_schema_compatibility": "forge-contracts-1",
     "journal_formats": [
       {

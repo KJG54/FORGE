@@ -18,6 +18,7 @@ from forge import __version__
 from forge.cli.app import app
 from forge.contracts import CONTRACT_MODELS
 from forge.contracts.base import SCHEMA_VERSION
+from forge.core.agent_protocol import AGENT_PROTOCOL_DIGEST, AGENT_PROTOCOL_VERSION
 from forge.packs.loader import load_pack
 from forge.schemas.export import schema_bundle
 from forge.storage.migrations import (
@@ -266,6 +267,18 @@ def validate_version_consistency(
         len(CONTRACT_MODELS),
         "matrix schema count",
     )
+    # Agents treat the protocol version as a public surface and route themselves by it,
+    # so a stale pin here is the same class of defect as a stale installed CLI.
+    _require_equal(
+        persisted.get("agent_protocol_version"),
+        AGENT_PROTOCOL_VERSION,
+        "agent protocol version",
+    )
+    _require_equal(
+        persisted.get("agent_protocol_digest"),
+        AGENT_PROTOCOL_DIGEST,
+        "agent protocol digest",
+    )
     compatibility = _text(
         persisted.get("pack_schema_compatibility"),
         "pack schema compatibility",
@@ -390,6 +403,7 @@ def validate_version_consistency(
         "sdist_filename": sdist_filename,
         "contract_schema_version": SCHEMA_VERSION,
         "public_model_count": len(CONTRACT_MODELS),
+        "agent_protocol_version": AGENT_PROTOCOL_VERSION,
         "cli_command_count": len(_cli_command_paths()),
         "bundled_packs": [item[0] for item in bundled],
         "repository_local_packs": [item[0] for item in repository_local],
