@@ -1,0 +1,58 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ca3ec123632afc7c2939279eea39d12b5c7f60a68ebe98ee9c865e32718345d4",
+    "sha256:00f057a196ae55f9fd0f2557938a5ebed77c304101492d853a22d0cd123ae2ee"
+  ],
+  "affected_record_ids": [
+    "74517ee3-ca25-47f2-90a7-7c8d8c68a53d",
+    "9977f858-aa82-4836-b51e-36fb24584e21"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "scope-reviewed",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-11T01:58:03.172688Z",
+  "event_sequence": 7,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "5071fdf4-a77a-4963-bb87-2381888533a6",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": ".venv/Scripts/python.exe -m ruff check . ; .venv/Scripts/python.exe -m pytest tests/test_local_v1_l4.py tests/test_m7_increment_2.py -q --basetemp=C:/t/pt ; forge doctor ; independent recomputation of forge-framework-change and forge-production-release pack digests against their recorded manifests",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "Focused scope validation only: ruff clean and 15 targeted tests passed. Full pytest suite, pyright, and wheel build are deferred to exact-candidate verification per the owner's batch-validation agreement.",
+    "One test skipped: symlink creation unavailable at the current Windows privilege level; environmental, not a defect.",
+    "This check validates repository health and the factual claims the scope artifacts make about existing code. It cannot validate implementation that does not yet exist."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-11T01:58:03.172744Z",
+  "result_digest": "sha256:aded3e52f7408dddf4ca815bc06910e71fc52bd0e09a83ae3a4bc96552382171",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-11T01:58:03.172686Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "74517ee3-ca25-47f2-90a7-7c8d8c68a53d",
+    "9977f858-aa82-4836-b51e-36fb24584e21"
+  ],
+  "tool_version": "1.0.0"
+}

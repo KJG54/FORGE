@@ -1,8 +1,6 @@
 {
   "active_pause_event_id": null,
-  "active_run_ids": [
-    "ae548bac-d1c6-452a-91e4-a08368a868a1"
-  ],
+  "active_run_ids": [],
   "current_artifact_revisions": {
     "0260efa7-0a93-4b53-bc85-a1a4441c00ac": 1,
     "81634484-f41f-47d6-8858-d31aac02a43a": 1
@@ -10,13 +8,13 @@
   "current_step_id": "scope",
   "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
   "integrity_state": "healthy",
-  "journal_head_hash": "sha256:b0b8d8c3e8d46ffa8bfeb399833161e6c92f69957c0e10c0f3d05db43f5471cf",
-  "journal_head_sequence": 4,
+  "journal_head_hash": "sha256:2a62ae3abfdb8c50f9b87f3df56b40b96e3406868ace9266e65e88b8f17cd97e",
+  "journal_head_sequence": 9,
   "lifecycle_state": "active",
   "open_decision_ids": [],
   "open_gate_ids": [],
   "permitted_next_actions": [
-    "complete:scope"
+    "acceptance-record:scope"
   ],
   "repository_state": "initialized",
   "schema_version": "1.0",
@@ -25,7 +23,7 @@
     "closeout": "pending",
     "implement": "pending",
     "review-risk": "pending",
-    "scope": "in_progress",
+    "scope": "awaiting_acceptance",
     "verify-release": "pending"
   },
   "workflow_id": "framework-change",
