@@ -1,0 +1,38 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:3c8fc9b00e8af9d8ccf7013fdf459bcf49a480c385782b7cb28ec3678f476203"
+  ],
+  "affected_record_ids": [
+    "7ce80d61-d755-411c-baf7-ac36d5664a75"
+  ],
+  "assertion": "Evaluated all sixteen Section A criteria against the built candidate wheel sha256:1d76bd7e1f59d8a312ccaeceab214af8036845ef721b51d5d86fd21c37243814, exercising skew detection, pack digest neutrality, and fresh-init health on an isolated venv installation. Sixteen of sixteen passed; M13 passed under decision 7cef20dd rather than as literally written.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "7ce80d61-d755-411c-baf7-ac36d5664a75"
+  ],
+  "correlation_id": null,
+  "event_sequence": 24,
+  "id": "6b713070-8d32-46c9-bda6-1f8696da420e",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "limitations": [
+    "Section B criteria O1-O9 are owner-observed, were not evaluated by this step, and cannot be satisfied by any agent-recorded check. They remain outstanding for review-risk.",
+    "Installed-candidate checks ran on one matrix cell only: CPython 3.14, Windows, venv installation. Linux, macOS, other Python versions, and pipx installation were not exercised.",
+    "Nine tests skip because symlink creation requires a Windows privilege this session does not hold; they were not evaluated.",
+    "M6 is evidenced by unchanged context behaviour and passing context tests rather than by a new allowlist-drift test."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-claude",
+  "recorded_at": "2026-08-11T05:37:17.513713Z",
+  "run_id": "2f94910f-be80-44e9-94c5-09383d34e301",
+  "schema_version": "1.0",
+  "step_id": "verify-release",
+  "tool_version": "1.0.0"
+}

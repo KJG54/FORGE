@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:3c8fc9b00e8af9d8ccf7013fdf459bcf49a480c385782b7cb28ec3678f476203"
+  ],
+  "affected_record_ids": [
+    "7ce80d61-d755-411c-baf7-ac36d5664a75"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "release-checks-passed",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-11T05:37:35.293655Z",
+  "event_sequence": 26,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "954ccdbe-3d8f-453e-9cec-83b7b817fd20",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": ".venv\\Scripts\\python.exe -m build --wheel --outdir dist\\profile-aware-facilitation ; .venv\\Scripts\\python.exe -m tools.distribution_smoke --wheel dist\\profile-aware-facilitation\\forge_governance-1.0.0-py3-none-any.whl --mode venv --work-directory C;\\t\\smoke ; installed-candidate exercise of forge create, agent context, induced protocol skew, and doctor across the no-context, matching, and skew states ; journal and active-file counts compared across forge doctor, status, agent context preview, and pack list",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "Sixteen of sixteen Section A criteria passed. M13 passed under owner decision 7cef20dd rather than as literally written, because protocol resources 1.0.0 through 1.2.0 have never existed in the repository source.",
+    "Section B criteria O1-O9 were not evaluated. They are owner-observed and gate review-risk.",
+    "One matrix cell only: CPython 3.14, Windows, venv installation. The candidate wheel is unpublished and untagged.",
+    "Nine environmental test skips for a missing Windows symlink privilege were not evaluated."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-11T05:37:35.293717Z",
+  "result_digest": "sha256:21f97cf440b9905d6a2069a2351e31ba789942d6d94e812a2cd2e8cc6c9eb3f8",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-11T05:37:35.293653Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "7ce80d61-d755-411c-baf7-ac36d5664a75"
+  ],
+  "tool_version": "1.0.0"
+}
