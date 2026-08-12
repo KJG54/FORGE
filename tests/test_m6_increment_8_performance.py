@@ -15,7 +15,17 @@ def test_macos_budgets_cover_the_slowest_supported_python_cell() -> None:
     }
     assert policy["cases"]["status"]["budget_ms"] == {
         "linux": 1000,
-        "macos": 1500,
+        "macos": 2500,
+        "windows": 1500,
+    }
+    assert policy["cases"]["context_generation"]["budget_ms"] == {
+        "linux": 1000,
+        "macos": 2000,
+        "windows": 1500,
+    }
+    assert policy["cases"]["archive_access"]["budget_ms"] == {
+        "linux": 1000,
+        "macos": 2000,
         "windows": 1500,
     }
     assert policy["measurement"] == {

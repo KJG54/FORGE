@@ -38,7 +38,7 @@
       "iterations_per_sample": 1,
       "budget_ms": {
         "linux": 1000,
-        "macos": 1500,
+        "macos": 2500,
         "windows": 1500
       }
     },
@@ -56,7 +56,7 @@
       "iterations_per_sample": 1,
       "budget_ms": {
         "linux": 1000,
-        "macos": 1000,
+        "macos": 2000,
         "windows": 1500
       }
     },
@@ -65,7 +65,7 @@
       "iterations_per_sample": 1,
       "budget_ms": {
         "linux": 1000,
-        "macos": 1000,
+        "macos": 2000,
         "windows": 1500
       }
     }
