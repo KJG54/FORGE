@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:2164e523080c432b7367d533baab71c0dfdac3257eba3b0e6917e41d894c88bf"
+  ],
+  "affected_record_ids": [
+    "3483fbd2-c49c-4eae-a8a7-26f957ff535d"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 51,
+  "id": "d380f7b0-53b8-413a-a2dc-bd9c86e0e494",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "recorded_at": "2026-08-12T17:49:08.499327Z",
+  "role": "release-readiness-record",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Profile-Aware Facilitation Release Readiness Record",
+  "tool_version": "1.0.0"
+}
