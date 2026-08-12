@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:3d19a455aa148da026d19877f7eeaaf8d108765b5f7e60c5c19c5f1006d0fbaa"
+  ],
+  "affected_record_ids": [
+    "e0b17373-fe1c-4ef4-ada1-3dd64b9f3f0f"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 41,
+  "id": "d086b5eb-d17d-48ea-a490-6fcfecc24db9",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "recorded_at": "2026-08-12T16:45:57.243337Z",
+  "role": "friction-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Profile-Aware Facilitation Friction Report",
+  "tool_version": "1.0.0"
+}

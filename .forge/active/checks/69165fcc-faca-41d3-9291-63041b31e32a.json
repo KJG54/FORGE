@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:91bdbc6b906d5a2a4b6f4535af3f47d9ff85a51a19a69085b8705fdcc78cfa13",
+    "sha256:3d19a455aa148da026d19877f7eeaaf8d108765b5f7e60c5c19c5f1006d0fbaa"
+  ],
+  "affected_record_ids": [
+    "dd16743f-d35b-443d-a163-5ea884f41e61",
+    "e0b17373-fe1c-4ef4-ada1-3dd64b9f3f0f"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "risk-review-complete",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-12T16:47:42.973898Z",
+  "event_sequence": 45,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": null,
+  "id": "69165fcc-faca-41d3-9291-63041b31e32a",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Manual cross-check of registered friction-report and residual-risk-report artifacts against the owner-supplied 2026-08-12 dogfooding handoff and release-requirements Section B; confirmed successor findings, workflow direction, residual risks, authority boundaries, and metadata limitations are recorded.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "Check is limited to the supplied handoff text and registered artifacts; underlying dogfood transcripts, exact prompts, exact per-run agent identities, exact per-run candidate revisions, and token measurements were not supplied."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-12T16:47:42.973958Z",
+  "result_digest": "sha256:4c3950d0981a4d68d329ef361be6dd8a567fd2d8ef1b48dcd167b7e41f04d147",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-12T16:47:42.973896Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "dd16743f-d35b-443d-a163-5ea884f41e61",
+    "e0b17373-fe1c-4ef4-ada1-3dd64b9f3f0f"
+  ],
+  "tool_version": "1.0.0"
+}
