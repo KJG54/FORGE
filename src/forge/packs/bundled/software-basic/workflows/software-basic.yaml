@@ -1,6 +1,6 @@
 schema_version: "1.0"
 id: software-basic
-version: 0.5.0
+version: 0.6.0
 pack_id: software-basic
 name: Software Basic
 description: A governed six-step workflow for ordinary software initiatives.
@@ -20,6 +20,21 @@ steps:
     context_selection_rules: [initiative-objective]
     explanation_content:
       mentored: Before building anything, make the objective, constraints, and requirements explicit. This gives later planning and verification a stable target without treating discovery notes as accepted truth until the owner accepts them.
+    phase_guidance:
+      label: Discover what to build and why
+      owner_tasks:
+        - Decide who this is for and what the first useful version must do.
+        - Name what is deliberately out of scope.
+        - In guided or mentored mode, say what you want to learn from this project.
+      agent_tasks:
+        - Ask for existing notes, designs, research, or prior work before asking broad questions.
+        - Turn the answers into a bounded objective, constraints, and requirements.
+        - Separate questions that must be answered now from uncertainty that can stay open.
+      either_tasks:
+        - Gather examples, screenshots, reference links, or comparable projects.
+      owner_only_gates:
+        - Accepting the discovery outputs.
+      done_signal: The objective, constraints, and requirements are written down, and every material open question is either answered or explicitly accepted as uncertainty.
   - id: plan
     purpose: Define the implementation plan.
     instructions: Produce a plan traceable to the accepted discovery outputs.
@@ -35,6 +50,21 @@ steps:
     context_selection_rules: [accepted-discovery]
     explanation_content:
       mentored: Turn the accepted discovery outputs into a traceable implementation plan. The plan narrows execution, but it does not authorize work outside the accepted scope or replace later evidence and owner acceptance.
+    phase_guidance:
+      label: Plan the work
+      owner_tasks:
+        - Review the plan against what you actually want, not only against the requirements.
+        - Decide which parts you want to attempt yourself.
+      agent_tasks:
+        - Trace every planned step back to an accepted requirement.
+        - Surface tradeoffs and alternatives that would change the plan.
+        - Say plainly what the plan cannot cover inside the accepted scope.
+      either_tasks:
+        - Sketch interfaces, data shapes, or screens.
+        - Find comparable implementations worth learning from.
+      owner_only_gates:
+        - Accepting the implementation plan.
+      done_signal: The plan is traceable to accepted requirements and its exclusions are explicit.
   - id: execute
     purpose: Produce the governed project work.
     instructions: Work only within the accepted objective, scope, and plan.
@@ -50,6 +80,21 @@ steps:
     context_selection_rules: [accepted-plan]
     explanation_content:
       mentored: Produce the project artifacts within the accepted plan and keep claims separate from proof. Completing the work creates a claim for verification; it does not mean the work has passed checks or been accepted.
+    phase_guidance:
+      label: Build it
+      owner_tasks:
+        - Review work as it lands rather than only at the end.
+        - Attempt the parts you chose for practice.
+      agent_tasks:
+        - Work only inside the accepted objective, scope, and plan.
+        - Record a claim when the outputs exist, keeping the claim separate from proof.
+        - Raise scope pressure for an owner decision instead of quietly widening the work.
+      either_tasks:
+        - Write tests, notes, or worked examples alongside the work.
+      owner_only_gates:
+        - Accepting the produced artifacts.
+        - Amending scope when the work no longer fits what was accepted.
+      done_signal: The declared project artifacts exist, are registered, and their known limitations are stated.
   - id: verify
     purpose: Check the governed work against declared requirements.
     instructions: Record checks and evidence without treating process success as acceptance.
@@ -65,6 +110,20 @@ steps:
     context_selection_rules: [requirements, project-artifacts]
     explanation_content:
       mentored: Test the exact governed artifact revisions against the declared requirements and record evidence. Passing checks supports the next decision, but only the owner can accept the result.
+    phase_guidance:
+      label: Check it against what was asked
+      owner_tasks:
+        - Decide whether the evidence is actually convincing.
+        - Perform any check that needs human observation.
+      agent_tasks:
+        - Run the declared checks against the exact registered artifact revisions.
+        - Register evidence binding those revisions, the check results, and the claim.
+        - Report failures, skips, and limitations without smoothing them over.
+      either_tasks:
+        - Reproduce a failure and narrow it to a smaller case.
+      owner_only_gates:
+        - Accepting the verification report.
+      done_signal: Every declared check has a recorded outcome and the evidence binds the exact revisions under review.
   - id: review
     purpose: Review outcomes, limitations, and residual risks.
     instructions: Produce a review record bound to the verified artifact revisions.
@@ -80,6 +139,20 @@ steps:
     context_selection_rules: [verification-report]
     explanation_content:
       mentored: Review what the verified work achieved, where it is limited, and which risks remain. Bind the review to the verified revisions so later closure does not silently rely on changed work.
+    phase_guidance:
+      label: Review what it achieved and what it did not
+      owner_tasks:
+        - Judge which residual risks are acceptable to carry.
+      agent_tasks:
+        - Bind the review to the verified artifact revisions.
+        - Classify every finding rather than delivering a single verdict.
+        - Keep what was proven by a check separate from what a human observed.
+      either_tasks:
+        - Note friction worth fixing before the next initiative.
+      owner_only_gates:
+        - Accepting the review report.
+        - Approving any residual risk.
+      done_signal: Outcomes, limitations, and residual risks are recorded against the verified revisions.
   - id: close
     purpose: Prepare accepted work and lessons for governed closure.
     instructions: Record lessons and closure materials without bypassing final acceptance.
@@ -95,6 +168,20 @@ steps:
     context_selection_rules: [accepted-review]
     explanation_content:
       mentored: Capture durable lessons and closure material while keeping final acceptance explicit. Closure preserves the governed history; it does not erase limitations or turn advisory lessons into authority.
+    phase_guidance:
+      label: Close out and capture lessons
+      owner_tasks:
+        - Decide whether the work is genuinely finished.
+        - Write or confirm the closing summary in your own words.
+      agent_tasks:
+        - Assemble lessons and closure materials from recorded facts only.
+        - Confirm every workflow requirement already has an owner acceptance.
+      either_tasks:
+        - Draft the lessons record for the owner to correct.
+      owner_only_gates:
+        - Accepting the closure record.
+        - Running the terminal closure command.
+      done_signal: Lessons and closure materials exist and every workflow requirement is accepted.
 transitions:
   - id: begin
     source_state: ready
@@ -142,6 +229,34 @@ required_artifact_classes:
   - lessons
 required_evidence_classes:
   - check-evidence
+interview_guidance:
+  vision:
+    purpose: Understand the human goal, the intended users, and any learning goals.
+    questions:
+      - What are you trying to build or learn?
+      - "Who is this for? For example: just you while learning, friends trying it out, a class or team, or people who already use something similar."
+      - What would make the very first version useful rather than complete?
+      - What do you want to understand better by the end of this project?
+    must_answer_before_create:
+      - intended-users
+      - first-useful-outcome
+  first_milestone:
+    purpose: Bound the first initiative so it can actually finish.
+    questions:
+      - What is the smallest version that would still be worth having?
+      - What should be explicitly out of scope for now?
+      - What does done look like, in plain language?
+  risks_and_constraints:
+    purpose: Avoid unsafe, blocked, or wasteful scope.
+    questions:
+      - "Are there limits to work within? For example: a deadline, a device or platform, a budget, privacy rules, or tools you must or cannot use."
+      - What would make you pause, restart, or abandon this?
+  learning_path:
+    purpose: Shape guided and mentored work around the experience the owner already has.
+    questions:
+      - What experience do you already have with this kind of work?
+      - "How do you prefer to learn? For example: short explanations as we go, worked examples, links to read, small exercises, or trying first and reviewing after."
+      - Which parts do you want to do yourself for practice, and which should I just handle?
 explanation_content:
   minimal: Follow the declared steps; claims, checks, evidence, and owner acceptance remain separate.
   standard: Follow each declared step and keep claims, checks, evidence, and acceptance separate.

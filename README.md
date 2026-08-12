@@ -11,7 +11,7 @@ or a same-user security sandbox.
 
 > **Unpublished local candidate:** Milestones 1 through 6 are complete and owner-accepted. The
 > current replacement Local Production-v1 source includes workspace-agent bootstrap and protocol
-> 1.3.0. Exact artifact identity and validation status are recorded in the
+> 1.4.0. Exact artifact identity and validation status are recorded in the
 > [candidate release evidence](release/local-production-v1/README.md). Native-app owner
 > observations and extended owner testing remain separate. No candidate is tagged, publicly
 > distributed, or finally accepted as Production v1.

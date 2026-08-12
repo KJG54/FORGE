@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
+from conftest import SOFTWARE_BASIC_VERSION
 from typer.testing import CliRunner
 
 from forge.cli.app import app
@@ -62,7 +63,7 @@ def test_software_authors_one_mentored_path_and_research_uses_fallback() -> None
     software = load_pack(SOFTWARE, bundled=True)
     research = load_pack(BUNDLED / "research-basic", bundled=True)
 
-    assert software.manifest.version == software.workflow().version == "0.5.0"
+    assert software.manifest.version == software.workflow().version == SOFTWARE_BASIC_VERSION
     assert all(set(step.explanation_content) == {"mentored"} for step in software.workflow().steps)
     assert len({step.explanation_content["mentored"] for step in software.workflow().steps}) == 6
     assert all(not step.explanation_content for step in research.workflow().steps)
@@ -114,11 +115,16 @@ def test_pre_l5_pack_digest_and_raw_workflow_lock_remain_compatible(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     current = load_pack(SOFTWARE, bundled=True)
+    # A pre-L5 pack predates step explanation content and the later guidance fields
+    # alike, so clear all three to keep this fixture meaning what it is named for.
     old_workflow = current.workflow().model_copy(
         update={
             "version": "0.4.0",
+            "interview_guidance": {},
             "steps": tuple(
-                step.model_copy(update={"explanation_content": {}})
+                step.model_copy(
+                    update={"explanation_content": {}, "phase_guidance": None}
+                )
                 for step in current.workflow().steps
             ),
         }

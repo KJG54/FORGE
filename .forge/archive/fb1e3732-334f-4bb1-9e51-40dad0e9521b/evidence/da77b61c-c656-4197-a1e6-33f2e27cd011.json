@@ -1,0 +1,44 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:6ef7392f49224805c7afb2250ac19eaf24c5e9bac30c293d41d0851ed3173baf"
+  ],
+  "affected_record_ids": [
+    "e0b17373-fe1c-4ef4-ada1-3dd64b9f3f0f",
+    "dd16743f-d35b-443d-a163-5ea884f41e61",
+    "69165fcc-faca-41d3-9291-63041b31e32a",
+    "790b7d19-f9a7-46a3-a869-c4202172d03a"
+  ],
+  "artifact_revision_ids": [
+    "e0b17373-fe1c-4ef4-ada1-3dd64b9f3f0f",
+    "dd16743f-d35b-443d-a163-5ea884f41e61"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "69165fcc-faca-41d3-9291-63041b31e32a"
+  ],
+  "claim_ids": [
+    "790b7d19-f9a7-46a3-a869-c4202172d03a"
+  ],
+  "correlation_id": null,
+  "event_sequence": 46,
+  "id": "da77b61c-c656-4197-a1e6-33f2e27cd011",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "limitations": [
+    "Evidence is based on the owner-supplied dogfooding handoff and artifact review; it does not include full underlying dogfood transcripts or complete per-run O1-O9 metadata.",
+    "Evidence does not authorize or implement successor project-basic work and does not constitute owner acceptance or closeout."
+  ],
+  "packet_digest": "sha256:6ef7392f49224805c7afb2250ac19eaf24c5e9bac30c293d41d0851ed3173baf",
+  "purpose": "Bind the owner-supplied dogfooding friction notation and residual-risk classification to the review-risk worker claim and risk-review-complete check.",
+  "recorded_at": "2026-08-12T16:48:09.755583Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

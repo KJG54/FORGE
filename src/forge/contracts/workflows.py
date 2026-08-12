@@ -38,6 +38,33 @@ class TransitionDefinition(VersionedModel):
     event_type: SymbolicId
 
 
+class InterviewGuidanceGroup(VersionedModel):
+    """Question guidance for one coverage area of the document-first interview.
+
+    Guidance is advisory framing for a conversational agent. It never changes
+    authority, required inputs, checks, evidence, or acceptance.
+    """
+
+    purpose: NonEmptyString
+    questions: tuple[NonEmptyString, ...] = ()
+    must_answer_before_create: tuple[SymbolicId, ...] = ()
+
+
+class PhaseGuidance(VersionedModel):
+    """Human-readable phase framing for one workflow step.
+
+    `owner_only_gates` restates which authority gates appear during the phase so
+    an agent can name them; it grants no authority and creates no gate.
+    """
+
+    label: NonEmptyString
+    owner_tasks: tuple[NonEmptyString, ...] = ()
+    agent_tasks: tuple[NonEmptyString, ...] = ()
+    either_tasks: tuple[NonEmptyString, ...] = ()
+    owner_only_gates: tuple[NonEmptyString, ...] = ()
+    done_signal: NonEmptyString | None = None
+
+
 class StepDefinition(VersionedModel):
     id: SymbolicId
     purpose: NonEmptyString
@@ -53,6 +80,7 @@ class StepDefinition(VersionedModel):
     cancellation_behavior: CancellationBehavior
     context_selection_rules: tuple[NonEmptyString, ...] = ()
     explanation_content: dict[str, NonEmptyString] = Field(default_factory=dict)
+    phase_guidance: PhaseGuidance | None = None
 
 
 class WorkflowDefinition(VersionedModel):
@@ -67,6 +95,7 @@ class WorkflowDefinition(VersionedModel):
     required_artifact_classes: tuple[SymbolicId, ...] = ()
     required_evidence_classes: tuple[SymbolicId, ...] = ()
     explanation_content: dict[str, NonEmptyString] = Field(default_factory=dict)
+    interview_guidance: dict[SymbolicId, InterviewGuidanceGroup] = Field(default_factory=dict)
     compatibility_constraints: tuple[NonEmptyString, ...] = ()
 
     @model_validator(mode="after")

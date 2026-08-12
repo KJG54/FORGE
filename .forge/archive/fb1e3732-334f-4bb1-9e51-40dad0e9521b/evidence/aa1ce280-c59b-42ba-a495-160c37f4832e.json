@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:2d8c919ffc2b1b95a5f0eaafa0773c7d4b45c599162f13ace6cbf8e6ec635ad0"
+  ],
+  "affected_record_ids": [
+    "3483fbd2-c49c-4eae-a8a7-26f957ff535d",
+    "d8889dd2-063e-428c-9fe1-68d64f3bfa2e",
+    "83985ce6-a3f9-437d-b64c-443f29b5f2a2",
+    "838bd4f2-08c7-482f-a55c-ac4922f30c31"
+  ],
+  "artifact_revision_ids": [
+    "3483fbd2-c49c-4eae-a8a7-26f957ff535d",
+    "d8889dd2-063e-428c-9fe1-68d64f3bfa2e"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "83985ce6-a3f9-437d-b64c-443f29b5f2a2"
+  ],
+  "claim_ids": [
+    "838bd4f2-08c7-482f-a55c-ac4922f30c31"
+  ],
+  "correlation_id": null,
+  "event_sequence": 56,
+  "id": "aa1ce280-c59b-42ba-a495-160c37f4832e",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "limitations": [
+    "Evidence supports closeout readiness only; it does not claim public publication, release tagging, remote CI, merge approval, terminal closure, or authorization to begin project-basic successor work."
+  ],
+  "packet_digest": "sha256:2d8c919ffc2b1b95a5f0eaafa0773c7d4b45c599162f13ace6cbf8e6ec635ad0",
+  "purpose": "Bind the closeout readiness record and lessons artifacts to the closeout worker claim and closeout-ready check for owner review.",
+  "recorded_at": "2026-08-12T17:50:33.904033Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

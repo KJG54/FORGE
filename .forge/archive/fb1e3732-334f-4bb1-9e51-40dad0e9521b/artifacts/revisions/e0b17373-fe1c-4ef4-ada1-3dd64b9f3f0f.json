@@ -1,0 +1,39 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:3d19a455aa148da026d19877f7eeaaf8d108765b5f7e60c5c19c5f1006d0fbaa"
+  ],
+  "affected_record_ids": [
+    "d086b5eb-d17d-48ea-a490-6fcfecc24db9"
+  ],
+  "artifact_id": "d086b5eb-d17d-48ea-a490-6fcfecc24db9",
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "byte_size": 7140,
+  "content_digest": "sha256:3d19a455aa148da026d19877f7eeaaf8d108765b5f7e60c5c19c5f1006d0fbaa",
+  "correlation_id": null,
+  "event_sequence": 41,
+  "id": "e0b17373-fe1c-4ef4-ada1-3dd64b9f3f0f",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "media_type": "text/markdown",
+  "path": "release/profile-aware-facilitation/friction-report.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/3d/19a455aa148da026d19877f7eeaaf8d108765b5f7e60c5c19c5f1006d0fbaa",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "39d972ac-34bd-44d0-abc1-20646d116ccb",
+    "metadata": {},
+    "recorded_at": "2026-08-12T16:45:57.243337Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "release/profile-aware-facilitation/friction-report.md",
+    "source_type": "local-file"
+  },
+  "recorded_at": "2026-08-12T16:45:57.243337Z",
+  "registration_event_id": "c7005039-b7f3-425c-92cd-7a24c0993f53",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "1.0.0"
+}

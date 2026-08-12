@@ -199,6 +199,28 @@ M4 Increment 9 requires that governed cancellation to bind the exact preceding h
 terminal proof. It does not signal a provider process, discover an orphan, or provide
 cross-process cancellation.
 
+## Direct workspace use is not adapter support
+
+Two different things are easy to confuse.
+
+A **registered adapter** is what this document describes: FORGE detects it, reports its version,
+binds a plan to a digest, and identifies its runs from governed worker records. Codex and Claude
+Code are the built-in targets.
+
+**Direct workspace use** is an agent reading the installed protocol, following it, and running
+commands the owner authorizes. Any capable agent can do that, including one with no adapter at
+all — the [starter prompts](agent-starter-prompts.md) include a manual variant for exactly this.
+It requires no registration and grants no adapter status.
+
+The distinction matters because the two have different trust properties. A registered adapter run
+is identified from its governed worker record. A direct agent is a same-user caller whose operator
+label and session reference are spoofable and are not authentication. Neither one's success
+constitutes a claim, a check, evidence, verification, or owner acceptance.
+
+Platform-neutral guidance therefore promises portability of *behaviour*, not adapter coverage. An
+agent that follows the protocol correctly is useful; it is still not a registered adapter, and
+saying so plainly avoids overpromising support that does not exist.
+
 ## Manual handoff through the adapter boundary
 
 The existing command remains the portable execution baseline:

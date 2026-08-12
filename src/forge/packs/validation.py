@@ -65,6 +65,10 @@ def calculate_pack_digest(
             # participates in the digest only when a pack actually supplies content.
             if not step["explanation_content"]:
                 del step["explanation_content"]
+            if not step["phase_guidance"]:
+                del step["phase_guidance"]
+        if not workflow_payload["interview_guidance"]:
+            del workflow_payload["interview_guidance"]
         workflow_payloads.append(workflow_payload)
     payload = {
         "manifest": manifest.model_dump(mode="json", exclude={"integrity_digest"}),

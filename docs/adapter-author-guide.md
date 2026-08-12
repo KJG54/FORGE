@@ -10,6 +10,13 @@ third-party adapter discovery or stable external plugin ABI. This guide is there
 contributors adding or maintaining an adapter in the FORGE source tree. The Python adapter surface
 remains pre-v1 and is not part of the documented persisted compatibility promise.
 
+You do not need an adapter to use an agent with FORGE. Any capable agent can work directly in the
+workspace by reading the installed protocol and running owner-authorized commands; see
+[direct workspace use is not adapter support](adapters.md#direct-workspace-use-is-not-adapter-support)
+and the manual variant in the [starter prompts](agent-starter-prompts.md). Write an adapter when
+you want FORGE to detect a worker, report its version, bind an invocation plan to a digest, and
+identify its runs from governed worker records — not merely to let an agent participate.
+
 ## Neutral protocol
 
 Implement `forge.adapters.base.AgentAdapter`. The protocol separates:

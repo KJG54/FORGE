@@ -349,6 +349,26 @@ def generate_agent_context(
         return write_agent_context_views(layout, context)
 
 
+def superseded_protocol_copies(layout: RepositoryLayout) -> tuple[Path, ...]:
+    """Return generated protocol copies that the installed protocol supersedes.
+
+    Regeneration owns every `agent-protocol-*.md` file in the context directory, so a
+    copy from an earlier CLI build is a leftover rather than a record. Callers preview
+    these paths before an apply removes them.
+    """
+    directory = layout.agent_context_directory
+    if not directory.is_dir() or directory.is_symlink():
+        return ()
+    current = load_agent_protocol().filename
+    return tuple(
+        sorted(
+            path
+            for path in directory.glob("agent-protocol-*.md")
+            if path.name != current and path.is_file() and not path.is_symlink()
+        )
+    )
+
+
 def write_agent_context_views(
     layout: RepositoryLayout,
     context: CanonicalAgentContext,
@@ -360,10 +380,15 @@ def write_agent_context_views(
     json_bytes = render_record(context)
     markdown_bytes = _render_markdown(context)
     created = _ensure_context_directory(layout.agent_context_directory)
+    superseded = superseded_protocol_copies(layout)
     try:
         _write_context_view_if_changed(protocol_path, protocol.content)
         _write_context_view_if_changed(layout.current_agent_context_json_file, json_bytes)
         _write_context_view_if_changed(layout.current_agent_context_markdown_file, markdown_bytes)
+        # A protocol bump would otherwise leave the previous copy beside the current
+        # one, and an agent reading the stale file follows a superseded contract.
+        for stale in superseded:
+            stale.unlink(missing_ok=True)
     except Exception:
         if created:
             for path in (

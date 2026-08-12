@@ -35,6 +35,12 @@ First, check whether FORGE is installed:
 If those commands work, read the full protocol and follow it before doing any
 project work.
 
+Check for version skew. If you can see both the protocol version those commands
+report and the version the repository source declares, compare them and tell me
+about any difference before relying on either. A stale or shadowed install routes
+you to a superseded contract while everything still looks healthy. `forge doctor`
+also reports skew between the installed protocol and the generated agent context.
+
 If FORGE is not installed, inspect the GitHub repository docs or propose an
 installation from that repository only after explaining what you will do and
 getting my approval. Use the repository docs as the source of truth, especially
@@ -48,23 +54,29 @@ form.
 
 Before initializing anything:
 1. Detect the repository state.
-2. Ask whether I have existing notes, requirements, designs, research,
+2. Confirm where this project durably lives: a folder on my own machine, a
+   private remote repository I have already pushed to, or a throwaway I have
+   explicitly called a throwaway. Never leave a governed journal only in a
+   workspace whose filesystem can be reclaimed.
+3. Ask whether I have existing notes, requirements, designs, research,
    predecessor archives, or other source documents.
-3. Conduct FORGE's document-first interview.
-4. Ask which profile I want to use for this initiative: minimal, standard,
+4. Conduct FORGE's document-first interview.
+5. Inspect the installed packs read-only with `forge pack list` and
+   `forge pack inspect <pack-id>` before proposing one. Inspecting a pack is not
+   trusting it and creates no state.
+6. Ask which profile I want to use for this initiative: minimal, standard,
    guided, or mentored.
-5. Ask about my experience level, preferred learning style, and what I want to
+7. Ask about my experience level, preferred learning style, and what I want to
    learn through this project.
    If it is unclear, ask whether I want resources, explanations, small practice
    tasks, worked examples, or a mix.
-6. Help me define the first milestone in beginner-friendly language.
-7. For open-ended beginner questions, include brief examples so I understand
+8. Help me define the first milestone in beginner-friendly language.
+9. For open-ended beginner questions, include brief examples so I understand
    what kind of answer would help.
-8. Separate tasks into owner tasks, agent tasks, either-party tasks, learning
-   or practice tasks, and
-   owner-only authority gates.
-9. Show me a plain-language project plan with distinct phases before running
-   `forge init`, `forge pack trust`, or `forge create`.
+10. Separate tasks into owner tasks, agent tasks, either-party tasks, learning
+    or practice tasks, and owner-only authority gates.
+11. Show me a plain-language project plan with distinct phases before running
+    `forge init`, `forge pack trust`, or `forge create`.
 
 Do not run owner-only FORGE commands unless you display the exact command,
 explain what it means, and I explicitly authorize that exact command.
@@ -78,6 +90,15 @@ tasks I should try myself for learning before offering to do them for me.
 After substantial explanations, briefly check whether the explanation made sense.
 Introduce FORGE terminology only when it helps me understand a decision, receipt,
 or owner-only gate.
+
+Open each phase with where we are, what the phase is for, what I do, what you do,
+and which owner-only gate may appear later. Close it with what changed, what is
+still uncertain, what evidence exists, what FORGE did and did not record, and the
+next step.
+
+Regenerating my agent context file is preview-first: show me the files it would
+write, the byte-preservation boundary, and that it records no journal event, then
+apply it only when I tell you to.
 ```
 
 ## Universal Short Prompt
@@ -89,7 +110,9 @@ instruction.
 Use FORGE for this project: https://github.com/KJG54/FORGE.
 Do not assume it is another forge tool. Check `forge --version` and
 `forge agent protocol`; if missing, read or install from that repo only with my
-approval. Follow the protocol, interview me before initializing, produce a
+approval. Report any skew between the protocol version reported and the one the
+repository source declares. Confirm where this project durably lives before
+recording anything. Follow the protocol, interview me before initializing, produce a
 beginner-friendly phased plan, separate owner/agent/either/owner-only tasks, and
 ask which profile I want for this initiative and what I want to learn from the
 project. Include examples after open-ended beginner questions. In guided or
@@ -106,7 +129,10 @@ Use this when FORGE is already installed on the computer or in the workspace.
 This repository should be governed with the installed FORGE CLI.
 
 Run `forge --version` and `forge agent protocol` first. Read the protocol in
-full and follow it before doing project work.
+full and follow it before doing project work. If more than one `forge` is on the
+PATH, or the protocol version differs from what this repository's source or its
+generated agent context declares, stop and tell me: a shadowed or stale install
+silently routes you to a superseded contract. `forge doctor` reports that skew.
 
 Then inspect the repository state enough to tell whether this is uninitialized,
 initialized without an active initiative, or already has an active initiative.
@@ -268,11 +294,21 @@ Use this when returning to a repository that may already have FORGE state.
 
 ```text
 This repository may already use FORGE. Run `forge --version` and
-`forge agent protocol`, then follow the protocol.
+`forge agent protocol`, then follow the protocol. Run `forge doctor` and report
+any protocol skew it finds between the installed CLI and the generated context
+before you rely on either.
 
-Inspect the repository state without making changes. If there is an active
-initiative, run the read-only health/status/recap commands required by the
-protocol and report:
+Inspect the repository state without making changes.
+
+If `forge status` reports no active initiative, that is an ordinary state and not
+an error. It usually means the last initiative was closed or abandoned. Tell me
+what the archives show and what the legal next action is, and do not create a
+successor, resume anything, or treat a missing `.forge/active/` directory as
+damage. Any `CLAUDE.md` or `AGENTS.md` reference to `.forge/active/context/`
+files is stale in that state, not broken.
+
+If there is an active initiative, run the read-only health/status/recap commands
+required by the protocol and report:
 - the current phase;
 - the approved scope;
 - selected inputs;
@@ -294,18 +330,23 @@ my explicit approval of the exact displayed command.
 After receiving one of these prompts, a capable agent should:
 
 1. Identify FORGE by the official repository or installed CLI.
-2. Run or read `forge agent protocol`.
+2. Run or read `forge agent protocol`, and report any version skew between the
+   installed CLI, the repository source, and the generated agent context.
 3. Detect repository state.
-4. Ask for existing documents before broad questions.
-5. Interview only for uncovered context.
-6. Ask about learning goals when the owner wants guided or mentored help.
-7. Play back the owner vision and first milestone.
-8. Show distinct phases and collaboration tasks.
-9. Separate practice tasks from routine owner review and owner-only gates.
-10. Gather information conversationally instead of presenting a rigid form.
-11. Preserve owner-only command gates.
-12. Quote FORGE receipts accurately.
-13. Keep claim, check, evidence, verification, and acceptance separate.
+4. Establish where the project durably lives before proposing any governed record.
+5. Ask for existing documents before broad questions.
+6. Interview only for uncovered context.
+7. Inspect packs read-only before proposing one; inspecting is not trusting.
+8. Ask about learning goals when the owner wants guided or mentored help.
+9. Play back the owner vision and first milestone.
+10. Show distinct phases with an opening and a closing, and a collaboration task
+    map separating owner, agent, either-party, and owner-only gate work.
+11. Separate practice tasks from routine owner review and owner-only gates.
+12. Gather information conversationally instead of presenting a rigid form.
+13. Preserve owner-only command gates, and treat agent-context regeneration as
+    preview-first owner-directed maintenance.
+14. Quote FORGE receipts accurately.
+15. Keep claim, check, evidence, verification, and acceptance separate.
 
 If an agent skips these steps, paste the shorter prompt again and ask it to
 restart from FORGE state detection.

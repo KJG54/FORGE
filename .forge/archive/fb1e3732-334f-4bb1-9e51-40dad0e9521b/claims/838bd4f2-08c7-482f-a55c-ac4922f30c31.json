@@ -1,0 +1,39 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:2164e523080c432b7367d533baab71c0dfdac3257eba3b0e6917e41d894c88bf",
+    "sha256:9a5a4bd2b23c731ed8cb719bace443075a600d25e9fc1d83205f6dcbb210447d"
+  ],
+  "affected_record_ids": [
+    "3483fbd2-c49c-4eae-a8a7-26f957ff535d",
+    "d8889dd2-063e-428c-9fe1-68d64f3bfa2e"
+  ],
+  "assertion": "Produced the declared closeout artifacts: release-readiness-record and lessons, summarizing accepted scope, verification, risk review, residual risks, and successor carry-forward without authorizing project-basic implementation or terminal closure.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "3483fbd2-c49c-4eae-a8a7-26f957ff535d",
+    "d8889dd2-063e-428c-9fe1-68d64f3bfa2e"
+  ],
+  "correlation_id": null,
+  "event_sequence": 53,
+  "id": "838bd4f2-08c7-482f-a55c-ac4922f30c31",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "limitations": [
+    "No public publication, release tag, or remote CI result is claimed by these closeout artifacts.",
+    "The project-basic workflow remains successor work and is not implemented or authorized by this closeout claim."
+  ],
+  "operator_session_reference": "codex-cli-closeout-2026-08-12",
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-12T17:49:38.366393Z",
+  "run_id": "9df9acbb-8f4d-4272-88cb-3ab9688f7d13",
+  "schema_version": "1.0",
+  "step_id": "closeout",
+  "tool_version": "1.0.0"
+}

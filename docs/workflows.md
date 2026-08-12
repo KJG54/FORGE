@@ -145,7 +145,7 @@ records and boundaries matter. The selected profile chooses only exact digest-bo
 text. Transition definitions, authority, record requirements, checks, evidence, acceptance, and
 materialized next actions are identical.
 
-Both bundled packs provide all four workflow-level profiles. `software-basic@0.5.0` also provides
+Both bundled packs provide all four workflow-level profiles. `software-basic@0.6.0` also provides
 authored Mentored guidance for each step; `research-basic@0.4.0` continues to use workflow-level
 fallback. Existing packs and workflow locks without the optional step map retain their prior
 digest and remain valid for every profile they provide. The active step text takes precedence,
@@ -154,6 +154,27 @@ warm recap is advisory and skippable: it cannot change transitions, authority, r
 checks, evidence, or acceptance. Requesting a profile absent from the selected workflow still
 fails before initiative state is written, profiles cannot be switched after creation, and external
 explanation resource files remain unsupported.
+
+## Interview and phase guidance
+
+A workflow may carry optional `interview_guidance` at workflow scope and `phase_guidance` on each
+step. Both default to empty, and both are presentation only.
+
+`interview_guidance` groups the questions worth asking before an initiative exists, with an
+optional `must_answer_before_create` list naming coverage an agent should not leave open at the
+creation gate. `phase_guidance` describes a step as a distinct phase: a label, owner tasks, agent
+tasks, either-party tasks, the owner-only gates that appear during it, and a done signal.
+
+Guidance never changes governance. `owner_only_gates` restates gates that already exist so an
+agent can name them in a collaboration task map; it cannot create a gate, satisfy one, waive a
+check, or alter acceptance. A task map is something an agent shows an owner, not a governed record.
+
+`software-basic@0.6.0` supplies interview guidance for vision, first milestone, risks and
+constraints, and learning path, plus phase guidance for all six steps. `research-basic@0.4.0`
+supplies neither and keeps the exact digest it had before these fields existed, which is the
+general rule: guidance enters the pack digest only when a pack actually supplies it, so old packs,
+locks, and archives continue to validate unchanged. Because supplied guidance is pack content,
+adding or changing it requires a pack version bump.
 
 ## Canonical long-gap resumption
 

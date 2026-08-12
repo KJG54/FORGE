@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:91bdbc6b906d5a2a4b6f4535af3f47d9ff85a51a19a69085b8705fdcc78cfa13"
+  ],
+  "affected_record_ids": [
+    "dd16743f-d35b-443d-a163-5ea884f41e61"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 42,
+  "id": "49904842-2c8e-48e3-85e9-29409bd8845b",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "recorded_at": "2026-08-12T16:46:35.243417Z",
+  "role": "residual-risk-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Profile-Aware Facilitation Residual Risk Report",
+  "tool_version": "1.0.0"
+}

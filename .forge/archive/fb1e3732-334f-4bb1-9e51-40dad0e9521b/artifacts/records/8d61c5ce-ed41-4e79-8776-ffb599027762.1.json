@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:9a5a4bd2b23c731ed8cb719bace443075a600d25e9fc1d83205f6dcbb210447d"
+  ],
+  "affected_record_ids": [
+    "d8889dd2-063e-428c-9fe1-68d64f3bfa2e"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 52,
+  "id": "8d61c5ce-ed41-4e79-8776-ffb599027762",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "recorded_at": "2026-08-12T17:49:21.516093Z",
+  "role": "lessons",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Profile-Aware Facilitation Lessons",
+  "tool_version": "1.0.0"
+}

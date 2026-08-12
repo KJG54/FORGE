@@ -6,6 +6,7 @@ from typer.testing import CliRunner
 
 from forge.cli.app import app
 from forge.core.agent_context import AgentContextTarget
+from forge.core.agent_protocol import AGENT_PROTOCOL_FILENAME
 from forge.core.authorization import owner_actor
 from forge.core.decisions import record_decision
 from forge.core.lifecycle import create_initiative
@@ -267,7 +268,7 @@ def test_vendor_cli_previews_then_requires_apply(tmp_path: Path) -> None:
     assert "Apply may persistently write or replace these derived files:" in preview.stdout
     assert str(tmp_path / "AGENTS.md") in preview.stdout
     assert str(tmp_path / ".forge" / "active" / "context" / "current.json") in preview.stdout
-    assert "agent-protocol-1.3.0.md" in preview.stdout
+    assert AGENT_PROTOCOL_FILENAME in preview.stdout
     assert "mutation.lock" in preview.stdout
     assert "every byte outside the FORGE managed markers" in preview.stdout
     assert "Governed journal effect: none" in preview.stdout

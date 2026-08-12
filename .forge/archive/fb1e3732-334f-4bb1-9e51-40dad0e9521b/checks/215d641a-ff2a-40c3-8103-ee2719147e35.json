@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:02b309fefb280eddec76e4e22116753803f65615e62884d9a0c2516c6d5f64dd"
+  ],
+  "affected_record_ids": [
+    "55c78ade-fd7d-400e-8d43-1d95a214b075"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "implementation-validated",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-11T04:56:07.736831Z",
+  "event_sequence": 16,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "215d641a-ff2a-40c3-8103-ee2719147e35",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": ".venv/Scripts/python.exe -m pyright --pythonpath .venv/Scripts/python.exe ; .venv/Scripts/python.exe -m ruff check . ; .venv/Scripts/python.exe -m tools.version_consistency ; .venv/Scripts/python.exe -m pytest -q --basetemp=C:/t/pt ; forge doctor",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "Full-suite validation: pyright 1.1.411 clean, ruff clean, version consistency passed, 448 tests passed with 9 skipped, forge doctor healthy with no protocol skew.",
+    "Nine skips are environmental: symlink creation requires a Windows privilege this session does not hold. They are not defects and were not evaluated.",
+    "This check validates the implementation against the repository's own suite. It does not exercise the release-requirements owner-observed criteria (O1-O9), which require dogfooding a built candidate outside this repository.",
+    "M13 could not be evaluated as written because protocol resources 1.0.0 through 1.2.0 have never existed in the repository source; only the retention of 1.3.0 and the addition of 1.4.0 were checked."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-11T04:56:07.736889Z",
+  "result_digest": "sha256:44789e2831c30ed3fde20aa71921ab8f5871f0a1d6df973e11386ac9f2e9f7d9",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-11T04:56:07.736829Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "55c78ade-fd7d-400e-8d43-1d95a214b075"
+  ],
+  "tool_version": "1.0.0"
+}

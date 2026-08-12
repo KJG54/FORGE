@@ -3,6 +3,7 @@ from pathlib import Path
 from uuid import uuid4
 
 import pytest
+from conftest import SOFTWARE_BASIC_VERSION
 from typer.testing import CliRunner
 
 from forge.cli.app import app
@@ -145,7 +146,7 @@ def test_cli_previews_exact_data_only_boundary_and_records_history(tmp_path: Pat
     preview = runner.invoke(app, arguments)
 
     assert preview.exit_code == 0, preview.stderr
-    assert "Locked pack: software-basic@0.5.0" in preview.stdout
+    assert f"Locked pack: software-basic@{SOFTWARE_BASIC_VERSION}" in preview.stdout
     assert "Trust boundary: validated declarative data only; never executable authority" in (
         preview.stdout
     )

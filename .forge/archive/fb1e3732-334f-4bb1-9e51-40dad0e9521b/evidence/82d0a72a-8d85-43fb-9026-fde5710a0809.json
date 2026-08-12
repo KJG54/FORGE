@@ -1,0 +1,42 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:2f058dc3948b3e5529b0ea2bcf04a546894bb49f3760ddd3d80be573f557fd99"
+  ],
+  "affected_record_ids": [
+    "81c7de6c-15e8-4c6f-9ad3-572033eb230e",
+    "69d97eac-894d-44cb-80b8-e295bdcf3b28",
+    "854d9e44-5327-4e22-9ac4-a3b823f487d3"
+  ],
+  "artifact_revision_ids": [
+    "81c7de6c-15e8-4c6f-9ad3-572033eb230e"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "69d97eac-894d-44cb-80b8-e295bdcf3b28"
+  ],
+  "claim_ids": [
+    "854d9e44-5327-4e22-9ac4-a3b823f487d3"
+  ],
+  "correlation_id": null,
+  "event_sequence": 36,
+  "id": "82d0a72a-8d85-43fb-9026-fde5710a0809",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "limitations": [
+    "Evidence covers the M8 correction addendum and Section A verification support only; O1-O9 remain owner-observed and outstanding.",
+    "Installed-wheel M8 smoke reused the existing .venv interpreter/dependency set with the rebuilt wheel isolated on PYTHONPATH."
+  ],
+  "packet_digest": "sha256:2f058dc3948b3e5529b0ea2bcf04a546894bb49f3760ddd3d80be573f557fd99",
+  "purpose": "Bind the revised verification-report revision, the passing M8 correction release-checks-passed check, and the worker claim for commit 2e77c3d and rebuilt wheel sha256:90e09d9d4da7244e483816e2016ce8f94d6e6ba8de73b2a953f24c605d918ae9.",
+  "recorded_at": "2026-08-11T18:07:02.788934Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

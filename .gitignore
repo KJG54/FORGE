@@ -19,3 +19,4 @@ htmlcov/
 !/.forge/
 !/.forge/**
 /.forge/local/
+/dist/profile-aware-facilitation/

@@ -1,0 +1,39 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:91bdbc6b906d5a2a4b6f4535af3f47d9ff85a51a19a69085b8705fdcc78cfa13",
+    "sha256:3d19a455aa148da026d19877f7eeaaf8d108765b5f7e60c5c19c5f1006d0fbaa"
+  ],
+  "affected_record_ids": [
+    "dd16743f-d35b-443d-a163-5ea884f41e61",
+    "e0b17373-fe1c-4ef4-ada1-3dd64b9f3f0f"
+  ],
+  "assertion": "Recorded owner-supplied dogfooding findings and classified residual risks for the profile-aware facilitation initiative in the declared friction-report and residual-risk-report artifacts.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "dd16743f-d35b-443d-a163-5ea884f41e61",
+    "e0b17373-fe1c-4ef4-ada1-3dd64b9f3f0f"
+  ],
+  "correlation_id": null,
+  "event_sequence": 43,
+  "id": "790b7d19-f9a7-46a3-a869-c4202172d03a",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "limitations": [
+    "The supplied dogfooding handoff provides directional findings but not complete per-run O1-O9 metadata such as exact prompts, agent identities, exact candidate revision for each run, or token comparison.",
+    "This claim does not implement, authorize, accept, close, or create the proposed project-basic successor initiative."
+  ],
+  "operator_session_reference": "codex-cli-review-risk-2026-08-12",
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-12T16:46:57.590970Z",
+  "run_id": "c8507e41-9da5-40be-8707-d8f5b8736c7a",
+  "schema_version": "1.0",
+  "step_id": "review-risk",
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,43 @@
+{
+  "acceptance_event_id": "f5c4543a-5045-4303-8ccd-79db03abe971",
+  "accepted_artifact_revision_ids": [
+    "81c7de6c-15e8-4c6f-9ad3-572033eb230e"
+  ],
+  "accepted_check_result_ids": [
+    "69d97eac-894d-44cb-80b8-e295bdcf3b28"
+  ],
+  "accepted_evidence_ids": [
+    "82d0a72a-8d85-43fb-9026-fde5710a0809"
+  ],
+  "accepted_scope": "Introduce FORGE agent protocol 1.4.0 as a strict superset of 1.3.0 and regenerate its Codex/Claude managed references for profile-aware collaboration, learning goals, phase playback, and task delegation; add additive, default-empty interview-guidance and phase-guidance fields to the pack workflow contract with a mandatory software-basic minor-version bump, append-only (version, digest) identity, unchanged digests for every pack that supplies no guidance, and a matching release/version-contract.json update; populate that guidance for the bundled software-basic pack only; add profile-differentiated rendering rules for minimal, standard, guided, and mentored; add starter-prompt documentation for universal, short, installed-CLI, GitHub-only, Codex, Claude, manual, beginner, and existing-project cases plus the supporting README and docs-index entries; add a protocol/CLI version-skew check surfaced by forge doctor; and add tests for schema compatibility, pack validation, digest identity, context allowlisting, managed-reference byte preservation, and absence of authority drift.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:20ec014962f7b4fc5086df787ada4d9480d9ec69c2fc66224f7f5d1fc84f9b53",
+    "sha256:dc60a61a45092362b5feb13f7a93c39d81737131db3e0bc65f67a9b830b7505a",
+    "sha256:2f058dc3948b3e5529b0ea2bcf04a546894bb49f3760ddd3d80be573f557fd99"
+  ],
+  "affected_record_ids": [
+    "81c7de6c-15e8-4c6f-9ad3-572033eb230e",
+    "69d97eac-894d-44cb-80b8-e295bdcf3b28",
+    "82d0a72a-8d85-43fb-9026-fde5710a0809"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 38,
+  "id": "add1a01c-7c97-411d-97f9-3894cdd9840a",
+  "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+  "known_limitations": [],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-11T18:12:17.609145Z",
+  "residual_risks": [],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}
