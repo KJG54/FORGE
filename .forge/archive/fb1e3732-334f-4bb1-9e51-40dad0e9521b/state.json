@@ -14,9 +14,9 @@
   "current_step_id": null,
   "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
   "integrity_state": "healthy",
-  "journal_head_hash": "sha256:ea888d9e45ef5d7b2c43f97148b5353e09a2942b9ae3870e2e77bc5d4feb0cfc",
-  "journal_head_sequence": 59,
-  "lifecycle_state": "active",
+  "journal_head_hash": "sha256:ac919cd174b294cfca824796798ff2dd3dee8d8f45a41710728b717d8a7c9c05",
+  "journal_head_sequence": 60,
+  "lifecycle_state": "closed",
   "open_decision_ids": [
     "7cef20dd-41d9-47d5-b01c-c5127d08d272"
   ],
