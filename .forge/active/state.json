@@ -9,18 +9,18 @@
     "9ff880d8-b55f-40da-952a-fcc18c522ea1": 1,
     "d086b5eb-d17d-48ea-a490-6fcfecc24db9": 1
   },
-  "current_step_id": "review-risk",
+  "current_step_id": "closeout",
   "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
   "integrity_state": "healthy",
-  "journal_head_hash": "sha256:6645e186cf52b8ca1edfc832ecdefa73fc4510b275dc11b5f4728fd3d6578893",
-  "journal_head_sequence": 47,
+  "journal_head_hash": "sha256:479ccd5c30e9f8fff7377bf447e30aaf5d18e92100cd2447faa53aea92ad99f1",
+  "journal_head_sequence": 49,
   "lifecycle_state": "active",
   "open_decision_ids": [
     "7cef20dd-41d9-47d5-b01c-c5127d08d272"
   ],
   "open_gate_ids": [],
   "permitted_next_actions": [
-    "acceptance-record:review-risk"
+    "begin:closeout"
   ],
   "repository_state": "initialized",
   "schema_version": "1.0",
@@ -32,9 +32,9 @@
     "a1ec35c4-f751-42c6-aa7f-74d2cc4a2c83"
   ],
   "step_states": {
-    "closeout": "pending",
+    "closeout": "ready",
     "implement": "completed",
-    "review-risk": "awaiting_acceptance",
+    "review-risk": "completed",
     "scope": "completed",
     "verify-release": "completed"
   },
