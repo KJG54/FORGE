@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e1cce44f6e83dee55afacf92c884db868df097721c7baf5f97c2a46ecd1ea904",
+    "sha256:ff5750aa93e342620bfdc1283b64334598c3bab5d87a460df0b0f97614497e20"
+  ],
+  "affected_record_ids": [
+    "78c588ae-6774-4fe8-8bd5-95ff436ab129",
+    "a1d866c4-b28e-4273-bde9-2d1e57ca7a11"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "closeout-ready",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-13T00:19:05.022696Z",
+  "event_sequence": 46,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "20905048-6296-48ce-9368-0aa84216cb0c",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Reviewed the release-readiness record and lessons against accepted risk-review outputs and the scoped non-release boundary.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "This check confirms the closeout documents classify readiness and retained limitations. It does not accept work, resolve residual risks, archive the initiative, or authorize release activity."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-13T00:19:05.022752Z",
+  "result_digest": "sha256:0ba519eede3e19d221bc9882bbf096cbb095f26d2b44b01d23f0c1a1de454d15",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-13T00:19:05.022694Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "78c588ae-6774-4fe8-8bd5-95ff436ab129",
+    "a1d866c4-b28e-4273-bde9-2d1e57ca7a11"
+  ],
+  "tool_version": "1.0.0"
+}

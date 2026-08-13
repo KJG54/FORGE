@@ -1,0 +1,35 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e79cf60f9bc001298ffcf1632fe18d78754c5bb79c27cede88a169c7b42a6586"
+  ],
+  "affected_record_ids": [
+    "2ab65326-d91b-4f8e-8012-0773bb3207a9"
+  ],
+  "assertion": "The scoped project-basic implementation has been release-verified against its accepted requirements through exact pack validation, focused lifecycle and identity coverage, version consistency, wheel build, and installed-wheel smoke.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "2ab65326-d91b-4f8e-8012-0773bb3207a9"
+  ],
+  "correlation_id": null,
+  "event_sequence": 23,
+  "id": "798548ee-a2b9-48a4-a5ff-e9c4a9ffe33e",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "This claim does not assert a full pytest-suite result because broad test attempts lacked a final terminal summary; it does not establish owner acceptance, release readiness beyond the scoped requirements, publication authorization, or dogfood outcomes."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-12T23:19:58.712983Z",
+  "run_id": "ea2fb1c8-b354-4e5c-a176-97d89b4b1d69",
+  "schema_version": "1.0",
+  "step_id": "verify-release",
+  "tool_version": "1.0.0"
+}

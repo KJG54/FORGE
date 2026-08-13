@@ -1,0 +1,47 @@
+{
+  "acceptance_event_id": "ff7f4361-c0f5-43fe-b3eb-9b012713b7dd",
+  "accepted_artifact_revision_ids": [
+    "2ab65326-d91b-4f8e-8012-0773bb3207a9"
+  ],
+  "accepted_check_result_ids": [
+    "2052c752-bd60-40c2-aaf2-bab9395ce735"
+  ],
+  "accepted_evidence_ids": [
+    "7849d2f5-1d11-4e5c-8680-b19fdade50a7"
+  ],
+  "accepted_scope": "Exact project-basic release-verification report and the scoped structural, identity, lifecycle, documentation, and installed-wheel validation it records",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e79cf60f9bc001298ffcf1632fe18d78754c5bb79c27cede88a169c7b42a6586",
+    "sha256:bf674b473766269664eef8219f84118dee4e30150d5ad0c88b5120fb193d0e91",
+    "sha256:e9919eeed6b068274421654ddc0c7d65c7723be2506134fd0cd90bdd6dfc8153"
+  ],
+  "affected_record_ids": [
+    "2ab65326-d91b-4f8e-8012-0773bb3207a9",
+    "2052c752-bd60-40c2-aaf2-bab9395ce735",
+    "7849d2f5-1d11-4e5c-8680-b19fdade50a7"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 28,
+  "id": "40b6e1f1-c61b-4aa2-bcc5-98fad5a43402",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "known_limitations": [
+    "No full pytest-suite result or subjective dogfood outcome is claimed."
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-12T23:23:21.606498Z",
+  "residual_risks": [
+    "Owner review remains required for workflow fit and release readiness; this acceptance does not create a release, tag, or publication authorization."
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

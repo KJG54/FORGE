@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:9d2f903503cf2dc72d2b6642a8849e53197b5d791a71e40ab5d588ff8de8c4e7"
+  ],
+  "affected_record_ids": [
+    "0996176f-107c-4028-9b65-e7df9af29f3d",
+    "b66bc9a1-a335-4ba3-bcf6-befa88727cb7",
+    "ebc87ed1-c74c-401b-b902-6c649f97e200",
+    "08d8b9c8-628b-4500-a51b-520e8830fe49"
+  ],
+  "artifact_revision_ids": [
+    "0996176f-107c-4028-9b65-e7df9af29f3d",
+    "b66bc9a1-a335-4ba3-bcf6-befa88727cb7"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "ebc87ed1-c74c-401b-b902-6c649f97e200"
+  ],
+  "claim_ids": [
+    "08d8b9c8-628b-4500-a51b-520e8830fe49"
+  ],
+  "correlation_id": null,
+  "event_sequence": 37,
+  "id": "141aeb8a-e912-4a9b-bc66-5179f75ba533",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "This evidence supports the stated risk classification only; it does not accept residual risk, prove dogfood outcomes, authorize a release, tag, or publication."
+  ],
+  "packet_digest": "sha256:9d2f903503cf2dc72d2b6642a8849e53197b5d791a71e40ab5d588ff8de8c4e7",
+  "purpose": "Bind the project-basic friction and residual-risk reports to their direct-Codex claim and passed risk-review-complete check.",
+  "recorded_at": "2026-08-12T23:49:51.768022Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

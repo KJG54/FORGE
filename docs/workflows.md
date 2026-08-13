@@ -24,9 +24,41 @@ Inspecting a pack does not trust it:
 
 ```console
 forge pack list
+forge pack validate project-basic
 forge pack validate software-basic
 forge pack validate research-basic
 ```
+
+## Bundled project workflow
+
+`project-basic@0.1.0` is a data-only, general-project workflow for vague, cross-domain, creative,
+hands-on, or learning-heavy work. Documentation and the document-first interview may recommend it
+for that kind of work, while the unqualified CLI default remains `software-basic`.
+
+It uses seven fixed phases: `intake`, `research`, `plan`, `create`, `evaluate`, `review`, and
+`close`. Their required outputs are respectively a human vision brief and owner context/learning
+profile; context readiness and project research; project plan, task map, and acceptance criteria;
+created work; an evaluation report; a review report; and lessons plus a closure record.
+
+Research is mandatory. Its readiness report may instead document that no new research is needed,
+but it must identify the materials considered sufficient, the sufficiency basis, remaining
+uncertainty, and the owner review. The evaluation report names the exact created-work and
+acceptance-criteria revisions and digests it evaluates. This makes the report's claim traceable;
+it does not prove the created work directly or turn an evaluation result into an automatic
+transition.
+
+The pack provides eleven declared, read-only templates for every role except domain-specific
+`created-work`. `forge pack template list|show` exposes the locked reference text before and after
+initiative creation; templates neither generate nor associate artifacts. Changing created work uses
+normal artifact revision, invalidation, and rework. Scope or criteria changes use scope amendment.
+No `revise` phase, conditional DAG branch, new CLI command, or lifecycle rule is added.
+
+All workflow profiles, interview groups, and phase guidance are digest-bound presentation only.
+They guide document-first intake, small question batches, vision playback, known/uncertain/blocked
+status, owner practice versus review work, artifact review pauses, and revocable conversational
+authorization envelopes. They cannot change authority, required conditions, actors, transitions,
+verification, or owner acceptance. See the [project companion](project-companion.md) for routing
+and beginner-facing use.
 
 ## Bundled research workflow
 
@@ -145,9 +177,10 @@ records and boundaries matter. The selected profile chooses only exact digest-bo
 text. Transition definitions, authority, record requirements, checks, evidence, acceptance, and
 materialized next actions are identical.
 
-Both bundled packs provide all four workflow-level profiles. `software-basic@0.6.0` also provides
-authored Mentored guidance for each step; `research-basic@0.4.0` continues to use workflow-level
-fallback. Existing packs and workflow locks without the optional step map retain their prior
+All three bundled packs provide all four workflow-level profiles. `software-basic@0.6.0` and
+`project-basic@0.1.0` provide authored phase guidance for every step; `research-basic@0.4.0`
+continues to use workflow-level fallback and remains guidance-unchanged. Existing packs and
+workflow locks without the optional step map retain their prior
 digest and remain valid for every profile they provide. The active step text takes precedence,
 while its locked workflow text is the deterministic fallback. Guidance shown at creation and in a
 warm recap is advisory and skippable: it cannot change transitions, authority, requirements,
@@ -170,7 +203,8 @@ agent can name them in a collaboration task map; it cannot create a gate, satisf
 check, or alter acceptance. A task map is something an agent shows an owner, not a governed record.
 
 `software-basic@0.6.0` supplies interview guidance for vision, first milestone, risks and
-constraints, and learning path, plus phase guidance for all six steps. `research-basic@0.4.0`
+constraints, and learning path, plus phase guidance for all six steps. `project-basic@0.1.0`
+supplies four interview groups and phase guidance for all seven steps. `research-basic@0.4.0`
 supplies neither and keeps the exact digest it had before these fields existed, which is the
 general rule: guidance enters the pack digest only when a pack actually supplies it, so old packs,
 locks, and archives continue to validate unchanged. Because supplied guidance is pack content,
@@ -198,8 +232,8 @@ artifact, change canonical context, authorize a worker, or satisfy any workflow 
 
 ## Shared bundled-pack conformance
 
-M5 Increment 7 applies one parameterized conformance contract to `software-basic` and
-`research-basic`. Both must use the same five transition definitions, participant and owner
+M5 Increment 7 applies one parameterized conformance contract to `project-basic`, `software-basic`,
+and `research-basic`. All must use the same five transition definitions, participant and owner
 authority split, worker actor classes, explicit claim/check/evidence/acceptance sequence, four
 inline explanation profiles, compatibility marker, digest validation, and prerequisite-bound
 input lineage. The same lifecycle service creates each initiative.

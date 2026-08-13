@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:2871548a65457ef5f26cae7d357a4c69f5b2ae68f0920b2e789a7f479552f8c4"
+  ],
+  "affected_record_ids": [
+    "c3f89948-5bcc-4aa5-beb0-fed2d327f303"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 3,
+  "id": "0231a754-63c7-4d0f-be5a-a6c4cf8ac7ea",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "recorded_at": "2026-08-12T22:23:42.380813Z",
+  "role": "change-scope",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Experimental project-basic change scope",
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,35 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8eb1935d78ac2cc4d35c631a54446a0ba9fbefc72120dcd388b4ab255ab3b3e9"
+  ],
+  "affected_record_ids": [
+    "cfe65436-c0b7-40a5-aa3f-069acc8b9969"
+  ],
+  "assertion": "Implemented the approved standalone project-basic@0.1.0 pack, read-only templates, advisory guidance, documentation, inventory metadata, and validation coverage within the accepted scope.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "cfe65436-c0b7-40a5-aa3f-069acc8b9969"
+  ],
+  "correlation_id": null,
+  "event_sequence": 14,
+  "id": "0a0df856-7f4b-4986-9382-e55fde96f8db",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "The implementation record reports focused and installed-wheel validation; the terminal bridge did not provide a final summary for two broad pytest attempts, so no full-suite result is claimed."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-12T22:54:00.890468Z",
+  "run_id": "e78e659d-c945-4aa5-85f0-58e407bb2a76",
+  "schema_version": "1.0",
+  "step_id": "implement",
+  "tool_version": "1.0.0"
+}

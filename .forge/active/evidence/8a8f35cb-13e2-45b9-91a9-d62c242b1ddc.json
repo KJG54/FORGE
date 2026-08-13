@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:c1f130ccf87baaef178500a39d0c4991a9ed1c2fe41bf368b286d00e1780decd"
+  ],
+  "affected_record_ids": [
+    "c3f89948-5bcc-4aa5-beb0-fed2d327f303",
+    "e553f2fc-fa8c-4896-aea5-d277905ae8d4",
+    "ffb38d07-ded0-4e5d-b275-9f7d32401931",
+    "4de01984-105a-4e08-b5c0-445beecdb817"
+  ],
+  "artifact_revision_ids": [
+    "c3f89948-5bcc-4aa5-beb0-fed2d327f303",
+    "e553f2fc-fa8c-4896-aea5-d277905ae8d4"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "ffb38d07-ded0-4e5d-b275-9f7d32401931"
+  ],
+  "claim_ids": [
+    "4de01984-105a-4e08-b5c0-445beecdb817"
+  ],
+  "correlation_id": null,
+  "event_sequence": 8,
+  "id": "8a8f35cb-13e2-45b9-91a9-d62c242b1ddc",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "This evidence covers scope artifacts and their review only; implementation and owner-observed dogfood remain unperformed."
+  ],
+  "packet_digest": "sha256:c1f130ccf87baaef178500a39d0c4991a9ed1c2fe41bf368b286d00e1780decd",
+  "purpose": "Bind the reviewed project-basic scope and requirements to the direct-Codex claim and passing scope review.",
+  "recorded_at": "2026-08-12T22:29:01.481924Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,50 @@
+{
+  "acceptance_event_id": "3dfdcde9-2911-4023-853d-91965d8b0ec2",
+  "accepted_artifact_revision_ids": [
+    "0996176f-107c-4028-9b65-e7df9af29f3d",
+    "b66bc9a1-a335-4ba3-bcf6-befa88727cb7"
+  ],
+  "accepted_check_result_ids": [
+    "ebc87ed1-c74c-401b-b902-6c649f97e200"
+  ],
+  "accepted_evidence_ids": [
+    "141aeb8a-e912-4a9b-bc66-5179f75ba533"
+  ],
+  "accepted_scope": "Exact project-basic friction and residual-risk reports, including the documented qualitative dogfood, discoverability, validation-observability, and release-boundary limitations",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:1e505716f844dbf174d3471f8b0a08d7bf283833ad1631314a65d02f022cd509",
+    "sha256:ddc8c417dc27172a7dc3da0916aa20e550647242915de1a45de386a530c737ed",
+    "sha256:def10fd1e5fa122bf29feb002e49a37a3b777c6940aadee3579be205730a5b6f",
+    "sha256:9d2f903503cf2dc72d2b6642a8849e53197b5d791a71e40ab5d588ff8de8c4e7"
+  ],
+  "affected_record_ids": [
+    "0996176f-107c-4028-9b65-e7df9af29f3d",
+    "b66bc9a1-a335-4ba3-bcf6-befa88727cb7",
+    "ebc87ed1-c74c-401b-b902-6c649f97e200",
+    "141aeb8a-e912-4a9b-bc66-5179f75ba533"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 39,
+  "id": "90817262-fa95-4097-bcaa-b14dab07800f",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "known_limitations": [
+    "The reports classify residual risk but do not prove owner-observed dogfood outcomes or a full pytest-suite result."
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-12T23:54:36.893092Z",
+  "residual_risks": [
+    "Workflow fit, teaching quality, and any broader release decision remain owner judgments; this acceptance does not authorize a release, tag, or publication."
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

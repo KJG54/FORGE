@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:35bc1229587b4e3089ea0cc740482e64bc8059f656be9667449db9e18abc7db3"
+  ],
+  "affected_record_ids": [
+    "69a11a06-12ab-45a2-85af-a40ccd570431",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f",
+    "a406ae5c-2054-42aa-8bb8-19f459d28a55",
+    "5d4c0024-563e-4ad3-9276-ff12d91330e4"
+  ],
+  "artifact_revision_ids": [
+    "69a11a06-12ab-45a2-85af-a40ccd570431",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "a406ae5c-2054-42aa-8bb8-19f459d28a55"
+  ],
+  "claim_ids": [
+    "5d4c0024-563e-4ad3-9276-ff12d91330e4"
+  ],
+  "correlation_id": null,
+  "event_sequence": 79,
+  "id": "4ddd37e0-c917-4612-90b6-c32c9f9cac6b",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "This evidence supports only revised risk documentation and clean-diff review; it does not accept residual risk, establish CI, fresh full-suite, release, tag, or publication."
+  ],
+  "packet_digest": "sha256:35bc1229587b4e3089ea0cc740482e64bc8059f656be9667449db9e18abc7db3",
+  "purpose": "Bind revised project-basic friction and residual-risk reports to their direct-Codex claim and documentation consistency check.",
+  "recorded_at": "2026-08-13T00:46:33.372571Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

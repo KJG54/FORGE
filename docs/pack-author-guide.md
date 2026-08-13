@@ -5,8 +5,8 @@ templates, structural validators, and capability identifiers. It cannot contain 
 approve a process, run a hook, grant owner authority, create evidence, or accept work.
 
 Pack authoring extends domain language without adding Python domain logic. The bundled
-`software-basic` and `research-basic` directories under `src/forge/packs/bundled/` are maintained
-reference implementations. The repository-local `community-research` fixture under
+`project-basic`, `software-basic`, and `research-basic` directories under `src/forge/packs/bundled/`
+are maintained reference implementations. The repository-local `community-research` fixture under
 `tests/fixtures/packs/` demonstrates a Python-free extension.
 
 ## Directory contract

@@ -10,11 +10,11 @@ FORGE governs work. It is not the worker, an autonomous agent runtime, a hosted 
 or a same-user security sandbox.
 
 > **Unpublished local candidate:** Milestones 1 through 6 are complete and owner-accepted. The
-> current replacement Local Production-v1 source includes workspace-agent bootstrap and protocol
-> 1.4.0. Exact artifact identity and validation status are recorded in the
-> [candidate release evidence](release/local-production-v1/README.md). Native-app owner
-> observations and extended owner testing remain separate. No candidate is tagged, publicly
-> distributed, or finally accepted as Production v1.
+> [candidate release evidence](release/local-production-v1/README.md) records the exact historical
+> Local Production-v1 artifact identity and validation. This source has since changed under a
+> successor; that historical candidate does not validate the current source. Native-app owner
+> observations and extended owner testing remain separate. No replacement candidate is tagged,
+> publicly distributed, or finally accepted as Production v1.
 
 The current v1 definition is the
 [Local Production-v1 candidate](release/local-production-v1/README.md): a personal, local-first
@@ -59,6 +59,10 @@ The [conversational walkthroughs](docs/conversational-walkthroughs.md) show what
 owner-agent exchange can look like when starting a project, resuming normal work, or changing
 scope after FORGE refuses an unsafe shortcut. The examples explain where the agent keeps working,
 where it pauses for you, and why a displayed owner command is different from routine agent work.
+
+For vague, cross-domain, creative, hands-on, or learning-heavy work, start with the
+[project companion](docs/project-companion.md). It helps an agent recommend the right workflow
+without changing the command-line default, which remains `software-basic`.
 
 ## When FORGE is a good fit
 
@@ -146,8 +150,8 @@ Read [Your first FORGE project](docs/quickstart.md) — a start-to-finish walkth
   `CLAUDE.md`/`AGENTS.md` context, a safe local scratchpad, and `forge recap` warm resume.
 - Honest authority/operator provenance for direct agent sessions, plus provider-neutral handoffs
   and two-phase untrusted result import.
-- Bundled declarative `software-basic` and `research-basic` packs; data-only pack trust that never
-  grants execution.
+- Bundled declarative `project-basic`, `software-basic`, and `research-basic` packs; data-only pack
+  trust that never grants execution.
 - Atomic closure and abandonment, hardened immutable archives, successor initiatives with exact
   predecessor references, and archive-derived successor briefs.
 - Journal hash chaining, deterministic replay, idempotent retries, snapshot recovery, stale-lock
@@ -162,6 +166,7 @@ Start at the [documentation index](docs/README.md), which routes by audience. Fr
 
 - [Your first FORGE project](docs/quickstart.md)
 - [Conversational walkthroughs](docs/conversational-walkthroughs.md)
+- [Project companion](docs/project-companion.md) and [owner-observed dogfood guide](docs/project-basic-dogfood.md)
 - [User guide](docs/user-guide/README.md)
 - [Canonical glossary](docs/glossary.md)
 - [Constitution](docs/constitution.md)

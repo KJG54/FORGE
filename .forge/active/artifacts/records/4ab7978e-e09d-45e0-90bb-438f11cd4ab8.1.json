@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e79cf60f9bc001298ffcf1632fe18d78754c5bb79c27cede88a169c7b42a6586"
+  ],
+  "affected_record_ids": [
+    "2ab65326-d91b-4f8e-8012-0773bb3207a9"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 22,
+  "id": "4ab7978e-e09d-45e0-90bb-438f11cd4ab8",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "recorded_at": "2026-08-12T23:19:49.498580Z",
+  "role": "verification-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Project-basic release verification report",
+  "tool_version": "1.0.0"
+}

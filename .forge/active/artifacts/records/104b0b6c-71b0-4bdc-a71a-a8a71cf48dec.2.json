@@ -1,0 +1,34 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e1cce44f6e83dee55afacf92c884db868df097721c7baf5f97c2a46ecd1ea904",
+    "sha256:3ab2eec2afbc1b9c273c3c0257848026d4895d7c96d00e32dd7528c83c5e136a"
+  ],
+  "affected_record_ids": [
+    "78c588ae-6774-4fe8-8bd5-95ff436ab129",
+    "ea125583-7dec-4b90-9f63-96e5fb340908",
+    "20905048-6296-48ce-9368-0aa84216cb0c",
+    "6376c70a-8765-4733-bb83-a3ebefe038b3",
+    "bbd51dc4-a281-4bfa-99a0-3171fb704497",
+    "e3a827db-e035-445d-ba34-9c3b89cf52da"
+  ],
+  "authorization_basis": "participant registered a new immutable artifact revision and FORGE propagated dependency staleness",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 2,
+  "event_sequence": 85,
+  "id": "104b0b6c-71b0-4bdc-a71a-a8a71cf48dec",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "recorded_at": "2026-08-13T00:52:47.386469Z",
+  "role": "lessons",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Project-basic implementation lessons",
+  "tool_version": "1.0.0"
+}

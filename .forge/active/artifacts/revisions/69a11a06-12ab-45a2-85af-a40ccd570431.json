@@ -1,0 +1,61 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:1e505716f844dbf174d3471f8b0a08d7bf283833ad1631314a65d02f022cd509",
+    "sha256:d4da6a4703ed6ab14a6f71c41b4b88d835d886c41abd64be3c67c93da93c83c1"
+  ],
+  "affected_record_ids": [
+    "d82a4f2e-a2a3-471c-b5a9-e04d929036bc",
+    "0996176f-107c-4028-9b65-e7df9af29f3d",
+    "08d8b9c8-628b-4500-a51b-520e8830fe49",
+    "0f7be78f-d52c-48e2-a727-67f911f0201f",
+    "141aeb8a-e912-4a9b-bc66-5179f75ba533",
+    "20905048-6296-48ce-9368-0aa84216cb0c",
+    "6376c70a-8765-4733-bb83-a3ebefe038b3",
+    "90817262-fa95-4097-bcaa-b14dab07800f",
+    "bbd51dc4-a281-4bfa-99a0-3171fb704497",
+    "e3a827db-e035-445d-ba34-9c3b89cf52da",
+    "ebc87ed1-c74c-401b-b902-6c649f97e200"
+  ],
+  "artifact_id": "d82a4f2e-a2a3-471c-b5a9-e04d929036bc",
+  "authorization_basis": "participant registered a new immutable artifact revision and FORGE propagated dependency staleness",
+  "byte_size": 3518,
+  "content_digest": "sha256:d4da6a4703ed6ab14a6f71c41b4b88d835d886c41abd64be3c67c93da93c83c1",
+  "correlation_id": null,
+  "event_sequence": 73,
+  "id": "69a11a06-12ab-45a2-85af-a40ccd570431",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "media_type": "text/markdown",
+  "path": "release/project-basic/friction-report.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/d4/da6a4703ed6ab14a6f71c41b4b88d835d886c41abd64be3c67c93da93c83c1",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "e661b32d-2bdf-446f-a950-10d42b108f43",
+    "metadata": {},
+    "recorded_at": "2026-08-13T00:45:54.288230Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "release/project-basic/friction-report.md",
+    "source_type": "local-file"
+  },
+  "recorded_at": "2026-08-13T00:45:54.288230Z",
+  "registration_event_id": "d5e9a906-91ee-4864-98d0-c74460b9ccf7",
+  "revision_number": 2,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [
+    "08d8b9c8-628b-4500-a51b-520e8830fe49",
+    "0996176f-107c-4028-9b65-e7df9af29f3d",
+    "0f7be78f-d52c-48e2-a727-67f911f0201f",
+    "141aeb8a-e912-4a9b-bc66-5179f75ba533",
+    "20905048-6296-48ce-9368-0aa84216cb0c",
+    "6376c70a-8765-4733-bb83-a3ebefe038b3",
+    "90817262-fa95-4097-bcaa-b14dab07800f",
+    "bbd51dc4-a281-4bfa-99a0-3171fb704497",
+    "e3a827db-e035-445d-ba34-9c3b89cf52da",
+    "ebc87ed1-c74c-401b-b902-6c649f97e200"
+  ],
+  "superseded_revision_number": 1,
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,41 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:59a496bcad532f85317aeb9d64bb9a46a03c09cf3e93e47450049c158ff39895"
+  ],
+  "affected_record_ids": [
+    "cfe65436-c0b7-40a5-aa3f-069acc8b9969",
+    "dde9ed66-852a-4543-b348-4747f573cdcd",
+    "0a0df856-7f4b-4986-9382-e55fde96f8db"
+  ],
+  "artifact_revision_ids": [
+    "cfe65436-c0b7-40a5-aa3f-069acc8b9969"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "dde9ed66-852a-4543-b348-4747f573cdcd"
+  ],
+  "claim_ids": [
+    "0a0df856-7f4b-4986-9382-e55fde96f8db"
+  ],
+  "correlation_id": null,
+  "event_sequence": 17,
+  "id": "f737e1da-b4af-44f6-a2f2-82cc08a4d590",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "The packet supports only the registered implementation record and the stated focused/source/installed-wheel validation; it does not establish owner acceptance, release readiness, publication authorization, or a full-suite result."
+  ],
+  "packet_digest": "sha256:59a496bcad532f85317aeb9d64bb9a46a03c09cf3e93e47450049c158ff39895",
+  "purpose": "Bind the reviewed project-basic implementation record to its direct-Codex claim and completed validation check.",
+  "recorded_at": "2026-08-12T22:54:27.248438Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

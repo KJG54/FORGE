@@ -1,0 +1,35 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:96d23b578124c8e044a0cff073c78a646b5b5df50a4c028df62e1d6062a8523a"
+  ],
+  "affected_record_ids": [
+    "fe2e84c2-c52a-4b26-8056-e41f44834e8e"
+  ],
+  "assertion": "Re-verified the amended project-basic implementation, including the documentation-only Git publishing and clean-worktree closure guidance and its preserved authority boundary.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "fe2e84c2-c52a-4b26-8056-e41f44834e8e"
+  ],
+  "correlation_id": null,
+  "event_sequence": 65,
+  "id": "2b123c48-4581-4cec-a70d-e36451e7293d",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "This rework adds a clean documentation-diff review only; prior focused/source/installed-wheel validation remains historical evidence, and no fresh full-suite, wheel, CI, release, tag, or publication result is claimed."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-13T00:41:02.516263Z",
+  "run_id": "758c5a4c-7f6e-45ee-8d33-aeeb5ede4e6b",
+  "schema_version": "1.0",
+  "step_id": "verify-release",
+  "tool_version": "1.0.0"
+}

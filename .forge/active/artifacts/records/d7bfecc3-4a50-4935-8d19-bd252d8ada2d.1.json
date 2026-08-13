@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ff5750aa93e342620bfdc1283b64334598c3bab5d87a460df0b0f97614497e20"
+  ],
+  "affected_record_ids": [
+    "a1d866c4-b28e-4273-bde9-2d1e57ca7a11"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 42,
+  "id": "d7bfecc3-4a50-4935-8d19-bd252d8ada2d",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "recorded_at": "2026-08-13T00:18:44.913647Z",
+  "role": "release-readiness-record",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Project-basic release-readiness record",
+  "tool_version": "1.0.0"
+}

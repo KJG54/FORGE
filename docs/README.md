@@ -12,7 +12,7 @@ remain the canonical detail; the guides connect them without redefining contract
 
 | Audience | Start here | Continue with |
 |---|---|---|
-| New user starting a project | [Your first FORGE project](quickstart.md) | [Conversational walkthroughs](conversational-walkthroughs.md), [user guide](user-guide/README.md), [glossary](glossary.md) |
+| New user starting a project | [Project companion](project-companion.md) | [Your first FORGE project](quickstart.md), [conversational walkthroughs](conversational-walkthroughs.md), [user guide](user-guide/README.md) |
 | Owner handing work to a fresh agent | [Agent starter prompts](agent-starter-prompts.md) | [Your first FORGE project](quickstart.md), [agent context](agent-context.md), [conversational walkthroughs](conversational-walkthroughs.md) |
 | Repository owner or contributor | [User guide](user-guide/README.md) | [Examples](../examples/README.md), [troubleshooting](troubleshooting.md) |
 | Pack author | [Pack-author guide](pack-author-guide.md) | [Workflows](workflows.md), [validators](validators.md) |
@@ -25,6 +25,8 @@ remain the canonical detail; the guides connect them without redefining contract
 
 - Start a first governed project end to end with the
   [quickstart](quickstart.md).
+- Choose between the bundled workflows with the [project companion](project-companion.md), then
+  use its [owner-observed dogfood guide](project-basic-dogfood.md) when evaluating a new experience.
 - Hand a fresh workspace agent the [starter prompts](agent-starter-prompts.md)
   so it can identify FORGE, read the installed protocol, and begin with the
   right interview and owner-gate rules.
@@ -34,7 +36,8 @@ remain the canonical detail; the guides connect them without redefining contract
   [ordinary virtual environment or `pipx`](installation.md).
 - [Initialize a repository](user-guide/initialization.md), create an initiative, and complete the
   [governed lifecycle](user-guide/README.md).
-- Inspect the uninitialized [software and research examples](../examples/README.md).
+- Inspect the uninitialized [software and research examples](../examples/README.md), or use the
+  [project-basic dogfood guide](project-basic-dogfood.md) for project workflow observations.
 - [Pause and resume](continuity.md) work without relying on chat history.
 - Return after an ordinary gap with a [safe local scratchpad and warm recap](scratchpad-and-recap.md).
 - Read [canonical transaction receipts](transaction-receipts.md), then use detailed history and

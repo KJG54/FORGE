@@ -1,0 +1,37 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:6e9ab5f0cdc8e67757b3fcd8cc710936149ca8f4df3a6c81d3fc0be29e3b68f4"
+  ],
+  "affected_record_ids": [
+    "b577c9f2-ffd2-47bb-b6f0-53318ce4969e",
+    "fb1e3732-334f-4bb1-9e51-40dad0e9521b"
+  ],
+  "authorization_basis": "configured owner explicitly trusted the selected pack as data and created a successor",
+  "correlation_id": null,
+  "creation_event_id": "b3a25df7-0079-422e-aed2-c6471ed45154",
+  "declared_scope_summary": "Add standalone project-basic@0.1.0 with seven declarative phases, eleven read-only templates, digest-bound guidance, companion/workflow-selection docs, owner-observed dogfood guide, and inventory/conformance/distribution tests; preserve core lifecycle, protocol 1.4.0, CLI default, existing pack identities, archives, and framework version 1.0.0.",
+  "event_sequence": 1,
+  "explanation_profile": "guided",
+  "id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "lifecycle_state": "active",
+  "objective": "Deliver an experimental bundled project-basic workflow for governed start-to-finish human-agent projects.",
+  "owner_identity_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "pack_id": "forge-framework-change",
+  "pack_version": "0.1.0",
+  "predecessor_references": [
+    {
+      "archive_reference": ".forge/archive/fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+      "initiative_id": "fb1e3732-334f-4bb1-9e51-40dad0e9521b",
+      "relationship": "successor-of",
+      "schema_version": "1.0"
+    }
+  ],
+  "recorded_at": "2026-08-12T22:05:58.921866Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": null,
+  "workflow_id": "framework-change",
+  "workflow_version": "0.1.0"
+}

@@ -1,0 +1,35 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:2b35bb32867fc0f3d2dc1d03ed3babd749ce53299aaa05ef447477923786346e"
+  ],
+  "affected_record_ids": [
+    "ef0083c6-c635-4f85-baeb-c46db69ba3f8"
+  ],
+  "assertion": "Added the scoped Git publishing and clean-worktree closure guidance and revised the project-basic implementation record to document the closure friction without changing framework behavior.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "ef0083c6-c635-4f85-baeb-c46db69ba3f8"
+  ],
+  "correlation_id": null,
+  "event_sequence": 55,
+  "id": "6da37abc-6aaf-4ae2-8862-0631b120399d",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "This rework is documentation-only. Earlier focused/source/installed-wheel validation remains historical evidence; this claim adds a clean documentation diff check and does not claim a fresh full-suite, wheel, CI, release, tag, or publication result."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-13T00:36:40.799147Z",
+  "run_id": "1e5bf3a2-bd18-49be-8311-c1e69fda1dd3",
+  "schema_version": "1.0",
+  "step_id": "implement",
+  "tool_version": "1.0.0"
+}

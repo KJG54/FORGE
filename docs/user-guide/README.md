@@ -1,9 +1,10 @@
 # User Guide
 
 This guide follows one initiative from installation to an immutable terminal archive. Commands use
-the bundled `software-basic` workflow; the `research-basic` workflow follows the same governance
-sequence with seven research-specific steps. Use `forge <command> --help` for the complete option
-set and [the static examples](../../examples/README.md) for mapped sample artifacts.
+the bundled `software-basic` workflow; `project-basic`, `software-basic`, and `research-basic`
+share the same governance sequence with domain-specific steps. Use the [project companion](../project-companion.md)
+to choose a workflow, `forge <command> --help` for the complete option set, and [the static
+examples](../../examples/README.md) for mapped sample artifacts.
 
 For the current v1 effort, install only the wheel recorded by the
 [Local Production-v1 candidate manifest](../../release/local-production-v1/README.md). The direct

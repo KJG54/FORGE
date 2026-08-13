@@ -1,0 +1,47 @@
+{
+  "acceptance_event_id": "116271e6-cd26-476e-ae07-2665afc2f5e4",
+  "accepted_artifact_revision_ids": [
+    "fe2e84c2-c52a-4b26-8056-e41f44834e8e"
+  ],
+  "accepted_check_result_ids": [
+    "fa1e66ee-8dfc-4af4-82e4-1323bcb7995a"
+  ],
+  "accepted_evidence_ids": [
+    "b15b62d8-bf68-4f82-b2bd-5fae25f8b6e8"
+  ],
+  "accepted_scope": "Exact revised project-basic verification report, including the Git publishing and clean-worktree closure guidance",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:96d23b578124c8e044a0cff073c78a646b5b5df50a4c028df62e1d6062a8523a",
+    "sha256:d8ea45d8d5a15722174c3fef647baaa8bee292a5b8adfc8f829264467d1f2f34",
+    "sha256:b8110123d2c8ddba29232273aa39706f6f24cb438f7883c7edb3359139ffb3ad"
+  ],
+  "affected_record_ids": [
+    "fe2e84c2-c52a-4b26-8056-e41f44834e8e",
+    "fa1e66ee-8dfc-4af4-82e4-1323bcb7995a",
+    "b15b62d8-bf68-4f82-b2bd-5fae25f8b6e8"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 70,
+  "id": "dd8efa1a-a7d0-422e-92bc-c829a3c18eae",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "known_limitations": [
+    "The amendment is documentation-only; prior focused/source/installed-wheel validation remains historical, and no fresh full-suite, wheel, or CI result is claimed."
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-13T00:42:33.727357Z",
+  "residual_risks": [
+    "Git commit/push, CI review, risk review, terminal closure, release, tag, and publication remain separate owner-controlled decisions."
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

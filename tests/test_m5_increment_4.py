@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from conftest import RESEARCH_BASIC_VERSION, SOFTWARE_BASIC_VERSION
+from conftest import PROJECT_BASIC_VERSION, RESEARCH_BASIC_VERSION, SOFTWARE_BASIC_VERSION
 from typer.testing import CliRunner
 
 from forge.cli.app import app
@@ -27,16 +27,18 @@ ALL_PROFILES = tuple(ExplanationProfile)
 runner = CliRunner()
 
 
-@pytest.mark.parametrize("pack_id", ("software-basic", "research-basic"))
+@pytest.mark.parametrize("pack_id", ("project-basic", "software-basic", "research-basic"))
 def test_bundled_packs_supply_exactly_four_digest_bound_profiles(
     pack_id: str,
 ) -> None:
     pack = load_pack(BUNDLED_PACK_ROOT / pack_id, bundled=True)
     workflow = pack.workflow()
 
-    expected_version = (
-        SOFTWARE_BASIC_VERSION if pack_id == "software-basic" else RESEARCH_BASIC_VERSION
-    )
+    expected_version = {
+        "project-basic": PROJECT_BASIC_VERSION,
+        "software-basic": SOFTWARE_BASIC_VERSION,
+        "research-basic": RESEARCH_BASIC_VERSION,
+    }[pack_id]
     assert pack.manifest.version == expected_version
     assert workflow.version == expected_version
     assert set(workflow.explanation_content) == {
@@ -51,7 +53,7 @@ def test_bundled_packs_supply_exactly_four_digest_bound_profiles(
     )
 
 
-@pytest.mark.parametrize("pack_id", ("software-basic", "research-basic"))
+@pytest.mark.parametrize("pack_id", ("project-basic", "software-basic", "research-basic"))
 def test_profiles_change_only_locked_presentation_not_governance(
     tmp_path: Path,
     pack_id: str,

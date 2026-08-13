@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:d4da6a4703ed6ab14a6f71c41b4b88d835d886c41abd64be3c67c93da93c83c1",
+    "sha256:baee5827de2d8ab6c0dbcd0ea6813a61ed4435b33d5d5fde3c822dc84ff039ed"
+  ],
+  "affected_record_ids": [
+    "69a11a06-12ab-45a2-85af-a40ccd570431",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "risk-review-complete",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-13T00:46:20.208750Z",
+  "event_sequence": 78,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "a406ae5c-2054-42aa-8bb8-19f459d28a55",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Ran git diff --check and reviewed revised friction and residual-risk reports for complete Git/closure authority and limitation classification.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "Documentation consistency check only; it does not accept risk, prove dogfood or CI outcomes, or authorize a release."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-13T00:46:20.208802Z",
+  "result_digest": "sha256:f03116e42289ca27abf8495f1a62d126397b862a9f39585e24c02ef0b981d3d4",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-13T00:46:20.208748Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "69a11a06-12ab-45a2-85af-a40ccd570431",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f"
+  ],
+  "tool_version": "1.0.0"
+}

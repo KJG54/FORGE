@@ -1,0 +1,38 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:d4da6a4703ed6ab14a6f71c41b4b88d835d886c41abd64be3c67c93da93c83c1",
+    "sha256:baee5827de2d8ab6c0dbcd0ea6813a61ed4435b33d5d5fde3c822dc84ff039ed"
+  ],
+  "affected_record_ids": [
+    "69a11a06-12ab-45a2-85af-a40ccd570431",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f"
+  ],
+  "assertion": "Updated the project-basic friction and residual-risk reports to classify the clean-worktree Git/closure coordination friction and retain the Git, CI, acceptance, and release authority separation.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "69a11a06-12ab-45a2-85af-a40ccd570431",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f"
+  ],
+  "correlation_id": null,
+  "event_sequence": 76,
+  "id": "5d4c0024-563e-4ad3-9276-ff12d91330e4",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "This rework is documentation-only and does not establish a fresh full suite, CI result, user-experience outcome, release, tag, or publication."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-13T00:46:13.897674Z",
+  "run_id": "ab8549e0-51a0-4464-828e-4ac6be1df420",
+  "schema_version": "1.0",
+  "step_id": "review-risk",
+  "tool_version": "1.0.0"
+}

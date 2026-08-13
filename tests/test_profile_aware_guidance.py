@@ -28,6 +28,9 @@ ROOT = Path(__file__).resolve().parents[1]
 # may never be reused for different content, so entries are append-only: to change a
 # pack's content, add a new version rather than editing an existing row.
 PUBLISHED_PACK_IDENTITIES = {
+    ("project-basic", "0.1.0"): (
+        "sha256:e9856041643c889e96ba67458176534c3fa86d69254724f1b137c1106303d1d9"
+    ),
     ("software-basic", "0.5.0"): (
         "sha256:b0975cc901a91a5674eec03c33f6c1ea67ba9cc7e5eed604be71ad6f02bb5ac5"
     ),
@@ -46,6 +49,7 @@ PUBLISHED_PACK_IDENTITIES = {
 }
 
 PACK_SOURCES = {
+    "project-basic": "src/forge/packs/bundled/project-basic",
     "software-basic": "src/forge/packs/bundled/software-basic",
     "research-basic": "src/forge/packs/bundled/research-basic",
     "forge-framework-change": "packs/forge-framework-change",
@@ -238,7 +242,6 @@ def test_no_pack_version_is_reused_for_different_content() -> None:
             f"{pack_id} is now at {version}, which has no recorded identity. Add the new "
             f"(version, digest) row rather than editing an existing one."
         )
-
         calculated = calculate_pack_digest(pack.manifest, pack.workflows, pack.resources)
 
         assert calculated == PUBLISHED_PACK_IDENTITIES[identity], (
@@ -247,6 +250,35 @@ def test_no_pack_version_is_reused_for_different_content() -> None:
             f"A published version must never denote different content; bump the version."
         )
 
+
+def test_project_basic_guidance_is_complete_and_presentation_only() -> None:
+    pack = load_pack(ROOT / "src" / "forge" / "packs" / "bundled" / "project-basic")
+    workflow = pack.workflow()
+
+    assert set(workflow.explanation_content) == {
+        "minimal",
+        "standard",
+        "guided",
+        "mentored",
+    }
+    assert len(workflow.interview_guidance) == 4
+    assert all(step.phase_guidance is not None for step in workflow.steps)
+    assert [step.id for step in workflow.steps] == [
+        "intake",
+        "research",
+        "plan",
+        "create",
+        "evaluate",
+        "review",
+        "close",
+    ]
+    assert workflow.steps[3].required_outputs == ("created-work",)
+    assert workflow.steps[4].required_inputs == ("created-work", "acceptance-criteria")
+    assert all(
+        step.allowed_transitions == ("begin", "rework", "submit", "verify", "accept")
+        and step.acceptance_requirements == ("owner-acceptance",)
+        for step in workflow.steps
+    )
 
 def test_software_basic_supplies_guidance_for_every_step_and_coverage_area() -> None:
     pack = load_pack(ROOT / "src" / "forge" / "packs" / "bundled" / "software-basic")

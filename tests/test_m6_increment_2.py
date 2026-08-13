@@ -48,7 +48,11 @@ def test_installation_matrix_matches_current_public_package() -> None:
     assert metadata["version"] == matrix.expected_version == __version__
     assert metadata["requires-python"] == ">=3.12"
     assert matrix.expected_schema_count == len(CONTRACT_MODELS)
-    assert set(matrix.expected_bundled_packs) == {"research-basic", "software-basic"}
+    assert set(matrix.expected_bundled_packs) == {
+        "project-basic",
+        "research-basic",
+        "software-basic",
+    }
     for version in matrix.python_versions:
         assert f"Programming Language :: Python :: {version}" in metadata["classifiers"]
 

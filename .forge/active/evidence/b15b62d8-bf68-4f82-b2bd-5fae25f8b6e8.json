@@ -1,0 +1,41 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:b8110123d2c8ddba29232273aa39706f6f24cb438f7883c7edb3359139ffb3ad"
+  ],
+  "affected_record_ids": [
+    "fe2e84c2-c52a-4b26-8056-e41f44834e8e",
+    "fa1e66ee-8dfc-4af4-82e4-1323bcb7995a",
+    "2b123c48-4581-4cec-a70d-e36451e7293d"
+  ],
+  "artifact_revision_ids": [
+    "fe2e84c2-c52a-4b26-8056-e41f44834e8e"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "fa1e66ee-8dfc-4af4-82e4-1323bcb7995a"
+  ],
+  "claim_ids": [
+    "2b123c48-4581-4cec-a70d-e36451e7293d"
+  ],
+  "correlation_id": null,
+  "event_sequence": 68,
+  "id": "b15b62d8-bf68-4f82-b2bd-5fae25f8b6e8",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "This evidence supports the revised documentation and clean-diff review; prior validation remains historical, and it does not establish CI, a fresh full suite, release, tag, or publication."
+  ],
+  "packet_digest": "sha256:b8110123d2c8ddba29232273aa39706f6f24cb438f7883c7edb3359139ffb3ad",
+  "purpose": "Bind the revised verification report to its direct-Codex claim and passed documentation consistency check.",
+  "recorded_at": "2026-08-13T00:41:20.847791Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

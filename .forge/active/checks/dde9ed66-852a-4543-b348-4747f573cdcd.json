@@ -1,0 +1,53 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8eb1935d78ac2cc4d35c631a54446a0ba9fbefc72120dcd388b4ab255ab3b3e9"
+  ],
+  "affected_record_ids": [
+    "cfe65436-c0b7-40a5-aa3f-069acc8b9969"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "implementation-validated",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-12T22:54:12.679828Z",
+  "event_sequence": 16,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "dde9ed66-852a-4543-b348-4747f573cdcd",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Validated project-basic source digest, 47 focused tests, version consistency, built wheel, and CPython 3.14 Windows installed-wheel smoke.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "This structural check records completed focused and installed-wheel validation; it does not assert a full pytest-suite result, semantic correctness beyond the stated checks, owner acceptance, or a release."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-12T22:54:12.679889Z",
+  "result_digest": "sha256:2f37176b74663ceacc10a27ded0fd7a3b565eeee305412db276fc7cfce68967e",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-12T22:54:12.679826Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "cfe65436-c0b7-40a5-aa3f-069acc8b9969"
+  ],
+  "tool_version": "1.0.0"
+}

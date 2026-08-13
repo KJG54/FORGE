@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:1e505716f844dbf174d3471f8b0a08d7bf283833ad1631314a65d02f022cd509"
+  ],
+  "affected_record_ids": [
+    "0996176f-107c-4028-9b65-e7df9af29f3d"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 31,
+  "id": "d82a4f2e-a2a3-471c-b5a9-e04d929036bc",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "recorded_at": "2026-08-12T23:48:56.149070Z",
+  "role": "friction-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Project-basic friction report",
+  "tool_version": "1.0.0"
+}

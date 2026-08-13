@@ -26,3 +26,4 @@ def bundled_pack_version(pack_id: str) -> str:
 
 SOFTWARE_BASIC_VERSION = bundled_pack_version("software-basic")
 RESEARCH_BASIC_VERSION = bundled_pack_version("research-basic")
+PROJECT_BASIC_VERSION = bundled_pack_version("project-basic")

@@ -38,11 +38,18 @@ def test_frozen_production_v1_contract_matches_every_current_version_boundary() 
     assert report["public_model_count"] == len(CONTRACT_MODELS) == 53
     assert report["wheel_filename"] == "forge_governance-1.0.0-py3-none-any.whl"
     assert report["sdist_filename"] == "forge_governance-1.0.0.tar.gz"
-    assert report["bundled_packs"] == ["research-basic", "software-basic"]
+    assert report["bundled_packs"] == [
+        "project-basic",
+        "research-basic",
+        "software-basic",
+    ]
     assert report["repository_local_packs"] == [
         "forge-framework-change",
         "forge-production-release",
     ]
+    assert report["historical_local_candidate_manifest"] == (
+        "validated-historical-artifact-only"
+    )
 
 
 def test_schema_index_binds_distribution_contract_and_pack_compatibility() -> None:

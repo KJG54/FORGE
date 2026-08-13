@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:874cae3a3976baee11c94623f4a4d01138ce55eca97eec66c374cd76d198a1e4"
+  ],
+  "affected_record_ids": [
+    "dedc933e-2387-4b73-8f5c-ffea3d80d18f",
+    "ea125583-7dec-4b90-9f63-96e5fb340908",
+    "d01dea17-465a-4e69-a317-27694b98b490",
+    "42de7ab4-9391-4c24-87a2-fd0a60b43e13"
+  ],
+  "artifact_revision_ids": [
+    "dedc933e-2387-4b73-8f5c-ffea3d80d18f",
+    "ea125583-7dec-4b90-9f63-96e5fb340908"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "d01dea17-465a-4e69-a317-27694b98b490"
+  ],
+  "claim_ids": [
+    "42de7ab4-9391-4c24-87a2-fd0a60b43e13"
+  ],
+  "correlation_id": null,
+  "event_sequence": 90,
+  "id": "df07d071-60d0-4639-ac65-13b566515738",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "This evidence supports the revised documentation and clean-diff review only; it does not establish a fresh full suite, CI, dogfood success, terminal closure, release, tag, or publication."
+  ],
+  "packet_digest": "sha256:874cae3a3976baee11c94623f4a4d01138ce55eca97eec66c374cd76d198a1e4",
+  "purpose": "Bind revised project-basic readiness and lessons records to their direct-Codex claim and documentation consistency check.",
+  "recorded_at": "2026-08-13T00:53:23.553596Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

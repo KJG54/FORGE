@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from conftest import SOFTWARE_BASIC_VERSION
+from conftest import PROJECT_BASIC_VERSION, SOFTWARE_BASIC_VERSION
 from typer.testing import CliRunner
 
 from forge import __version__
@@ -65,7 +65,17 @@ def test_bundled_pack_inspection_works_before_initialization(tmp_path: Path) -> 
 
     assert listed.exit_code == 0, listed.stdout
     assert "Repository: uninitialized" in listed.stdout
+    assert f"project-basic {PROJECT_BASIC_VERSION} (bundled" in listed.stdout
     assert f"software-basic {SOFTWARE_BASIC_VERSION} (bundled" in listed.stdout
+
+    project_inspected = runner.invoke(
+        app,
+        ["pack", "inspect", "project-basic", "-C", str(tmp_path)],
+    )
+    assert project_inspected.exit_code == 0, project_inspected.stdout
+    assert f"Pack: project-basic@{PROJECT_BASIC_VERSION} (bundled" in project_inspected.stdout
+    assert "- intake: required_inputs=none" in project_inspected.stdout
+    assert "required_outputs=human-vision-brief, owner-context-and-learning-profile" in project_inspected.stdout
 
     inspected = runner.invoke(
         app,

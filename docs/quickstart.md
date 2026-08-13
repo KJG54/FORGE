@@ -75,7 +75,9 @@ nothing about scope, checks, evidence, or acceptance — every profile is govern
 When the interview covers enough, the agent plays back one proposal: vision, first-milestone
 objective, bounded scope, exclusions, definition of done, and which workflow pack it suggests
 (for software projects, typically `software-basic`: discover → plan → execute → verify → review →
-close). Read it. Correct anything. Your approval of the playback approves *only* the text you
+close). For vague, creative, hands-on, cross-domain, or learning-heavy work, use the
+[project companion](project-companion.md) to consider `project-basic` instead. Read it. Correct
+anything. Your approval of the playback approves *only* the text you
 read — it does not let the agent start creating things silently.
 
 Then come the owner gates. The agent must show you exact commands and wait:

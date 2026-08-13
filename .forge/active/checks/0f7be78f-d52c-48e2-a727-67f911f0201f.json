@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:1e505716f844dbf174d3471f8b0a08d7bf283833ad1631314a65d02f022cd509",
+    "sha256:ddc8c417dc27172a7dc3da0916aa20e550647242915de1a45de386a530c737ed"
+  ],
+  "affected_record_ids": [
+    "0996176f-107c-4028-9b65-e7df9af29f3d",
+    "b66bc9a1-a335-4ba3-bcf6-befa88727cb7"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "risk-review-complete",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-12T23:49:19.885025Z",
+  "event_sequence": 35,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "0f7be78f-d52c-48e2-a727-67f911f0201f",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Reviewed the friction and residual-risk reports against the accepted verification report, including limits on dogfood, full-suite observability, historical candidate evidence, and release authority.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "This structural review confirms the reports classify stated risks and boundaries; it does not prove user experience, accept residual risk, authorize a release, or substitute for owner judgment."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-12T23:49:19.885077Z",
+  "result_digest": "sha256:a067b90bc1aa64569b7b3b8455f5d2c6b20b70df9178b0189dd16400d038a865",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-12T23:49:19.885023Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "0996176f-107c-4028-9b65-e7df9af29f3d",
+    "b66bc9a1-a335-4ba3-bcf6-befa88727cb7"
+  ],
+  "tool_version": "1.0.0"
+}
