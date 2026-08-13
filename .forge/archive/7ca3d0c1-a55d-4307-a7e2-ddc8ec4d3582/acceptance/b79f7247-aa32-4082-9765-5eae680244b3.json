@@ -1,0 +1,50 @@
+{
+  "acceptance_event_id": "03737804-e210-44e0-9e11-2066deb813a9",
+  "accepted_artifact_revision_ids": [
+    "69a11a06-12ab-45a2-85af-a40ccd570431",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f"
+  ],
+  "accepted_check_result_ids": [
+    "a406ae5c-2054-42aa-8bb8-19f459d28a55"
+  ],
+  "accepted_evidence_ids": [
+    "4ddd37e0-c917-4612-90b6-c32c9f9cac6b"
+  ],
+  "accepted_scope": "Exact revised project-basic friction and residual-risk reports, including clean-worktree Git/closure coordination and Git, CI, acceptance, and release authority boundaries",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:d4da6a4703ed6ab14a6f71c41b4b88d835d886c41abd64be3c67c93da93c83c1",
+    "sha256:baee5827de2d8ab6c0dbcd0ea6813a61ed4435b33d5d5fde3c822dc84ff039ed",
+    "sha256:f03116e42289ca27abf8495f1a62d126397b862a9f39585e24c02ef0b981d3d4",
+    "sha256:35bc1229587b4e3089ea0cc740482e64bc8059f656be9667449db9e18abc7db3"
+  ],
+  "affected_record_ids": [
+    "69a11a06-12ab-45a2-85af-a40ccd570431",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f",
+    "a406ae5c-2054-42aa-8bb8-19f459d28a55",
+    "4ddd37e0-c917-4612-90b6-c32c9f9cac6b"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 81,
+  "id": "b79f7247-aa32-4082-9765-5eae680244b3",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "known_limitations": [
+    "The amendment is documentation-only and does not establish a fresh full suite, CI result, or owner-observed dogfood outcome."
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-13T00:51:02.243522Z",
+  "residual_risks": [
+    "Commit/push, CI review, terminal closure, release, tag, and publication remain separate owner-controlled decisions."
+  ],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

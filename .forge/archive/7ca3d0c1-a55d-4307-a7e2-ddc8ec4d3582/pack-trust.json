@@ -1,0 +1,29 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:6e9ab5f0cdc8e67757b3fcd8cc710936149ca8f4df3a6c81d3fc0be29e3b68f4"
+  ],
+  "affected_record_ids": [
+    "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582"
+  ],
+  "authorization_basis": "configured owner explicitly trusted the selected pack as data and created a successor",
+  "correlation_id": null,
+  "event_sequence": 1,
+  "id": "b577c9f2-ffd2-47bb-b6f0-53318ce4969e",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "pack_id": "forge-framework-change",
+  "pack_version": "0.1.0",
+  "rationale": "Owner confirmed this exact validated pack version for the initiative",
+  "recorded_at": "2026-08-12T22:05:58.921866Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": null,
+  "trust_state": "trusted-data"
+}

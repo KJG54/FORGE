@@ -1,0 +1,39 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ddc8c417dc27172a7dc3da0916aa20e550647242915de1a45de386a530c737ed",
+    "sha256:baee5827de2d8ab6c0dbcd0ea6813a61ed4435b33d5d5fde3c822dc84ff039ed"
+  ],
+  "affected_record_ids": [
+    "b66bc9a1-a335-4ba3-bcf6-befa88727cb7",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f",
+    "08d8b9c8-628b-4500-a51b-520e8830fe49",
+    "0f7be78f-d52c-48e2-a727-67f911f0201f",
+    "141aeb8a-e912-4a9b-bc66-5179f75ba533",
+    "20905048-6296-48ce-9368-0aa84216cb0c",
+    "6376c70a-8765-4733-bb83-a3ebefe038b3",
+    "90817262-fa95-4097-bcaa-b14dab07800f",
+    "bbd51dc4-a281-4bfa-99a0-3171fb704497",
+    "e3a827db-e035-445d-ba34-9c3b89cf52da",
+    "ebc87ed1-c74c-401b-b902-6c649f97e200"
+  ],
+  "authorization_basis": "participant registered a new immutable artifact revision and FORGE propagated dependency staleness",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 2,
+  "event_sequence": 74,
+  "id": "55da6ca2-1475-4a0e-bd75-d524c546dca8",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "recorded_at": "2026-08-13T00:45:58.433787Z",
+  "role": "residual-risk-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Project-basic residual risk report",
+  "tool_version": "1.0.0"
+}

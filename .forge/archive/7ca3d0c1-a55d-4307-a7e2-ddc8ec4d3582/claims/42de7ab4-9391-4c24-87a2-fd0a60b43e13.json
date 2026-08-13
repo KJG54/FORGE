@@ -1,0 +1,38 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:cb966e7eb4b96005e3c785314fdc674cfc1b595a64641a5384942af5ebae25f4",
+    "sha256:3ab2eec2afbc1b9c273c3c0257848026d4895d7c96d00e32dd7528c83c5e136a"
+  ],
+  "affected_record_ids": [
+    "dedc933e-2387-4b73-8f5c-ffea3d80d18f",
+    "ea125583-7dec-4b90-9f63-96e5fb340908"
+  ],
+  "assertion": "Revised the project-basic readiness record and lessons to document the clean-worktree commit checkpoint and owner-directed no-wait CI push boundary without implying release authority.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "dedc933e-2387-4b73-8f5c-ffea3d80d18f",
+    "ea125583-7dec-4b90-9f63-96e5fb340908"
+  ],
+  "correlation_id": null,
+  "event_sequence": 87,
+  "id": "42de7ab4-9391-4c24-87a2-fd0a60b43e13",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "This documentation-only rework does not establish a fresh full suite, CI result, dogfood outcome, terminal closure, release, tag, or publication."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-13T00:53:03.060175Z",
+  "run_id": "879fd502-8317-43f8-afea-f999cd03544c",
+  "schema_version": "1.0",
+  "step_id": "closeout",
+  "tool_version": "1.0.0"
+}

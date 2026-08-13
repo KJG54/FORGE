@@ -1,0 +1,23 @@
+schema_version: "1.0"
+id: project-basic
+version: 0.1.0
+schema_compatibility:
+  - forge-contracts-1
+provided_workflow_ids:
+  - project-basic
+template_paths:
+  - templates/human-vision-brief.md
+  - templates/owner-context-and-learning-profile.md
+  - templates/context-readiness-report.md
+  - templates/project-research.md
+  - templates/project-plan.md
+  - templates/task-map.md
+  - templates/acceptance-criteria.md
+  - templates/evaluation-report.md
+  - templates/review-report.md
+  - templates/lessons.md
+  - templates/closure-record.md
+explanation_paths: []
+data_resource_paths: []
+declared_capability_ids: []
+integrity_digest: sha256:e9856041643c889e96ba67458176534c3fa86d69254724f1b137c1106303d1d9

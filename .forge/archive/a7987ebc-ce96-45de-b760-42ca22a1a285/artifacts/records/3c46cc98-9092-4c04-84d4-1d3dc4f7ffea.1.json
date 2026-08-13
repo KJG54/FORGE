@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e0bdc26fdf53fbbbec228a37cdb2a745b542d78e44e68e931148aad869f5d400"
+  ],
+  "affected_record_ids": [
+    "46a4c3f0-ec7b-4ab0-b948-b09761ba73af"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 3,
+  "id": "3c46cc98-9092-4c04-84d4-1d3dc4f7ffea",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "recorded_at": "2026-08-13T01:37:12.969533Z",
+  "role": "change-scope",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Project-basic CI contract repair scope",
+  "tool_version": "1.0.0"
+}

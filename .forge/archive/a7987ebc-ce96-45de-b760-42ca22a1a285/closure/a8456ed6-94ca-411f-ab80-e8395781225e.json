@@ -1,0 +1,75 @@
+{
+  "accepted_artifact_revision_ids": [
+    "22d88f37-12b6-4dae-ab44-49e011dc300b",
+    "44cbd743-faae-4d2e-9cfa-825785200fb6",
+    "46a4c3f0-ec7b-4ab0-b948-b09761ba73af",
+    "5c51a80a-d6d2-4e50-989e-8ba4e05d5d37",
+    "70a00a01-acab-4458-b11d-83d1d87de342",
+    "96629cda-25e2-4ff4-9388-a7556e843ae9",
+    "a784c04a-53be-46d3-892a-4f28c3225bb5",
+    "f11f9e55-2b43-4efb-9976-f59775334e03"
+  ],
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ba99edcfd9b7f07eca99591c541fff29393741f49b286cc2f7b475cad99ec61b",
+    "sha256:b2d996551f6ce3b47053bdba062ea60b741debcae0ea783ada034aaadf4b22d6",
+    "sha256:e0bdc26fdf53fbbbec228a37cdb2a745b542d78e44e68e931148aad869f5d400",
+    "sha256:116d628a68876281e83b3ec2079d5c613e6d74f40a95575c930a72e329a8c583",
+    "sha256:79e9c764eff0d1dbee5e40f952a2ebdbc87f4c21a9bd7516037657e874b8933a",
+    "sha256:ec1d4dcfca240bd34e03b49481a498d24b0c92bf11a2d5b6b3c3db6852cffb81",
+    "sha256:ac7da6bcf56b548eb2a030e0ead5a3ed04162178066853c38ed6d8a65591e2dd",
+    "sha256:d1565e63b00253c88726733a1a6aec99ae5e7c50a1d9df1d6539a8153007a139"
+  ],
+  "affected_record_ids": [
+    "54f539a8-0212-4dc1-91cf-02290ea1fb2b",
+    "b1d18925-2ca5-4b03-a576-2fa5fe91b4bd",
+    "97a5bb58-0f75-4786-990e-3f6ca2e0c16a",
+    "4eaac95e-f553-43ff-90a9-9ba85275bcca",
+    "304f3343-e717-4ccf-979c-ccf2d70eb295",
+    "22d88f37-12b6-4dae-ab44-49e011dc300b",
+    "44cbd743-faae-4d2e-9cfa-825785200fb6",
+    "46a4c3f0-ec7b-4ab0-b948-b09761ba73af",
+    "5c51a80a-d6d2-4e50-989e-8ba4e05d5d37",
+    "70a00a01-acab-4458-b11d-83d1d87de342",
+    "96629cda-25e2-4ff4-9388-a7556e843ae9",
+    "a784c04a-53be-46d3-892a-4f28c3225bb5",
+    "f11f9e55-2b43-4efb-9976-f59775334e03"
+  ],
+  "archive_reference": ".forge/archive/a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "authorization_basis": "configured owner closed fully accepted work for atomic M2 archival",
+  "closing_summary": "Closed the bounded project-basic CI contract repair: restored the historical README protocol contract, fixed Ruff and newly exposed Pyright quality findings, documented CI-detection friction, and pushed the branch without claiming replacement remote CI.",
+  "closure_event_id": "99e0eaee-8572-4dc9-9ed4-f9c7b932dec5",
+  "correlation_id": null,
+  "current_artifact_revision_ids": [
+    "22d88f37-12b6-4dae-ab44-49e011dc300b",
+    "44cbd743-faae-4d2e-9cfa-825785200fb6",
+    "46a4c3f0-ec7b-4ab0-b948-b09761ba73af",
+    "5c51a80a-d6d2-4e50-989e-8ba4e05d5d37",
+    "70a00a01-acab-4458-b11d-83d1d87de342",
+    "96629cda-25e2-4ff4-9388-a7556e843ae9",
+    "a784c04a-53be-46d3-892a-4f28c3225bb5",
+    "f11f9e55-2b43-4efb-9976-f59775334e03"
+  ],
+  "event_sequence": 53,
+  "final_acceptance_ids": [
+    "54f539a8-0212-4dc1-91cf-02290ea1fb2b",
+    "b1d18925-2ca5-4b03-a576-2fa5fe91b4bd",
+    "97a5bb58-0f75-4786-990e-3f6ca2e0c16a",
+    "4eaac95e-f553-43ff-90a9-9ba85275bcca",
+    "304f3343-e717-4ccf-979c-ccf2d70eb295"
+  ],
+  "id": "a8456ed6-94ca-411f-ab80-e8395781225e",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-13T01:51:51.814396Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "terminal_state": "closed",
+  "tool_version": "1.0.0"
+}

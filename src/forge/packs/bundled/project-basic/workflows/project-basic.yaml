@@ -1,0 +1,298 @@
+schema_version: "1.0"
+id: project-basic
+version: 0.1.0
+pack_id: project-basic
+name: Project Basic
+description: A governed seven-step workflow for start-to-finish human-agent projects across domains.
+steps:
+  - id: intake
+    purpose: Capture the human vision, context, learning goals, and first bounded outcome.
+    instructions: Ask for existing material before broad questions, play back the vision, and separate known facts, uncertainty, and blockers.
+    prerequisites: []
+    required_inputs: []
+    required_outputs: [human-vision-brief, owner-context-and-learning-profile]
+    claim_requirements: [outputs-produced]
+    check_requirements: [outputs-present]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [initiative-objective]
+    explanation_content:
+      mentored: Start with the human's actual project and learning goals, not a generic task list. A concise vision playback makes later planning reviewable without turning interview notes into accepted truth.
+    phase_guidance:
+      label: Understand the project and the person doing it
+      owner_tasks:
+        - Share existing briefs, sketches, research, examples, constraints, and desired outcome before answering broad questions.
+        - Confirm the vision playback and say what is intentionally not part of the first milestone.
+        - In guided or mentored work, name what you want to learn and what you would like to attempt yourself.
+      agent_tasks:
+        - Ask a small batch of questions with examples when an answer may be unfamiliar.
+        - Recommend whether project-basic is a fit or whether a narrower workflow is better.
+        - Report what is known, uncertain, and blocked, then pause for review of the intake artifacts.
+      either_tasks:
+        - Gather existing notes, references, examples, or prior work.
+      owner_only_gates:
+        - Accepting the intake outputs.
+      done_signal: The first useful outcome, audience, constraints, learning preferences, and unresolved questions are visible in a reviewed vision playback.
+  - id: research
+    purpose: Establish whether new research is needed and preserve the context used for planning.
+    instructions: Produce research or an evidence-based no-new-research-needed conclusion that names the materials considered, why they are sufficient, and what remains uncertain.
+    prerequisites: [intake]
+    required_inputs: [human-vision-brief, owner-context-and-learning-profile]
+    required_outputs: [context-readiness-report, project-research]
+    claim_requirements: [outputs-produced]
+    check_requirements: [research-readiness-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [accepted-intake]
+    explanation_content:
+      mentored: Research can mean learning from supplied materials as well as finding new sources. A documented no-new-research conclusion is honest only when it names what was considered and the uncertainty that remains.
+    phase_guidance:
+      label: Improve the context before committing to a plan
+      owner_tasks:
+        - Review whether the available material is enough to plan responsibly.
+        - Decide whether important uncertainty is acceptable for this milestone.
+      agent_tasks:
+        - Distinguish existing material, new findings, inference, uncertainty, and blockers.
+        - Do not invent research merely to satisfy the phase.
+        - Pause for review of the readiness and research artifacts before planning.
+      either_tasks:
+        - Find examples, references, safety information, or domain techniques worth considering.
+      owner_only_gates:
+        - Accepting the research outputs.
+      done_signal: Planning has a documented context basis, including an explicit no-new-research result when applicable.
+  - id: plan
+    purpose: Turn accepted vision and context into a bounded task map and acceptance criteria.
+    instructions: Produce a traceable project plan, collaboration task map, and acceptance criteria before creating work.
+    prerequisites: [research]
+    required_inputs: [human-vision-brief, owner-context-and-learning-profile, context-readiness-report, project-research]
+    required_outputs: [project-plan, task-map, acceptance-criteria]
+    claim_requirements: [outputs-produced]
+    check_requirements: [plan-traceability-reviewed]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [accepted-intake, accepted-research]
+    explanation_content:
+      mentored: A plan is a learning and decision aid, not permission to drift beyond accepted scope. Separate optional practice tasks from required owner review and owner-only authority gates.
+    phase_guidance:
+      label: Decide what to make and how to judge it
+      owner_tasks:
+        - Review the plan against the vision and choose practice tasks you want to attempt.
+        - Confirm the acceptance criteria before creation begins.
+      agent_tasks:
+        - Trace plan tasks and criteria to the accepted vision and context.
+        - Separate agent work, owner practice, either-party work, owner review, and owner-only gates.
+        - Present a bounded, revocable authorization envelope for coherent low-risk routine work without treating it as a FORGE acceptance.
+      either_tasks:
+        - Sketch alternatives, break work into tasks, and identify risks early.
+      owner_only_gates:
+        - Accepting the project plan, task map, and acceptance criteria.
+        - Amending scope or criteria after they are accepted.
+      done_signal: The plan, task map, and criteria are traceable, bounded, and explicitly reviewed before creation.
+  - id: create
+    purpose: Produce the governed project work within the accepted plan and criteria.
+    instructions: Create only the declared work, record limitations, and raise scope pressure rather than quietly widening the project.
+    prerequisites: [plan]
+    required_inputs: [project-plan, task-map, acceptance-criteria]
+    required_outputs: [created-work]
+    claim_requirements: [outputs-produced]
+    check_requirements: [declared-checks]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: block_for_owner_review
+    context_selection_rules: [accepted-project-plan]
+    explanation_content:
+      mentored: Build in small reviewable increments. A completed work artifact is a claim for checking, not proof that it meets the criteria or that the owner accepts it.
+    phase_guidance:
+      label: Create the work
+      owner_tasks:
+        - Attempt the practice tasks you chose and review significant work as it appears.
+        - Raise changed goals or constraints for a scope decision instead of silently expanding the work.
+      agent_tasks:
+        - Work within the accepted plan and criteria, recording known limitations.
+        - Keep claims separate from proof and owner acceptance.
+        - Pause at meaningful artifact review points.
+      either_tasks:
+        - Produce project materials, tests, examples, notes, or prototypes appropriate to the domain.
+      owner_only_gates:
+        - Accepting the created work.
+        - Amending scope when creation no longer fits what was accepted.
+      done_signal: The created work exists, its known limitations are stated, and it is ready to be evaluated against exact criteria.
+  - id: evaluate
+    purpose: Evaluate the exact created-work revision against the exact accepted criteria revision.
+    instructions: Record pass, fail, and skipped findings with exact revision references, limitations, and a rework recommendation when warranted.
+    prerequisites: [create]
+    required_inputs: [created-work, acceptance-criteria]
+    required_outputs: [evaluation-report]
+    claim_requirements: [outputs-produced]
+    check_requirements: [acceptance-criteria-evaluated]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [created-work-and-criteria]
+    explanation_content:
+      mentored: Evaluation tells you what the exact work achieved against the exact criteria. Its recommendation can inform a revision, but it never changes workflow state automatically.
+    phase_guidance:
+      label: Evaluate the exact work against the exact criteria
+      owner_tasks:
+        - Review whether the results and limitations are convincing for the intended outcome.
+        - Decide whether a change in scope or criteria is needed before rework.
+      agent_tasks:
+        - Bind every finding to the current created-work and acceptance-criteria revisions.
+        - Report pass, fail, skipped, and inconclusive results without a single smoothing verdict.
+        - Explain that findings do not automatically start a revise phase or accept the work.
+      either_tasks:
+        - Reproduce findings and identify focused fixes or follow-up questions.
+      owner_only_gates:
+        - Accepting the evaluation report.
+        - Authorizing a scope amendment when criteria or scope must change.
+      done_signal: The evaluation report names the exact revisions assessed, all findings, limitations, and any recommended native rework path.
+  - id: review
+    purpose: Review outcome, residual risk, learning, and readiness for closure.
+    instructions: Produce a review report that distinguishes evaluated facts, owner observations, remaining risk, and follow-up work.
+    prerequisites: [evaluate]
+    required_inputs: [created-work, evaluation-report]
+    required_outputs: [review-report]
+    claim_requirements: [outputs-produced]
+    check_requirements: [review-complete]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [evaluation-report]
+    explanation_content:
+      mentored: Review is where evidence and human judgment meet. It records residual risk and learning without turning an agent recommendation or a passing check into owner acceptance.
+    phase_guidance:
+      label: Review what was achieved, learned, and left open
+      owner_tasks:
+        - Judge whether remaining limitations and risks are acceptable.
+        - Separate what you observed from what a check established.
+      agent_tasks:
+        - Classify outcomes, limitations, and follow-up work rather than offering an unqualified verdict.
+        - Identify learning gained and practice that may be useful next time.
+      either_tasks:
+        - Capture friction, alternatives, and future improvements.
+      owner_only_gates:
+        - Accepting the review report.
+        - Approving any separately governed residual-risk decision.
+      done_signal: The review distinguishes evidence, observation, residual risk, learning, and follow-up work.
+  - id: close
+    purpose: Preserve lessons and closure material without bypassing final owner decisions.
+    instructions: Produce lessons and closure material from recorded facts, then let the owner decide whether the initiative should close.
+    prerequisites: [review]
+    required_inputs: [review-report]
+    required_outputs: [lessons, closure-record]
+    claim_requirements: [outputs-produced]
+    check_requirements: [closure-readiness]
+    acceptance_requirements: [owner-acceptance]
+    allowed_actors: [owner, human_contributor, agent_adapter]
+    allowed_transitions: [begin, rework, submit, verify, accept]
+    cancellation_behavior: return_to_ready
+    context_selection_rules: [accepted-review]
+    explanation_content:
+      mentored: Closure preserves the useful history, including limitations and lessons. It does not erase uncertainty or replace the owner's separate terminal decision.
+    phase_guidance:
+      label: Capture lessons and prepare an honest closeout
+      owner_tasks:
+        - Confirm the closing summary and decide whether the work is genuinely ready to finish.
+      agent_tasks:
+        - Assemble closure material from current recorded facts only.
+        - Confirm that no acceptance, risk, or follow-up boundary is being silently bypassed.
+      either_tasks:
+        - Draft lessons the owner can correct for future projects.
+      owner_only_gates:
+        - Accepting the lessons and closure record.
+        - Running the terminal closure command.
+      done_signal: Lessons and closure material state what was achieved, what remains limited, and what the owner must still decide.
+transitions:
+  - id: begin
+    source_state: ready
+    destination_state: in_progress
+    conditions: []
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: submit
+    source_state: in_progress
+    destination_state: awaiting_verification
+    conditions: [claim-recorded]
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: rework
+    source_state: invalidated
+    destination_state: in_progress
+    conditions: []
+    authority_requirement: participant
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: verify
+    source_state: awaiting_verification
+    destination_state: awaiting_acceptance
+    conditions: [required-checks-passed, required-evidence-registered]
+    authority_requirement: forge-cli
+    invalidation_effects: []
+    event_type: step-transitioned
+  - id: accept
+    source_state: awaiting_acceptance
+    destination_state: completed
+    conditions: [owner-acceptance-recorded]
+    authority_requirement: owner
+    invalidation_effects: []
+    event_type: step-transitioned
+required_gates: []
+required_artifact_classes:
+  - human-vision-brief
+  - owner-context-and-learning-profile
+  - context-readiness-report
+  - project-research
+  - project-plan
+  - task-map
+  - acceptance-criteria
+  - created-work
+  - evaluation-report
+  - review-report
+  - lessons
+required_evidence_classes:
+  - project-check-evidence
+interview_guidance:
+  vision:
+    purpose: Understand the human vision, existing material, intended audience, first useful outcome, and workflow fit.
+    questions:
+      - What existing notes, examples, designs, research, or prior work should we read before asking broad questions?
+      - "Who is this for? For example: yourself while learning, friends or collaborators, a client, a class, or people who already use something similar."
+      - "What would make the first version useful? For example: a playable loop, a tested decision memo, a working physical prototype, or a draft you can share."
+      - Does this need project-basic, or is clear software implementation or research-as-the-deliverable a better fit?
+    must_answer_before_create: [intended-users, first-useful-outcome]
+  first_milestone:
+    purpose: Bound the first project milestone and make its success criteria reviewable.
+    questions:
+      - What is the smallest outcome worth finishing now?
+      - What must be out of scope for this milestone?
+      - What will convince you that the outcome is useful enough to evaluate?
+  risks_and_constraints:
+    purpose: Surface constraints, unknowns, safety concerns, and the context needed before planning.
+    questions:
+      - "What limits matter? For example: deadline, budget, materials, platform, privacy, safety, tools, or accessibility."
+      - What is known, uncertain, or currently blocked?
+      - What existing material is sufficient, and what needs research before planning?
+  learning_path:
+    purpose: Shape guided and mentored work around the owner's experience and desired involvement.
+    questions:
+      - What experience do you already have with this project domain?
+      - "How would you like to learn? For example: short explanations, worked examples, resources, practice tasks, or trying first and reviewing afterward."
+      - Which tasks would you like to practice, and which should be routine agent work or required owner review?
+explanation_content:
+  minimal: Follow the declared project phases; claims, checks, evidence, verification, and owner acceptance remain separate.
+  standard: Capture vision and context, plan, create, evaluate, review, and close while keeping each governance record and owner decision distinct.
+  guided: FORGE explains workflow fit, inputs, outputs, uncertainty, task ownership, checks, evidence, and review points while preserving the same authority boundaries.
+  mentored: FORGE supports learning by building through domain explanations, examples, practice choices, and understanding checks while preserving the same workflow permissions and owner gates.
+compatibility_constraints:
+  - forge-contracts-1

@@ -1,0 +1,38 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:79e9c764eff0d1dbee5e40f952a2ebdbc87f4c21a9bd7516037657e874b8933a",
+    "sha256:d1565e63b00253c88726733a1a6aec99ae5e7c50a1d9df1d6539a8153007a139"
+  ],
+  "affected_record_ids": [
+    "70a00a01-acab-4458-b11d-83d1d87de342",
+    "f11f9e55-2b43-4efb-9976-f59775334e03"
+  ],
+  "assertion": "The readiness record and lessons accurately summarize local validation, preserved boundaries, CI limitations, and commit/push readiness.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "70a00a01-acab-4458-b11d-83d1d87de342",
+    "f11f9e55-2b43-4efb-9976-f59775334e03"
+  ],
+  "correlation_id": null,
+  "event_sequence": 46,
+  "id": "ecfe1680-5187-45a6-b573-c0be6f7281b7",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "limitations": [
+    "Remote CI remains owner-reviewed after push."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-13T01:50:21.368905Z",
+  "run_id": "550f6b06-143a-440b-b8ee-96b22bf15862",
+  "schema_version": "1.0",
+  "step_id": "closeout",
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8bc88fbd03c1b0af256a8436990fab3aaf0d9d99349b241745d77a5e86267e02"
+  ],
+  "affected_record_ids": [
+    "44cbd743-faae-4d2e-9cfa-825785200fb6",
+    "96629cda-25e2-4ff4-9388-a7556e843ae9",
+    "97c650c1-3eff-4116-b989-c6dc2f02afcc",
+    "957ab366-4dbd-4d09-9e0f-5f4aa6510828"
+  ],
+  "artifact_revision_ids": [
+    "44cbd743-faae-4d2e-9cfa-825785200fb6",
+    "96629cda-25e2-4ff4-9388-a7556e843ae9"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "97c650c1-3eff-4116-b989-c6dc2f02afcc"
+  ],
+  "claim_ids": [
+    "957ab366-4dbd-4d09-9e0f-5f4aa6510828"
+  ],
+  "correlation_id": null,
+  "event_sequence": 39,
+  "id": "7da172a6-b779-4118-8f54-bde237bb860e",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "limitations": [
+    "Remote CI remains owner-reviewed."
+  ],
+  "packet_digest": "sha256:8bc88fbd03c1b0af256a8436990fab3aaf0d9d99349b241745d77a5e86267e02",
+  "purpose": "Bind the reviewed friction and residual-risk reports to their passing risk check and claim.",
+  "recorded_at": "2026-08-13T01:49:12.912657Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

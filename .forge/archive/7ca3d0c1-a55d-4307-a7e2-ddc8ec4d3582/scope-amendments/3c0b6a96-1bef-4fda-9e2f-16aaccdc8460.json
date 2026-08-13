@@ -1,0 +1,60 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_artifact_ids": [],
+  "affected_digests": [],
+  "affected_record_ids": [
+    "08d8b9c8-628b-4500-a51b-520e8830fe49",
+    "0a0df856-7f4b-4986-9382-e55fde96f8db",
+    "0f7be78f-d52c-48e2-a727-67f911f0201f",
+    "141aeb8a-e912-4a9b-bc66-5179f75ba533",
+    "2052c752-bd60-40c2-aaf2-bab9395ce735",
+    "20905048-6296-48ce-9368-0aa84216cb0c",
+    "40b6e1f1-c61b-4aa2-bcc5-98fad5a43402",
+    "5681855f-6e9f-4930-a56e-e737966f8f1d",
+    "6376c70a-8765-4733-bb83-a3ebefe038b3",
+    "7849d2f5-1d11-4e5c-8680-b19fdade50a7",
+    "798548ee-a2b9-48a4-a5ff-e9c4a9ffe33e",
+    "90817262-fa95-4097-bcaa-b14dab07800f",
+    "bbd51dc4-a281-4bfa-99a0-3171fb704497",
+    "dde9ed66-852a-4543-b348-4747f573cdcd",
+    "e3a827db-e035-445d-ba34-9c3b89cf52da",
+    "ebc87ed1-c74c-401b-b902-6c649f97e200",
+    "f737e1da-b4af-44f6-a2f2-82cc08a4d590"
+  ],
+  "affected_requirements": [
+    "framework-changes"
+  ],
+  "authorization_basis": "configured owner replaced the effective initiative scope and invalidated derived downstream support",
+  "changed_scope": "Add standalone project-basic@0.1.0 with seven declarative phases, eleven read-only templates, digest-bound guidance, companion/workflow-selection docs, owner-observed dogfood guide, inventory/conformance/distribution tests, and documented clean-worktree closure/Git-publishing guidance; preserve core lifecycle, protocol 1.4.0, CLI default, existing pack identities, archives, and framework version 1.0.0.",
+  "correlation_id": null,
+  "event_sequence": 51,
+  "id": "3c0b6a96-1bef-4fda-9e2f-16aaccdc8460",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "invalidated_acceptance_ids": [
+    "40b6e1f1-c61b-4aa2-bcc5-98fad5a43402",
+    "5681855f-6e9f-4930-a56e-e737966f8f1d",
+    "90817262-fa95-4097-bcaa-b14dab07800f",
+    "e3a827db-e035-445d-ba34-9c3b89cf52da"
+  ],
+  "invalidated_check_ids": [
+    "0f7be78f-d52c-48e2-a727-67f911f0201f",
+    "2052c752-bd60-40c2-aaf2-bab9395ce735",
+    "20905048-6296-48ce-9368-0aa84216cb0c",
+    "dde9ed66-852a-4543-b348-4747f573cdcd",
+    "ebc87ed1-c74c-401b-b902-6c649f97e200"
+  ],
+  "invalidated_gate_ids": [],
+  "rationale": "Owner directed publication and durable documentation for the clean-worktree closure friction; Git commit/push and CI remain distinct from FORGE acceptance and closure.",
+  "recorded_at": "2026-08-13T00:32:21.854436Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0",
+  "workflow_return_step_id": "implement"
+}

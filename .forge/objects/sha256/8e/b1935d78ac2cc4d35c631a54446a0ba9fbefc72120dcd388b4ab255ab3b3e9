@@ -1,0 +1,79 @@
+# Project-basic implementation record
+
+## Delivered bounded change
+
+This change adds the standalone data-only bundled pack `project-basic@0.1.0` without changing
+FORGE's framework version (`1.0.0`), protocol version (`1.4.0`), core lifecycle services, CLI
+default (`software-basic`), executable capabilities, or persisted authorization model.
+
+The pack defines the fixed seven-phase workflow:
+
+| Phase | Required outputs |
+|---|---|
+| `intake` | `human-vision-brief`, `owner-context-and-learning-profile` |
+| `research` | `context-readiness-report`, `project-research` |
+| `plan` | `project-plan`, `task-map`, `acceptance-criteria` |
+| `create` | `created-work` |
+| `evaluate` | `evaluation-report` |
+| `review` | `review-report` |
+| `close` | `lessons`, `closure-record` |
+
+It has all four explanation profiles, four document-first interview guidance groups, and phase
+guidance for every step. The guidance is digest-bound presentation text only: it cannot change
+actors, conditions, transitions, verification, or owner acceptance. It describes small
+beginner-friendly question batches, vision playback, known/uncertain/blocked status, workflow-fit
+routing, practice versus review tasks, major-artifact review pauses, and bounded revocable
+conversational authorization envelopes.
+
+Research remains mandatory. The readiness template permits a documented no-new-research-needed
+outcome only when it identifies the considered material, sufficiency basis, remaining uncertainty,
+and owner review. The evaluation template names the exact created-work and acceptance-criteria
+revision IDs and digests being assessed. Findings do not transition the workflow automatically.
+
+Eleven declared read-only templates cover every role except domain-specific `created-work`.
+Templates are list/show reference resources, not artifact generators or approvals. Native artifact
+revision invalidates completed downstream work and supports the normal `rework` transition; no
+mandatory `revise` phase was added.
+
+## Documentation and compatibility work
+
+- Added the canonical [project companion](../../docs/project-companion.md), workflow routing, and
+  owner-observed [dogfood guide](../../docs/project-basic-dogfood.md) for beginner game,
+  scientific/evidence, physical-making, creative-writing/song, and clear-software scenarios.
+- Updated README, documentation indexes, quickstart, user guide, workflow reference, and pack-author
+  guide to distinguish all three bundled workflows while keeping `research-basic` guidance unchanged.
+- Registered `project-basic@0.1.0` in the bundled-pack version contract and installation matrix.
+- Updated inventory, profile, CLI, template, lifecycle, invalidation/rework, and version-consistency
+  tests. Existing `software-basic@0.6.0` and `research-basic@0.4.0` identities remain pinned.
+- Clarified that the Local Production-v1 candidate manifest validates historical built artifacts only
+  after this successor changes source. No replacement candidate, tag, publication, or release claim
+  was made.
+
+## Exact pack identity
+
+`project-basic@0.1.0` validates with digest:
+
+```text
+sha256:e9856041643c889e96ba67458176534c3fa86d69254724f1b137c1106303d1d9
+```
+
+## Validation performed
+
+| Check | Result |
+|---|---|
+| `forge pack validate project-basic` | Passed with the exact digest above. |
+| Focused pack, profile, CLI, template, lifecycle, invalidation, inventory, and version tests | `47 passed` using a writable isolated pytest base. |
+| `python -m tools.version_consistency --forge .venv\Scripts\forge.exe` | Passed; reports all three bundled packs and historical-candidate-only status. |
+| `python -m build` | Built `forge_governance-1.0.0.tar.gz` and `forge_governance-1.0.0-py3-none-any.whl`. |
+| Installed-wheel distribution smoke (CPython 3.14, Windows, venv) | Passed; validated `project-basic@0.1.0`, `research-basic@0.4.0`, and `software-basic@0.6.0`. |
+
+The two broad local `pytest -q` attempts did not return a final summary through this session's
+terminal bridge, so this record deliberately makes no full-suite claim. The focused suite and
+installed-wheel smoke above are the recorded completed validation.
+
+## Boundaries retained
+
+No new CLI guide commands, persisted batch approvals, automatic template generation, profile
+switching, core lifecycle changes, direct-agent protocol change, or CLI-default change are part of
+this result. This is an implementation record, not a worker claim, check result, evidence packet,
+FORGE verification, owner acceptance, release candidate, tag, or publication authorization.

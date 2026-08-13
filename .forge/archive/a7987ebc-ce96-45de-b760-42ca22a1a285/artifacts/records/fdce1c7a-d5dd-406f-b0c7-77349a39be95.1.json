@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ba99edcfd9b7f07eca99591c541fff29393741f49b286cc2f7b475cad99ec61b"
+  ],
+  "affected_record_ids": [
+    "22d88f37-12b6-4dae-ab44-49e011dc300b"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 25,
+  "id": "fdce1c7a-d5dd-406f-b0c7-77349a39be95",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "recorded_at": "2026-08-13T01:47:02.598478Z",
+  "role": "verification-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "CI contract repair verification report",
+  "tool_version": "1.0.0"
+}

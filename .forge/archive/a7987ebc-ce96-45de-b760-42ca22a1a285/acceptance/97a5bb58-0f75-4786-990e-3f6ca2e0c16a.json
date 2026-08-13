@@ -1,0 +1,46 @@
+{
+  "acceptance_event_id": "a851be96-9a4b-42f9-9aaf-4ec1283ceda1",
+  "accepted_artifact_revision_ids": [
+    "22d88f37-12b6-4dae-ab44-49e011dc300b"
+  ],
+  "accepted_check_result_ids": [
+    "13057d29-39fd-447c-88d6-3871f9f3ac2e"
+  ],
+  "accepted_evidence_ids": [
+    "fc7e4c86-fcb3-49dc-9338-1603e7837fe3"
+  ],
+  "accepted_scope": "Accept the local release verification for the bounded CI repair: focused protocol/CLI tests 17 passed, project-basic workflow tests 2 passed, and quality gate passed; retain the unclaimed full-suite terminal result and owner-reviewed remote CI limitations.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ba99edcfd9b7f07eca99591c541fff29393741f49b286cc2f7b475cad99ec61b",
+    "sha256:7140a023b17b15742640728bca7c03c224f8790ea85ab556360abcefc4a07a86",
+    "sha256:ace5cab32bb46d7136d90d7fe4b6f4d90735e55b327aa9fe56ceb61d2efdd446"
+  ],
+  "affected_record_ids": [
+    "22d88f37-12b6-4dae-ab44-49e011dc300b",
+    "13057d29-39fd-447c-88d6-3871f9f3ac2e",
+    "fc7e4c86-fcb3-49dc-9338-1603e7837fe3"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 31,
+  "id": "97a5bb58-0f75-4786-990e-3f6ca2e0c16a",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "known_limitations": [
+    "Full-suite terminal result was not retained.",
+    "Replacement remote CI remains for owner review after push."
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-13T01:47:54.968533Z",
+  "residual_risks": [],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

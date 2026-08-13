@@ -1,0 +1,46 @@
+{
+  "acceptance_event_id": "21b14c1e-ea6a-4e54-9821-bd80c7c1616f",
+  "accepted_artifact_revision_ids": [
+    "c3f89948-5bcc-4aa5-beb0-fed2d327f303",
+    "e553f2fc-fa8c-4896-aea5-d277905ae8d4"
+  ],
+  "accepted_check_result_ids": [
+    "ffb38d07-ded0-4e5d-b275-9f7d32401931"
+  ],
+  "accepted_evidence_ids": [
+    "8a8f35cb-13e2-45b9-91a9-d62c242b1ddc"
+  ],
+  "accepted_scope": "Add standalone project-basic@0.1.0 with seven declarative phases, eleven read-only templates, digest-bound guidance, companion/workflow-selection docs, owner-observed dogfood guide, and inventory/conformance/distribution tests; preserve core lifecycle, protocol 1.4.0, CLI default, existing pack identities, archives, and framework version 1.0.0.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:2871548a65457ef5f26cae7d357a4c69f5b2ae68f0920b2e789a7f479552f8c4",
+    "sha256:15ae866e05f3515d1da9d00bb03c4d63e9062d6d775c39df16d982171e2f8407",
+    "sha256:6609922cea8bd9f0dc116a07bc2ae7ff6fe32b0b69e1de3d97ac9e8cdbb0916e",
+    "sha256:c1f130ccf87baaef178500a39d0c4991a9ed1c2fe41bf368b286d00e1780decd"
+  ],
+  "affected_record_ids": [
+    "c3f89948-5bcc-4aa5-beb0-fed2d327f303",
+    "e553f2fc-fa8c-4896-aea5-d277905ae8d4",
+    "ffb38d07-ded0-4e5d-b275-9f7d32401931",
+    "8a8f35cb-13e2-45b9-91a9-d62c242b1ddc"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 10,
+  "id": "b6a6dce8-0873-4e73-bd06-1dd672e3d14a",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "known_limitations": [],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-12T22:31:34.754136Z",
+  "residual_risks": [],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

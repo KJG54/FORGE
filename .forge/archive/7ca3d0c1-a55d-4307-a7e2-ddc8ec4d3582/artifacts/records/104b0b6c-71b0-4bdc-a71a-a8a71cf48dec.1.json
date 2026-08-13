@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e1cce44f6e83dee55afacf92c884db868df097721c7baf5f97c2a46ecd1ea904"
+  ],
+  "affected_record_ids": [
+    "78c588ae-6774-4fe8-8bd5-95ff436ab129"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 43,
+  "id": "104b0b6c-71b0-4bdc-a71a-a8a71cf48dec",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "recorded_at": "2026-08-13T00:18:48.786398Z",
+  "role": "lessons",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Project-basic implementation lessons",
+  "tool_version": "1.0.0"
+}

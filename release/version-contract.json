@@ -54,6 +54,11 @@
   "packs": {
     "bundled": [
       {
+        "id": "project-basic",
+        "version": "0.1.0",
+        "schema_compatibility": "forge-contracts-1"
+      },
+      {
         "id": "research-basic",
         "version": "0.4.0",
         "schema_compatibility": "forge-contracts-1"

@@ -1,0 +1,50 @@
+# Project-basic release verification report
+
+## Candidate under review
+
+This report evaluates the scoped source change described by the accepted
+`release/project-basic/release-requirements.md` and the accepted implementation record
+`release/project-basic/framework-changes.md`. It is not a release candidate, release, tag,
+publication authorization, or owner acceptance.
+
+## Requirements and observed evidence
+
+| Requirement | Observed result |
+|---|---|
+| A standalone data-only `project-basic@0.1.0` pack exists with the declared seven-phase lifecycle. | Passed: source pack validation reports `project-basic 0.1.0` with digest `sha256:e9856041643c889e96ba67458176534c3fa86d69254724f1b137c1106303d1d9`. |
+| Eleven declared read-only templates cover every required role except `created-work`. | Passed: focused template-list/show coverage asserts all eleven paths before and after the lock. |
+| Guidance is complete but cannot change governance. | Passed: focused profile coverage asserts four workflow profiles, four interview groups, phase guidance for seven steps, unchanged standard transitions, actors, and owner acceptance requirements. |
+| Mandatory research permits only a documented evidence-based no-new-research result. | Passed by declared workflow instructions and readiness-template coverage; it still requires research-step claim, check, evidence, verification, and owner acceptance in any real initiative. |
+| Revising created work uses native invalidation/rework, not a revise phase. | Passed: lifecycle coverage completes the seven phases, revises `created-work`, observes invalidated create/evaluate/review/close state, and starts native `create` rework. |
+| Existing bundle identities remain unchanged. | Passed: pinned identity tests retain `software-basic@0.6.0` digest `sha256:7ef57351d571bf78fedbb115466b0f0b351addd4970909ef92e845fbc4aff962` and `research-basic@0.4.0` digest `sha256:11ce1ee84c288a210346a9c1ff61567385ee704b6adb3498ed4e77dfd2cf37e5`. |
+| Version/distribution contracts contain all three bundled packs without a framework version change. | Passed: version consistency reports `project-basic`, `research-basic`, and `software-basic`; framework version remains `1.0.0`. |
+| Built distribution discovers all three bundled packs. | Passed: `python -m build` produced the 1.0.0 wheel, and Windows CPython 3.14 venv smoke installed it and validated all three packs. |
+| Historical Local Production-v1 evidence is not claimed for changed source. | Passed: version-consistency output identifies the local candidate manifest as `validated-historical-artifact-only`; no replacement candidate, tag, publication, or release claim was made. |
+| Clean-worktree closure and Git publishing friction is documented without changing authority. | Passed: the Git/closure guidance distinguishes commit, push, CI, FORGE acceptance, and terminal close; it permits owner-directed branch publication without waiting for CI while making no release claim. |
+
+## Commands and results
+
+| Command | Result |
+|---|---|
+| `forge pack validate project-basic` | Passed with the exact project-basic digest. |
+| Focused pytest command covering project workflow, pack identities/guidance, conformance, profile behavior, CLI, installation matrix, and version contract | `47 passed`. |
+| `python -m tools.version_consistency --forge .venv\Scripts\forge.exe` | Passed. |
+| `python -m build` | Built `forge_governance-1.0.0.tar.gz` and `forge_governance-1.0.0-py3-none-any.whl`. |
+| Installed-wheel distribution smoke, CPython 3.14/Windows/venv | Passed. |
+
+## Limitations and residual review
+
+- Two broad local `pytest -q` attempts did not return a final summary through this session's terminal
+  bridge. This report makes no full-suite claim.
+- Automated checks confirm declared structure, digest identity, lifecycle mechanics, and distribution
+  discovery. They do not establish subjective workflow fit, teaching quality, factual correctness of
+  future project work, or owner-observed dogfood outcomes.
+- The dogfood guide intentionally records observation criteria and evidence expectations rather than
+  fabricated scenario results.
+
+## Conclusion
+
+The completed checks support the narrow release-verification claim that the scoped implementation
+meets the stated structural, identity, lifecycle, documentation, and installed-wheel requirements
+within their recorded limitations. FORGE verification and owner acceptance remain separate next
+actions.

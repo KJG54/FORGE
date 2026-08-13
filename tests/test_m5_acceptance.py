@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 
 import pytest
-from conftest import RESEARCH_BASIC_VERSION, SOFTWARE_BASIC_VERSION
+from conftest import PROJECT_BASIC_VERSION, RESEARCH_BASIC_VERSION, SOFTWARE_BASIC_VERSION
 
 from forge.contracts import CONTRACT_MODELS
 from forge.contracts.actors import ActorType
@@ -24,7 +24,7 @@ from forge.storage.repository import RepositoryLayout, initialize_repository
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 BUNDLED_PACK_ROOT = PROJECT_ROOT / "src" / "forge" / "packs" / "bundled"
 DATA_ONLY_PACK_ROOT = PROJECT_ROOT / "tests" / "fixtures" / "packs" / "community-research"
-BUNDLED_PACK_IDS = ("software-basic", "research-basic")
+BUNDLED_PACK_IDS = ("project-basic", "software-basic", "research-basic")
 EXPECTED_ACTORS = (
     ActorType.OWNER,
     ActorType.HUMAN_CONTRIBUTOR,
@@ -92,9 +92,11 @@ def test_bundled_packs_pass_one_shared_conformance_contract(
     workflow = pack.workflow()
 
     assert pack.manifest.id == pack_id
-    expected_version = (
-        SOFTWARE_BASIC_VERSION if pack_id == "software-basic" else RESEARCH_BASIC_VERSION
-    )
+    expected_version = {
+        "project-basic": PROJECT_BASIC_VERSION,
+        "software-basic": SOFTWARE_BASIC_VERSION,
+        "research-basic": RESEARCH_BASIC_VERSION,
+    }[pack_id]
     assert pack.manifest.version == workflow.version == expected_version
     assert pack.manifest.provided_workflow_ids == (workflow.id,)
     assert pack.manifest.declared_capability_ids == ()

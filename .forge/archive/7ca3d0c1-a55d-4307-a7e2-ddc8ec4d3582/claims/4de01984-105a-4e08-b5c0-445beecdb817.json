@@ -1,0 +1,38 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:2871548a65457ef5f26cae7d357a4c69f5b2ae68f0920b2e789a7f479552f8c4",
+    "sha256:15ae866e05f3515d1da9d00bb03c4d63e9062d6d775c39df16d982171e2f8407"
+  ],
+  "affected_record_ids": [
+    "c3f89948-5bcc-4aa5-beb0-fed2d327f303",
+    "e553f2fc-fa8c-4896-aea5-d277905ae8d4"
+  ],
+  "assertion": "The reviewed change-scope and release-requirements artifacts define the bounded declarative project-basic successor and its measurable validation target.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "c3f89948-5bcc-4aa5-beb0-fed2d327f303",
+    "e553f2fc-fa8c-4896-aea5-d277905ae8d4"
+  ],
+  "correlation_id": null,
+  "event_sequence": 5,
+  "id": "4de01984-105a-4e08-b5c0-445beecdb817",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "limitations": [
+    "This is a worker claim only; independent scope review, evidence, FORGE verification, and owner acceptance remain required."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-12T22:23:52.413074Z",
+  "run_id": "de61d620-a38c-4648-9b37-43ab8058ee92",
+  "schema_version": "1.0",
+  "step_id": "scope",
+  "tool_version": "1.0.0"
+}

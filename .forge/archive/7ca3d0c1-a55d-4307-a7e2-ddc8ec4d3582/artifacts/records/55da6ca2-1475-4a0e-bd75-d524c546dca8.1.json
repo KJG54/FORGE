@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ddc8c417dc27172a7dc3da0916aa20e550647242915de1a45de386a530c737ed"
+  ],
+  "affected_record_ids": [
+    "b66bc9a1-a335-4ba3-bcf6-befa88727cb7"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 32,
+  "id": "55da6ca2-1475-4a0e-bd75-d524c546dca8",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "recorded_at": "2026-08-12T23:48:59.954538Z",
+  "role": "residual-risk-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Project-basic residual risk report",
+  "tool_version": "1.0.0"
+}

@@ -9,7 +9,7 @@ FORGE's installed direct workspace-agent protocol is available at:
 FORGE's provider-neutral generated context is available at:
 
 - `.forge/active/context/current.md`
-- `.forge/active/context/current.json` (`sha256:23d965385a8dfa910611b13390122648725bd05dced7f8bbbe1e3261df3b0855`)
+- `.forge/active/context/current.json` (`sha256:e6068869bb56cb642dd5d1a7c2aada38b444b5dd9bc72eb58d121f8f6aa5ee5a`)
 
 Read the protocol first, then the Markdown context before work. Use only the context's
 selected inputs and permitted actions.

@@ -1,0 +1,53 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:96d23b578124c8e044a0cff073c78a646b5b5df50a4c028df62e1d6062a8523a"
+  ],
+  "affected_record_ids": [
+    "fe2e84c2-c52a-4b26-8056-e41f44834e8e"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "release-checks-passed",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-13T00:41:08.704453Z",
+  "event_sequence": 67,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "fa1e66ee-8dfc-4af4-82e4-1323bcb7995a",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Ran git diff --check and reviewed the revised verification report against the amended scope and Git/FORGE/CI/closure authority boundaries.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "This check covers documentation consistency and clean diff only; it does not rerun the focused suite, build, installed-wheel smoke, CI, release, tag, or publication."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-13T00:41:08.704508Z",
+  "result_digest": "sha256:d8ea45d8d5a15722174c3fef647baaa8bee292a5b8adfc8f829264467d1f2f34",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-13T00:41:08.704451Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "fe2e84c2-c52a-4b26-8056-e41f44834e8e"
+  ],
+  "tool_version": "1.0.0"
+}

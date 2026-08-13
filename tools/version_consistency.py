@@ -390,6 +390,8 @@ def validate_version_consistency(
     )
     _require_equal(local_candidate.get("integration_increment"), "L8", "integration increment")
     _require_equal(local_candidate.get("validation_increment"), "L9", "validation increment")
+    # The recorded Local Production-v1 manifest binds historical built artifacts. Source may have
+    # advanced under a governed successor without a replacement candidate being authorized.
     manifest = validate_manifest_contract()
     _require_equal(manifest.get("distribution"), expected_name, "candidate distribution")
     _require_equal(manifest.get("version"), expected_version, "candidate version")
@@ -408,12 +410,16 @@ def validate_version_consistency(
         "bundled_packs": [item[0] for item in bundled],
         "repository_local_packs": [item[0] for item in repository_local],
         "publication_metadata_status": publication.get("status"),
+        "historical_local_candidate_manifest": "validated-historical-artifact-only",
     }
 
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Validate the frozen Production-v1 version and compatibility contract."
+        description=(
+            "Validate source/version consistency and the historical Local Production-v1 "
+            "artifact contract."
+        )
     )
     parser.add_argument("--forge", type=Path, help="Exact forge console executable to inspect.")
     return parser

@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:15ae866e05f3515d1da9d00bb03c4d63e9062d6d775c39df16d982171e2f8407"
+  ],
+  "affected_record_ids": [
+    "e553f2fc-fa8c-4896-aea5-d277905ae8d4"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 4,
+  "id": "0a68a965-59c2-408e-99fa-086f02796515",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "recorded_at": "2026-08-12T22:23:47.380899Z",
+  "role": "release-requirements",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Experimental project-basic release requirements",
+  "tool_version": "1.0.0"
+}
