@@ -1,0 +1,75 @@
+{
+  "accepted_artifact_revision_ids": [
+    "69a11a06-12ab-45a2-85af-a40ccd570431",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f",
+    "c3f89948-5bcc-4aa5-beb0-fed2d327f303",
+    "dedc933e-2387-4b73-8f5c-ffea3d80d18f",
+    "e553f2fc-fa8c-4896-aea5-d277905ae8d4",
+    "ea125583-7dec-4b90-9f63-96e5fb340908",
+    "ef0083c6-c635-4f85-baeb-c46db69ba3f8",
+    "fe2e84c2-c52a-4b26-8056-e41f44834e8e"
+  ],
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:d4da6a4703ed6ab14a6f71c41b4b88d835d886c41abd64be3c67c93da93c83c1",
+    "sha256:baee5827de2d8ab6c0dbcd0ea6813a61ed4435b33d5d5fde3c822dc84ff039ed",
+    "sha256:2871548a65457ef5f26cae7d357a4c69f5b2ae68f0920b2e789a7f479552f8c4",
+    "sha256:cb966e7eb4b96005e3c785314fdc674cfc1b595a64641a5384942af5ebae25f4",
+    "sha256:15ae866e05f3515d1da9d00bb03c4d63e9062d6d775c39df16d982171e2f8407",
+    "sha256:3ab2eec2afbc1b9c273c3c0257848026d4895d7c96d00e32dd7528c83c5e136a",
+    "sha256:2b35bb32867fc0f3d2dc1d03ed3babd749ce53299aaa05ef447477923786346e",
+    "sha256:96d23b578124c8e044a0cff073c78a646b5b5df50a4c028df62e1d6062a8523a"
+  ],
+  "affected_record_ids": [
+    "b6a6dce8-0873-4e73-bd06-1dd672e3d14a",
+    "6180355a-4a24-4c16-b78f-7a250a5ea4d5",
+    "dd8efa1a-a7d0-422e-92bc-c829a3c18eae",
+    "b79f7247-aa32-4082-9765-5eae680244b3",
+    "453461ba-1f7e-4661-a8c4-25fad59b4f5a",
+    "69a11a06-12ab-45a2-85af-a40ccd570431",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f",
+    "c3f89948-5bcc-4aa5-beb0-fed2d327f303",
+    "dedc933e-2387-4b73-8f5c-ffea3d80d18f",
+    "e553f2fc-fa8c-4896-aea5-d277905ae8d4",
+    "ea125583-7dec-4b90-9f63-96e5fb340908",
+    "ef0083c6-c635-4f85-baeb-c46db69ba3f8",
+    "fe2e84c2-c52a-4b26-8056-e41f44834e8e"
+  ],
+  "archive_reference": ".forge/archive/7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "authorization_basis": "configured owner closed fully accepted work for atomic M2 archival",
+  "closing_summary": "Closed the accepted experimental project-basic@0.1.0 implementation with preserved verification, risk, readiness, lessons, and Git/clean-worktree closure guidance; branch publication occurred without waiting for CI, and no release, tag, publication, or replacement candidate was authorized.",
+  "closure_event_id": "60d18f14-d676-4c8d-98d1-f56ca86442e6",
+  "correlation_id": null,
+  "current_artifact_revision_ids": [
+    "69a11a06-12ab-45a2-85af-a40ccd570431",
+    "8a8ac241-8900-41f7-9682-a5ebc3994c6f",
+    "c3f89948-5bcc-4aa5-beb0-fed2d327f303",
+    "dedc933e-2387-4b73-8f5c-ffea3d80d18f",
+    "e553f2fc-fa8c-4896-aea5-d277905ae8d4",
+    "ea125583-7dec-4b90-9f63-96e5fb340908",
+    "ef0083c6-c635-4f85-baeb-c46db69ba3f8",
+    "fe2e84c2-c52a-4b26-8056-e41f44834e8e"
+  ],
+  "event_sequence": 94,
+  "final_acceptance_ids": [
+    "b6a6dce8-0873-4e73-bd06-1dd672e3d14a",
+    "6180355a-4a24-4c16-b78f-7a250a5ea4d5",
+    "dd8efa1a-a7d0-422e-92bc-c829a3c18eae",
+    "b79f7247-aa32-4082-9765-5eae680244b3",
+    "453461ba-1f7e-4661-a8c4-25fad59b4f5a"
+  ],
+  "id": "cda10f26-2f74-44b2-87ac-516b822fd61f",
+  "initiative_id": "7ca3d0c1-a55d-4307-a7e2-ddc8ec4d3582",
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-13T01:00:22.567057Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "terminal_state": "closed",
+  "tool_version": "1.0.0"
+}
