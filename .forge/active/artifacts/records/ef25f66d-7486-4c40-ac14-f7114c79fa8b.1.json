@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:d1565e63b00253c88726733a1a6aec99ae5e7c50a1d9df1d6539a8153007a139"
+  ],
+  "affected_record_ids": [
+    "f11f9e55-2b43-4efb-9976-f59775334e03"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 44,
+  "id": "ef25f66d-7486-4c40-ac14-f7114c79fa8b",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "recorded_at": "2026-08-13T01:50:10.572530Z",
+  "role": "release-readiness-record",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "CI contract repair readiness record",
+  "tool_version": "1.0.0"
+}

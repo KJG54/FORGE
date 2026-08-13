@@ -1,0 +1,66 @@
+{
+  "active_step": {
+    "context_selection_rules": [
+      "accepted-risk-review"
+    ],
+    "id": "closeout",
+    "instructions": "Bind the readiness record to accepted verification and risk-review outputs.",
+    "purpose": "Record release-candidate readiness and lessons without publishing Production v1.",
+    "required_inputs": [
+      {
+        "content_digest": "sha256:b2d996551f6ce3b47053bdba062ea60b741debcae0ea783ada034aaadf4b22d6",
+        "media_type": "text/markdown",
+        "path": "release/project-basic-ci-repair/friction-report.md",
+        "role": "friction-report"
+      },
+      {
+        "content_digest": "sha256:ec1d4dcfca240bd34e03b49481a498d24b0c92bf11a2d5b6b3c3db6852cffb81",
+        "media_type": "text/markdown",
+        "path": "release/project-basic-ci-repair/residual-risk-report.md",
+        "role": "residual-risk-report"
+      }
+    ],
+    "state": "ready"
+  },
+  "approved_scope": "Repair the codex/project-basic CI failures only: restore README wording required by the historical protocol contract, wrap the two Ruff E501 violations, repair the six Pyright type errors in tests/test_project_basic_workflow.py exposed after Ruff passed, document the CI-detection friction, and validate/push the bounded fix; preserve project-basic behavior, framework version 1.0.0, protocol 1.4.0, existing pack identities, archives, release state, and publication boundaries.",
+  "expected_evidence": [
+    "Worker claim requirement: outputs-produced",
+    "Check requirement after import: closeout-ready",
+    "Workflow evidence class after import: check-evidence",
+    "Owner-only acceptance requirement: owner-acceptance",
+    "Returned files require staged import before registration",
+    "Worker claims never constitute checks, evidence, or owner acceptance"
+  ],
+  "known_blockers": [],
+  "objective": "Repair project-basic CI contract and record CI-detection friction",
+  "permitted_actions": [
+    "Create only declared returned files within the approved scope",
+    "Report worker claims, tool metadata, and limitations without governance approval",
+    "Use only the selected required-input paths listed in the active step"
+  ],
+  "prohibited_actions": [
+    "Record or imply owner decisions, acceptance, checks, or evidence",
+    "Modify FORGE-managed paths or undeclared project files",
+    "Read unrelated repository, archive, ignored, environment, or local-secret content",
+    "Execute external or irreversible side effects without separate authorization"
+  ],
+  "relevant_constraints": [
+    "Context selection rule: accepted-risk-review"
+  ],
+  "relevant_decisions": [],
+  "required_outputs": [
+    "release-readiness-record",
+    "lessons"
+  ],
+  "return_contract": {
+    "contract": "agent-result",
+    "manifest_filename": "result.json",
+    "requirements": [
+      "Bind source_run_or_handoff_id to the identifier supplied by FORGE",
+      "Declare every returned file, worker claim, limitation, and tool metadata item",
+      "Treat every returned file and claim as untrusted until staged import succeeds"
+    ],
+    "schema_filename": "agent-result.schema.json"
+  },
+  "schema_version": "1.0"
+}

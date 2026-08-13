@@ -1,0 +1,35 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:116d628a68876281e83b3ec2079d5c613e6d74f40a95575c930a72e329a8c583"
+  ],
+  "affected_record_ids": [
+    "5c51a80a-d6d2-4e50-989e-8ba4e05d5d37"
+  ],
+  "assertion": "The registered implementation report describes the bounded README contract restoration, Ruff formatting, Pyright typing repair, CI-friction guidance, and local validation while preserving all pack, version, archive, and publication boundaries.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "5c51a80a-d6d2-4e50-989e-8ba4e05d5d37"
+  ],
+  "correlation_id": null,
+  "event_sequence": 17,
+  "id": "4ed08056-60ae-463e-b91f-f28d5146c08e",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "limitations": [
+    "Remote CI is intentionally not awaited; a full-suite terminal result was not retained and is not claimed."
+  ],
+  "operator_session_reference": null,
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-13T01:45:28.463547Z",
+  "run_id": "69c48432-7f98-49e4-ab46-f1d8724b41f5",
+  "schema_version": "1.0",
+  "step_id": "implement",
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,39 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:79e9c764eff0d1dbee5e40f952a2ebdbc87f4c21a9bd7516037657e874b8933a"
+  ],
+  "affected_record_ids": [
+    "535aa786-7968-419e-b6fd-f8b18fa80150"
+  ],
+  "artifact_id": "535aa786-7968-419e-b6fd-f8b18fa80150",
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "byte_size": 350,
+  "content_digest": "sha256:79e9c764eff0d1dbee5e40f952a2ebdbc87f4c21a9bd7516037657e874b8933a",
+  "correlation_id": null,
+  "event_sequence": 45,
+  "id": "70a00a01-acab-4458-b11d-83d1d87de342",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "media_type": "text/markdown",
+  "path": "release/project-basic-ci-repair/lessons.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/79/e9c764eff0d1dbee5e40f952a2ebdbc87f4c21a9bd7516037657e874b8933a",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "75cccc8e-74e1-4ebf-821c-f896a92a5298",
+    "metadata": {},
+    "recorded_at": "2026-08-13T01:50:15.955156Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "release/project-basic-ci-repair/lessons.md",
+    "source_type": "local-file"
+  },
+  "recorded_at": "2026-08-13T01:50:15.955156Z",
+  "registration_event_id": "3f70c2ba-935c-4a92-ab47-7f84d1a70cdb",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "1.0.0"
+}

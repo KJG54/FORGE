@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from uuid import UUID
 
 from typer.testing import CliRunner
 
@@ -92,7 +93,7 @@ def test_project_workflow_completes_then_revising_created_work_requires_rework(
 
     for step in workflow.steps:
         begin_manual_run(initialized.layout, step_id=step.id, actor=actor)
-        revision_ids = []
+        revision_ids: list[UUID] = []
         for role in step.required_outputs:
             path = artifact_root / f"{role}.md"
             path.write_text(f"{role} for {step.id}\n", encoding="utf-8")
@@ -110,7 +111,7 @@ def test_project_workflow_completes_then_revising_created_work_requires_rework(
             assertion=f"Temporary {step.id} outputs produced",
             actor=actor,
         )
-        check_ids = []
+        check_ids: list[UUID] = []
         for check_id in step.check_requirements:
             check = record_check(
                 initialized.layout,

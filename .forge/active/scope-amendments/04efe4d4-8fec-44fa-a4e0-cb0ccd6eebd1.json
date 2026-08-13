@@ -1,0 +1,31 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_artifact_ids": [],
+  "affected_digests": [],
+  "affected_record_ids": [],
+  "affected_requirements": [
+    "framework-changes"
+  ],
+  "authorization_basis": "configured owner replaced the effective initiative scope and invalidated derived downstream support",
+  "changed_scope": "Repair the codex/project-basic CI failures only: restore README wording required by the historical protocol contract, wrap the two Ruff E501 violations, repair the six Pyright type errors in tests/test_project_basic_workflow.py exposed after Ruff passed, document the CI-detection friction, and validate/push the bounded fix; preserve project-basic behavior, framework version 1.0.0, protocol 1.4.0, existing pack identities, archives, release state, and publication boundaries.",
+  "correlation_id": null,
+  "event_sequence": 14,
+  "id": "04efe4d4-8fec-44fa-a4e0-cb0ccd6eebd1",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "invalidated_acceptance_ids": [],
+  "invalidated_check_ids": [],
+  "invalidated_gate_ids": [],
+  "rationale": "The quality gate exposed six existing Pyright errors only after the two Ruff blockers were repaired; resolving them is required to complete the same bounded CI repair.",
+  "recorded_at": "2026-08-13T01:41:47.424239Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0",
+  "workflow_return_step_id": "implement"
+}

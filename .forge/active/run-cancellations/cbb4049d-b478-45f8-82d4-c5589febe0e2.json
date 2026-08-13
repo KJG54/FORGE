@@ -1,0 +1,33 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:0f98baf1f259ca0690052566c994e62e8cc10051feb74c38f1ad68cba95b800b"
+  ],
+  "affected_record_ids": [
+    "8e693c74-ff60-40c5-8854-8a0e28ff6f4c"
+  ],
+  "authorization_basis": "authorized run worker or configured owner formally cancelled active work; managed execution was terminal when applicable",
+  "cancellation_behavior": "block_for_owner_review",
+  "correlation_id": null,
+  "destination_state": "blocked",
+  "event_sequence": 13,
+  "id": "cbb4049d-b478-45f8-82d4-c5589febe0e2",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "reason": "Return implementation to ready before the owner-authorized scope amendment for newly exposed Pyright findings.",
+  "recorded_at": "2026-08-13T01:41:43.051150Z",
+  "run_id": "8e693c74-ff60-40c5-8854-8a0e28ff6f4c",
+  "schema_version": "1.0",
+  "side_effect_class": "repository_write",
+  "source_state": "in_progress",
+  "step_id": "implement",
+  "terminal_execution_event_hash": null,
+  "terminal_execution_event_id": null,
+  "tool_version": "1.0.0"
+}

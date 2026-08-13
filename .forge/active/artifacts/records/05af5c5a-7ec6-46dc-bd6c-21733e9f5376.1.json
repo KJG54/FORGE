@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ac7da6bcf56b548eb2a030e0ead5a3ed04162178066853c38ed6d8a65591e2dd"
+  ],
+  "affected_record_ids": [
+    "a784c04a-53be-46d3-892a-4f28c3225bb5"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 4,
+  "id": "05af5c5a-7ec6-46dc-bd6c-21733e9f5376",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "recorded_at": "2026-08-13T01:37:17.332611Z",
+  "role": "release-requirements",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Project-basic CI contract repair requirements",
+  "tool_version": "1.0.0"
+}

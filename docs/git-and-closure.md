@@ -41,3 +41,16 @@ the terminal archive is created.
 After a successful `forge close`, the archive is terminal and immutable. Further work uses a new,
 owner-authorized successor; it does not reopen the archive or retroactively alter the commit that
 made the worktree clean.
+
+## CI-detection friction
+
+CI can reveal a repository contract that a focused local test run did not cover—for example, a
+historical documentation assertion or a platform-matrix repetition of one failure. Treat that as
+diagnostic friction, not as permission to alter a closed archive or to imply that FORGE acceptance
+was wrong.
+
+For a bounded repair, preserve the failing run URL and exact failure pattern, make the smallest
+source change that restores the contract, and run the relevant local test plus the quality gate
+before pushing. Record the local evidence in the successor initiative. A new remote CI run remains
+separate evidence for the owner to review; it neither blocks an already-authorized closeout nor
+turns a Git push into a release or owner acceptance.

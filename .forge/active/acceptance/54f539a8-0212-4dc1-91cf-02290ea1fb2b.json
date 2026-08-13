@@ -1,0 +1,48 @@
+{
+  "acceptance_event_id": "e45f248d-c8e1-4d0e-b222-05dbb1d6a66f",
+  "accepted_artifact_revision_ids": [
+    "46a4c3f0-ec7b-4ab0-b948-b09761ba73af",
+    "a784c04a-53be-46d3-892a-4f28c3225bb5"
+  ],
+  "accepted_check_result_ids": [
+    "85a6ccac-b5a5-4778-9e13-d3eb041d86b4"
+  ],
+  "accepted_evidence_ids": [
+    "f7a5ef0d-4687-4439-b08f-ae58dfcff203"
+  ],
+  "accepted_scope": "Repair only the project-basic branch CI contract regression: restore accurate historical README protocol wording, wrap two Ruff E501 lines, document CI-detection friction, locally validate, commit, and push; preserve project-basic behavior, framework 1.0.0, protocol 1.4.0, pack identities, archives, release state, and publication boundaries.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:e0bdc26fdf53fbbbec228a37cdb2a745b542d78e44e68e931148aad869f5d400",
+    "sha256:ac7da6bcf56b548eb2a030e0ead5a3ed04162178066853c38ed6d8a65591e2dd",
+    "sha256:26a2554d8f98ad1be81a852f8ed3749b53f7671a3a7676c09d696f62d1333aba",
+    "sha256:eddc1cceef34003bb80bb303c0b361c0aa371ac2b3b17f7b03cf1ccdbb4105b1"
+  ],
+  "affected_record_ids": [
+    "46a4c3f0-ec7b-4ab0-b948-b09761ba73af",
+    "a784c04a-53be-46d3-892a-4f28c3225bb5",
+    "85a6ccac-b5a5-4778-9e13-d3eb041d86b4",
+    "f7a5ef0d-4687-4439-b08f-ae58dfcff203"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 10,
+  "id": "54f539a8-0212-4dc1-91cf-02290ea1fb2b",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "known_limitations": [
+    "Remote CI is intentionally not awaited or claimed; the owner will review it after push."
+  ],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-13T01:38:12.098866Z",
+  "residual_risks": [],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

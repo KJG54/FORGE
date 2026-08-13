@@ -1,0 +1,15 @@
+{
+  "command": "evidence_add",
+  "completed_at": "2026-08-13T01:50:52.070312Z",
+  "events": [
+    {
+      "event_hash": "sha256:a6c8c095e89118719c6a3d1257eda100d19c8e928ba172906542862ab4ef0c70",
+      "event_id": "133b8c9a-9af2-4fe6-ac36-c86aad49fc39",
+      "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+      "sequence": 49
+    }
+  ],
+  "key": "dec4fb30-cf71-41d5-8082-b78cce7df454",
+  "request_digest": "sha256:efa106fcb5f29beb9a2bb289866af2a8dfc8bca0d02587bf92f14fa6ba72fd74",
+  "schema_version": "1.0"
+}

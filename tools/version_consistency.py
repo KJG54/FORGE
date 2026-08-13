@@ -416,7 +416,10 @@ def validate_version_consistency(
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Validate source/version consistency and the historical Local Production-v1 artifact contract."
+        description=(
+            "Validate source/version consistency and the historical Local Production-v1 "
+            "artifact contract."
+        )
     )
     parser.add_argument("--forge", type=Path, help="Exact forge console executable to inspect.")
     return parser

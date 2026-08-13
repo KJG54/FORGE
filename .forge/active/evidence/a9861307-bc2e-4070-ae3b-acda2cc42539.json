@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:25f9f40807063c99df9f0c9d1c23bcb5438c80b42feaadc72e66a30dac537324"
+  ],
+  "affected_record_ids": [
+    "f11f9e55-2b43-4efb-9976-f59775334e03",
+    "70a00a01-acab-4458-b11d-83d1d87de342",
+    "9b6f726d-852b-40f0-a21a-2d89c7650f4a",
+    "ecfe1680-5187-45a6-b573-c0be6f7281b7"
+  ],
+  "artifact_revision_ids": [
+    "f11f9e55-2b43-4efb-9976-f59775334e03",
+    "70a00a01-acab-4458-b11d-83d1d87de342"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "9b6f726d-852b-40f0-a21a-2d89c7650f4a"
+  ],
+  "claim_ids": [
+    "ecfe1680-5187-45a6-b573-c0be6f7281b7"
+  ],
+  "correlation_id": null,
+  "event_sequence": 49,
+  "id": "a9861307-bc2e-4070-ae3b-acda2cc42539",
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "limitations": [
+    "Remote CI remains owner-reviewed."
+  ],
+  "packet_digest": "sha256:25f9f40807063c99df9f0c9d1c23bcb5438c80b42feaadc72e66a30dac537324",
+  "purpose": "Bind the closeout readiness record, lessons, passing closeout review, and worker claim.",
+  "recorded_at": "2026-08-13T01:50:51.889412Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

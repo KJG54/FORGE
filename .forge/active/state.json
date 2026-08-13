@@ -1,0 +1,35 @@
+{
+  "active_pause_event_id": null,
+  "active_run_ids": [],
+  "current_artifact_revisions": {
+    "05af5c5a-7ec6-46dc-bd6c-21733e9f5376": 1,
+    "3c46cc98-9092-4c04-84d4-1d3dc4f7ffea": 1,
+    "491fa4b5-81b9-45c6-9962-da44030826fa": 1,
+    "535aa786-7968-419e-b6fd-f8b18fa80150": 1,
+    "5a39a638-cd37-4a05-b83b-3a8a2777acff": 1,
+    "ee016363-ba5f-47fe-873c-3c3ce605306a": 1,
+    "ef25f66d-7486-4c40-ac14-f7114c79fa8b": 1,
+    "fdce1c7a-d5dd-406f-b0c7-77349a39be95": 1
+  },
+  "current_step_id": null,
+  "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+  "integrity_state": "healthy",
+  "journal_head_hash": "sha256:8197fdc9c3ae4b87e37e0d7544310a140ff509f7dca25f125af3936c42333cca",
+  "journal_head_sequence": 52,
+  "lifecycle_state": "active",
+  "open_decision_ids": [],
+  "open_gate_ids": [],
+  "permitted_next_actions": [],
+  "repository_state": "initialized",
+  "schema_version": "1.0",
+  "stale_record_ids": [],
+  "step_states": {
+    "closeout": "completed",
+    "implement": "completed",
+    "review-risk": "completed",
+    "scope": "completed",
+    "verify-release": "completed"
+  },
+  "workflow_id": "framework-change",
+  "workflow_version": "0.1.0"
+}
