@@ -17,6 +17,19 @@ Public interfaces must be typed. Business rules belong in core services, not CLI
 data contracts. Filesystem and security-sensitive behavior requires negative and cross-platform
 tests. Every practical bug fix should include a regression test.
 
+## Documentation-only maintenance
+
+An owner-directed documentation change does not require a FORGE initiative when it is narrow,
+reversible, and non-behavioral—for example, recording friction, fixing a typo or broken link,
+improving an index, or clarifying text without changing authority or a public contract. Use
+ordinary Git review and state what was checked. When relevant, reference a stable entry in the
+[friction register](docs/friction-register.md).
+
+This path does not make the result FORGE-verified or owner-accepted. If documentation changes
+authority, trust, persistence, state machines, archives, compatibility, the threat model, pack or
+adapter boundaries, or public CLI semantics, follow the governance-change rules below. A compact
+governed maintenance mechanism is deliberately deferred until observed work demonstrates a need.
+
 ## Governance changes
 
 Changes to authority, trust, persistence, state machines, archives, compatibility, the threat
