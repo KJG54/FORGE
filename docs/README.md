@@ -17,7 +17,7 @@ remain the canonical detail; the guides connect them without redefining contract
 | Repository owner or contributor | [User guide](user-guide/README.md) | [Examples](../examples/README.md), [troubleshooting](troubleshooting.md) |
 | Pack author | [Pack-author guide](pack-author-guide.md) | [Workflows](workflows.md), [validators](validators.md) |
 | Adapter contributor | [Adapter-author guide](adapter-author-guide.md) | [Adapters](adapters.md), [agent context](agent-context.md) |
-| Architect or maintainer | [Architecture](architecture.md) | [Contracts](contracts.md), [persistence](persistence.md), [dependency rationale](dependencies.md), [ADRs](history/adr/README.md) |
+| Architect or maintainer | [Architecture](architecture.md) | [Friction register](friction-register.md), [improvement roadmap](forge-improvement-roadmap.md), [contracts](contracts.md), [persistence](persistence.md), [dependency rationale](dependencies.md), [ADRs](history/adr/README.md) |
 | Security reviewer or operator | [Security guide](security.md) | [Security policy](../SECURITY.md), [Git policy](git-policy.md) |
 | Operator handling a failure | [Troubleshooting](troubleshooting.md) | [Recovery](recovery.md), [migrations](migrations.md) |
 
@@ -27,6 +27,9 @@ remain the canonical detail; the guides connect them without redefining contract
   [quickstart](quickstart.md).
 - Choose between the bundled workflows with the [project companion](project-companion.md), then
   use its [owner-observed dogfood guide](project-basic-dogfood.md) when evaluating a new experience.
+- Record observed usability, documentation, security, performance, or maintenance friction in the
+  advisory [friction register](friction-register.md). An entry records an observation; it does not
+  authorize a fix or establish acceptance.
 - Hand a fresh workspace agent the [starter prompts](agent-starter-prompts.md)
   so it can identify FORGE, read the installed protocol, and begin with the
   right interview and owner-gate rules.

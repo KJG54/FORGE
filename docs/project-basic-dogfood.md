@@ -16,3 +16,10 @@ For each observed run, record only owner-observed facts and exact revision ident
 qualitative criteria are: captured vision, improved context, useful questions, appropriate teaching,
 delegation support, reduced confusion, and a meaningful improvement over ordinary chat. These are
 observation prompts, not automatically enforceable checks or fabricated outcomes.
+
+Add newly observed friction to the living [FORGE friction register](friction-register.md) using a
+stable friction ID. Preserve the owner's observation separately from agent analysis, and link any
+later roadmap item or governed response without treating the register entry as implementation
+authority. For controlled comparisons, also record the model, effort, profile, prompt variant,
+FORGE and protocol identities, locked pack identity, session ID, owner-turn count, interruptions,
+and elapsed agent time.

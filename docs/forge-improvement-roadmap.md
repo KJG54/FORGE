@@ -1,0 +1,630 @@
+# FORGE Improvement and Optimization Roadmap
+
+> **Status:** Owner-reviewed coordination proposal; D-01 and D-02 have conversational owner
+> direction, but no implementation or governed change is authorized  
+> **Owner:** Krystian Garcia  
+> **Prepared:** 2026-08-13  
+> **Repository baseline:** `ebbdf9ea1b86fdda0b68d4ce3a665c37323dd68f`  
+> **Governance state at preparation:** healthy, no active initiative, legal next action
+> `create-successor`
+
+This document combines the owner-requested repository review, the Codex review, the independent
+Claude review, the recovered Production-v1 Master Implementation Specification, current source,
+current documentation, governed archives, and current GitHub state into one staged improvement
+program.
+
+It is a planning and coordination view. It does not approve a change, amend the Constitution,
+supersede an ADR, create an initiative, establish release status, authorize a GitHub setting
+change, or prove that an item is complete. Those outcomes require their normal separate authority
+and evidence.
+
+## How to use this roadmap
+
+- Work on one bounded phase or slice at a time.
+- Before each initiative, confirm the exact scope, exclusions, validation, persistent effects, and
+  stop condition.
+- Do not interpret a checked implementation task as verification, owner acceptance, Git
+  publication, or release acceptance.
+- Update a checkbox only from cited evidence. Record local validation and remote CI separately.
+- Preserve accepted historical artifacts. Correct their current interpretation through indexes,
+  status metadata, or explicit supersession rather than silent rewriting.
+- Revisit priorities when dogfooding produces stronger evidence than the reviews used here.
+- Keep detailed observations and status history in the
+  [living friction register](friction-register.md). This roadmap routes selected responses without
+  duplicating or silently rewriting those observations.
+
+Status vocabulary:
+
+| Status | Meaning |
+|---|---|
+| Proposed | Identified work that has not been owner-approved. |
+| Ready | Dependencies and owner decisions are satisfied; exact scope may be proposed. |
+| In progress | Work is occurring inside an explicitly bounded phase. |
+| Locally validated | Stated local checks passed; remote CI is a separate fact. |
+| Remotely validated | The identified remote CI run passed for the exact commit. |
+| Owner accepted | The owner accepted the exact governed scope and revisions. |
+| Deferred | Deliberately postponed with a reason and revisit trigger. |
+| Rejected | Deliberately not pursued, with rationale preserved. |
+
+## Current verified baseline
+
+- Local `main` and `origin/main` both point to `ebbdf9e` after a clean fast-forward.
+- The worktree was clean immediately before this document was created.
+- `forge doctor` reports a healthy repository, 5 validated data packs, 7 terminal archives, 344
+  idempotency receipts, and no active initiative.
+- Current source reports CLI/distribution version `1.0.0`, protocol `1.4.0`, 53 public models, and
+  three bundled packs: `project-basic@0.1.0`, `research-basic@0.4.0`, and
+  `software-basic@0.6.0`.
+- The exact Local Production-v1 candidate remains a different historical artifact built from
+  commit `6e222985c57a9f6e74b33cf5146cb51c80e42744`.
+- GitHub `main` CI passed for `ebbdf9e`, but `main` has no branch protection or ruleset.
+- The repository is public, while the machine release contract says publication is not authorized
+  and no tagged, supported release exists.
+- The recovered master specification has SHA-256
+  `ec0da4a895dd762e49746c6f029f6bfca251825e011363c53438e5034ccd764a`.
+
+The full local test result quoted in the Claude review (`450 passed, 9 skipped`) belongs to the
+pre-pull tree. It has not been repeated locally against `ebbdf9e`; current remote CI is the present
+cross-platform evidence.
+
+## Review reconciliation
+
+### Where the reviews agree
+
+Both reviews independently found that FORGE's core engineering is stronger than its connective
+tissue. They agree on these major themes:
+
+- the governing authority chain is distributed and ambiguously named;
+- release, source, candidate, and installation identity do not line up;
+- living documentation contains milestone-era or superseded claims;
+- ADRs and release evidence need navigable indexes;
+- GitHub does not enforce the governance discipline that FORGE advocates;
+- existing security tooling is not wired into CI;
+- the CLI module is too concentrated and contributes to startup cost;
+- historical link preservation needs a non-destructive resolution;
+- `project-basic` and profile-aware facilitation still need owner-observed dogfooding; and
+- generated runtime records and receipts are notably more reliable than manually maintained
+  status prose.
+
+### Distinctive Claude findings that were validated
+
+- `append_event` performs whole-journal work on each append, creating an asymptotic scaling risk.
+- The CLI imports private Typer internals.
+- Default secret-location patterns cover fewer paths than many readers would expect, and
+  undecodable content bypasses text-pattern screening.
+- Local Windows symlink-security tests may all skip without making the security coverage gap loud.
+- CI hard-codes the `1.0.0` wheel filename.
+- `forge status` is already close to its Windows regression budget with no active initiative.
+- The quickstart contains the stray phrase “Backtest ideas welcome.”
+
+### Corrections and cautions to the Claude review
+
+1. Its numerical baseline predates PR #47. Current state has 7 terminal archives, 5 validated data
+   packs, 848 tracked `.forge` files, 344 idempotency receipts, 73 tracked Python test files, and 24
+   local branches whose upstream is marked gone.
+2. The recovered master specification now exists as an attachment, but it remains absent from the
+   repository. It is a pre-implementation planning authority and public-v1 roadmap, so importing it
+   unchanged as today's top authority would make current work contradictory. Preserve it as a
+   historical specification and create a concise current governing reference through an ADR.
+3. `dist/` is not all disposable cruft. It contains exact ignored candidate artifacts whose digests
+   are recorded in the repository. Never bulk-delete it. Inventory, preserve, and classify exact
+   candidate bytes before any cleanup.
+4. `.forge/local/` is ungoverned, but that does not make every byte valueless. Scratchpads, audit
+   records, captures, and troubleshooting evidence must be classified before deletion.
+5. Closed initiative summaries may inform a changelog, but an archive closure is not a software
+   release. Do not manufacture released-version sections from archive history.
+6. The O(n²) journal concern is structurally credible, but its user impact is not yet measured.
+   Benchmark representative event counts before approving an integrity-model ADR or optimization.
+7. The local symlink skips are important. Confirm exact Linux, macOS, and Windows CI execution and
+   skip counts rather than assuming every operating-system boundary is covered.
+8. `docs/contracts.md` is not fully current: it repeatedly says 51 public models while the machine
+   contract reports 53.
+
+### Additional Codex findings to retain
+
+- Current source and the immutable historical candidate are materially different products that
+  both report `1.0.0`.
+- Protocol 1.4 tells agents to display capability scope `approved-for-initiative`, while the CLI
+  accepts `approved-for-project`. This makes an “exact” owner-gate template invalid.
+- The source distribution includes tracked `.forge` governance history and release material. This
+  adds size and may expose self-governance metadata unnecessarily.
+- PR #47 changed 336 files, 286 under `.forge`; governance evidence can bury the human-reviewable
+  implementation diff.
+- CI actions are pinned by major tags, dependency resolution is broad on every run, matrices are
+  not gated by a fast preflight, and superseded runs are not cancelled.
+- Dependabot security updates and private vulnerability reporting are disabled; CODEOWNERS and
+  pull-request templates are absent.
+- `record_validation.py` is a second major concentration point in addition to the CLI.
+- A complete static `project-basic` example is missing.
+- The abandoned `forge-production-release` repository-local pack is still listed without a clear
+  current/historical status route.
+- Performance tests need scaling workloads, not only a fixed archive and journal size.
+
+## Owner decision gates
+
+Unchecked decisions remain deliberately unresolved. Checked conversational directions still need
+the appropriate governed scope and change-control record before they alter project authority. A
+recommendation is not an owner decision.
+
+### D-01 — Public-source and release posture
+
+- [x] Conversational owner direction captured on 2026-08-13: FORGE remains public source as an
+  unreleased development project.
+
+This checkbox records direction for later governed work; it does not itself amend the version
+contract, package version, release state, or publication authority.
+
+Recommended direction: keep the GitHub source public, describe it as source-available development
+software with no tagged, supported, or finally accepted release, and stop calling it “not publicly
+distributed.” Give post-candidate source a development version distinct from the immutable
+`1.0.0` candidate.
+
+Alternatives:
+
+1. Keep source public and unreleased, using a development version. **Recommended.**
+2. Make the repository private and preserve the local-only posture.
+3. Prepare and owner-accept a new public release candidate and publication program.
+
+This decision is required before changing release language, installation promises, package
+version, support statements, or publication metadata.
+
+### D-02 — Primary user and audience priority
+
+- [x] Conversational owner direction captured on 2026-08-13: optimize first for one owner working
+  with direct workspace agents. Pack authors, adapter contributors, security reviewers, and release
+  engineers remain supported secondary audiences.
+
+This checkbox records product direction for later governed work; it does not itself change current
+documentation or compatibility commitments.
+
+Recommended direction: optimize first for one repository owner collaborating with direct Codex or
+Claude workspace agents. Treat pack authors, adapter contributors, security reviewers, and release
+engineers as supported secondary audiences reached through deeper reference routes.
+
+This does not remove extensibility. It determines what belongs on the front door and what belongs
+behind an advanced navigation path.
+
+### D-03 — Expected initiative scale
+
+- [ ] Target event-count range recorded.
+
+This is not required for the first documentation and integrity-honesty phases. Before journal
+optimization, benchmark at least 100, 1,000, 5,000, and 10,000 events and ask whether the measured
+latency matters for expected owner workloads.
+
+### D-04 — Default workflow
+
+- [ ] Owner decides whether `project-basic` becomes the CLI default or remains an explicit choice.
+
+Do not decide this from documentation preference alone. Complete owner-observed dogfooding first.
+Until then, either retain the current disclosed split or soften “recommended starting point” into
+clear workflow-selection language.
+
+### D-05 — Governing specification lifecycle
+
+- [ ] Owner accepts, revises, or rejects the historical-plus-current-reference model.
+
+Recommended direction:
+
+- preserve the recovered master specification byte-for-byte under a historical specifications
+  area with its provenance and digest;
+- write a concise current governing specification that contains durable invariants and authority
+  types rather than milestone implementation instructions;
+- use a superseding ADR to define how specifications and ADRs become current, partially
+  superseded, or historical; and
+- keep machine contracts authoritative for exact inventories rather than copying volatile counts
+  into multiple prose documents.
+
+### D-06 — Proportional maintenance path
+
+- [x] Conversational owner direction captured on 2026-08-16: ordinary documentation maintenance
+  is sufficient for recording friction and other narrow non-behavioral repository maintenance.
+- [x] A compact governed mechanism is deferred until repeated evidence shows that documentation
+  maintenance and full initiatives leave a material gap.
+
+This direction does not weaken the Constitution's ADR boundary or turn a documentation note, Git
+commit, check, or agent claim into FORGE verification or owner acceptance. Semantic impact decides
+the route:
+
+1. observations go into the advisory friction register without an initiative;
+2. narrow, reversible, non-behavioral documentation maintenance may use ordinary Git review and
+   validation without an initiative;
+3. changes to authority, trust, persistence, state machines, archives, compatibility, threat
+   model, pack or adapter boundaries, or public CLI semantics retain the normal ADR and governed
+   initiative path; and
+4. a compact governed path will be designed only if observed work cannot be handled honestly by
+   those routes.
+
+## Dogfooding schedule
+
+Do not wait until this roadmap is finished. The “new profile” named during roadmap review was
+clarified to mean the new `project-basic` workflow. Dogfood it before the first FORGE optimization
+initiative so the baseline is not contaminated by later facilitation or documentation changes.
+
+### Project-basic baseline dogfood — next
+
+- [x] Select one small, real or deliberately disposable non-FORGE project and a durable project
+  directory.
+- [x] Initialize that project only after the separate `forge init` preview and owner authorization.
+- [x] Create its initiative with `project-basic@0.1.0` and the explanation profile that matches the
+  owner's learning goal; use `mentored` when learning-by-building is part of the test.
+- [x] Before changing facilitation behavior, record whether intake captures the owner's vision,
+  context, current ability, learning goals, delegation preferences, and workflow fit.
+- [x] Record whether mandatory research adds clarity or ceremony, including whether the
+  no-new-research-needed route is honest and usable.
+- [x] At each phase, record whether FORGE teaches the project problem or merely narrates its own
+  governance.
+- [x] Record approval fatigue, unclear commands, missing explanations, useful explanations, and
+  the quality of major-artifact review checkpoints.
+- [x] Compare the experience against the observation prompts in
+  `docs/project-basic-dogfood.md`.
+- [x] Keep owner-observed statements separate from agent inference.
+- [ ] Close or abandon honestly before deciding whether `project-basic` should become the CLI
+  default.
+
+Baseline evidence is recorded in `docs/friction-register.md`. Every workflow step was accepted,
+but the initiative remains active because terminal `forge close` was not separately authorized or
+executed. Do not describe the baseline as archived or terminally closed.
+
+Do not use this dogfood initiative to implement FORGE source, authority, compatibility, or release
+changes. Those belong under `forge-framework-change` in the FORGE repository.
+
+### Framework-change dogfood — first optimization initiative
+
+- [ ] Use the repository-local `forge-framework-change` workflow for the accepted Phase 1 source-
+  of-truth work.
+- [ ] Use `mentored` if the owner wants the authority and specification-lifecycle design taught
+  while it is shaped; otherwise choose the explanation profile explicitly during intake.
+- [ ] Carry forward only owner-observed friction from the separate project-basic run, not its
+  acceptance or progress.
+- [ ] Close or abandon honestly before starting the next roadmap phase.
+
+### Regression dogfood — after UX/documentation work
+
+- [ ] Repeat one comparable scenario after the relevant fixes.
+- [ ] Compare time-to-orientation, number of approval interruptions, owner understanding, artifact
+  review quality, and ability of a fresh agent to resume.
+
+## Phased action plan
+
+Each phase below is intentionally smaller than the entire optimization program. A phase may be
+split again during its intake if its review surface becomes too broad.
+
+### Phase 0 — Review and decisions
+
+Goal: accept a bounded roadmap without treating the roadmap itself as implementation authority.
+
+- [x] Owner reviewed this document and clarified that the pending dogfood target is the
+  `project-basic` workflow.
+- [x] Resolve D-01 and D-02 conversationally; carry them into the later governed scope and
+  decision records before treating them as changed project authority.
+- [ ] Complete the separate project-basic baseline dogfood or explicitly defer it with a reason.
+- [ ] Confirm that Phase 1 is the first bounded repository initiative.
+- [ ] Present the exact `forge create` successor command, complete scope, exclusions, predecessor
+  lineage, profile, persistent effects, validation, and stop condition.
+- [ ] Wait for explicit owner authorization before creating the successor.
+
+Exit: one approved Phase 1 scope and a separately authorized successor creation.
+
+### Phase 1 — Canonical authority and specification lifecycle
+
+Goal: make it possible for a human or agent to find the current governing authority without
+interpreting an obsolete roadmap as current instruction.
+
+Proposed scope:
+
+- [ ] Preserve the recovered master specification byte-for-byte in a historical specifications
+  location, with provenance, status, and SHA-256 identity.
+- [ ] Add a superseding ADR defining normative, runtime-history, locked-rule, content, and derived
+  authority types.
+- [ ] Explain that an initiative-scoped owner decision does not silently amend global architecture;
+  it must have applicable scope and satisfy required change control.
+- [ ] Create a concise current governing specification.
+- [ ] Update the Constitution's authority section and remove finished milestone mechanics from the
+  living constitutional contract without rewriting their historical record.
+- [ ] Correct the blended hierarchy in `docs/architecture.md`.
+- [ ] Align the documentation index with the same typed authority map.
+- [ ] Add machine-readable effective-status metadata for ADR supersession, or define the exact
+  format to be generated in Phase 3.
+- [ ] Add semantic documentation checks for the governing reference and authority map.
+
+Explicit exclusions:
+
+- release-version changes;
+- installation changes;
+- CLI refactors;
+- journal optimization;
+- GitHub settings;
+- destructive cleanup; and
+- changing the default workflow.
+
+Validation:
+
+- [ ] Documentation links and navigation tests pass locally.
+- [ ] Authority statements are textually and semantically consistent.
+- [ ] `forge doctor` remains healthy.
+- [ ] Local validation evidence is recorded.
+- [ ] Remote CI is observed separately for the exact commit.
+- [ ] Owner reviews the human-facing artifacts before progression.
+
+### Phase 2 — Product, source, candidate, and installation identity
+
+Goal: make every installation and version claim identify the exact thing a user receives.
+
+Depends on: D-01.
+
+- [ ] Preserve the immutable historical `1.0.0` candidate identity and checksums.
+- [ ] Give changed source a distinct development identity, or owner-authorize a replacement
+  candidate process.
+- [ ] Replace “not publicly distributed” with precise public-source/unreleased language if D-01
+  selects that posture.
+- [ ] Split installation documentation into named source-development and exact-candidate tracks.
+- [ ] Remove mutable `@main` as a reproducibility claim; label it as development installation if
+  retained.
+- [ ] Align README, quickstart, user guide, installation guide, version contract, package metadata,
+  and changelog.
+- [ ] Resolve 51-versus-53 public-model prose drift.
+- [ ] Fix the protocol capability-scope template so exact commands match the CLI enum.
+- [ ] Add semantic consistency tests for protocol command templates and machine inventories.
+
+Exit: no two materially different artifacts share an unexplained release identity, and a fresh
+clone has one usable, honestly labeled installation path.
+
+### Phase 3 — Documentation navigation and historical integrity
+
+Goal: retain the excellent living/history split while giving every important artifact a front
+door and explicit status.
+
+- [ ] Generate an ADR table with number, title, date, recorded status, effective status,
+  supersedes, and superseded-by.
+- [ ] Add `release/README.md` with directory, initiative, archive UUID, status, current role, and
+  supersession.
+- [ ] Add a historical path relocation map instead of editing immutable historical records.
+- [ ] Add a documentation catalog with audience, authority tier/type, status, version checked,
+  immutability, and superseded-by fields.
+- [ ] Index `idempotency.md`, `acceptance-and-invalidation.md`, and
+  `artifacts-and-evidence.md` where appropriate.
+- [ ] Move or externally classify the closed profile-aware facilitation plan as historical while
+  preserving any digest-bound path requirements.
+- [ ] Rewrite living dogfooding guidance as a standing practice, not remaining M6 work.
+- [ ] Correct the history index's “currently operative” handoff language.
+- [ ] Rebuild the changelog without equating initiative closure with release publication.
+- [ ] Fix the quickstart's stray finance phrase.
+- [ ] Add a complete static `project-basic` example after owner-observed behavior is understood.
+- [ ] Expand link checking to all living docs and historical links through the relocation map.
+
+Exit: every living reference is discoverable, every historical artifact is clearly non-current,
+and a beginner or agent can select a valid path without resolving contradictions.
+
+### Phase 4 — GitHub and security governance
+
+Goal: make repository controls reflect FORGE's explicit-gate and fail-closed philosophy.
+
+External GitHub settings and any security-channel activation require separately previewed owner
+authorization.
+
+- [ ] Add a required fast security CI job using the existing release-security tooling.
+- [ ] Define tool installation, versions, caching, network boundary, and failure behavior.
+- [ ] Strengthen default secret-location patterns and document exact matching semantics.
+- [ ] Decide and test the policy for UTF-16 and undecodable/binary secret screening.
+- [ ] Make security-test skips loud and add a strict `FORGE_REQUIRE_SYMLINK_TESTS=1` mode.
+- [ ] Confirm symlink test execution and skip counts on every CI operating system.
+- [ ] Add targeted property/fuzz tests for canonical serialization, hash chains, path containment,
+  imports, and recovery.
+- [ ] Enable private vulnerability reporting.
+- [ ] Enable dependency security updates or record why another mechanism replaces them.
+- [ ] Add a main-branch ruleset requiring selected CI checks and blocking force-push/deletion.
+- [ ] Add CODEOWNERS for authority-, persistence-, security-, release-, and protocol-sensitive
+  areas.
+- [ ] Add pull-request and security-report templates.
+- [ ] Pin third-party Actions to reviewed commit SHAs.
+
+Exit: the exact protected-branch and security settings are verified through GitHub, local security
+checks pass, and the remote security job passes for the exact commit.
+
+### Phase 5 — Packaging and CI efficiency
+
+Goal: make distributions minimal and CI fast, reproducible, and diagnostic.
+
+- [ ] Exclude `.forge` self-governance state and unrelated historical release evidence from the
+  sdist unless an explicit requirement justifies inclusion.
+- [ ] Verify wheel and sdist inventories as separate product surfaces.
+- [ ] Replace hard-coded wheel names with data derived from the build artifact or version contract.
+- [ ] Add a fast preflight gate before the expensive OS/Python matrices.
+- [ ] Add workflow concurrency so superseded branch runs are cancelled.
+- [ ] Build once and test the exact built artifacts throughout installation and release scenarios.
+- [ ] Add release constraints or another reproducible dependency snapshot while keeping a separate
+  compatibility-with-ranges lane.
+- [ ] Reduce PR review noise from governed state, with a generated summary or review partition that
+  does not weaken tracked evidence.
+- [ ] Ensure package changes do not overwrite the immutable historical candidate.
+
+Exit: a reviewer can identify code, docs, and governed evidence separately; package contents are
+intentional; matrices consume one exact build; and failures occur first in the cheapest relevant
+job.
+
+### Phase 6 — Maintainability and agent-facing correctness
+
+Goal: reduce high-risk concentration without changing public behavior accidentally.
+
+- [ ] Replace private Typer imports with a supported public boundary and make any directly imported
+  package a direct dependency.
+- [ ] Split `src/forge/cli/app.py` into command-family modules while preserving all command paths,
+  inputs, exit meanings, and receipts.
+- [ ] Introduce lazy command imports where profiling proves they reduce startup cost safely.
+- [ ] Split `record_validation.py` by record family behind one explicit dispatch registry.
+- [ ] Add golden/help/schema/receipt tests that protect agent-facing behavior during the split.
+- [ ] Add stable machine-readable variants for orientation, status, and next-action use where
+  justified by dogfood evidence.
+- [ ] Let direct agents perform participant-level phase starts and routine claim, check, evidence,
+  and verification mechanics inside an explicit bounded authorization envelope, pausing again at
+  major-artifact review and owner-only gates.
+- [ ] Define representative `mentored` behavior that produces useful project teaching, optional
+  practice, feedback, and recap without adding mandatory ceremony.
+- [ ] Make `forge next` surface terminal `forge close` after every workflow requirement is accepted,
+  and distinguish closure preparation from terminal archival in agent-facing wording.
+- [ ] Make current check-result selection unambiguous for evidence binding, using machine-readable
+  output or an exact-next-command field if focused reproduction supports it.
+- [ ] Test that a plain-language FORGE request reaches the same safe bootstrap baseline as the
+  universal starter prompt.
+- [ ] Generate a no-active-initiative managed-context block without stale active-context digests.
+- [ ] Clearly mark the abandoned production-release pack as historical, or retire it through an
+  explicit compatibility-aware decision.
+- [ ] Rename milestone-named tests opportunistically when their features are otherwise touched.
+
+Exit: module boundaries are smaller, CLI compatibility is proven, protocol/templates produce valid
+commands, and dogfood confirms that agent orientation did not regress.
+
+### Phase 7 — Performance and scaling
+
+Goal: optimize measured bottlenecks without weakening integrity.
+
+- [ ] Profile CLI import time by module before changing imports.
+- [ ] Benchmark status with 0, 1, 10, 50, and 100 archives.
+- [ ] Benchmark journal append and full validation with 100, 1,000, 5,000, and 10,000 events.
+- [ ] Measure context generation and archive inspection at comparable scales.
+- [ ] Evaluate digest-keyed archive-summary caching under `.forge/local/cache/` with explicit
+  invalidation and fail-closed behavior.
+- [ ] Evaluate `model_validate_json` where it avoids a measurable conversion cost without changing
+  validation behavior.
+- [ ] Record D-03 from measured results and expected workloads.
+- [ ] If journal scaling matters, write an ADR for a verified-prefix checkpoint whose mutation path
+  still validates the new tail and whose doctor/recovery/archive-sealing paths still validate the
+  complete chain.
+- [ ] Implement incremental validation only after ADR acceptance.
+- [ ] Evaluate pytest parallelism experimentally; do not assume cross-process mutation tests are
+  safe under xdist.
+- [ ] Update budgets from representative measurements, not desired numbers.
+
+Exit: improvements are demonstrated against the same fixtures, integrity failures still fail
+closed, and the owner accepts any change to the integrity model.
+
+### Phase 8 — Retention, workspace hygiene, and branch cleanup
+
+Goal: make local state understandable and safely maintainable without destroying unique evidence.
+
+- [ ] Inventory every top-level generated directory by purpose, recoverability, size, and retention
+  requirement.
+- [ ] Identify and separately preserve exact candidate wheel/sdist bytes before touching `dist/`.
+- [ ] Classify unexpected `.forge/local/` entries; preserve needed scratchpad, audit, capture, and
+  troubleshooting material.
+- [ ] Design a dry-run cleanup command or documented cleanup procedure with explicit target paths.
+- [ ] Add a doctor warning for unmanaged `.forge/local/` entries if the supported layout is meant
+  to be closed.
+- [ ] Delete only owner-approved, explicitly enumerated disposable targets.
+- [ ] Re-list merged branches against current `main`, distinguish merged from merely gone, and
+  delete only an owner-approved exact list.
+- [ ] Define a retention policy for validation environments, caches, performance profiles, and
+  candidate artifacts.
+
+Exit: retained local material has a reason, cleanup is repeatable and previewable, and no unique
+candidate or governed evidence was destroyed.
+
+### Phase 9 — Consolidated validation and roadmap reassessment
+
+Goal: prove the cumulative result and decide what FORGE should become next.
+
+- [ ] Run the documented local quality, full-test, package, installation, security, and performance
+  checks against exact source/artifact identities.
+- [ ] Record skipped tests prominently and explain each unexercised boundary.
+- [ ] Observe remote CI separately and bind it to the exact commit.
+- [ ] Repeat mentored and `project-basic` dogfood scenarios.
+- [ ] Hold the primary comparison constant on Terra with medium effort and record the model,
+  effort, profile, prompt variant, app version, FORGE commit, CLI and protocol versions, locked pack
+  identity, session ID, owner-turn count, approval interruptions, and elapsed agent time.
+- [ ] Reassess D-04 and the public-release question from observed evidence.
+- [ ] Review every open finding below; close, defer, reject, or move it into a new roadmap with a
+  reason.
+- [ ] Produce an owner-facing summary of improvements, remaining limitations, and the next smallest
+  worthwhile initiative.
+
+## Finding register
+
+The register is a routing view, not proof of completion. Detailed observations, evidence,
+workarounds, and status history live in `docs/friction-register.md`.
+
+| ID | Finding | Planned phase | Status |
+|---|---|---:|---|
+| AUTH-01 | Recovered master specification is absent from the repository and obsolete as current instruction. | 1 | Proposed |
+| AUTH-02 | Three differently scoped hierarchies share the name “source of truth.” | 1 | Proposed |
+| AUTH-03 | ADRs lack an effective-status and supersession index. | 1, 3 | Proposed |
+| AUTH-04 | Protocol capability scope does not match the CLI enum. | 2 | Proposed |
+| ID-01 | Historical candidate and changed source both report `1.0.0`. | 2 | Proposed |
+| ID-02 | Public repository/installability conflicts with “not publicly distributed” language. | 2 | Decision D-01 |
+| ID-03 | Source and exact-candidate installation routes conflict. | 2 | Proposed |
+| ID-04 | `project-basic` is recommended but is not the CLI default or qualitatively proven. | Dogfood, 9 | Decision D-04 |
+| DOC-01 | Changelog is stale and structurally inconsistent. | 3 | Proposed |
+| DOC-02 | Living dogfooding documentation still describes remaining M6 work. | 3 | Proposed |
+| DOC-03 | Closed facilitation plan remains in the living docs root. | 3 | Proposed |
+| DOC-04 | Living contracts prose says 51 models; machine contract says 53. | 2 | Proposed |
+| DOC-05 | Historical relocation produced 35 broken relative links. | 3 | Proposed |
+| DOC-06 | Release evidence has no directory/status index. | 3 | Proposed |
+| DOC-07 | History index calls a closed handoff currently operative. | 3 | Proposed |
+| DOC-08 | Quickstart contains unrelated finance vocabulary. | 3 | Proposed |
+| DOC-09 | No complete static `project-basic` example exists. | 3 | Waiting for dogfood |
+| SEC-01 | `main` has no enforced ruleset or protection. | 4 | Proposed |
+| SEC-02 | Existing security-review tooling is absent from CI. | 4 | Proposed |
+| SEC-03 | Secret defaults and undecodable-content behavior are narrower than expected. | 4 | Proposed |
+| SEC-04 | Local symlink-security skips are quiet. | 4 | Proposed |
+| SEC-05 | Private reporting, dependency security updates, and ownership routing are incomplete. | 4 | Proposed |
+| CI-01 | CI hard-codes the `1.0.0` wheel filename. | 5 | Proposed |
+| CI-02 | Third-party Actions use floating major tags. | 4 | Proposed |
+| CI-03 | Expensive matrices lack preflight gating, constraints, and superseded-run cancellation. | 5 | Proposed |
+| PKG-01 | The sdist includes `.forge` and unrelated self-governance history. | 5 | Proposed |
+| PKG-02 | Governed-record volume obscures human-reviewable PR changes. | 5 | Proposed |
+| STR-01 | CLI command surface is concentrated in one large module. | 6 | Proposed |
+| STR-02 | CLI imports private Typer internals. | 6 | Proposed |
+| STR-03 | Record validation is a second large concentration point. | 6 | Proposed |
+| PERF-01 | Idle status latency is close to the Windows budget. | 7 | Proposed |
+| PERF-02 | Journal append performs whole-history work per event. | 7 | Needs measurement |
+| PERF-03 | Performance fixtures do not establish archive/journal scaling. | 7 | Proposed |
+| OPS-01 | Generated local state consumes substantial space without one retention view. | 8 | Proposed |
+| OPS-02 | 24 local branches have gone upstreams; merge status needs exact revalidation. | 8 | Proposed |
+| OPS-03 | `.forge/local/` contains undocumented working directories. | 8 | Proposed |
+| OPS-04 | Terminal managed context points at absent active-context digests. | 6 | Proposed |
+| OPS-05 | Abandoned production-release pack lacks clear current/historical routing. | 6 | Proposed |
+| GH-01 | Repository description, topics, issue templates, releases, and wiki posture are incomplete. | 4 | Proposed |
+| TEST-01 | Security-critical invariants lack an explicit property/fuzz coverage program. | 4 | Proposed |
+| TEST-02 | Some tests are discoverable only through milestone-era filenames. | 6 | Opportunistic |
+| UX-01 | Approval interruptions and unused authorization envelopes dominate the project-basic conversation. See FRI-2026-001 and FRI-2026-002. | 6 | Confirmed |
+| UX-02 | The mentored profile did not produce learning by building. See FRI-2026-003. | 6, 9 | Confirmed |
+| UX-03 | Safe bootstrap quality depends too heavily on the universal starter prompt. See FRI-2026-004 and FRI-2026-011. | 6, 9 | Needs controlled comparison |
+| UX-04 | Dogfood does not record controlled model, effort, prompt, and exact FORGE provenance. See FRI-2026-005. | 9 | Planned |
+| UX-05 | Closure preparation, terminal archival, and the final `forge next` action are unclear. See FRI-2026-006 and FRI-2026-007. | 6 | Confirmed |
+| UX-06 | Agents selected stale check-result IDs during evidence binding. See FRI-2026-008. | 6 | Needs reproduction |
+| UX-07 | Filesystem-only Git posture was disclosed too late in bootstrap. See FRI-2026-010. | 3, 6 | Proposed |
+| GOV-01 | No beginner-facing proportional route distinguishes observations, documentation maintenance, and full initiatives. See FRI-2026-012. | Decision D-06, 3 | Documentation path selected |
+
+## Evidence log template
+
+Append one entry when a phase finishes. Do not overwrite prior entries.
+
+```text
+Phase / initiative:
+Initiative ID:
+Accepted scope:
+Exact source commit:
+Changed artifact revisions:
+Worker claim:
+Checks performed:
+Local validation:
+Remote CI URL and commit:
+Known skips or untested boundaries:
+FORGE verification:
+Owner acceptance:
+Git publication state:
+Release state:
+Residual risks:
+Next smallest action:
+```
+
+## Immediate next checkpoint
+
+The project-basic baseline has exercised and accepted all seven workflow steps. Its friction is
+recorded in `docs/friction-register.md`, but the initiative remains active and has not produced a
+terminal archive. Terminal `forge close` remains a separate owner-only action and is not authorized
+by this roadmap update.
+
+After the owner separately closes or explicitly leaves that disposable dogfood initiative active,
+present one exact, bounded successor proposal for Phase 1 in this FORGE repository using
+`forge-framework-change`. Do not include later phases merely because they appear in this document.
