@@ -1,0 +1,15 @@
+{
+  "command": "check_record",
+  "completed_at": "2026-08-20T04:58:41.845991Z",
+  "events": [
+    {
+      "event_hash": "sha256:3049e1027e3ddf6328feb7033fd215e8093d7fdbf2e71cff48abff8bb59737de",
+      "event_id": "e5904fa3-e269-4dd1-a22f-dc44356e851e",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 47
+    }
+  ],
+  "key": "authority-spec-lifecycle-closeout-ready-check-20260820",
+  "request_digest": "sha256:99bd3ca2ab402ea44611082492cedffd5238183bf8a1d9d3ff2467a1929c214e",
+  "schema_version": "1.0"
+}

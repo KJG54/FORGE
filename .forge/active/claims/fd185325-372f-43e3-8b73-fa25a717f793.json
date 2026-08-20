@@ -1,0 +1,38 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:6fb33ba226c98b4575be807b07385444b30584d7b3409c97e304b532a527c702",
+    "sha256:cab7b03b82d81da3fcf9fab6f0732ce5751d8455f5e4fa3f0c17cde7c60c2fd8"
+  ],
+  "affected_record_ids": [
+    "749ed770-b755-4578-a7c6-977f94de6598",
+    "d3def432-6adc-42e1-b1e2-abd178792131"
+  ],
+  "assertion": "The owner-reviewed change-scope and release-requirements revisions are registered at their previewed digests, define the bounded Phase 1 implementation and validation surface, preserve the named exclusions, and make owner acceptance a separate gate.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "749ed770-b755-4578-a7c6-977f94de6598",
+    "d3def432-6adc-42e1-b1e2-abd178792131"
+  ],
+  "correlation_id": null,
+  "event_sequence": 4,
+  "id": "fd185325-372f-43e3-8b73-fa25a717f793",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "limitations": [
+    "The exact ADR supersession graph and governing-reference prose remain implementation work subject to later checking and owner review."
+  ],
+  "operator_session_reference": "019ff998-db70-7b30-a258-c56f87785585",
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-17T04:22:34.658550Z",
+  "run_id": "3892edb2-8de5-4a61-bf32-1f69f4a97c62",
+  "schema_version": "1.0",
+  "step_id": "scope",
+  "tool_version": "1.0.0"
+}

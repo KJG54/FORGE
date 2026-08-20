@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:d0a5fc6aa92d04f27fe252b5729f720238ea1f99a178af685eb0b2f79447ee87"
+  ],
+  "affected_record_ids": [
+    "ea3a284c-a74c-44cc-aabe-26d267c3cddb"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 33,
+  "id": "c612f801-f1cf-4c01-bba8-d83ffb0bcb21",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "recorded_at": "2026-08-20T04:54:14.294284Z",
+  "role": "friction-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Phase 1 authority and specification lifecycle friction report",
+  "tool_version": "1.0.0"
+}

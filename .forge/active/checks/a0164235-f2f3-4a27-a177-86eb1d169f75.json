@@ -1,0 +1,58 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:bbba55593adb58149ea63467e97e29159df55c07a1e00412e5c528a509b61bc2",
+    "sha256:a42500aaada6e259b5a534e5ecf836c884b57e02c39a9f00be9719b8d93dbed0"
+  ],
+  "affected_record_ids": [
+    "12690d29-6625-468e-a641-b83b191d566b",
+    "ccda0f90-165b-429a-bc40-579cdb363467"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "closeout-ready",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-20T04:58:41.678008Z",
+  "event_sequence": 47,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "a0164235-f2f3-4a27-a177-86eb1d169f75",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Terminal-readiness review after registering release-readiness and lessons revisions: python -m tools.quality_gate passed; git diff --check passed; forge doctor healthy; forge status confirmed scope, implement, verify-release, and review-risk completed with closeout awaiting verification; release plan includes terminal governance state and explicitly excludes remote-CI and tagged-release claims.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "Nine Windows symlink-security tests remain unexercised from the full local suite.",
+    "FORGE doctor warns that 154 governed files are not tracked until archive closure and commit.",
+    "Publication will proceed without waiting for remote CI under owner instruction."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-20T04:58:41.678064Z",
+  "result_digest": "sha256:9a112f4dcf1dafb2119f2049492c50e251df56d8deac71fdfc9865e3b6c23663",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-20T04:58:41.678006Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "12690d29-6625-468e-a641-b83b191d566b",
+    "ccda0f90-165b-429a-bc40-579cdb363467"
+  ],
+  "tool_version": "1.0.0"
+}

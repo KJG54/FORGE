@@ -1,0 +1,21 @@
+{
+  "command": "complete",
+  "completed_at": "2026-08-20T04:54:43.965830Z",
+  "events": [
+    {
+      "event_hash": "sha256:abf52367f0768207968bc92f27313670c4ec6e6017393c249829e58b44e72009",
+      "event_id": "4d715226-d001-4238-82cd-6f742562065f",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 35
+    },
+    {
+      "event_hash": "sha256:168cb199b6040508a3808b9e120f7997d6f94e99c015cc0528f330fb8e6250e4",
+      "event_id": "01f99f4a-600c-446a-97f1-362b3d0470ad",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 36
+    }
+  ],
+  "key": "authority-spec-lifecycle-review-risk-claim-20260820",
+  "request_digest": "sha256:bed1cd5d8aef23a768ecbd9ac849e4430b15eb785ede48813be1ad02bf116dcf",
+  "schema_version": "1.0"
+}

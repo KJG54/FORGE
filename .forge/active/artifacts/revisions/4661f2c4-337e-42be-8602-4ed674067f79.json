@@ -1,0 +1,42 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:ec0da4a895dd762e49746c6f029f6bfca251825e011363c53438e5034ccd764a"
+  ],
+  "affected_record_ids": [
+    "df6e7cf5-4f8e-40d2-9bc8-07725665229a",
+    "406f4db8-0959-47a0-a272-d60574bedcc9"
+  ],
+  "artifact_id": "df6e7cf5-4f8e-40d2-9bc8-07725665229a",
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "byte_size": 77538,
+  "content_digest": "sha256:ec0da4a895dd762e49746c6f029f6bfca251825e011363c53438e5034ccd764a",
+  "correlation_id": null,
+  "event_sequence": 12,
+  "id": "4661f2c4-337e-42be-8602-4ed674067f79",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "media_type": "text/markdown",
+  "path": "docs/history/specifications/FORGE-Production-v1-Master-Implementation-Specification.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/ec/0da4a895dd762e49746c6f029f6bfca251825e011363c53438e5034ccd764a",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "1642be7e-ada0-43d8-9489-c89f58409ce1",
+    "metadata": {
+      "untrusted": true
+    },
+    "recorded_at": "2026-08-20T04:09:04.155442Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "result:406f4db8-0959-47a0-a272-d60574bedcc9:files/docs/history/specifications/FORGE-Production-v1-Master-Implementation-Specification.md",
+    "source_type": "import-result"
+  },
+  "recorded_at": "2026-08-20T04:09:04.155442Z",
+  "registration_event_id": "4007c584-90bf-4087-8124-2ccc91094bae",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "1.0.0"
+}

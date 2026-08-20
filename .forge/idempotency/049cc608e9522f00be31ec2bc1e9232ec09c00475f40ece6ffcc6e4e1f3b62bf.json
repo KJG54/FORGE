@@ -1,0 +1,15 @@
+{
+  "command": "evidence_add",
+  "completed_at": "2026-08-20T04:52:10.398764Z",
+  "events": [
+    {
+      "event_hash": "sha256:fca36fa6f52e0367f71dcc9ee7b6f4ffd5e3255a663491cb86c9debdd6c4d829",
+      "event_id": "a9c1c1f3-d75f-4e70-b25c-9869041b9c01",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 28
+    }
+  ],
+  "key": "authority-spec-lifecycle-verify-release-evidence-20260820",
+  "request_digest": "sha256:0171d716682f67f579be24d8ae1c559ae76b99f999dcf449a638802dcfa2fcf0",
+  "schema_version": "1.0"
+}

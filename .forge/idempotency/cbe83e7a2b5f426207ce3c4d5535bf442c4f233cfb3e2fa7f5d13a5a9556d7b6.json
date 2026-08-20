@@ -1,0 +1,15 @@
+{
+  "command": "evidence_add",
+  "completed_at": "2026-08-20T04:39:10.388264Z",
+  "events": [
+    {
+      "event_hash": "sha256:2487f90d77d8f4c67f0e414c7bc9723f0305ee0267a2bb7f89719573cdfc0af7",
+      "event_id": "b92ccb6c-5854-4bb9-8b01-159b7b4d6653",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 19
+    }
+  ],
+  "key": "authority-spec-lifecycle-implementation-evidence-revisions-20260820",
+  "request_digest": "sha256:f43d5585048337184b7dbef336ae0470fc1f7e3b25d400ba484fa65d558d8cdd",
+  "schema_version": "1.0"
+}

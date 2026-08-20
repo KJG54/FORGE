@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8520a4d659e9ac161afc67def7f39215ae3c4df3f9af89d04ff4464888355676"
+  ],
+  "affected_record_ids": [
+    "6d2a3b23-4ecc-413f-afae-422375ad9128"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 34,
+  "id": "b3d1f70e-2493-4f3a-b7cb-a7ef6cd4ea7d",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "recorded_at": "2026-08-20T04:54:26.801503Z",
+  "role": "residual-risk-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Phase 1 authority and specification lifecycle residual-risk report",
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,46 @@
+{
+  "acceptance_event_id": "a7eac575-3922-4efc-9d36-2da29ae0556e",
+  "accepted_artifact_revision_ids": [
+    "749ed770-b755-4578-a7c6-977f94de6598",
+    "d3def432-6adc-42e1-b1e2-abd178792131"
+  ],
+  "accepted_check_result_ids": [
+    "5839eb8a-f85b-499a-abd3-bb3c50fb10c4"
+  ],
+  "accepted_evidence_ids": [
+    "33d5b8fa-14b1-4244-88f7-8e081b7d8b5d"
+  ],
+  "accepted_scope": "Accept the exact current Phase 1 change-scope revision d3def432-6adc-42e1-b1e2-abd178792131 and release-requirements revision 749ed770-b755-4578-a7c6-977f94de6598: preserve the recovered Production-v1 specification at SHA-256 ec0da4a895dd762e49746c6f029f6bfca251825e011363c53438e5034ccd764a; establish typed authority through ADR-0062 and one current governing reference; align the Constitution, architecture, documentation navigation, and ADR effective-status metadata; add semantic documentation checks; update only the completed dogfood closure status; preserve all listed compatibility and historical boundaries; and exclude later roadmap phases, project-basic UX, release/version/install, CLI, journal, security, GitHub, cleanup, default-workflow, and publication work. This accepts the planning boundary only, not its future implementation or any release.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:6fb33ba226c98b4575be807b07385444b30584d7b3409c97e304b532a527c702",
+    "sha256:cab7b03b82d81da3fcf9fab6f0732ce5751d8455f5e4fa3f0c17cde7c60c2fd8",
+    "sha256:f73d1572a3913291585cd5fb33aa4af28c71eaac881e2da284a1970341bc6889",
+    "sha256:3efe7827f51125d59c084e36bc9ac9e4d918d7d583b9451a5c4e46017cca283d"
+  ],
+  "affected_record_ids": [
+    "749ed770-b755-4578-a7c6-977f94de6598",
+    "d3def432-6adc-42e1-b1e2-abd178792131",
+    "5839eb8a-f85b-499a-abd3-bb3c50fb10c4",
+    "33d5b8fa-14b1-4244-88f7-8e081b7d8b5d"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 9,
+  "id": "4dfc4721-3ea4-4d52-b31d-93abb76ad31b",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "known_limitations": [],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-17T04:26:51.515095Z",
+  "residual_risks": [],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

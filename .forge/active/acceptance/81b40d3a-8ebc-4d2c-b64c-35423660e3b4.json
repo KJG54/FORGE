@@ -1,0 +1,46 @@
+{
+  "acceptance_event_id": "2c3cf1c4-0172-4cbf-a747-1e6f504b57d4",
+  "accepted_artifact_revision_ids": [
+    "12690d29-6625-468e-a641-b83b191d566b",
+    "ccda0f90-165b-429a-bc40-579cdb363467"
+  ],
+  "accepted_check_result_ids": [
+    "a0164235-f2f3-4a27-a177-86eb1d169f75"
+  ],
+  "accepted_evidence_ids": [
+    "701e4d01-f4bb-48d5-9e0b-cb9878df8f71"
+  ],
+  "accepted_scope": "Accept exact release-readiness revision 12690d29-6625-468e-a641-b83b191d566b, lessons revision ccda0f90-165b-429a-bc40-579cdb363467, claim 8aaca506-d71a-4ff0-952d-e7295b50a7f4, closeout-ready check a0164235-f2f3-4a27-a177-86eb1d169f75, and evidence 701e4d01-f4bb-48d5-9e0b-cb9878df8f71; authorize terminal closure and subsequent topic-branch publication without waiting for remote CI, while preserving all stated limitations and successor-audit needs.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:bbba55593adb58149ea63467e97e29159df55c07a1e00412e5c528a509b61bc2",
+    "sha256:a42500aaada6e259b5a534e5ecf836c884b57e02c39a9f00be9719b8d93dbed0",
+    "sha256:9a112f4dcf1dafb2119f2049492c50e251df56d8deac71fdfc9865e3b6c23663",
+    "sha256:3085204f30a46b41e6612e7663e235c09b797d1b88f321e2257b546f5ec367c6"
+  ],
+  "affected_record_ids": [
+    "12690d29-6625-468e-a641-b83b191d566b",
+    "ccda0f90-165b-429a-bc40-579cdb363467",
+    "a0164235-f2f3-4a27-a177-86eb1d169f75",
+    "701e4d01-f4bb-48d5-9e0b-cb9878df8f71"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 50,
+  "id": "81b40d3a-8ebc-4d2c-b64c-35423660e3b4",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "known_limitations": [],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-20T04:59:48.781900Z",
+  "residual_risks": [],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

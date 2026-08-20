@@ -1,0 +1,44 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:6e9ab5f0cdc8e67757b3fcd8cc710936149ca8f4df3a6c81d3fc0be29e3b68f4"
+  ],
+  "affected_record_ids": [
+    "bc2e4d87-c67a-422f-a271-380b7809254a",
+    "a7987ebc-ce96-45de-b760-42ca22a1a285",
+    "ace6c2c9-e3b4-40d1-842c-70f10060e0fe"
+  ],
+  "authorization_basis": "configured owner explicitly trusted the selected pack as data and created a successor",
+  "correlation_id": null,
+  "creation_event_id": "f929aabd-35b7-47eb-80ce-ee13feeb2684",
+  "declared_scope_summary": "Preserve the owner-supplied Production-v1 Master Implementation Specification byte-for-byte under historical specifications with provenance, historical status, and SHA-256 ec0da4a895dd762e49746c6f029f6bfca251825e011363c53438e5034ccd764a; write a superseding ADR defining normative design, persisted runtime-history, locked-rule, reference-content, and derived-advisory authority types; explain the applicability boundary between initiative-scoped owner decisions and global FORGE architecture; create one concise current governing specification; update the Constitution authority section and move finished milestone mechanics out of the living constitutional contract without rewriting historical records; correct the blended hierarchy in docs/architecture.md; align docs/README.md; define machine-readable ADR effective-status and supersession metadata; add semantic documentation checks; and update only the dogfood closure status in the roadmap and friction register. Exclude project-basic UX or profile changes, release/version and installation changes, CLI or journal refactors, security or GitHub settings, cleanup, default-workflow changes, and publication or release authorization. Stop after the authority documents, ADR, status metadata, navigation, and checks are reviewed and accepted.",
+  "event_sequence": 1,
+  "explanation_profile": "guided",
+  "id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "lifecycle_state": "active",
+  "objective": "Establish one current, discoverable FORGE authority and specification lifecycle while preserving the recovered Production-v1 master specification as historical evidence",
+  "owner_identity_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "pack_id": "forge-framework-change",
+  "pack_version": "0.1.0",
+  "predecessor_references": [
+    {
+      "archive_reference": ".forge/archive/a7987ebc-ce96-45de-b760-42ca22a1a285",
+      "initiative_id": "a7987ebc-ce96-45de-b760-42ca22a1a285",
+      "relationship": "successor-of",
+      "schema_version": "1.0"
+    },
+    {
+      "archive_reference": ".forge/archive/ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+      "initiative_id": "ace6c2c9-e3b4-40d1-842c-70f10060e0fe",
+      "relationship": "successor-of",
+      "schema_version": "1.0"
+    }
+  ],
+  "recorded_at": "2026-08-17T03:15:37.254672Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": null,
+  "workflow_id": "framework-change",
+  "workflow_version": "0.1.0"
+}

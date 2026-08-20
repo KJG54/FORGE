@@ -1,0 +1,21 @@
+{
+  "command": "complete",
+  "completed_at": "2026-08-20T04:51:03.742736Z",
+  "events": [
+    {
+      "event_hash": "sha256:775efdea7651b4949326e8f48d680a7f35a035bb3b4bc478abf1b4cfc6274017",
+      "event_id": "2a65807d-e1ed-4c63-8459-01e970544a51",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 25
+    },
+    {
+      "event_hash": "sha256:529acc0c4feb02a83fa9e8e4a24d679a1b1b0761419e01705e02085ba74e112e",
+      "event_id": "17458e59-6868-467a-92fc-dbcdcff8fc42",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 26
+    }
+  ],
+  "key": "authority-spec-lifecycle-verify-release-claim-20260820",
+  "request_digest": "sha256:100f2b467b4420ef606a07c5c942fe29668c51913ac419d9c91a4df50500de8d",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,45 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:3085204f30a46b41e6612e7663e235c09b797d1b88f321e2257b546f5ec367c6"
+  ],
+  "affected_record_ids": [
+    "12690d29-6625-468e-a641-b83b191d566b",
+    "ccda0f90-165b-429a-bc40-579cdb363467",
+    "a0164235-f2f3-4a27-a177-86eb1d169f75",
+    "8aaca506-d71a-4ff0-952d-e7295b50a7f4"
+  ],
+  "artifact_revision_ids": [
+    "12690d29-6625-468e-a641-b83b191d566b",
+    "ccda0f90-165b-429a-bc40-579cdb363467"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "a0164235-f2f3-4a27-a177-86eb1d169f75"
+  ],
+  "claim_ids": [
+    "8aaca506-d71a-4ff0-952d-e7295b50a7f4"
+  ],
+  "correlation_id": null,
+  "event_sequence": 48,
+  "id": "701e4d01-f4bb-48d5-9e0b-cb9878df8f71",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "limitations": [
+    "Nine Windows symlink-security tests remain unexercised.",
+    "Remote CI will not be awaited before publication under owner instruction.",
+    "The broader FORGE malfunction remains a successor-audit input, not a resolved Phase 1 finding."
+  ],
+  "packet_digest": "sha256:3085204f30a46b41e6612e7663e235c09b797d1b88f321e2257b546f5ec367c6",
+  "purpose": "Bind exact release-readiness revision 12690d29-6625-468e-a641-b83b191d566b and lessons revision ccda0f90-165b-429a-bc40-579cdb363467 to closeout claim 8aaca506-d71a-4ff0-952d-e7295b50a7f4 and passing closeout-ready check a0164235-f2f3-4a27-a177-86eb1d169f75.",
+  "recorded_at": "2026-08-20T04:59:10.681358Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

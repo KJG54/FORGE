@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:a42500aaada6e259b5a534e5ecf836c884b57e02c39a9f00be9719b8d93dbed0"
+  ],
+  "affected_record_ids": [
+    "ccda0f90-165b-429a-bc40-579cdb363467"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 44,
+  "id": "1fead4c3-2edf-4c7b-ab31-47a382be43e5",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "recorded_at": "2026-08-20T04:57:25.213733Z",
+  "role": "lessons",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Phase 1 authority and specification lifecycle lessons",
+  "tool_version": "1.0.0"
+}

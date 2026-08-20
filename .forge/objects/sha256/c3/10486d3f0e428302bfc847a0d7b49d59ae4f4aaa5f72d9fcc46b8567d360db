@@ -1,0 +1,392 @@
+"""Validate FORGE's current authority documents and ADR effective-status catalog."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import re
+from datetime import date
+from pathlib import Path
+from typing import Any
+
+HISTORICAL_SPECIFICATION = Path(
+    "docs/history/specifications/FORGE-Production-v1-Master-Implementation-Specification.md"
+)
+HISTORICAL_SPECIFICATION_SHA256 = (
+    "ec0da4a895dd762e49746c6f029f6bfca251825e011363c53438e5034ccd764a"
+)
+ADR_DIRECTORY = Path("docs/history/adr")
+ADR_INDEX = ADR_DIRECTORY / "index.json"
+ADR_PATTERN = re.compile(r"^ADR-[0-9]{4}-.+\.md$")
+ADR_HEADING = re.compile(r"^#\s+(ADR-[0-9]{4})\s*(?:—|:)\s*(.+)$", re.MULTILINE)
+ADR_STATUS = re.compile(
+    r"^(?:-\s*)?\*\*Status:\*\*\s*([^\r\n]+)", re.MULTILINE
+)
+ADR_DATE = re.compile(r"^(?:-\s*)?\*\*Date:\*\*\s*([^\r\n]+)", re.MULTILINE)
+PLAIN_STATUS = re.compile(r"^-\s*Status:\s*([^\r\n]+)", re.MULTILINE)
+PLAIN_DATE = re.compile(r"^-\s*Date:\s*([^\r\n]+)", re.MULTILINE)
+MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+
+RECORDED_STATUSES = {"Proposed", "Accepted", "Superseded", "Rejected"}
+EFFECTIVE_STATUSES = {
+    "proposed",
+    "effective",
+    "partially-superseded",
+    "superseded",
+    "rejected",
+}
+DATE_SOURCES = {"adr", "git-introduction"}
+RELATIONSHIP_SCOPES = {"partial", "full"}
+AUTHORITY_TYPES = (
+    "normative design",
+    "persisted runtime/history",
+    "active locked rules",
+    "reference content",
+    "derived advisory views",
+)
+AUTHORITY_DOCUMENTS = (
+    Path("docs/governing-specification.md"),
+    Path("docs/architecture.md"),
+    Path("docs/README.md"),
+    ADR_DIRECTORY / "ADR-0062-typed-authority-and-specification-lifecycle.md",
+)
+GOVERNING_LINKS = {
+    Path("docs/README.md"): "(governing-specification.md)",
+    Path("docs/constitution.md"): "(governing-specification.md)",
+    Path("docs/architecture.md"): "(governing-specification.md)",
+    Path("docs/history/adr/README.md"): "(../../governing-specification.md)",
+    Path("docs/history/specifications/README.md"): "(../../governing-specification.md)",
+}
+LINK_DOCUMENTS = (
+    *GOVERNING_LINKS,
+    Path("docs/governing-specification.md"),
+    Path("docs/history/adr/ADR-0062-typed-authority-and-specification-lifecycle.md"),
+    Path("docs/history/milestones/constitution-milestone-governance.md"),
+)
+AUTHORITY_INVARIANT = (
+    "worker claim -> check -> evidence -> FORGE verification -> owner acceptance"
+)
+
+
+class DocumentationConsistencyError(RuntimeError):
+    """Raised when maintained documentation authority surfaces disagree."""
+
+
+def _read_text(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        raise DocumentationConsistencyError(f"cannot read {path}: {error}") from error
+
+
+def _load_json(path: Path) -> dict[str, Any]:
+    try:
+        value = json.loads(_read_text(path))
+    except json.JSONDecodeError as error:
+        raise DocumentationConsistencyError(f"invalid JSON in {path}: {error}") from error
+    if not isinstance(value, dict):
+        raise DocumentationConsistencyError(f"{path} must contain one JSON object")
+    return value
+
+
+def _required_string(value: object, *, field: str, owner: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise DocumentationConsistencyError(f"{owner}.{field} must be a non-empty string")
+    return value
+
+
+def _required_list(value: object, *, field: str, owner: str) -> list[object]:
+    if not isinstance(value, list):
+        raise DocumentationConsistencyError(f"{owner}.{field} must be a list")
+    return value
+
+
+def _parse_adr(path: Path) -> tuple[str, str, str, str | None]:
+    text = _read_text(path)
+    heading = ADR_HEADING.search(text)
+    if heading is None:
+        raise DocumentationConsistencyError(f"{path} has no parseable ADR heading")
+    status_match = ADR_STATUS.search(text) or PLAIN_STATUS.search(text)
+    if status_match is None:
+        raise DocumentationConsistencyError(f"{path} has no parseable recorded status")
+    date_match = ADR_DATE.search(text) or PLAIN_DATE.search(text)
+    declared_date = date_match.group(1).strip() if date_match is not None else None
+    return (
+        heading.group(1),
+        heading.group(2).strip(),
+        status_match.group(1).strip(),
+        declared_date,
+    )
+
+
+def _relationship_map(
+    entries_by_id: dict[str, dict[str, Any]],
+    *,
+    owner_id: str,
+    field: str,
+) -> dict[tuple[str, str], str]:
+    relationships: dict[tuple[str, str], str] = {}
+    raw_relationships = _required_list(
+        entries_by_id[owner_id].get(field), field=field, owner=owner_id
+    )
+    for position, raw_relationship in enumerate(raw_relationships):
+        relation_owner = f"{owner_id}.{field}[{position}]"
+        if not isinstance(raw_relationship, dict):
+            raise DocumentationConsistencyError(f"{relation_owner} must be an object")
+        target = _required_string(
+            raw_relationship.get("adr"), field="adr", owner=relation_owner
+        )
+        scope = _required_string(
+            raw_relationship.get("scope"), field="scope", owner=relation_owner
+        )
+        description = _required_string(
+            raw_relationship.get("description"),
+            field="description",
+            owner=relation_owner,
+        )
+        if target not in entries_by_id:
+            raise DocumentationConsistencyError(
+                f"{relation_owner} references unknown ADR {target}"
+            )
+        if target == owner_id:
+            raise DocumentationConsistencyError(f"{relation_owner} cannot reference itself")
+        if scope not in RELATIONSHIP_SCOPES:
+            raise DocumentationConsistencyError(
+                f"{relation_owner}.scope must be partial or full"
+            )
+        key = (target, scope)
+        if key in relationships:
+            raise DocumentationConsistencyError(
+                f"{relation_owner} duplicates relationship to {target} ({scope})"
+            )
+        relationships[key] = description
+    return relationships
+
+
+def validate_documentation(root: Path | None = None) -> dict[str, object]:
+    """Validate authority vocabulary, historical identity, and ADR catalog semantics."""
+
+    repository = (root or Path(__file__).resolve().parents[1]).resolve()
+    specification_path = repository / HISTORICAL_SPECIFICATION
+    try:
+        specification_digest = hashlib.sha256(specification_path.read_bytes()).hexdigest()
+    except OSError as error:
+        raise DocumentationConsistencyError(
+            f"cannot read historical specification {specification_path}: {error}"
+        ) from error
+    if specification_digest != HISTORICAL_SPECIFICATION_SHA256:
+        raise DocumentationConsistencyError(
+            "historical specification digest mismatch: "
+            f"expected {HISTORICAL_SPECIFICATION_SHA256}, got {specification_digest}"
+        )
+
+    index_path = repository / ADR_INDEX
+    catalog = _load_json(index_path)
+    if catalog.get("schema_version") != "1.0":
+        raise DocumentationConsistencyError("ADR index schema_version must be 1.0")
+    if catalog.get("authority_model") != "ADR-0062":
+        raise DocumentationConsistencyError("ADR index authority_model must be ADR-0062")
+    recorded_status_values = set(
+        _required_list(
+            catalog.get("recorded_status_values"),
+            field="recorded_status_values",
+            owner="index",
+        )
+    )
+    if recorded_status_values != RECORDED_STATUSES:
+        raise DocumentationConsistencyError("ADR index recorded_status_values are incomplete")
+    effective_status_values = set(
+        _required_list(
+            catalog.get("effective_status_values"),
+            field="effective_status_values",
+            owner="index",
+        )
+    )
+    if effective_status_values != EFFECTIVE_STATUSES:
+        raise DocumentationConsistencyError("ADR index effective_status_values are incomplete")
+
+    raw_entries = _required_list(catalog.get("adrs"), field="adrs", owner="index")
+    entries_by_id: dict[str, dict[str, Any]] = {}
+    paths_by_id: dict[str, str] = {}
+    for position, raw_entry in enumerate(raw_entries):
+        owner = f"index.adrs[{position}]"
+        if not isinstance(raw_entry, dict):
+            raise DocumentationConsistencyError(f"{owner} must be an object")
+        adr_id = _required_string(raw_entry.get("id"), field="id", owner=owner)
+        if not re.fullmatch(r"ADR-[0-9]{4}", adr_id):
+            raise DocumentationConsistencyError(f"{owner}.id is invalid: {adr_id}")
+        if adr_id in entries_by_id:
+            raise DocumentationConsistencyError(f"duplicate ADR catalog ID: {adr_id}")
+        path_value = _required_string(raw_entry.get("path"), field="path", owner=adr_id)
+        if path_value in paths_by_id.values():
+            raise DocumentationConsistencyError(f"duplicate ADR catalog path: {path_value}")
+        entries_by_id[adr_id] = raw_entry
+        paths_by_id[adr_id] = path_value
+
+    adr_directory = repository / ADR_DIRECTORY
+    actual_files = {
+        path.name
+        for path in adr_directory.iterdir()
+        if path.is_file() and ADR_PATTERN.fullmatch(path.name)
+    }
+    catalog_files = set(paths_by_id.values())
+    if actual_files != catalog_files:
+        missing = sorted(actual_files - catalog_files)
+        stale = sorted(catalog_files - actual_files)
+        raise DocumentationConsistencyError(
+            f"ADR catalog coverage mismatch; missing={missing}, stale={stale}"
+        )
+
+    relationship_cache: dict[tuple[str, str], dict[tuple[str, str], str]] = {}
+    for adr_id, entry in entries_by_id.items():
+        path = adr_directory / paths_by_id[adr_id]
+        parsed_id, parsed_title, parsed_status, declared_date = _parse_adr(path)
+        title = _required_string(entry.get("title"), field="title", owner=adr_id)
+        catalog_date = _required_string(entry.get("date"), field="date", owner=adr_id)
+        date_source = _required_string(
+            entry.get("date_source"), field="date_source", owner=adr_id
+        )
+        recorded_status = _required_string(
+            entry.get("recorded_status"), field="recorded_status", owner=adr_id
+        )
+        effective_status = _required_string(
+            entry.get("effective_status"), field="effective_status", owner=adr_id
+        )
+        if parsed_id != adr_id or parsed_title != title:
+            raise DocumentationConsistencyError(
+                f"{adr_id} identity differs between {path.name} and index.json"
+            )
+        if recorded_status not in RECORDED_STATUSES or recorded_status != parsed_status:
+            raise DocumentationConsistencyError(
+                f"{adr_id} recorded_status does not match immutable ADR text"
+            )
+        if effective_status not in EFFECTIVE_STATUSES:
+            raise DocumentationConsistencyError(
+                f"{adr_id} has invalid effective_status {effective_status}"
+            )
+        if date_source not in DATE_SOURCES:
+            raise DocumentationConsistencyError(
+                f"{adr_id} has invalid date_source {date_source}"
+            )
+        try:
+            date.fromisoformat(catalog_date)
+        except ValueError as error:
+            raise DocumentationConsistencyError(
+                f"{adr_id} has invalid ISO date {catalog_date}"
+            ) from error
+        if declared_date is not None:
+            if date_source != "adr" or declared_date != catalog_date:
+                raise DocumentationConsistencyError(
+                    f"{adr_id} date must match its declared ADR date"
+                )
+        elif date_source != "git-introduction":
+            raise DocumentationConsistencyError(
+                f"{adr_id} without a declared date must use git-introduction"
+            )
+        relationship_cache[(adr_id, "supersedes")] = _relationship_map(
+            entries_by_id, owner_id=adr_id, field="supersedes"
+        )
+        relationship_cache[(adr_id, "superseded_by")] = _relationship_map(
+            entries_by_id, owner_id=adr_id, field="superseded_by"
+        )
+
+    for adr_id, entry in entries_by_id.items():
+        supersedes = relationship_cache[(adr_id, "supersedes")]
+        superseded_by = relationship_cache[(adr_id, "superseded_by")]
+        for (target, scope), description in supersedes.items():
+            reciprocal = relationship_cache[(target, "superseded_by")]
+            if reciprocal.get((adr_id, scope)) != description:
+                raise DocumentationConsistencyError(
+                    f"{adr_id} supersedes {target} ({scope}) without an exact "
+                    "reciprocal relationship"
+                )
+        for (target, scope), description in superseded_by.items():
+            reciprocal = relationship_cache[(target, "supersedes")]
+            if reciprocal.get((adr_id, scope)) != description:
+                raise DocumentationConsistencyError(
+                    f"{adr_id} is superseded by {target} ({scope}) without an exact "
+                    "reciprocal relationship"
+                )
+        recorded_status = str(entry["recorded_status"])
+        effective_status = str(entry["effective_status"])
+        relationship_scopes = {scope for _, scope in superseded_by}
+        expected_effective = {
+            "Proposed": "proposed",
+            "Rejected": "rejected",
+            "Superseded": "superseded",
+        }.get(recorded_status, "effective")
+        if "full" in relationship_scopes:
+            expected_effective = "superseded"
+        elif "partial" in relationship_scopes:
+            expected_effective = "partially-superseded"
+        if effective_status != expected_effective:
+            raise DocumentationConsistencyError(
+                f"{adr_id} effective_status must be {expected_effective}, got {effective_status}"
+            )
+
+    for relative_path, required_link in GOVERNING_LINKS.items():
+        text = _read_text(repository / relative_path)
+        if required_link not in text:
+            raise DocumentationConsistencyError(
+                f"{relative_path} must link to the current governing specification"
+            )
+
+    for relative_path in AUTHORITY_DOCUMENTS:
+        lowered = _read_text(repository / relative_path).lower()
+        missing_types = [term for term in AUTHORITY_TYPES if term not in lowered]
+        if missing_types:
+            raise DocumentationConsistencyError(
+                f"{relative_path} is missing authority types: {missing_types}"
+            )
+
+    link_count = 0
+    for relative_path in LINK_DOCUMENTS:
+        document_path = repository / relative_path
+        for target in MARKDOWN_LINK.findall(_read_text(document_path)):
+            if target.startswith(("http://", "https://", "mailto:", "#")):
+                continue
+            target_without_fragment = target.split("#", maxsplit=1)[0]
+            if not target_without_fragment:
+                continue
+            resolved_target = (document_path.parent / target_without_fragment).resolve()
+            if not resolved_target.is_relative_to(repository):
+                raise DocumentationConsistencyError(
+                    f"{relative_path} link escapes repository: {target}"
+                )
+            if not resolved_target.exists():
+                raise DocumentationConsistencyError(
+                    f"{relative_path} has broken local link: {target}"
+                )
+            link_count += 1
+
+    for relative_path in (Path("docs/governing-specification.md"), Path("docs/README.md")):
+        if AUTHORITY_INVARIANT not in _read_text(repository / relative_path):
+            raise DocumentationConsistencyError(
+                f"{relative_path} must contain the five-stage authority invariant"
+            )
+
+    return {
+        "status": "passed",
+        "adr_count": len(entries_by_id),
+        "authority_model": "ADR-0062",
+        "historical_specification_sha256": specification_digest,
+        "validated_local_links": link_count,
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, default=None)
+    arguments = parser.parse_args(argv)
+    try:
+        report = validate_documentation(arguments.root)
+    except DocumentationConsistencyError as error:
+        print(json.dumps({"status": "failed", "error": str(error)}, sort_keys=True))
+        return 1
+    print(json.dumps(report, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

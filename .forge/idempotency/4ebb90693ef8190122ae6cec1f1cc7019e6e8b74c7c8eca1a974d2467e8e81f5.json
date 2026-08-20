@@ -1,0 +1,15 @@
+{
+  "command": "check_record",
+  "completed_at": "2026-08-20T04:36:39.336552Z",
+  "events": [
+    {
+      "event_hash": "sha256:d1b209f0fed27fc5c71d15439c64f31d514b1cf3b761beee033d0d9e58b372ed",
+      "event_id": "42821a34-6d92-4fc0-8327-95f6029d828c",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 18
+    }
+  ],
+  "key": "authority-spec-lifecycle-implementation-check-20260820",
+  "request_digest": "sha256:02884e93c6678efc02bd084ec47ce9aabdba6833c3c70999e0e23625c1d0d6af",
+  "schema_version": "1.0"
+}

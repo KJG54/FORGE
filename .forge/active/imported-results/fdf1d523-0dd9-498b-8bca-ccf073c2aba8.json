@@ -1,0 +1,31 @@
+{
+  "declared_limitations": [
+    "This revision corrects only strict JSON boundary typing detected by the real repository quality gate; full validation is rerun after import."
+  ],
+  "id": "fdf1d523-0dd9-498b-8bca-ccf073c2aba8",
+  "returned_files": [
+    {
+      "declared_digest": "sha256:228db19f31a80736493e675d564f9a02718d8cc1030b13808ff8aff40bce7ae8",
+      "media_type": "text/x-python",
+      "proposed_target_path": "tools/documentation_consistency.py",
+      "schema_version": "1.0",
+      "source_path": "documentation_consistency.py"
+    },
+    {
+      "declared_digest": "sha256:c7b6e1d798abfd3815e60af180940d74ec8df431ffa888ac215026bda7a806e9",
+      "media_type": "text/x-python",
+      "proposed_target_path": "tests/test_documentation_consistency.py",
+      "schema_version": "1.0",
+      "source_path": "test_documentation_consistency.py"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_run_or_handoff_id": "547d3ef4-2d67-4924-97f5-860e3984eff9",
+  "tool_metadata": {
+    "operator": "direct-codex",
+    "purpose": "Repository-root strict Pyright JSON boundary correction"
+  },
+  "worker_claims": [
+    "The documentation consistency checker and its focused tests now narrow decoded JSON from object-shaped runtime values into explicit typed dictionaries and lists required by strict Pyright; validation behavior is unchanged."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "command": "artifact_add",
+  "completed_at": "2026-08-20T04:57:14.162026Z",
+  "events": [
+    {
+      "event_hash": "sha256:3efec283da0ab45d673ed64765deef8bafe2aa5c1b7c9ea9f950ee698e911658",
+      "event_id": "55b4a1e6-d865-4a7d-839f-89e186dbda0b",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 43
+    }
+  ],
+  "key": "authority-spec-lifecycle-release-readiness-add-20260820",
+  "request_digest": "sha256:90548f2c6733f8e52ead694fe73e36c264c6d05ee3b9bf52899f39904838bd3f",
+  "schema_version": "1.0"
+}

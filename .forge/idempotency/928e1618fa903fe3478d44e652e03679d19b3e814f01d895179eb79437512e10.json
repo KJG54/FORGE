@@ -1,0 +1,15 @@
+{
+  "command": "import_result",
+  "completed_at": "2026-08-20T04:10:37.618424Z",
+  "events": [
+    {
+      "event_hash": "sha256:cae07fed1e20c4d6e6f2fe6d0194078886f17e2e2b3001788191fbdbc56ad7d9",
+      "event_id": "4fe5ec53-e5a2-4ccb-9f4f-809a7d57cd58",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 13
+    }
+  ],
+  "key": "authority-spec-lifecycle-test-import-order-revision-20260820",
+  "request_digest": "sha256:894f8f0bfe99e25a1057c428b2c4e3abe714ee1a14f9c30e58b02fe5d176618f",
+  "schema_version": "1.0"
+}

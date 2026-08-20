@@ -1,0 +1,33 @@
+{
+  "declared_limitations": [
+    "The exact ADR supersession graph and governing-reference prose remain implementation work and require independent checking and owner review.",
+    "No repository target, governed artifact, check, evidence, verification, or acceptance record has been created by this result bundle."
+  ],
+  "id": "fb4993e5-5841-43d8-a37e-94e5a9ce9c1a",
+  "returned_files": [
+    {
+      "declared_digest": "sha256:cab7b03b82d81da3fcf9fab6f0732ce5751d8455f5e4fa3f0c17cde7c60c2fd8",
+      "media_type": "text/markdown",
+      "proposed_target_path": "release/authority-specification-lifecycle/change-scope.md",
+      "schema_version": "1.0",
+      "source_path": "change-scope.md"
+    },
+    {
+      "declared_digest": "sha256:6fb33ba226c98b4575be807b07385444b30584d7b3409c97e304b532a527c702",
+      "media_type": "text/markdown",
+      "proposed_target_path": "release/authority-specification-lifecycle/release-requirements.md",
+      "schema_version": "1.0",
+      "source_path": "release-requirements.md"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_run_or_handoff_id": "f35981c5-49f8-4b34-bd13-1df23050540c",
+  "tool_metadata": {
+    "operator": "direct-codex",
+    "purpose": "scope-artifact drafting"
+  },
+  "worker_claims": [
+    "The change-scope draft confines implementation to Phase 1 canonical authority and specification-lifecycle work and preserves all named exclusions.",
+    "The release-requirements draft defines measurable identity, authority, metadata, semantic-check, preservation, validation, and owner-review outcomes without claiming acceptance."
+  ]
+}

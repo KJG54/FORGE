@@ -1,0 +1,46 @@
+{
+  "acceptance_event_id": "fc591e98-5009-4598-8e56-9010e13cdc98",
+  "accepted_artifact_revision_ids": [
+    "6d2a3b23-4ecc-413f-afae-422375ad9128",
+    "ea3a284c-a74c-44cc-aabe-26d267c3cddb"
+  ],
+  "accepted_check_result_ids": [
+    "e5f66f50-5a3f-4af0-85d6-5c5108324f5f"
+  ],
+  "accepted_evidence_ids": [
+    "3387b7f9-38cc-4943-a020-f4de2705d792"
+  ],
+  "accepted_scope": "Accept exact friction-report revision ea3a284c-a74c-44cc-aabe-26d267c3cddb, residual-risk-report revision 6d2a3b23-4ecc-413f-afae-422375ad9128, claim 245f3aad-ff25-4bf7-908b-d4efeb891589, check e5f66f50-5a3f-4af0-85d6-5c5108324f5f, and evidence 3387b7f9-38cc-4943-a020-f4de2705d792, preserving all reported friction and residual risks as unresolved successor inputs and accepting publication without waiting for remote CI.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8520a4d659e9ac161afc67def7f39215ae3c4df3f9af89d04ff4464888355676",
+    "sha256:d0a5fc6aa92d04f27fe252b5729f720238ea1f99a178af685eb0b2f79447ee87",
+    "sha256:0b5f0b8871f1dafb03c133f63bb2d5727dded951ef5509879d6560f9e20d95ff",
+    "sha256:5a99bdcff5b3c25422022b4e37783100166f4d78af34b45f96a926081e3b4f4b"
+  ],
+  "affected_record_ids": [
+    "6d2a3b23-4ecc-413f-afae-422375ad9128",
+    "ea3a284c-a74c-44cc-aabe-26d267c3cddb",
+    "e5f66f50-5a3f-4af0-85d6-5c5108324f5f",
+    "3387b7f9-38cc-4943-a020-f4de2705d792"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 40,
+  "id": "db92e56c-e92a-47bc-9440-ceb4bdc090ca",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "known_limitations": [],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-20T04:56:03.108738Z",
+  "residual_risks": [],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

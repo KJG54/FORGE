@@ -1,0 +1,15 @@
+{
+  "command": "import_result",
+  "completed_at": "2026-08-20T04:14:21.246433Z",
+  "events": [
+    {
+      "event_hash": "sha256:bc5fb7454032e34b88fc7241bc654821b232fb093c74e342226e5da7b17c2bb5",
+      "event_id": "2007f96c-5e3c-41f3-8976-c4db3d8f4cef",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 14
+    }
+  ],
+  "key": "authority-spec-lifecycle-strict-json-types-revision-20260820",
+  "request_digest": "sha256:257d67d9b9b99afcaf749060529edb85d28c0533edcebf38e86786e7254dc27c",
+  "schema_version": "1.0"
+}

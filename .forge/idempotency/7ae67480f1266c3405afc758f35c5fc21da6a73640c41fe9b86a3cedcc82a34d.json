@@ -1,0 +1,15 @@
+{
+  "command": "check_record",
+  "completed_at": "2026-08-20T04:51:47.944352Z",
+  "events": [
+    {
+      "event_hash": "sha256:f389ade0be1e83cd0326f1583386b671ad2733d416e93e32e3666c3a0e933c58",
+      "event_id": "f6bac882-1eb9-45a1-b50f-a4bf3f6f7c0d",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 27
+    }
+  ],
+  "key": "authority-spec-lifecycle-release-checks-20260820",
+  "request_digest": "sha256:246759789feea3bd86c5ce28f0cc2973ab85ae2e9f97d2ddf7951cdbfee0b54e",
+  "schema_version": "1.0"
+}
