@@ -1,0 +1,15 @@
+{
+  "command": "close",
+  "completed_at": "2026-08-20T05:01:33.719366Z",
+  "events": [
+    {
+      "event_hash": "sha256:123807504461f408f458b123472c441983c9ec27a054555d27ac4457474aebe9",
+      "event_id": "b09fce48-5a44-473b-add7-50efc31eb0be",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 52
+    }
+  ],
+  "key": "authority-spec-lifecycle-terminal-close-after-clean-20260820",
+  "request_digest": "sha256:004f010d1b1c5420a654c7b3c43f0cd3749fccc756db901c052703286bcec068",
+  "schema_version": "1.0"
+}
