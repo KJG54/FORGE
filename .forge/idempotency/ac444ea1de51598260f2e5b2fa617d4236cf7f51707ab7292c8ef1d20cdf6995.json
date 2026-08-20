@@ -1,0 +1,15 @@
+{
+  "command": "artifact_add",
+  "completed_at": "2026-08-20T04:54:14.490556Z",
+  "events": [
+    {
+      "event_hash": "sha256:4b4758a3cc5005fec6f4945e1edbc871217929e4687ca5777aa7dbf5e65ba113",
+      "event_id": "03e78c39-bc1a-4727-9c85-1d34241aec8a",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 33
+    }
+  ],
+  "key": "authority-spec-lifecycle-friction-report-add-20260820",
+  "request_digest": "sha256:c6058cc6ce517d58d982c83239ee9756ae64f79bee7b387edf01bb7fd67c3e50",
+  "schema_version": "1.0"
+}

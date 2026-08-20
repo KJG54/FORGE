@@ -1,0 +1,15 @@
+{
+  "command": "check_record",
+  "completed_at": "2026-08-20T04:55:05.305815Z",
+  "events": [
+    {
+      "event_hash": "sha256:bf2b9f56e205e77de1b9063e58030cbc9fc45edd2b493fb44080567483d70e18",
+      "event_id": "393b30a0-2a85-46e6-b976-790c2030bd99",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 37
+    }
+  ],
+  "key": "authority-spec-lifecycle-risk-review-check-20260820",
+  "request_digest": "sha256:91a0993c302be399774855dc5b5b6a1366350869922074765021fa60d86b61dc",
+  "schema_version": "1.0"
+}

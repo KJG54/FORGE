@@ -1,0 +1,42 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:388e0175fadae636f6586e7a2cdbac4cee707d67c4c3feb3517d24f42f4ea4da"
+  ],
+  "affected_record_ids": [
+    "517fb994-3e6c-4555-90a2-16b5f5ae5246",
+    "406f4db8-0959-47a0-a272-d60574bedcc9"
+  ],
+  "artifact_id": "517fb994-3e6c-4555-90a2-16b5f5ae5246",
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "byte_size": 4537,
+  "content_digest": "sha256:388e0175fadae636f6586e7a2cdbac4cee707d67c4c3feb3517d24f42f4ea4da",
+  "correlation_id": null,
+  "event_sequence": 12,
+  "id": "4e52b3d2-0e21-4f28-b121-62a910e99b42",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "media_type": "text/markdown",
+  "path": "docs/constitution.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/38/8e0175fadae636f6586e7a2cdbac4cee707d67c4c3feb3517d24f42f4ea4da",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "4541df17-6fb1-4587-baf1-26bf8d439e99",
+    "metadata": {
+      "untrusted": true
+    },
+    "recorded_at": "2026-08-20T04:09:04.155442Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "result:406f4db8-0959-47a0-a272-d60574bedcc9:files/docs/constitution.md",
+    "source_type": "import-result"
+  },
+  "recorded_at": "2026-08-20T04:09:04.155442Z",
+  "registration_event_id": "4007c584-90bf-4087-8124-2ccc91094bae",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "1.0.0"
+}

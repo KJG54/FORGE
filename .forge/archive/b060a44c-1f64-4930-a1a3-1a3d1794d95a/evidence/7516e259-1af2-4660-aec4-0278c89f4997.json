@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:0962352deb50642ecec548ccdf248744f8f6a6ae06f92ddfafa4ba6bb793f040"
+  ],
+  "affected_record_ids": [
+    "2851a78c-a2d2-4e44-b579-eb86a55e3c7f",
+    "424cd811-4d03-4260-b2c9-16c5e3eb7714",
+    "a58b4e90-ebcc-4c7a-b6e1-6d5773af7ab3"
+  ],
+  "artifact_revision_ids": [
+    "2851a78c-a2d2-4e44-b579-eb86a55e3c7f"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "424cd811-4d03-4260-b2c9-16c5e3eb7714"
+  ],
+  "claim_ids": [
+    "a58b4e90-ebcc-4c7a-b6e1-6d5773af7ab3"
+  ],
+  "correlation_id": null,
+  "event_sequence": 28,
+  "id": "7516e259-1af2-4660-aec4-0278c89f4997",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "limitations": [
+    "Nine Windows symlink-security tests were not exercised because symlink creation is unavailable (WinError 1314).",
+    "No remote CI is bound; publication will proceed without waiting for CI under the owner's explicit instruction.",
+    "Current governance files are untracked until terminal closure is committed."
+  ],
+  "packet_digest": "sha256:0962352deb50642ecec548ccdf248744f8f6a6ae06f92ddfafa4ba6bb793f040",
+  "purpose": "Bind exact verification-report revision 2851a78c-a2d2-4e44-b579-eb86a55e3c7f to verification claim a58b4e90-ebcc-4c7a-b6e1-6d5773af7ab3 and passing release check 424cd811-4d03-4260-b2c9-16c5e3eb7714. The report identifies all accepted implementation revisions and local validation, integrity, preservation, and publication boundaries.",
+  "recorded_at": "2026-08-20T04:52:10.247683Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

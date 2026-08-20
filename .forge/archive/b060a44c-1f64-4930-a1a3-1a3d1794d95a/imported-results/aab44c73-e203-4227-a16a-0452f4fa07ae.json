@@ -1,0 +1,24 @@
+{
+  "declared_limitations": [
+    "This revision corrects only import grouping detected by the real repository quality gate; full validation is rerun after import."
+  ],
+  "id": "aab44c73-e203-4227-a16a-0452f4fa07ae",
+  "returned_files": [
+    {
+      "declared_digest": "sha256:028aaec63f6141bd9bf9bc614a5d6702b97d51cdbfaefc3d79243fc478afb2bc",
+      "media_type": "text/x-python",
+      "proposed_target_path": "tests/test_documentation_consistency.py",
+      "schema_version": "1.0",
+      "source_path": "test_documentation_consistency.py"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_run_or_handoff_id": "547d3ef4-2d67-4924-97f5-860e3984eff9",
+  "tool_metadata": {
+    "operator": "direct-codex",
+    "purpose": "Repository-root Ruff import-order correction"
+  },
+  "worker_claims": [
+    "The focused documentation-consistency test now uses the repository-root first-party import grouping required by Ruff; test behavior is unchanged."
+  ]
+}

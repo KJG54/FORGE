@@ -1,0 +1,21 @@
+{
+  "command": "complete",
+  "completed_at": "2026-08-20T04:57:41.925738Z",
+  "events": [
+    {
+      "event_hash": "sha256:6ef7d2c1d8cb519e2c677cd6d53dcdcbc76921be6508f1e6a5399b344b76273f",
+      "event_id": "897cfda6-41b5-4adf-bc59-24a4efede197",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 45
+    },
+    {
+      "event_hash": "sha256:66419f20eb811322057f7c947b2fc1b51bc3f3e0988db474da42d16fa5502ffc",
+      "event_id": "1d9470c0-fb96-4fd9-a086-26fe2a46cc9b",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 46
+    }
+  ],
+  "key": "authority-spec-lifecycle-closeout-claim-20260820",
+  "request_digest": "sha256:96fe998839e2754764089e2980e5d12efa23d886ab59cbe5d1300371efde7e72",
+  "schema_version": "1.0"
+}

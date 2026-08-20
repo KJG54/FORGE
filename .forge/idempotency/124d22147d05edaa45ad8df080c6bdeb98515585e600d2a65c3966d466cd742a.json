@@ -1,0 +1,21 @@
+{
+  "command": "complete",
+  "completed_at": "2026-08-20T04:35:59.029343Z",
+  "events": [
+    {
+      "event_hash": "sha256:2a2ca51f5c772cdfe3a518c679af9bafe06ea45fd25298096c16acc1f0e3b0d7",
+      "event_id": "8fb92205-e6a7-466b-805d-e944c32d60c4",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 16
+    },
+    {
+      "event_hash": "sha256:811f9d1a256f2ac2b07b439d75dad2df63a75c27fcda51636624df7c89f06cc6",
+      "event_id": "5ac85a66-8077-49ab-86cc-7cee6a86debf",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 17
+    }
+  ],
+  "key": "authority-spec-lifecycle-implement-claim-20260820",
+  "request_digest": "sha256:957c0226b3e66734e2f3d8d79b915f70421ce13222c82a49e59713a420104160",
+  "schema_version": "1.0"
+}

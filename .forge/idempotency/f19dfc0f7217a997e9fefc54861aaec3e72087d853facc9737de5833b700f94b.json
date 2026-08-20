@@ -1,0 +1,15 @@
+{
+  "command": "verify",
+  "completed_at": "2026-08-20T04:55:46.281212Z",
+  "events": [
+    {
+      "event_hash": "sha256:e54de30f9a4dbf833d685fdf3ba89f9c4d8da7e8b7330a030f6e5330bae563ed",
+      "event_id": "b59a1e3b-c5c6-408b-a004-5f851475c5a6",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 39
+    }
+  ],
+  "key": "authority-spec-lifecycle-review-risk-verify-20260820",
+  "request_digest": "sha256:da19a7ade0ce3d58e87c943e163d87d10b6416edd24a828eecce5e91651c2ff4",
+  "schema_version": "1.0"
+}

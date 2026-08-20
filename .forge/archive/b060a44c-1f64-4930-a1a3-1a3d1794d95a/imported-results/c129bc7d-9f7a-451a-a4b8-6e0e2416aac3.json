@@ -1,0 +1,24 @@
+{
+  "declared_limitations": [
+    "This revision corrects only the focused test helper's mutation semantics; repository validation is rerun after import."
+  ],
+  "id": "c129bc7d-9f7a-451a-a4b8-6e0e2416aac3",
+  "returned_files": [
+    {
+      "declared_digest": "sha256:35e997421a67e806fcc34b32596fcc763a81b96b3a19273ae17d3ee64579b855",
+      "media_type": "text/x-python",
+      "proposed_target_path": "tests/test_documentation_consistency.py",
+      "schema_version": "1.0",
+      "source_path": "test_documentation_consistency.py"
+    }
+  ],
+  "schema_version": "1.0",
+  "source_run_or_handoff_id": "547d3ef4-2d67-4924-97f5-860e3984eff9",
+  "tool_metadata": {
+    "operator": "direct-codex",
+    "purpose": "Preserve focused ADR fixture mutation after strict typing"
+  },
+  "worker_claims": [
+    "The focused documentation-consistency tests now validate the decoded ADR entries while returning the original mutable list, preserving each negative test's intended fixture mutation."
+  ]
+}

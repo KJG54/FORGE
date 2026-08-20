@@ -1,0 +1,72 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:9b29536d44e4900c5cec199a6c47aa5a8bb46014a31066142eebf5ba69e618be"
+  ],
+  "affected_record_ids": [
+    "66f2ecd1-c27f-428b-9457-865699e945d2",
+    "06728050-baa5-4e98-a26e-9f9e5cc08207",
+    "701704a8-64ab-4e1d-9b2e-86f5da8f8f91",
+    "4e52b3d2-0e21-4f28-b121-62a910e99b42",
+    "b448053f-feaa-4100-a7da-c990a6715b55",
+    "75faa88c-b738-45c7-8b9b-328c167a50f6",
+    "4661f2c4-337e-42be-8602-4ed674067f79",
+    "83609a8e-2cee-4bc5-b653-0c3ca8c4a8b5",
+    "2783e3d0-75cc-4620-af0c-577bdbfb880e",
+    "8677a855-9461-4303-91df-78a467336592",
+    "0ad52529-451a-4660-9d9f-7561fa1afa7b",
+    "75872648-974e-4d8c-97d5-ca53c6869feb",
+    "2efe2521-da22-496d-989a-40fb74534381",
+    "f5c7f00d-0408-400a-a003-bc36ca013701",
+    "6533efed-1fdf-4d0d-bf4d-5370006a041b",
+    "b63aa7ca-5d5f-4e8e-a056-64cf86844ebf",
+    "c2059609-e1b0-4e61-9913-d2441d3e30e8",
+    "9ccbcb10-f3eb-4685-93be-3cb600b01234"
+  ],
+  "artifact_revision_ids": [
+    "66f2ecd1-c27f-428b-9457-865699e945d2",
+    "06728050-baa5-4e98-a26e-9f9e5cc08207",
+    "701704a8-64ab-4e1d-9b2e-86f5da8f8f91",
+    "4e52b3d2-0e21-4f28-b121-62a910e99b42",
+    "b448053f-feaa-4100-a7da-c990a6715b55",
+    "75faa88c-b738-45c7-8b9b-328c167a50f6",
+    "4661f2c4-337e-42be-8602-4ed674067f79",
+    "83609a8e-2cee-4bc5-b653-0c3ca8c4a8b5",
+    "2783e3d0-75cc-4620-af0c-577bdbfb880e",
+    "8677a855-9461-4303-91df-78a467336592",
+    "0ad52529-451a-4660-9d9f-7561fa1afa7b",
+    "75872648-974e-4d8c-97d5-ca53c6869feb",
+    "2efe2521-da22-496d-989a-40fb74534381",
+    "f5c7f00d-0408-400a-a003-bc36ca013701",
+    "6533efed-1fdf-4d0d-bf4d-5370006a041b",
+    "b63aa7ca-5d5f-4e8e-a056-64cf86844ebf"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "c2059609-e1b0-4e61-9913-d2441d3e30e8"
+  ],
+  "claim_ids": [
+    "9ccbcb10-f3eb-4685-93be-3cb600b01234"
+  ],
+  "correlation_id": null,
+  "event_sequence": 19,
+  "id": "8bb1202c-84df-40bb-bde2-164284416053",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "limitations": [
+    "Full suite result was 462 passed, 9 skipped, 0 failed; the nine skipped symlink-security cases were not exercised locally because Windows denied symlink creation (WinError 1314).",
+    "No remote CI result is bound; publication and GitHub actions remain a later separately authorized boundary."
+  ],
+  "packet_digest": "sha256:9b29536d44e4900c5cec199a6c47aa5a8bb46014a31066142eebf5ba69e618be",
+  "purpose": "Bind the exact current Phase 1 framework-change revisions to worker claim 9ccbcb10-f3eb-4685-93be-3cb600b01234 and passing implementation check c2059609-e1b0-4e61-9913-d2441d3e30e8. Evidence covers the 16 owner-reviewed implementation targets, deterministic documentation and link validation, focused negative tests, the fast quality gate, whitespace and inventory review, healthy FORGE integrity, exact recovered-spec identity, and the full local Windows test suite.",
+  "recorded_at": "2026-08-20T04:39:10.235208Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,21 @@
+{
+  "command": "acceptance_record",
+  "completed_at": "2026-08-20T04:59:49.803367Z",
+  "events": [
+    {
+      "event_hash": "sha256:dd64039b6e163f950060afddf6871ca51eb0368a0351d6ec7d55bddd607d033b",
+      "event_id": "2c3cf1c4-0172-4cbf-a747-1e6f504b57d4",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 50
+    },
+    {
+      "event_hash": "sha256:a4d77419907c06fb8b8bf08c65251752d8d1461759c1a015f4e8c0649296f848",
+      "event_id": "cd8d0063-086d-4939-bc77-c95255b68b98",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 51
+    }
+  ],
+  "key": "34198ed7-115b-4b9f-a102-3ba6dc45fec5",
+  "request_digest": "sha256:4920b51c23e432d080e37a9b773e622a47c4f77b584353c22bb1465b5ff73adf",
+  "schema_version": "1.0"
+}

@@ -1,0 +1,30 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:028aaec63f6141bd9bf9bc614a5d6702b97d51cdbfaefc3d79243fc478afb2bc"
+  ],
+  "affected_record_ids": [
+    "cef974fc-1155-48c0-abdb-33a6ab07395e",
+    "aab44c73-e203-4227-a16a-0452f4fa07ae",
+    "869531da-90fd-453e-84c2-8665848f4982"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 2,
+  "event_sequence": 13,
+  "id": "810b16a3-b08d-4041-af64-2be8f416124e",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "recorded_at": "2026-08-20T04:10:36.644142Z",
+  "role": "framework-changes",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "test_documentation_consistency.py",
+  "tool_version": "1.0.0"
+}

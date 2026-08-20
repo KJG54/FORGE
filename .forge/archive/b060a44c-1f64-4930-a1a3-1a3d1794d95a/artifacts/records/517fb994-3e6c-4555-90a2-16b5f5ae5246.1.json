@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:388e0175fadae636f6586e7a2cdbac4cee707d67c4c3feb3517d24f42f4ea4da"
+  ],
+  "affected_record_ids": [
+    "4e52b3d2-0e21-4f28-b121-62a910e99b42",
+    "406f4db8-0959-47a0-a272-d60574bedcc9"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 12,
+  "id": "517fb994-3e6c-4555-90a2-16b5f5ae5246",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "recorded_at": "2026-08-20T04:09:04.155442Z",
+  "role": "framework-changes",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "constitution.md",
+  "tool_version": "1.0.0"
+}

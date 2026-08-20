@@ -1,0 +1,55 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:b8f939e9ef943f3cd0644949d7ac019489bd33e8dfb62f4268841f1ab28a4cd3"
+  ],
+  "affected_record_ids": [
+    "2851a78c-a2d2-4e44-b579-eb86a55e3c7f"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "release-checks-passed",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-20T04:51:47.788798Z",
+  "event_sequence": 27,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "424cd811-4d03-4260-b2c9-16c5e3eb7714",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Manual release verification: refreshed python -m tools.quality_gate, python -m tools.documentation_consistency, git diff --check, and forge doctor after registering verification report revision 2851a78c-a2d2-4e44-b579-eb86a55e3c7f; bound full-suite result remains 462 passed, 9 skipped, 0 failed; report identity and contents reviewed against accepted implementation revisions and release requirements.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "Nine Windows symlink-security tests were skipped in the full suite because symlink creation is unavailable (WinError 1314).",
+    "FORGE doctor is healthy with a pre-publication warning that 116 governed files are not yet tracked by Git; closure and commit must include the terminal governed state.",
+    "Remote CI was not run and is not claimed."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-20T04:51:47.788850Z",
+  "result_digest": "sha256:993610efbe28b5a98a6e881bd88bdbb4c0b1637934749cd88e5ee996bcb6b50a",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-20T04:51:47.788796Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "2851a78c-a2d2-4e44-b579-eb86a55e3c7f"
+  ],
+  "tool_version": "1.0.0"
+}

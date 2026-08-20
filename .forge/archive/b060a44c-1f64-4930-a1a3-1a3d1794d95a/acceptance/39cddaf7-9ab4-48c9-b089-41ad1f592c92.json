@@ -1,0 +1,43 @@
+{
+  "acceptance_event_id": "08c032ce-4b22-4b8b-9d71-a1f49790b00c",
+  "accepted_artifact_revision_ids": [
+    "2851a78c-a2d2-4e44-b579-eb86a55e3c7f"
+  ],
+  "accepted_check_result_ids": [
+    "424cd811-4d03-4260-b2c9-16c5e3eb7714"
+  ],
+  "accepted_evidence_ids": [
+    "7516e259-1af2-4660-aec4-0278c89f4997"
+  ],
+  "accepted_scope": "Accept exact verification-report revision 2851a78c-a2d2-4e44-b579-eb86a55e3c7f, claim a58b4e90-ebcc-4c7a-b6e1-6d5773af7ab3, release-checks-passed result 424cd811-4d03-4260-b2c9-16c5e3eb7714, and evidence 7516e259-1af2-4660-aec4-0278c89f4997, including the nine unexercised Windows symlink tests, no-remote-CI claim, and pre-commit governed-file limitation.",
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:b8f939e9ef943f3cd0644949d7ac019489bd33e8dfb62f4268841f1ab28a4cd3",
+    "sha256:993610efbe28b5a98a6e881bd88bdbb4c0b1637934749cd88e5ee996bcb6b50a",
+    "sha256:0962352deb50642ecec548ccdf248744f8f6a6ae06f92ddfafa4ba6bb793f040"
+  ],
+  "affected_record_ids": [
+    "2851a78c-a2d2-4e44-b579-eb86a55e3c7f",
+    "424cd811-4d03-4260-b2c9-16c5e3eb7714",
+    "7516e259-1af2-4660-aec4-0278c89f4997"
+  ],
+  "authorization_basis": "configured owner accepted exact current revisions, checks, evidence, and scope",
+  "correlation_id": null,
+  "event_sequence": 30,
+  "id": "39cddaf7-9ab4-48c9-b089-41ad1f592c92",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "known_limitations": [],
+  "owner_actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "recorded_at": "2026-08-20T04:52:47.081412Z",
+  "residual_risks": [],
+  "revocation_id": null,
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

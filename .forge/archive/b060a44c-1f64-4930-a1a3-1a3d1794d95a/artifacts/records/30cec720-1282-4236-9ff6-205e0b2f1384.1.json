@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:c2a49aef431dd13ec8d1b63496ce107e37a908ec0193492ca357f8a72fbca95e"
+  ],
+  "affected_record_ids": [
+    "2783e3d0-75cc-4620-af0c-577bdbfb880e",
+    "406f4db8-0959-47a0-a272-d60574bedcc9"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 12,
+  "id": "30cec720-1282-4236-9ff6-205e0b2f1384",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "recorded_at": "2026-08-20T04:09:04.155442Z",
+  "role": "framework-changes",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "friction-register.md",
+  "tool_version": "1.0.0"
+}

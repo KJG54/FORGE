@@ -1,0 +1,42 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:2ba758a81ec206e7355be0d7223f435726b45d1726774cc8970f870bc9cc0612"
+  ],
+  "affected_record_ids": [
+    "a9f1d5ac-7550-4536-855e-f77af269bd59",
+    "406f4db8-0959-47a0-a272-d60574bedcc9"
+  ],
+  "artifact_id": "a9f1d5ac-7550-4536-855e-f77af269bd59",
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "byte_size": 7003,
+  "content_digest": "sha256:2ba758a81ec206e7355be0d7223f435726b45d1726774cc8970f870bc9cc0612",
+  "correlation_id": null,
+  "event_sequence": 12,
+  "id": "8677a855-9461-4303-91df-78a467336592",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "media_type": "text/markdown",
+  "path": "docs/governing-specification.md",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/2b/a758a81ec206e7355be0d7223f435726b45d1726774cc8970f870bc9cc0612",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "3811ef07-0387-40e5-b42c-609a1d4a7692",
+    "metadata": {
+      "untrusted": true
+    },
+    "recorded_at": "2026-08-20T04:09:04.155442Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "result:406f4db8-0959-47a0-a272-d60574bedcc9:files/docs/governing-specification.md",
+    "source_type": "import-result"
+  },
+  "recorded_at": "2026-08-20T04:09:04.155442Z",
+  "registration_event_id": "4007c584-90bf-4087-8124-2ccc91094bae",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "1.0.0"
+}

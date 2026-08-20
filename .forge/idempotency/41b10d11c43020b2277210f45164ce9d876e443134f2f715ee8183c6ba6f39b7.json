@@ -1,0 +1,15 @@
+{
+  "command": "artifact_add",
+  "completed_at": "2026-08-20T04:54:26.983887Z",
+  "events": [
+    {
+      "event_hash": "sha256:fc5a5f75fb011f1a4e4d0d0feee984a5f38ae4ba1cf7db960934c9125a546b1b",
+      "event_id": "97e50a49-ad91-44bf-8d9b-11b7f761e763",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 34
+    }
+  ],
+  "key": "authority-spec-lifecycle-residual-risk-report-add-20260820",
+  "request_digest": "sha256:e4510c52558b38d6aebbf42bbb29d52dab6f04e1d062650948a02f2b17a92244",
+  "schema_version": "1.0"
+}

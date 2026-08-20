@@ -1,0 +1,112 @@
+from __future__ import annotations
+
+import json
+import shutil
+from pathlib import Path
+from typing import cast
+
+import pytest
+
+from tools.documentation_consistency import (
+    DocumentationConsistencyError,
+    validate_documentation,
+)
+
+REPOSITORY = Path(__file__).resolve().parents[1]
+INDEX_PATH = Path("docs/history/adr/index.json")
+SPECIFICATION_PATH = Path(
+    "docs/history/specifications/FORGE-Production-v1-Master-Implementation-Specification.md"
+)
+
+
+def _fixture(tmp_path: Path) -> Path:
+    root = tmp_path / "repository"
+    shutil.copytree(REPOSITORY / "docs", root / "docs")
+    return root
+
+
+def _load_index(root: Path) -> dict[str, object]:
+    value: object = json.loads((root / INDEX_PATH).read_text(encoding="utf-8"))
+    assert isinstance(value, dict)
+    return cast(dict[str, object], value)
+
+
+def _write_index(root: Path, value: dict[str, object]) -> None:
+    (root / INDEX_PATH).write_text(
+        json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
+def _adr_entries(index: dict[str, object]) -> list[dict[str, object]]:
+    raw_entries = index["adrs"]
+    assert isinstance(raw_entries, list)
+    for raw_entry in cast(list[object], raw_entries):
+        assert isinstance(raw_entry, dict)
+    return cast(list[dict[str, object]], raw_entries)
+
+
+def test_current_documentation_authority_is_consistent() -> None:
+    report = validate_documentation(REPOSITORY)
+
+    assert report["status"] == "passed"
+    assert report["adr_count"] == 62
+
+
+def test_missing_adr_catalog_entry_fails(tmp_path: Path) -> None:
+    root = _fixture(tmp_path)
+    index = _load_index(root)
+    adrs = _adr_entries(index)
+    adrs.pop()
+    _write_index(root, index)
+
+    with pytest.raises(DocumentationConsistencyError, match="coverage mismatch"):
+        validate_documentation(root)
+
+
+def test_invalid_effective_status_fails(tmp_path: Path) -> None:
+    root = _fixture(tmp_path)
+    index = _load_index(root)
+    adrs = _adr_entries(index)
+    first = adrs[0]
+    first["effective_status"] = "current-ish"
+    _write_index(root, index)
+
+    with pytest.raises(DocumentationConsistencyError, match="invalid effective_status"):
+        validate_documentation(root)
+
+
+def test_nonreciprocal_supersession_fails(tmp_path: Path) -> None:
+    root = _fixture(tmp_path)
+    index = _load_index(root)
+    adrs = _adr_entries(index)
+    adr_0062 = next(entry for entry in adrs if entry.get("id") == "ADR-0062")
+    adr_0062["supersedes"] = []
+    _write_index(root, index)
+
+    with pytest.raises(DocumentationConsistencyError, match="without an exact reciprocal"):
+        validate_documentation(root)
+
+
+def test_historical_specification_digest_drift_fails(tmp_path: Path) -> None:
+    root = _fixture(tmp_path)
+    with (root / SPECIFICATION_PATH).open("ab") as specification:
+        specification.write(b"\nchanged\n")
+
+    with pytest.raises(DocumentationConsistencyError, match="digest mismatch"):
+        validate_documentation(root)
+
+
+def test_missing_governing_reference_link_fails(tmp_path: Path) -> None:
+    root = _fixture(tmp_path)
+    architecture = root / "docs/architecture.md"
+    text = architecture.read_text(encoding="utf-8")
+    architecture.write_text(
+        text.replace("(governing-specification.md)", "(missing-specification.md)"),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        DocumentationConsistencyError,
+        match="must link to the current governing specification",
+    ):
+        validate_documentation(root)

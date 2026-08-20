@@ -1,0 +1,15 @@
+{
+  "command": "artifact_add",
+  "completed_at": "2026-08-20T04:57:25.412023Z",
+  "events": [
+    {
+      "event_hash": "sha256:875ce5a8e74ff9caa03ce6a5b9b97a18d9a8978d750d0de76a4c2ac13bfab4ba",
+      "event_id": "a309d5f2-bb84-4806-a877-13dc49f0d9e7",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 44
+    }
+  ],
+  "key": "authority-spec-lifecycle-lessons-add-20260820",
+  "request_digest": "sha256:ff534d61e1efe657441cf0b77c0a1146d949532107e55c8d6698dd399c19da6a",
+  "schema_version": "1.0"
+}

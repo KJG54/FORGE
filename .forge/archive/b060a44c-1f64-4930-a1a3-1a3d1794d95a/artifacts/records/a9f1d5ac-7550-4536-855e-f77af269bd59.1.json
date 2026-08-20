@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:2ba758a81ec206e7355be0d7223f435726b45d1726774cc8970f870bc9cc0612"
+  ],
+  "affected_record_ids": [
+    "8677a855-9461-4303-91df-78a467336592",
+    "406f4db8-0959-47a0-a272-d60574bedcc9"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 12,
+  "id": "a9f1d5ac-7550-4536-855e-f77af269bd59",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "recorded_at": "2026-08-20T04:09:04.155442Z",
+  "role": "framework-changes",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "governing-specification.md",
+  "tool_version": "1.0.0"
+}

@@ -1,0 +1,44 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:5a99bdcff5b3c25422022b4e37783100166f4d78af34b45f96a926081e3b4f4b"
+  ],
+  "affected_record_ids": [
+    "ea3a284c-a74c-44cc-aabe-26d267c3cddb",
+    "6d2a3b23-4ecc-413f-afae-422375ad9128",
+    "e5f66f50-5a3f-4af0-85d6-5c5108324f5f",
+    "245f3aad-ff25-4bf7-908b-d4efeb891589"
+  ],
+  "artifact_revision_ids": [
+    "ea3a284c-a74c-44cc-aabe-26d267c3cddb",
+    "6d2a3b23-4ecc-413f-afae-422375ad9128"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "e5f66f50-5a3f-4af0-85d6-5c5108324f5f"
+  ],
+  "claim_ids": [
+    "245f3aad-ff25-4bf7-908b-d4efeb891589"
+  ],
+  "correlation_id": null,
+  "event_sequence": 38,
+  "id": "3387b7f9-38cc-4943-a020-f4de2705d792",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "limitations": [
+    "The broader FORGE malfunction remains unclassified pending a successor audit.",
+    "Remote CI is not bound and will not be awaited before publication under owner instruction."
+  ],
+  "packet_digest": "sha256:5a99bdcff5b3c25422022b4e37783100166f4d78af34b45f96a926081e3b4f4b",
+  "purpose": "Bind exact friction-report revision ea3a284c-a74c-44cc-aabe-26d267c3cddb and residual-risk-report revision 6d2a3b23-4ecc-413f-afae-422375ad9128 to claim 245f3aad-ff25-4bf7-908b-d4efeb891589 and passing risk-review check e5f66f50-5a3f-4af0-85d6-5c5108324f5f.",
+  "recorded_at": "2026-08-20T04:55:27.764033Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

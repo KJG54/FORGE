@@ -1,0 +1,36 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:b8f939e9ef943f3cd0644949d7ac019489bd33e8dfb62f4268841f1ab28a4cd3"
+  ],
+  "affected_record_ids": [
+    "2851a78c-a2d2-4e44-b579-eb86a55e3c7f"
+  ],
+  "assertion": "The registered verification report revision 2851a78c-a2d2-4e44-b579-eb86a55e3c7f accurately identifies the 16 accepted implementation revisions and records the required local validation results, exact recovered-specification identity, changed-file and preservation boundaries, FORGE integrity result, explicit test limitations, and absence of remote CI or publication claims.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "2851a78c-a2d2-4e44-b579-eb86a55e3c7f"
+  ],
+  "correlation_id": null,
+  "event_sequence": 25,
+  "id": "a58b4e90-ebcc-4c7a-b6e1-6d5773af7ab3",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "limitations": [
+    "Nine Windows symlink-security tests were skipped because symlink creation is unavailable to this account (WinError 1314); those cases were not exercised locally.",
+    "No remote CI result is claimed, and the current governed files remain uncommitted until terminal closure and publication."
+  ],
+  "operator_session_reference": "019ff998-db70-7b30-a258-c56f87785585",
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-20T04:51:02.757044Z",
+  "run_id": "d25113d3-b50b-440f-a77a-0c0bf238d3b6",
+  "schema_version": "1.0",
+  "step_id": "verify-release",
+  "tool_version": "1.0.0"
+}

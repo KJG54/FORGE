@@ -1,0 +1,43 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:3efe7827f51125d59c084e36bc9ac9e4d918d7d583b9451a5c4e46017cca283d"
+  ],
+  "affected_record_ids": [
+    "d3def432-6adc-42e1-b1e2-abd178792131",
+    "749ed770-b755-4578-a7c6-977f94de6598",
+    "5839eb8a-f85b-499a-abd3-bb3c50fb10c4",
+    "fd185325-372f-43e3-8b73-fa25a717f793"
+  ],
+  "artifact_revision_ids": [
+    "d3def432-6adc-42e1-b1e2-abd178792131",
+    "749ed770-b755-4578-a7c6-977f94de6598"
+  ],
+  "authorization_basis": "participant registered digest-bound evidence references and limitations",
+  "check_result_ids": [
+    "5839eb8a-f85b-499a-abd3-bb3c50fb10c4"
+  ],
+  "claim_ids": [
+    "fd185325-372f-43e3-8b73-fa25a717f793"
+  ],
+  "correlation_id": null,
+  "event_sequence": 7,
+  "id": "33d5b8fa-14b1-4244-88f7-8e081b7d8b5d",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "limitations": [
+    "This evidence supports acceptance of the planning boundary only; it does not prove that the scoped implementation has been performed or that the owner accepts it."
+  ],
+  "packet_digest": "sha256:3efe7827f51125d59c084e36bc9ac9e4d918d7d583b9451a5c4e46017cca283d",
+  "purpose": "Bind the exact reviewed Phase 1 change-scope and release-requirements revisions to the direct-agent claim and passing scope-reviewed check before FORGE verification.",
+  "recorded_at": "2026-08-17T04:24:32.425787Z",
+  "run_id": null,
+  "schema_version": "1.0",
+  "tool_version": "1.0.0"
+}

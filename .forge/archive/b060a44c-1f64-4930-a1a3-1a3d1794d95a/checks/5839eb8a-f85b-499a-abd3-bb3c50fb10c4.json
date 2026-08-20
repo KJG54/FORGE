@@ -1,0 +1,56 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:6fb33ba226c98b4575be807b07385444b30584d7b3409c97e304b532a527c702",
+    "sha256:cab7b03b82d81da3fcf9fab6f0732ce5751d8455f5e4fa3f0c17cde7c60c2fd8"
+  ],
+  "affected_record_ids": [
+    "749ed770-b755-4578-a7c6-977f94de6598",
+    "d3def432-6adc-42e1-b1e2-abd178792131"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "scope-reviewed",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-17T04:23:46.806086Z",
+  "event_sequence": 6,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "5839eb8a-f85b-499a-abd3-bb3c50fb10c4",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Manual semantic and identity evaluation of the exact current change-scope and release-requirements revisions: compared both SHA-256 digests to the reviewed import, verified the recovered source specification SHA-256, checked all five authority types, explicit exclusions, stop condition, R1-R11 coverage, and separate owner-acceptance language; forge doctor also reported healthy.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "This check establishes scope-document coverage and exact identity only; it does not validate future implementation, resolve the ADR supersession graph, verify owner identity, or constitute owner acceptance."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-17T04:23:46.806143Z",
+  "result_digest": "sha256:f73d1572a3913291585cd5fb33aa4af28c71eaac881e2da284a1970341bc6889",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-17T04:23:46.806084Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "749ed770-b755-4578-a7c6-977f94de6598",
+    "d3def432-6adc-42e1-b1e2-abd178792131"
+  ],
+  "tool_version": "1.0.0"
+}

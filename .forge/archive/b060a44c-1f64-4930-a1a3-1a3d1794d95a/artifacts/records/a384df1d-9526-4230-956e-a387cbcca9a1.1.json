@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:cab7b03b82d81da3fcf9fab6f0732ce5751d8455f5e4fa3f0c17cde7c60c2fd8"
+  ],
+  "affected_record_ids": [
+    "d3def432-6adc-42e1-b1e2-abd178792131",
+    "fb4993e5-5841-43d8-a37e-94e5a9ce9c1a"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 3,
+  "id": "a384df1d-9526-4230-956e-a387cbcca9a1",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "recorded_at": "2026-08-17T04:22:03.448072Z",
+  "role": "change-scope",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "change-scope.md",
+  "tool_version": "1.0.0"
+}

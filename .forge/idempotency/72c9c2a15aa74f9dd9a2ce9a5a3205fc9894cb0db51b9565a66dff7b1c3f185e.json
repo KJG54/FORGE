@@ -1,0 +1,15 @@
+{
+  "command": "evidence_add",
+  "completed_at": "2026-08-20T04:55:27.927806Z",
+  "events": [
+    {
+      "event_hash": "sha256:6b115cb09efa25260923830928e1301aa0132c838c78f26b76e97492d9b7d7a0",
+      "event_id": "6283dd68-b126-4570-a6dd-2baf6dc29822",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 38
+    }
+  ],
+  "key": "authority-spec-lifecycle-review-risk-evidence-20260820",
+  "request_digest": "sha256:ec2a548697011bf6361d24043f76a541890102e3ef5d988b9dff6d6a9b6e7c76",
+  "schema_version": "1.0"
+}

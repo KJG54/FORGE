@@ -1,0 +1,28 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:b8f939e9ef943f3cd0644949d7ac019489bd33e8dfb62f4268841f1ab28a4cd3"
+  ],
+  "affected_record_ids": [
+    "2851a78c-a2d2-4e44-b579-eb86a55e3c7f"
+  ],
+  "authorization_basis": "participant registered an exact preserved project artifact revision",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 24,
+  "id": "dcfca9a3-a920-4f69-b68b-f444a1d1a2cf",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "recorded_at": "2026-08-20T04:50:46.843138Z",
+  "role": "verification-report",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "Phase 1 authority and specification lifecycle verification report",
+  "tool_version": "1.0.0"
+}

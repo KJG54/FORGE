@@ -1,0 +1,15 @@
+{
+  "command": "check_record",
+  "completed_at": "2026-08-17T04:23:46.943805Z",
+  "events": [
+    {
+      "event_hash": "sha256:ef896d493afd2822835683fb56360e14e8e1f3e3ecdf880382c9ee613cb8160d",
+      "event_id": "d24d7ec9-39e5-46b3-bf27-b1327355129e",
+      "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+      "sequence": 6
+    }
+  ],
+  "key": "authority-spec-lifecycle-scope-check-20260817",
+  "request_digest": "sha256:bccf3a06e017d958b5f895d21c730436bc8307e4ed99bc05514507cdce328ea3",
+  "schema_version": "1.0"
+}

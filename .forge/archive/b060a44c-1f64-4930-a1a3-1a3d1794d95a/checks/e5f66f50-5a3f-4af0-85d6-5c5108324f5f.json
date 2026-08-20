@@ -1,0 +1,57 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:8520a4d659e9ac161afc67def7f39215ae3c4df3f9af89d04ff4464888355676",
+    "sha256:d0a5fc6aa92d04f27fe252b5729f720238ea1f99a178af685eb0b2f79447ee87"
+  ],
+  "affected_record_ids": [
+    "6d2a3b23-4ecc-413f-afae-422375ad9128",
+    "ea3a284c-a74c-44cc-aabe-26d267c3cddb"
+  ],
+  "authorization_basis": "participant recorded a manual structured check without executable capability trust",
+  "capability_approval_id": null,
+  "capability_id": null,
+  "check_id": "risk-review-complete",
+  "check_version": "1",
+  "correlation_id": null,
+  "ended_at": "2026-08-20T04:55:05.148844Z",
+  "event_sequence": 37,
+  "evidence_ids": [],
+  "execution_status": null,
+  "exit_status": 0,
+  "id": "e5f66f50-5a3f-4af0-85d6-5c5108324f5f",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "invocation_digest": null,
+  "invocation_metadata": {
+    "invocation": "Manual review of friction-report revision ea3a284c-a74c-44cc-aabe-26d267c3cddb and residual-risk-report revision 6d2a3b23-4ecc-413f-afae-422375ad9128 against observed command transcripts, verification limitations, accepted Phase 1 scope, and owner publication instruction; git diff --check passed for both reports; confirmed no item is falsely marked resolved and the broader malfunction is deferred to a successor audit.",
+    "mode": "manual-record"
+  },
+  "limitations": [
+    "The successor audit has not yet diagnosed the owner's broader FORGE malfunction report.",
+    "Remote CI will not be awaited before publication by owner direction."
+  ],
+  "outcome": "passed",
+  "recorded_at": "2026-08-20T04:55:05.148898Z",
+  "result_digest": "sha256:0b5f0b8871f1dafb03c133f63bb2d5727dded951ef5509879d6560f9e20d95ff",
+  "run_id": null,
+  "schema_version": "1.0",
+  "started_at": "2026-08-20T04:55:05.148842Z",
+  "stderr_byte_count": null,
+  "stderr_capture_path": null,
+  "stderr_digest": null,
+  "stdout_byte_count": null,
+  "stdout_capture_path": null,
+  "stdout_digest": null,
+  "target_artifact_revision_ids": [
+    "6d2a3b23-4ecc-413f-afae-422375ad9128",
+    "ea3a284c-a74c-44cc-aabe-26d267c3cddb"
+  ],
+  "tool_version": "1.0.0"
+}

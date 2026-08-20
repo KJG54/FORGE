@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:84f63bbb67ba59bd5de8176e67649e97d532c7a2ae4e8efb54186b7c23d1d49c"
+  ],
+  "affected_record_ids": [
+    "66f2ecd1-c27f-428b-9457-865699e945d2",
+    "406f4db8-0959-47a0-a272-d60574bedcc9"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 12,
+  "id": "288cd0ba-d267-4981-9f8b-0db30126987a",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "recorded_at": "2026-08-20T04:09:04.155442Z",
+  "role": "framework-changes",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "ADR-0062-typed-authority-and-specification-lifecycle.md",
+  "tool_version": "1.0.0"
+}

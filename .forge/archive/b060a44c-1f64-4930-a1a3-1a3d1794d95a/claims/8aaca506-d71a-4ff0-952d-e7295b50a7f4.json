@@ -1,0 +1,39 @@
+{
+  "actor": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:bbba55593adb58149ea63467e97e29159df55c07a1e00412e5c528a509b61bc2",
+    "sha256:a42500aaada6e259b5a534e5ecf836c884b57e02c39a9f00be9719b8d93dbed0"
+  ],
+  "affected_record_ids": [
+    "12690d29-6625-468e-a641-b83b191d566b",
+    "ccda0f90-165b-429a-bc40-579cdb363467"
+  ],
+  "assertion": "The exact release-readiness record revision 12690d29-6625-468e-a641-b83b191d566b and lessons revision ccda0f90-165b-429a-bc40-579cdb363467 accurately establish readiness for terminal closure and source publication through a topic branch and pull request, preserve all validation and residual-risk limitations, exclude tagged or package release claims, and hand the owner's broader FORGE malfunction report to an extensive successor audit.",
+  "authorization_basis": "participant asserted declared outputs against exact current artifact revisions",
+  "claimed_artifact_revision_ids": [
+    "12690d29-6625-468e-a641-b83b191d566b",
+    "ccda0f90-165b-429a-bc40-579cdb363467"
+  ],
+  "correlation_id": null,
+  "event_sequence": 45,
+  "id": "8aaca506-d71a-4ff0-952d-e7295b50a7f4",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "limitations": [
+    "Publication will occur without waiting for remote CI under explicit owner direction; no remote pass is claimed.",
+    "Nine Windows symlink-security tests were not exercised locally."
+  ],
+  "operator_session_reference": "019ff998-db70-7b30-a258-c56f87785585",
+  "operator_type": "direct-codex",
+  "recorded_at": "2026-08-20T04:57:40.905379Z",
+  "run_id": "d7599cc3-2c8a-421b-8fd5-0ea414bee8fe",
+  "schema_version": "1.0",
+  "step_id": "closeout",
+  "tool_version": "1.0.0"
+}

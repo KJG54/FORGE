@@ -1,0 +1,42 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:13be88c0a04227122a4bd48e20c78ba6482d5825e53f315c22e2af3e9c5f995c"
+  ],
+  "affected_record_ids": [
+    "97260caa-4abc-4e59-a27b-054e580db826",
+    "406f4db8-0959-47a0-a272-d60574bedcc9"
+  ],
+  "artifact_id": "97260caa-4abc-4e59-a27b-054e580db826",
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "byte_size": 2002,
+  "content_digest": "sha256:13be88c0a04227122a4bd48e20c78ba6482d5825e53f315c22e2af3e9c5f995c",
+  "correlation_id": null,
+  "event_sequence": 12,
+  "id": "75872648-974e-4d8c-97d5-ca53c6869feb",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "media_type": "text/x-python",
+  "path": "tools/quality_gate.py",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/13/be88c0a04227122a4bd48e20c78ba6482d5825e53f315c22e2af3e9c5f995c",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "795f8191-7758-4db4-8cd6-b25741996d0b",
+    "metadata": {
+      "untrusted": true
+    },
+    "recorded_at": "2026-08-20T04:09:04.155442Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "result:406f4db8-0959-47a0-a272-d60574bedcc9:files/tools/quality_gate.py",
+    "source_type": "import-result"
+  },
+  "recorded_at": "2026-08-20T04:09:04.155442Z",
+  "registration_event_id": "4007c584-90bf-4087-8124-2ccc91094bae",
+  "revision_number": 1,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [],
+  "superseded_revision_number": null,
+  "tool_version": "1.0.0"
+}

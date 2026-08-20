@@ -1,0 +1,45 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:35e997421a67e806fcc34b32596fcc763a81b96b3a19273ae17d3ee64579b855"
+  ],
+  "affected_record_ids": [
+    "810b16a3-b08d-4041-af64-2be8f416124e",
+    "c129bc7d-9f7a-451a-a4b8-6e0e2416aac3",
+    "bfd4a2c6-06dc-40c5-ba29-8f8bc453fe46"
+  ],
+  "artifact_id": "810b16a3-b08d-4041-af64-2be8f416124e",
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "byte_size": 3489,
+  "content_digest": "sha256:35e997421a67e806fcc34b32596fcc763a81b96b3a19273ae17d3ee64579b855",
+  "correlation_id": null,
+  "event_sequence": 15,
+  "id": "b63aa7ca-5d5f-4e8e-a056-64cf86844ebf",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "media_type": "text/x-python",
+  "path": "tests/test_documentation_consistency.py",
+  "preservation_status": "preserved",
+  "preserved_object_path": ".forge/objects/sha256/35/e997421a67e806fcc34b32596fcc763a81b96b3a19273ae17d3ee64579b855",
+  "provenance": {
+    "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "id": "6ceb997c-f1b2-4ae3-86d2-2947d9655d31",
+    "metadata": {
+      "untrusted": true
+    },
+    "recorded_at": "2026-08-20T04:15:55.048308Z",
+    "run_id": null,
+    "schema_version": "1.0",
+    "source_reference": "result:c129bc7d-9f7a-451a-a4b8-6e0e2416aac3:test_documentation_consistency.py",
+    "source_type": "import-result"
+  },
+  "recorded_at": "2026-08-20T04:15:55.048308Z",
+  "registration_event_id": "277eb1bd-1144-4ec3-9e93-d7c8b07f7b33",
+  "revision_number": 4,
+  "run_id": null,
+  "schema_version": "1.0",
+  "stale_dependency_effects": [
+    "bfd4a2c6-06dc-40c5-ba29-8f8bc453fe46"
+  ],
+  "superseded_revision_number": 3,
+  "tool_version": "1.0.0"
+}

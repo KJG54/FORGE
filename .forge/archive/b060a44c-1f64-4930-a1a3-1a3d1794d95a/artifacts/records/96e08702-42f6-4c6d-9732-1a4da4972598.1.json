@@ -1,0 +1,29 @@
+{
+  "actor_id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+  "affected_digests": [
+    "sha256:aacb97e0bac02e277c5554ba6140d6bfcde8900a6d16e35628d2d03d85a25789"
+  ],
+  "affected_record_ids": [
+    "0ad52529-451a-4660-9d9f-7561fa1afa7b",
+    "406f4db8-0959-47a0-a272-d60574bedcc9"
+  ],
+  "authorization_basis": "participant explicitly applied a previewed untrusted result with collision-safe artifact registration",
+  "correlation_id": null,
+  "created_by": {
+    "actor_type": "owner",
+    "display_label": "Krystian Garcia",
+    "id": "b1861f2d-80df-45ea-a6e9-e947e798c0da",
+    "schema_version": "1.0",
+    "tool_reference": "forge 1.0.0"
+  },
+  "current_revision": 1,
+  "event_sequence": 12,
+  "id": "96e08702-42f6-4c6d-9732-1a4da4972598",
+  "initiative_id": "b060a44c-1f64-4930-a1a3-1a3d1794d95a",
+  "recorded_at": "2026-08-20T04:09:04.155442Z",
+  "role": "framework-changes",
+  "run_id": null,
+  "schema_version": "1.0",
+  "title": "index.json",
+  "tool_version": "1.0.0"
+}
